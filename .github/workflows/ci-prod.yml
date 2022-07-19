@@ -1,0 +1,48 @@
+name: CI Build prod image
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      tag:
+        description: "tag to deploy from"
+        default: ""
+        required: false
+        type: string
+  push:
+    branches:
+      - "!*"
+    tags:
+      - "*"
+    paths-ignore:
+      - ".github/**"
+
+jobs:
+  # test:
+  #   ...
+
+  deploy:
+    runs-on: ubuntu-latest
+    # needs: test
+    name: Build and deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: Tag name
+        id: tag_name
+        run: |
+          if [ '${{ inputs.tag }}' = '' ]; then
+            echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+          else
+            echo ::set-output name=TAG::${{ inputs.tag }}
+          fi
+      
+      - name: Build prod image
+        uses: lidofinance/dispatch-workflow@v1
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          TARGET_REPO: "lidofinance/infra-mainnet"
+          TAG: "${{ steps.tag_name.outputs.TAG }}"
+          TARGET_WORKFLOW: "build_mainnet_eth2_validators_monitoring.yaml"

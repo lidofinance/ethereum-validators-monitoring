@@ -1,0 +1,30 @@
+name: Prepare release
+on: workflow_dispatch
+
+jobs:
+  prepare-release:
+    name: Prepare release and create pre-release PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Bump version and update CHANGELOG.MD
+        id: changelog
+        uses: lidofinance/conventional-changelog-action@v3.11.0
+        with:
+          git-message: "chore(release): {version}"
+          tag-prefix: ""
+          output-file: "CHANGELOG.md"
+          version-file: package.json
+          version-path: version
+          release-count: 10 # save all releases in the CHANGELOG.md
+          git-push: false
+          skip-on-empty: false
+          
+      - name: Create Pull Request
+        uses: lidofinance/create-pull-request@v4
+        with:
+          branch: pre-release-${{ steps.changelog.outputs.version }}
+          title: "chore(release): ${{ steps.changelog.outputs.version }}"
+          body: "This PR is generated automatically.\nMerge it with **Rebase and merge** option or with the **Squash and merge** keeping default commit message (CRUCIAL) for the automatic tag creation.\nIf you don't need this PR than close it and **delete source branch**! "

@@ -1,0 +1,30 @@
+#ide
+.idea
+
+# production
+/dist
+
+# generated
+/src/modules/generated
+
+# testing
+/coverage
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# env
+.env
+.env.local
+.env.production
+.env.development
+.env.testnet
+"env.mainnet"
+# docker
+.volumes
+.images
+
+# ssh keys
+keys

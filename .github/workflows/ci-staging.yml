@@ -1,0 +1,29 @@
+name: CI Staging
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - ".github/**"
+
+jobs:
+  # test:
+  #   ...
+  
+  deploy:
+    runs-on: ubuntu-latest
+    # needs: test
+    name: Build and deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Staging deploy
+        uses: lidofinance/dispatch-workflow@v1
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          TARGET_REPO: "lidofinance/infra-mainnet"
+          TARGET_WORKFLOW: "deploy_staging_mainnet_eth2_validators_monitoring.yaml"

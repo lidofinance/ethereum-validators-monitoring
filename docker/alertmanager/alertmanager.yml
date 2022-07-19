@@ -1,0 +1,23 @@
+global:
+  resolve_timeout: 15m
+route:
+  group_by: ['alertname']
+  group_wait: 1s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: discord_webhook_default
+  routes:
+    - receiver: discord_webhook_send_resolved
+      matchers:
+        - alertname =~ "DataActuality|NumValidatorsWithNegativeDelta"
+
+receivers:
+  - name: 'discord_webhook_default'
+    webhook_configs:
+      - url: 'http://alertmanager-discord:9094/'
+        send_resolved: false
+
+  - name: 'discord_webhook_send_resolved'
+    webhook_configs:
+      - url: 'http://alertmanager-discord:9094/'
+        send_resolved: true

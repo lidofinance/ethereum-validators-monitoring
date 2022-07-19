@@ -1,0 +1,126 @@
+groups:
+  - name: test-alerts
+    rules:
+
+      - alert: LidoSlashedValidators
+        expr: lido_validators{status="slashed"} > 0 AND ON(nos_name) delta(lido_validators{status="slashed"}[1m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          emoji: 🔪
+          summary: "Operators have slashed validators"
+          description: 'Number of slashed validators per operator'
+          field_name: '{{ $labels.nos_name }}'
+          field_value: '[{{ $value }}](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 900) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          url: "https://localhost:8082/d/HRgPmpNnz/validators"
+
+      - alert: DataActuality
+        expr: data_actuality > 3600000
+        for: 30m
+        labels:
+          severity: critical
+        annotations:
+          emoji: ⏳
+          summary: "Data actuality greater then 1 hour"
+          resolved_summary: "Data actuality less then 1 hour"
+          description: "It's not OK. Please, check app health"
+          resolved_description: "It's OK"
+          url: "https://localhost:8082/d/HRgPmpNnz/validators"
+
+      - alert: NumValidatorsWithNegativeDelta
+        expr: validator_count_with_negative_balances_delta > 0
+        labels:
+          severity: critical
+        annotations:
+          emoji: 💸
+          summary: 'Operators have a negative balance delta'
+          resolved_summary: 'Operators have a positive balance delta'
+          description: 'Number of validators per operator who have a negative balance delta.'
+          resolved_description: 'Number of validators per operator who recovered.'
+          field_name: '{{ $labels.nos_name }}'
+          field_value: '[{{ $value }}](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 900) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          url: "https://localhost:8082/d/HRgPmpNnz/validators"
+
+      - alert: NumValidatorsWithMissAttestationLastNEpoch
+        expr: validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(slot_number[1m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          emoji: 📝
+          summary: 'Operators have missed attestation in last {{ $labels.epoch_interval }} finalized epochs'
+          resolved_summary: 'Operators not have missed attestation in last {{ $labels.epoch_interval }} finalized epochs'
+          description: 'Number of validators per operator who have missed attestations.'
+          resolved_description: 'Number of validators per operator who recovered.'
+          field_name: '{{ $labels.nos_name }}'
+          field_value: '[{{ $value }}](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 900) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          url: "https://localhost:8082/d/HRgPmpNnz/validators"
+
+      - alert: NumValidatorsWithMissPropose
+        expr: validator_count_miss_propose > 0 AND ON() changes(slot_number[1m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          emoji: 📥
+          summary: 'Operators missed block propose in the last finalized epoch'
+          resolved_summary: 'Operators not missed block propose in the last finalized epoch'
+          description: 'Number of validators per operator who missed block propose.'
+          resolved_description: 'Number of validators per operator who recovered.'
+          field_name: '{{ $labels.nos_name }}'
+          field_value: '[{{ $value }}](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 900) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          url: "https://localhost:8082/d/HRgPmpNnz/validators"
+
+      - alert: NumValidatorsWithSyncParticipationLessAvgLastNEpoch
+        expr: validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(slot_number[1m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          emoji: 🔄
+          summary: 'Operators sync participation less than average in last {{ $labels.epoch_interval }} finalized epochs'
+          resolved_summary: 'Operators sync participation higher or equal than average in last {{ $labels.epoch_interval }} finalized epochs'
+          description: 'Number of validators per operator whose sync participation less than average.'
+          resolved_description: 'Number of validators per operator who recovered.'
+          field_name: '{{ $labels.nos_name }}'
+          field_value: '[{{ $value }}](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 900) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          url: "https://localhost:8082/d/HRgPmpNnz/validators"
+
+      - alert: HighRewardNumValidatorsWithSyncParticipationLessAvgLastNEpoch
+        expr: high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(slot_number[1m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          emoji: '📈🔄'
+          summary: 'Operators may get high rewards in the future, but sync participation less than average in last {{ $labels.epoch_interval }} finalized epochs!'
+          resolved_summary: 'Operators sync participation higher or equal than average in last {{ $labels.epoch_interval }} finalized epoch. Now may get high rewards in the future!'
+          description: 'Number of validators per operator whose sync participation less than average.'
+          resolved_description: 'Number of validators per operator who recovered.'
+          field_name: '{{ $labels.nos_name }}'
+          field_value: '[{{ $value }}](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 900) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          url: "https://localhost:8082/d/HRgPmpNnz/validators"
+
+      - alert: HighRewardNumValidatorsWithMissAttestationLastNEpoch
+        expr: high_reward_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(slot_number[1m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          emoji: '📈📝'
+          summary: 'Operators may get high rewards in the future, but missed attestation in last {{ $labels.epoch_interval }} finalized epochs!'
+          resolved_summary: 'Operators not have missed attestation in last {{ $labels.epoch_interval }} finalized epochs. Now may get high rewards in the future!'
+          description: 'Number of validators per operator who have missed attestations.'
+          resolved_description: 'Number of validators per operator who recovered.'
+          field_name: '{{ $labels.nos_name }}'
+          field_value: '[{{ $value }}](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 900) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          url: "https://localhost:8082/d/HRgPmpNnz/validators"
+
+      - alert: HighRewardNumValidatorsWithMissPropose
+        expr: high_reward_validator_count_miss_propose > 0 AND ON() changes(slot_number[1m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          emoji: '📈📥'
+          summary: 'Operators may get high rewards in the future, but missed block propose in the last finalized epoch!'
+          resolved_summary: 'Operators not missed block propose in the last finalized epoch. Now may get high rewards in the future!'
+          description: 'Number of validators per operator who missed block propose.'
+          resolved_description: 'Number of validators per operator who recovered.'
+          field_name: '{{ $labels.nos_name }}'
+          field_value: '[{{ $value }}](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 900) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          url: "https://localhost:8082/d/HRgPmpNnz/validators"

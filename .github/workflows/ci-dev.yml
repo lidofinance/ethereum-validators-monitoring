@@ -1,0 +1,30 @@
+name: CI Dev
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+    paths-ignore:
+      - ".github/**"
+
+jobs:
+  # test:
+  #   ...
+
+  deploy:
+    runs-on: ubuntu-latest
+    # needs: test
+    name: Build and deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Testnet deploy
+        uses: lidofinance/dispatch-workflow@v1
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          TARGET_REPO: "lidofinance/infra-mainnet"
+          TARGET: "develop"
+          TARGET_WORKFLOW: "deploy_testnet_eth2_validators_monitoring.yaml"

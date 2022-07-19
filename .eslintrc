@@ -1,0 +1,43 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.json",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint/eslint-plugin"],
+  "extends": [
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "prettier/@typescript-eslint"
+  ],
+  "root": true,
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "rules": {
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/ban-ts-ignore": "off",
+    "@typescript-eslint/no-unused-vars": ["error"],
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/member-ordering": ["error"],
+    "max-len": ["error", { "code": 140, "ignoreUrls": true }],
+    "no-undef": 1,
+    "no-unused-vars": "off",
+    "camelcase": 0,
+    "eol-last": 1,
+    "no-multiple-empty-lines": 1,
+    "comma-dangle": "off",
+    "quotes": [2, "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
+    "jsx-quotes": [2, "prefer-single"],
+    "no-useless-escape": 0,
+    "valid-jsdoc": 0,
+    "linebreak-style": ["error", "unix"],
+    "semi": ["error", "always"]
+  }
+}

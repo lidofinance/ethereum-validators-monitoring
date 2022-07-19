@@ -1,0 +1,169 @@
+version: '3.7'
+services:
+  clickhouse:
+    image: yandex/clickhouse-server
+    container_name: clickhouse
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 12g
+        reservations:
+          cpus: '0.25'
+          memory: 4g
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    hostname: clickhouse
+    ports:
+      - "8123:8123"
+    volumes:
+      - ./.volumes/clickhouse:/var/lib/clickhouse
+      - ./docker/clickhouse:/docker-entrypoint-initdb.d/
+
+  client:
+    image: yandex/clickhouse-client
+    container_name: clickhouse-client
+    restart: always
+    entrypoint:
+      - /bin/sleep
+    command:
+      - infinity
+
+  tabix:
+    image: spoonest/clickhouse-tabix-web-client
+    container_name: clickhouse-tabix-web-client
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      - CH_HOST=clickhouse:8123
+
+  prometheus:
+    image: prom/prometheus:latest
+    sysctls:
+      - net.ipv6.conf.lo.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=0
+    container_name: prometheus
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+    volumes:
+      - ./.volumes/prometheus/:/prometheus
+      - ./docker/prometheus/:/etc/prometheus/
+    expose:
+      - 9090
+    ports:
+      - "0.0.0.0:9090:9090/tcp"
+
+  cadvisor:
+    image: 'zcube/cadvisor:latest'
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - '8083:8080'
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 64m
+    volumes:
+      - ./.volumes/alertmanager/:/alertmanager
+      - ./docker/alertmanager/:/etc/alertmanager/
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+    expose:
+      - 9093
+    ports:
+      - "0.0.0.0:9093:9093/tcp"
+
+  alertmanager-discord:
+    image: vgorkavenko/alertmanager-discord-balval:1.1.0
+    container_name: alertmanager-discord
+    restart: unless-stopped
+    expose:
+      - 9094
+    ports:
+      - "0.0.0.0:9094:9094/tcp"
+    environment:
+      - "PORT=9094"
+      - "DISCORD_WEBHOOK=${DISCORD_WEBHOOK_URL}"
+
+  grafana:
+    image: grafana/grafana:latest
+    sysctls:
+      - net.ipv6.conf.lo.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=0
+    container_name: grafana
+    hostname: grafana.local
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 192m
+    links:
+      - prometheus:prometheus
+    volumes:
+      - ./.volumes/grafana/:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=MYPASSWORT
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_DOMAIN=locahost
+      - GF_SMTP_ENABLED=false
+      - GF_SMTP_HOST=smtp.gmail.com:587
+      - GF_SMTP_USER=myadrress@gmail.com
+      - GF_SMTP_PASSWORD=mypassword
+      - GF_SMTP_FROM_ADDRESS=myaddress@gmail.com
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource
+      - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
+    ports:
+      - "8082:3000"
+
+  app:
+    build: ./
+    container_name: balval_app
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - START_SLOT=${START_SLOT}
+      - REGISTRY_CONCURRENCY_LIMIT=${REGISTRY_CONCURRENCY_LIMIT}
+      - ETH1_RPC_URL=${ETH1_RPC_URL}
+      - ETH_NETWORK=${ETH_NETWORK}
+      - ETH2_BEACON_RPC_URL=${ETH2_BEACON_RPC_URL}
+    ports:
+      - "8080:8080"
+    expose:
+      - 8080
+    depends_on:
+      - clickhouse
+      - prometheus
+
+networks:
+  default:
+    name: dev_validators_monitoring
+    driver_opts:
+      com.docker.network.bridge.name: dev-val-mon
