@@ -1,4 +1,4 @@
-# eth2-validators-monitoring (aka balval)
+# ethereum-validators-monitoring (aka balval)
 
 Consensus layer validators monitoring bot, that fetches Lido Node Operator keys
 from eth1 (Execution layer) and checks their performance in eth2 (Consensus
