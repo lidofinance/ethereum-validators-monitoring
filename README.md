@@ -1,8 +1,8 @@
-# eth2-validators-monitoring (aka balval)
+# ethereum-validators-monitoring (aka balval)
 
 Consensus layer validators monitoring bot, that fetches Lido Node Operator keys
-from eth1 (Execution layer) and checks their performance in eth2 (Consensus
-layer) by: balance delta, attestations, proposes, sync committee participation.
+from Execution layer and checks their performance in Consensus
+layer by: balance delta, attestations, proposes, sync committee participation.
 
 Bot uses finalized state (2 epochs back from HEAD) for fetching validator info,
 writes data to **Clickhouse**, displays aggregates by **Grafana**
@@ -50,7 +50,7 @@ docker-compose up -d clickhouse
 | DB_MAX_BACKOFF_SEC                              | Max backoff for DB query retrier                                                                                   | false        | 120         |
 | LOG_LEVEL                                       | Logging level                                                                                                      | false        | info        |
 | DRY_RUN                                         | Option to run Balval in dry mode. This means that Balval runs a main cycle once every 24 hours                     | false        | false       |
-| ETH_NETWORK                                     | Ethereum network ID for connection eth1 RPC                                                                        | true         |             |
+| ETH_NETWORK                                     | Ethereum network ID for connection execution layer RPC                                                                        | true         |             |
 | ETH1_RPC_URL                                    | Ethereum execution layer RPC url                                                                                   | true         |             |
 | ETH1_RPC_URL_BACKUP                             | Ethereum execution layer backup RPC url                                                                            | false        |             |
 | ETH1_RPC_RETRY_DELAY_MS                         | Ethereum execution layer request retry delay                                                                       | false        | 500         |
