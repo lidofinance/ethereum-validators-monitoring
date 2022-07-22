@@ -1,34 +1,32 @@
 /* eslint-disable @typescript-eslint/member-ordering */
-import got, { HTTPError, Response }                               from 'got';
-import { BlockHeaderResponse }                                    from './types/BlockHeaderResponse';
-import { StateValidatorResponse }                                 from './types/StateValidatorResponse';
-import { inject, injectable }                                     from 'inversify';
-import { Environment }                                            from '../environment/Environment';
-import { VersionResponse }                                        from './types/VersionResponse';
-import { urljoin }                                                from '../common/functions/urljoin';
-import { GenesisResponse }                                        from './types/GenesisResponse';
-import { FinalityCheckpointsResponse }                            from './types/FinalityCheckpointsResponse';
-import { ILogger }                                                from '../logger/ILogger';
-import { BeaconChainGeneralApiError, errCommon, errGet, errPost } from './errors/BeaconChainGeneralApiError';
-import { rejectDelay }                                            from '../common/functions/rejectDelay';
-import { ShortBeaconBlockHeader }                                 from './types/ShortBeaconBlockHeader';
-import { retrier }                                                from '../common/functions/retrier';
-import { bigintRange }                                            from '../common/utils/range';
-import { ShortBeaconBlockInfo }                                   from './types/ShortBeaconBlockInfo';
-import { AttesterDutyInfo }                                       from './types/AttesterDutyInfo';
-import { ProposerDutyInfo }                                       from './types/ProposerDutyInfo';
-import { SyncCommitteeDutyInfo }                                  from './types/SyncCommitteeDutyInfo';
-import { SyncCommitteeInfo }                                      from './types/SyncCommitteeInfo';
-import { parseChunked }                                           from '@discoveryjs/json-ext';
-import { Prometheus }                                             from '../prometheus/Prometheus';
+import got, { HTTPError, Response }                          from 'got';
+import { BlockHeaderResponse }                               from './types/BlockHeaderResponse';
+import { StateValidatorResponse }                            from './types/StateValidatorResponse';
+import { inject, injectable }                                from 'inversify';
+import { Environment }                                       from '../environment/Environment';
+import { VersionResponse }                                   from './types/VersionResponse';
+import { urljoin }                                           from '../common/functions/urljoin';
+import { GenesisResponse }                                   from './types/GenesisResponse';
+import { FinalityCheckpointsResponse }                       from './types/FinalityCheckpointsResponse';
+import { ILogger }                                           from '../logger/ILogger';
+import { BeaconChainGeneralApiError, errCommon, errRequest } from './errors/BeaconChainGeneralApiError';
+import { rejectDelay }                                       from '../common/functions/rejectDelay';
+import { ShortBeaconBlockHeader }                            from './types/ShortBeaconBlockHeader';
+import { retrier }                                           from '../common/functions/retrier';
+import { bigintRange }                                       from '../common/utils/range';
+import { ShortBeaconBlockInfo }                              from './types/ShortBeaconBlockInfo';
+import { AttesterDutyInfo }                                  from './types/AttesterDutyInfo';
+import { ProposerDutyInfo }                                  from './types/ProposerDutyInfo';
+import { SyncCommitteeDutyInfo }                             from './types/SyncCommitteeDutyInfo';
+import { SyncCommitteeInfo }                                 from './types/SyncCommitteeInfo';
+import { parseChunked }                                      from '@discoveryjs/json-ext';
+import { Prometheus }                                        from '../prometheus/Prometheus';
 
-type GetFunction = (subUrl: string) => Promise<any>;
-type PostFunction = (subUrl: string, params?: Record<string, any>) => Promise<any>;
+type RequestRetryOptions = { maxRetries?: number, dataOnly?: boolean, fallbackConditionCallback?: (e: any) => any };
 
 @injectable()
 export class Eth2Client {
-  protected rpcUrls: string[];
-  protected activeRpcUrl = 0;
+  protected rpcUrls: { main: string, backup: string };
   protected version = '';
   protected genesisTime = 0n;
 
@@ -53,17 +51,19 @@ export class Eth2Client {
     @inject(ILogger) protected logger: ILogger,
     @inject(Prometheus) protected prometheus: Prometheus,
   ) {
-    this.rpcUrls = [
-      environment.ETH2_BEACON_RPC_URL,
-      environment.ETH2_BEACON_RPC_URL_BACKUP || '',
-    ].filter(val => val && val.toString().length > 0);
+    this.rpcUrls = {
+      main: environment.ETH2_BEACON_RPC_URL,
+      backup: environment.ETH2_BEACON_RPC_URL_BACKUP || ''
+    }
   }
 
   public async getVersion(): Promise<string> {
     if (this.version) {
       return this.version;
     }
-    const version = (await this.retryGet<VersionResponse>(this.endpoints.version)).version;
+    const version = (
+      await this.retryRequest<VersionResponse>((rpcURL: string) => this.apiGet(rpcURL, this.endpoints.version))
+    ).version;
     return (this.version = version);
   }
 
@@ -72,17 +72,30 @@ export class Eth2Client {
       return this.genesisTime;
     }
 
-    const genesisTime = BigInt((await this.retryGet<GenesisResponse>(this.endpoints.genesis)).genesis_time);
+    const genesisTime = BigInt(
+      (
+        await this.retryRequest<GenesisResponse>((rpcURL: string) => this.apiGet(rpcURL, this.endpoints.genesis))
+      ).genesis_time
+    );
     this.logger.info(`Got genesis time [${genesisTime}] from Eth2 Client API`);
     return (this.genesisTime = genesisTime);
   }
 
   public async getFinalizedEpoch(): Promise<bigint> {
-    return BigInt((await this.retryGet<FinalityCheckpointsResponse>(this.endpoints.beaconHeadFinalityCheckpoints)).finalized.epoch);
+    return BigInt(
+      (
+        await this.retryRequest<FinalityCheckpointsResponse>(
+          (rpcURL: string) => this.apiGet(rpcURL, this.endpoints.beaconHeadFinalityCheckpoints)
+        )
+      ).finalized.epoch
+    );
   }
 
   public async getBeaconBlockHeader(state: bigint | string, maxRetries = 3): Promise<ShortBeaconBlockHeader> {
-    const blockHeader = await this.retryGet<BlockHeaderResponse>(this.endpoints.beaconHeaders(state), maxRetries);
+    const blockHeader = await this.retryRequest<BlockHeaderResponse>(
+      (rpcURL: string) => this.apiGet(rpcURL, this.endpoints.beaconHeaders(state)),
+      {maxRetries, fallbackConditionCallback: (e) => 404 != e.$httpCode}
+    )
     const slotNumber = BigInt(blockHeader.header.message.slot);
     const stateRoot = blockHeader.header.message.state_root;
     const blockRoot = blockHeader.root;
@@ -168,36 +181,33 @@ export class Eth2Client {
   public async getBlockInfoWithSlotAttestations(slot: bigint): Promise<[ShortBeaconBlockInfo | void, Array<string>]> {
     const nearestBlockIncludedAttestations = slot + 1n; // good attestation should be included to the next block
     const maxDeep = 8;
-    let missedSlots: string[] = [];
-    const blockInfo = await this.getNextNotMissedBlockInfo(nearestBlockIncludedAttestations, maxDeep).catch(
-      (e) => {
-        if (404 == e.$httpCode) {
-          this.logger.error(
-            `Error than trying to get nearest block with attestations for slot ${slot}: nearest ${maxDeep} blocks missed`
-          );
-          missedSlots = bigintRange(
-            nearestBlockIncludedAttestations, nearestBlockIncludedAttestations + BigInt(maxDeep + 1)).map(v => v.toString()
-          );
-        } else throw e;
-      }
-    );
+    let missedSlots: bigint[] = [];
+    const blockInfo = await this.getNextNotMissedBlockInfo(nearestBlockIncludedAttestations, maxDeep);
+    if (!blockInfo) {
+      this.logger.error(
+        `Error than trying to get nearest block with attestations for slot ${slot}: nearest ${maxDeep} blocks missed`
+      );
+      missedSlots = bigintRange(
+        nearestBlockIncludedAttestations, nearestBlockIncludedAttestations + BigInt(maxDeep + 1)
+      );
+    }
 
     if (blockInfo && (nearestBlockIncludedAttestations != BigInt(blockInfo.message.slot))) {
-      missedSlots = bigintRange(nearestBlockIncludedAttestations, BigInt(blockInfo.message.slot)).map(v => v.toString());
+      missedSlots = bigintRange(nearestBlockIncludedAttestations, BigInt(blockInfo.message.slot));
     }
-    return [blockInfo, missedSlots];
+    return [blockInfo, missedSlots.map(v => v.toString())];
   }
 
-  public async getNextNotMissedBlockInfo(slot: bigint, maxDeep = 32): Promise<ShortBeaconBlockInfo> {
-    try {
-      return await this.getBlockInfo(slot);
-    } catch (e: any) {
-      if (maxDeep < 1 || 404 != e.$httpCode) {
-        throw e;
+  public async getNextNotMissedBlockInfo(slot: bigint, maxDeep = 32): Promise<ShortBeaconBlockInfo | undefined> {
+    const blockInfo = await this.getBlockInfo(slot);
+    if (!blockInfo) {
+      if (maxDeep < 1) {
+        return undefined;
       }
       this.logger.info(`Try to get info from ${slot + 1n} slot because ${slot} is missing`);
       return await this.getNextNotMissedBlockInfo(slot + 1n, maxDeep - 1);
     }
+    return blockInfo;
   }
 
   public async checkSlotIsMissed(slotNumber: bigint, someNextBlock: ShortBeaconBlockHeader): Promise<[boolean, ShortBeaconBlockHeader]> {
@@ -223,12 +233,16 @@ export class Eth2Client {
   }
 
   public async getBalances(stateRoot: string): Promise<StateValidatorResponse[]> {
-    return await this.retryGet(this.endpoints.balances(stateRoot), 5, this.apiLargeGet);
+    return await this.retryRequest((rpcURL: string) => this.apiLargeGet(rpcURL, this.endpoints.balances(stateRoot)));
   }
 
   public async getBlockInfo(block: string | bigint): Promise<ShortBeaconBlockInfo> {
-    return <ShortBeaconBlockInfo>(await this.retryGet(
-        this.endpoints.blockInfo(block), this.environment.ETH2_GET_BLOCK_INFO_MAX_RETRIES
+    return <ShortBeaconBlockInfo>(await this.retryRequest(
+        (rpcURL: string) => this.apiGet(rpcURL, this.endpoints.blockInfo(block)),
+        {
+          maxRetries: this.environment.ETH2_GET_BLOCK_INFO_MAX_RETRIES,
+          fallbackConditionCallback: (e) => 404 != e.$httpCode
+        }
       ).catch(
         (e) => {
           if (404 != e.$httpCode) {
@@ -241,7 +255,9 @@ export class Eth2Client {
   }
 
   public async getSyncCommitteeInfo(stateRoot: string, epoch: string | bigint): Promise<SyncCommitteeInfo> {
-    return await this.retryGet(this.endpoints.syncCommittee(stateRoot, epoch), 5);
+    return await this.retryRequest(
+      (rpcURL: string) => this.apiGet(rpcURL, this.endpoints.syncCommittee(stateRoot, epoch))
+    );
   }
 
   public async getCanonicalAttesterDuties(
@@ -249,13 +265,13 @@ export class Eth2Client {
   ): Promise<AttesterDutyInfo[]> {
     const retry = retrier(this.logger, maxRetries, 100, 10000, true);
     const request = async () => {
-      const res = <{ dependent_root: string, data: AttesterDutyInfo[] }>(await this.retryPost(
-        this.endpoints.attesterDuties(epoch), 5, {body: JSON.stringify(indexes)}, this.apiLargePost, false
+      const res = <{ dependent_root: string, data: AttesterDutyInfo[] }>(await this.retryRequest(
+        (rpcURL: string) => this.apiLargePost(rpcURL, this.endpoints.attesterDuties(epoch), {body: JSON.stringify(indexes)}),
+        {dataOnly: false}
       ));
       if (res.dependent_root != dependentRoot) {
-        throw new BeaconChainGeneralApiError(errCommon(
-          `Attester duty dependent root is not as expected. Actual: ${res.dependent_root} Expected: ${dependentRoot}`,
-          this.endpoints.attesterDuties(epoch))
+        throw Error(
+          `Attester duty dependent root is not as expected. Actual: ${res.dependent_root} Expected: ${dependentRoot}`
         );
       }
       return res.data;
@@ -286,8 +302,8 @@ export class Eth2Client {
     while (chunked.length > 0) {
       const chunk = chunked.splice(0, this.environment.ETH2_POST_REQUEST_CHUNK_SIZE); // large payload may cause endpoint exception
       result = result.concat(
-        <SyncCommitteeDutyInfo[]>(await this.retryPost(
-            this.endpoints.syncCommitteeDuties(epoch), 5, {body: JSON.stringify(chunk)}, this.apiLargePost
+        <SyncCommitteeDutyInfo[]>(await this.retryRequest(
+            (rpcURL: string) => this.apiLargePost(rpcURL, this.endpoints.syncCommitteeDuties(epoch), {body: JSON.stringify(chunk)})
           ).catch(
             (e) => {
               this.logger.error('Unexpected status code while fetching sync committee duties info');
@@ -304,7 +320,10 @@ export class Eth2Client {
     const retry = retrier(this.logger, maxRetries, 100, 10000, true);
     const request = async () => {
       const res = <{ dependent_root: string, data: ProposerDutyInfo[] }>(
-        await this.retryGet(this.endpoints.proposerDutes(epoch), 5, this.apiGetNoFallback, false).catch(
+        await this.retryRequest(
+          (rpcURL: string) => this.apiGet(rpcURL, this.endpoints.proposerDutes(epoch)),
+          {maxRetries, dataOnly: false}
+        ).catch(
           (e) => {
             this.logger.error('Unexpected status code while fetching proposer duties info');
             throw e;
@@ -312,9 +331,8 @@ export class Eth2Client {
         )
       );
       if (res.dependent_root != dependentRoot) {
-        throw new BeaconChainGeneralApiError(errCommon(
+        throw Error(
           `Proposer duty dependent root is not as expected. Actual: ${res.dependent_root} Expected: ${dependentRoot}`,
-          this.endpoints.proposerDutes(epoch))
         );
       }
       return res.data;
@@ -331,73 +349,41 @@ export class Eth2Client {
     return ((await this.getGenesisTime()) + (slot * BigInt(this.environment.CHAIN_SLOT_TIME_SECONDS)));
   }
 
-  protected get url(): string {
-    // sanity check
-    if (this.activeRpcUrl > this.rpcUrls.length - 1) {
-      this.activeRpcUrl = 0;
-    }
-
-    return this.rpcUrls[this.activeRpcUrl];
-  }
-
-  protected switchToNextRpc(): void {
-    if (this.rpcUrls.length === 1) {
-      this.logger.info('Will not switch to next RPC url for ETH2. No backup RPC provided.');
-      return;
-    }
-    this.activeRpcUrl++;
-    this.logger.info('Switched to next RPC url for ETH2');
-  }
-
-  protected async retryGet<T>(subUrl: string, maxRetries = 5, getFunc: GetFunction = this.apiGetNoFallback, dataOnly = true): Promise<T> {
+  protected async retryRequest<T>(callback: (rpcURL: string) => any, options?: RequestRetryOptions): Promise<T> {
+    const [maxRetries, dataOnly, fallbackConditionCallback] = [
+      options?.maxRetries ?? 5,
+      options?.dataOnly != undefined ? options.dataOnly : true,
+      options?.fallbackConditionCallback != undefined ? options.fallbackConditionCallback : () => true
+    ]
     const retry = retrier(this.logger, maxRetries, 100, 10000, true);
-
-    const res = await getFunc(subUrl)
+    const res = await callback(this.rpcUrls.main)
       .catch(rejectDelay(this.environment.ETH2_BEACON_RPC_RETRY_DELAY_MS))
-      .catch(() => retry(() => getFunc(subUrl)))
-      .catch((e) => {
-        this.logger.error('Error while doing ETH2 RPC request. Will try to switch to another RPC');
-        this.switchToNextRpc();
+      .catch(() => retry(() => callback(this.rpcUrls.main)))
+      .catch((e: any) => {
+        if (fallbackConditionCallback(e)) {
+          this.logger.error('Error while doing ETH2 RPC request. Will try to switch to another RPC if exists');
+          return retry(() => callback(this.rpcUrls.backup || this.rpcUrls.main));
+        }
         throw e;
-      })
-      .catch(() => retry(() => getFunc(subUrl)));
+      });
 
     if (dataOnly) return res.data; else return res;
   }
 
-  protected async retryPost<T>(
-    subUrl: string, maxRetries = 5, params?: Record<string, unknown>, postFunc: PostFunction = this.apiPostNoFallback, dataOnly = true
-  ): Promise<T> {
-    const retry = retrier(this.logger, maxRetries, 100, 10000, true);
-
-    const res = await postFunc(subUrl, params)
-      .catch(rejectDelay(this.environment.ETH2_BEACON_RPC_RETRY_DELAY_MS))
-      .catch(() => retry(() => postFunc(subUrl, params)))
-      .catch((e) => {
-        this.logger.error('Error while doing ETH2 RPC request. Will try to switch to another RPC');
-        this.switchToNextRpc();
-        throw e;
-      })
-      .catch(() => retry(() => postFunc(subUrl, params)));
-
-
-    if (dataOnly) return res.data; else return res;
-  }
-
-  protected apiGetNoFallback = async <T>(subUrl: string): Promise<T> => {
+  protected apiGet = async <T>(rpcUrl: string, subUrl: string): Promise<T> => {
     return await this.prometheus.trackCLRequest(
-      this.url, subUrl, async () => {
-        const res = await got.get(urljoin(this.url, subUrl), {timeout: {response: this.environment.ETH2_GET_RESPONSE_TIMEOUT}})
+      rpcUrl, subUrl, async () => {
+        const res = await got.get(urljoin(rpcUrl, subUrl), {timeout: {response: this.environment.ETH2_GET_RESPONSE_TIMEOUT}})
           .catch(
             (e) => {
               if (e.response) {
-                throw new BeaconChainGeneralApiError(errGet(e.response.body, subUrl), e.response.statusCode);
+                throw new BeaconChainGeneralApiError(errRequest(e.response.body, subUrl, rpcUrl), e.response.statusCode);
               }
-              throw new BeaconChainGeneralApiError(errCommon(e.message, subUrl));
+              throw new BeaconChainGeneralApiError(errCommon(e.message, subUrl, rpcUrl));
             }
           );
         if (res.statusCode !== 200) {
-          throw new BeaconChainGeneralApiError(errGet(res.body, subUrl), res.statusCode);
+          throw new BeaconChainGeneralApiError(errRequest(res.body, subUrl, rpcUrl), res.statusCode);
         }
         try {
           return JSON.parse(res.body);
@@ -408,20 +394,20 @@ export class Eth2Client {
     );
   };
 
-  protected apiPostNoFallback = async <T>(subUrl: string, params?: Record<string, any>): Promise<T> => {
+  protected apiPost = async <T>(rpcUrl: string, subUrl: string, params?: Record<string, any>): Promise<T> => {
     return await this.prometheus.trackCLRequest(
-      this.url, subUrl, async () => {
-        const res = await got.post(urljoin(this.url, subUrl), {timeout: {response: this.environment.ETH2_POST_RESPONSE_TIMEOUT}, ...params})
+      rpcUrl, subUrl, async () => {
+        const res = await got.post(urljoin(rpcUrl, subUrl), {timeout: {response: this.environment.ETH2_POST_RESPONSE_TIMEOUT}, ...params})
           .catch(
             (e) => {
               if (e.response) {
-                throw new BeaconChainGeneralApiError(errPost(e.response.body, subUrl, params), e.response.statusCode);
+                throw new BeaconChainGeneralApiError(errRequest(e.response.body, subUrl, rpcUrl), e.response.statusCode);
               }
-              throw new BeaconChainGeneralApiError(errCommon(e.message, subUrl));
+              throw new BeaconChainGeneralApiError(errCommon(e.message, subUrl, rpcUrl));
             }
           );
         if (res.statusCode !== 200) {
-          throw new BeaconChainGeneralApiError(errPost(res.body, subUrl, params), res.statusCode);
+          throw new BeaconChainGeneralApiError(errRequest(res.body, subUrl, rpcUrl), res.statusCode);
         }
         try {
           return JSON.parse(res.body);
@@ -432,11 +418,11 @@ export class Eth2Client {
     );
   };
 
-  protected apiLargeGet = async (subUrl: string): Promise<any> => {
+  protected apiLargeGet = async (rpcUrl: string, subUrl: string): Promise<any> => {
     return await this.prometheus.trackCLRequest(
-      this.url, subUrl, async () => {
+      rpcUrl, subUrl, async () => {
         return await parseChunked(
-          got.stream.get(urljoin(this.url, subUrl), {timeout: {response: this.environment.ETH2_GET_RESPONSE_TIMEOUT}})
+          got.stream.get(urljoin(rpcUrl, subUrl), {timeout: {response: this.environment.ETH2_GET_RESPONSE_TIMEOUT}})
             .on(
               'response',
               (r: Response) => {
@@ -445,19 +431,19 @@ export class Eth2Client {
             )
         ).catch((e) => {
           if (e instanceof HTTPError) {
-            throw new BeaconChainGeneralApiError(errGet(<string>e.response.body, subUrl), e.response.statusCode);
+            throw new BeaconChainGeneralApiError(errRequest(<string>e.response.body, subUrl, rpcUrl), e.response.statusCode);
           }
-          throw new BeaconChainGeneralApiError(errCommon(e.message, subUrl));
+          throw new BeaconChainGeneralApiError(errCommon(e.message, subUrl, rpcUrl));
         });
       }
     );
   };
 
-  protected apiLargePost = async (subUrl: string, params?: Record<string, any>,): Promise<any> => {
+  protected apiLargePost = async (rpcUrl: string, subUrl: string, params?: Record<string, any>,): Promise<any> => {
     return await this.prometheus.trackCLRequest(
-      this.url, subUrl, async () => {
+      rpcUrl, subUrl, async () => {
         return await parseChunked(
-          got.stream.post(urljoin(this.url, subUrl), {timeout: {response: this.environment.ETH2_POST_RESPONSE_TIMEOUT}, ...params})
+          got.stream.post(urljoin(rpcUrl, subUrl), {timeout: {response: this.environment.ETH2_POST_RESPONSE_TIMEOUT}, ...params})
             .on(
               'response',
               (r: Response) => {
@@ -466,9 +452,9 @@ export class Eth2Client {
             )
         ).catch((e) => {
           if (e instanceof HTTPError) {
-            throw new BeaconChainGeneralApiError(errPost(<string>e.response.body, subUrl, params), e.response.statusCode);
+            throw new BeaconChainGeneralApiError(errRequest(<string>e.response.body, subUrl, rpcUrl), e.response.statusCode);
           }
-          throw new BeaconChainGeneralApiError(errCommon(e.message, subUrl));
+          throw new BeaconChainGeneralApiError(errCommon(e.message, subUrl, rpcUrl));
         });
       }
     );
