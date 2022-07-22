@@ -21,7 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1654153475630,
+  "iteration": 1659506556287,
   "links": [
     {
       "asDropdown": false,
@@ -104,7 +104,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -112,7 +112,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "data_actuality",
+          "expr": "ethereum_validators_monitoring_data_actuality",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -164,7 +164,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -172,7 +172,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "slot_number",
+          "expr": "ethereum_validators_monitoring_slot_number",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -182,18 +182,171 @@
       "type": "stat"
     },
     {
+      "description": "AVG",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 3
+      },
+      "id": 990,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "ethereum_validators_monitoring_chain_sync_participation_avg_percent",
+          "format": "time_series",
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "Blockchain Sync Committee validators participation",
+      "type": "gauge"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 3
+        "y": 9
       },
       "id": 4,
       "panels": [],
-      "repeat": "nos_name_var",
       "title": "$nos_name_var",
       "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "description": "AVG",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "green",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 10
+      },
+      "id": 799,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateTimeType": "DATETIME",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "\n        SELECT\n          avg(epoch_participation_percent)\n        FROM\n          stats.validator_sync\n        WHERE\n          last_slot_of_epoch = ${slot_number_var} AND nos_name = '${nos_name_var}'\n\n",
+          "rawQuery": "SELECT\n          avg(epoch_participation_percent)\n        FROM\n          stats.validator_sync\n        WHERE\n          last_slot_of_epoch = 3583199 AND nos_name = 'Allnodes'",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true
+        }
+      ],
+      "title": "Sync Committee validators participation",
+      "type": "gauge"
     },
     {
       "description": "Delta: current slot - 192 slot",
@@ -255,8 +408,8 @@
       "gridPos": {
         "h": 6,
         "w": 6,
-        "x": 0,
-        "y": 4
+        "x": 6,
+        "y": 10
       },
       "id": 2,
       "options": {
@@ -277,13 +430,103 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validator_balances_delta{nos_name=\"${nos_name_var:string}\"}",
+          "expr": "ethereum_validators_monitoring_validator_balances_delta{nos_name=\"${nos_name_var:string}\"}",
           "interval": "",
           "legendFormat": "{{nos_name}}",
           "refId": "A"
         }
       ],
       "title": "Average validator balances delta",
+      "type": "timeseries"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-red",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "right",
+            "axisSoftMax": 10,
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 50,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-red",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 12,
+        "y": 10
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max"
+          ],
+          "displayMode": "hidden",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name=\"${nos_name_var:string}\"}",
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Number of validators with negative delta",
       "type": "timeseries"
     },
     {
@@ -346,8 +589,8 @@
       "gridPos": {
         "h": 6,
         "w": 6,
-        "x": 6,
-        "y": 4
+        "x": 18,
+        "y": 10
       },
       "id": 6,
       "options": {
@@ -368,7 +611,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validator_quantile_001_balances_delta{nos_name=\"${nos_name_var:string}\"}",
+          "expr": "ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_name=\"${nos_name_var:string}\"}",
           "interval": "",
           "legendFormat": "{{nos_name}}",
           "refId": "A"
@@ -376,661 +619,6 @@
       ],
       "title": "Worst validator balances delta [0.1% percentile]",
       "type": "timeseries"
-    },
-    {
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-red",
-            "mode": "fixed"
-          },
-          "custom": {
-            "axisLabel": "",
-            "axisPlacement": "right",
-            "axisSoftMax": 10,
-            "axisSoftMin": 0,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "decimals": 0,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "dark-red",
-                "value": null
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 12,
-        "y": 4
-      },
-      "id": 5,
-      "options": {
-        "legend": {
-          "calcs": [
-            "max"
-          ],
-          "displayMode": "hidden",
-          "placement": "bottom"
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "8.1.5",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": true,
-          "expr": "validator_count_with_negative_balances_delta{nos_name=\"${nos_name_var:string}\"}",
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Number of validators with negative delta",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto"
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "delta"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 70
-              },
-              {
-                "id": "unit",
-                "value": "locale"
-              },
-              {
-                "id": "custom.displayMode",
-                "value": "color-text"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "status"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 110
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "validator_pubkey"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
-                  }
-                ]
-              },
-              {
-                "id": "displayName",
-                "value": "validator"
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 18,
-        "y": 4
-      },
-      "id": 222,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": false,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.4.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": false,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "hide": false,
-          "intervalFactor": 1,
-          "query": "SELECT\n  current.balance - previous.balance AS delta,\n  current.status,\n  CAST(current.validator_pubkey, 'FixedString(100)') as validator_pubkey\nFROM \n  (\n    SELECT balance, validator_pubkey, status, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE \n      status != 'pending_queued' AND \n      nos_name IN (${nos_name_var:singlequote}) AND\n      slot = ${slot_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT balance, validator_pubkey, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE\n      status != 'pending_queued' AND \n      nos_name IN (${nos_name_var:singlequote}) AND\n      slot = (${slot_number_var} - ${fetch_interval_var} * 6)\n  ) AS previous\nON\n  previous.nos_id = current.nos_id AND \n  previous.validator_pubkey = current.validator_pubkey\nORDER BY delta ASC\nLIMIT 10",
-          "rawQuery": "SELECT\n  current.balance - previous.balance AS delta,\n  current.status,\n  CAST(current.validator_pubkey, 'FixedString(100)') as validator_pubkey\nFROM \n  (\n    SELECT balance, validator_pubkey, status, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE \n      status != 'pending_queued' AND \n      nos_name IN () AND\n      slot = 2640991\n  ) AS current\nLEFT JOIN\n  (\n    SELECT balance, validator_pubkey, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE\n      status != 'pending_queued' AND \n      nos_name IN () AND\n      slot = (2640991 - 32 * 6)\n  ) AS previous\nON\n  previous.nos_id = current.nos_id AND \n  previous.validator_pubkey = current.validator_pubkey\nORDER BY delta ASC\nLIMIT 10",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Validators with worst balance delta",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "AVG",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 0
-              },
-              {
-                "color": "yellow",
-                "value": 60
-              },
-              {
-                "color": "green",
-                "value": 90
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 0,
-        "y": 10
-      },
-      "id": 799,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
-      },
-      "pluginVersion": "8.4.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "\n        SELECT\n          avg(epoch_participation_percent)\n        FROM\n          stats.validator_sync\n        WHERE\n          last_slot_of_epoch == ${slot_number_var} AND nos_name in (${nos_name_var})\n\n",
-          "rawQuery": "SELECT\n          avg(epoch_participation_percent)\n        FROM\n          stats.validator_sync\n        WHERE\n          last_slot_of_epoch == 3621535 AND nos_name in ('Allnodes')",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "$nos_name_var Sync Committee validators participation (last finalized epoch)",
-      "type": "gauge"
-    },
-    {
-      "description": "AVG",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "percentage",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 0
-              },
-              {
-                "color": "yellow",
-                "value": 60
-              },
-              {
-                "color": "green",
-                "value": 90
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 6,
-        "y": 10
-      },
-      "id": 990,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
-      },
-      "pluginVersion": "8.4.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": true,
-          "expr": "chain_sync_participation_avg_percent",
-          "format": "time_series",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "title": "Blockchain Sync Committee validators participation (last finalized epoch)",
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "Lido only",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto"
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "validator_pubkey"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
-                  }
-                ]
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "nos_name"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 200
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 6,
-        "x": 12,
-        "y": 10
-      },
-      "id": 1202,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": false,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.4.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n  CAST(validator_pubkey, 'FixedString(100)') as validator_pubkey,\n  slot_to_propose\nFROM stats.validator_proposes\nWHERE proposed = 0 AND (slot_to_propose <= ${slot_number_var} AND slot_to_propose >= (${slot_number_var} - ${fetch_interval_var})) AND nos_name in (${nos_name_var})\nORDER BY slot_to_propose DESC, validator_pubkey",
-          "rawQuery": "SELECT\n  CAST(validator_pubkey, 'FixedString(100)') as validator_pubkey,\n  slot_to_propose\nFROM stats.validator_proposes\nWHERE proposed = 0 AND (slot_to_propose <= 3943903 AND slot_to_propose >= (3943903 - 32)) AND nos_name in ('Allnodes')\nORDER BY slot_to_propose DESC, validator_pubkey",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Validators with missed proposes (last finalized epoch)",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "Lido only",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto",
-            "filterable": false
-          },
-          "links": [],
-          "mappings": [
-            {
-              "options": {
-                "from": 4,
-                "result": {
-                  "color": "red",
-                  "index": 0
-                },
-                "to": 6
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 1,
-                "result": {
-                  "color": "yellow",
-                  "index": 1
-                },
-                "to": 3
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 0,
-                "result": {
-                  "color": "green",
-                  "index": 2
-                },
-                "to": 0
-              },
-              "type": "range"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "count_fail"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 70
-              },
-              {
-                "id": "unit",
-                "value": "none"
-              },
-              {
-                "id": "custom.displayMode",
-                "value": "color-text"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "validator_pubkey"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
-                  }
-                ]
-              },
-              {
-                "id": "displayName",
-                "value": "validator"
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "nos_name"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 200
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 6,
-        "x": 18,
-        "y": 10
-      },
-      "id": 629,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": false,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.4.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "\nSELECT\n  validator_pubkey,\n  count() as count_fail\nFROM (\n    SELECT\n      CAST(validator_pubkey, 'FixedString(100)') as validator_pubkey,\n      nos_name\n    FROM stats.validator_proposes\n    WHERE proposed = 0 AND \n    (slot_to_propose <= ${slot_number_var} AND slot_to_propose > (${slot_number_var} - ${fetch_interval_var} * 6)) AND nos_name in (${nos_name_var})\n    ORDER BY slot_to_propose DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
-          "rawQuery": "SELECT\n  validator_pubkey,\n  count() as count_fail\nFROM (\n    SELECT\n      CAST(validator_pubkey, 'FixedString(100)') as validator_pubkey,\n      nos_name\n    FROM stats.validator_proposes\n    WHERE proposed = 0 AND \n    (slot_to_propose <= 3923007 AND slot_to_propose > (3923007 - 32 * 6)) AND nos_name in ('Allnodes')\n    ORDER BY slot_to_propose DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Number of times the validator miss propose (last 6 finalized epochs)",
-      "type": "table"
     },
     {
       "datasource": {
@@ -1178,7 +766,7 @@
           }
         ]
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -1190,14 +778,14 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "\nSELECT\n  validator_pubkey,\n  count() as count_fail\nFROM (\n    SELECT\n      CAST(validator_pubkey, 'FixedString(100)') as validator_pubkey,\n      nos_name\n    FROM stats.validator_sync\n    WHERE epoch_participation_percent < (${chain_sync_participation_var} - ${sync_participation_distance_var}) AND \n    (last_slot_of_epoch <= ${slot_number_var} AND last_slot_of_epoch > (${slot_number_var} - ${fetch_interval_var} * 6)) AND nos_name in (${nos_name_var})\n    ORDER BY last_slot_of_epoch DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey",
-          "rawQuery": "SELECT\n  validator_pubkey,\n  count() as count_fail\nFROM (\n    SELECT\n      CAST(validator_pubkey, 'FixedString(100)') as validator_pubkey,\n      nos_name\n    FROM stats.validator_sync\n    WHERE epoch_participation_percent < (93.1 - 10) AND \n    (last_slot_of_epoch <= 3621599 AND last_slot_of_epoch > (3621599 - 32 * 6)) AND nos_name in ('Allnodes')\n    ORDER BY last_slot_of_epoch DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey",
+          "query": "\nSELECT\n  validator_pubkey,\n  count() as count_fail\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_sync\n    WHERE epoch_participation_percent < (epoch_chain_participation_percent_avg - ${sync_participation_distance_var}) AND \n    (last_slot_of_epoch <= ${slot_number_var} AND last_slot_of_epoch > (${slot_number_var} - ${fetch_interval_var} * ${epochs})) AND nos_name = '${nos_name_var}'\n    ORDER BY last_slot_of_epoch DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  validator_pubkey,\n  count() as count_fail\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_sync\n    WHERE epoch_participation_percent < (epoch_chain_participation_percent_avg - 10) AND \n    (last_slot_of_epoch <= 3583199 AND last_slot_of_epoch > (3583199 - 32 * 1)) AND nos_name = 'Allnodes'\n    ORDER BY last_slot_of_epoch DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
         }
       ],
-      "title": "Number of times the validator sync participation less chain average (last 6 finalized epochs)",
+      "title": "Number of times the validator sync participation less chain average (${epochs} epoch(s))",
       "type": "table"
     },
     {
@@ -1346,7 +934,7 @@
           }
         ]
       },
-      "pluginVersion": "8.4.3",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -1358,14 +946,257 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "\nSELECT\n  validator_pubkey,\n  count() as count_fail\nFROM (\n    SELECT\n      CAST(validator_pubkey, 'FixedString(100)') as validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND nos_name in (${nos_name_var}) AND\n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * 6))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
-          "rawQuery": "SELECT\n  validator_pubkey,\n  count() as count_fail\nFROM (\n    SELECT\n      CAST(validator_pubkey, 'FixedString(100)') as validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND nos_name in ('Allnodes') AND\n    (slot_to_attestation <= 3621599 AND slot_to_attestation > (3621599 - 32 * 6))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+          "query": "\nSELECT\n  validator_pubkey,\n  count() as count_fail\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND nos_name = '${nos_name_var}' AND\n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs}))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  validator_pubkey,\n  count() as count_fail\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND nos_name = 'Allnodes' AND\n    (slot_to_attestation <= 3583199 AND slot_to_attestation > (3583199 - 32 * 1))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
         }
       ],
-      "title": "Number of times the validator miss attestation (last 6 finalized epochs)",
+      "title": "Number of times the validator miss attestation (${epochs} epoch(s))",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "description": "Lido only",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "validator_pubkey"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "beaconcha.in",
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                  }
+                ]
+              },
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "nos_name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 200
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 12,
+        "y": 16
+      },
+      "id": 1202,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "delta"
+          }
+        ]
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateTimeType": "DATETIME",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n  validator_pubkey,\n  slot_to_propose\nFROM stats.validator_proposes\nWHERE proposed = 0 AND (slot_to_propose <= ${slot_number_var} AND slot_to_propose >= (${slot_number_var} - ${fetch_interval_var} * ${epochs})) AND nos_name = '${nos_name_var}'\nORDER BY slot_to_propose DESC, validator_pubkey",
+          "rawQuery": "SELECT\n  validator_pubkey,\n  slot_to_propose\nFROM stats.validator_proposes\nWHERE proposed = 0 AND (slot_to_propose <= 3583199 AND slot_to_propose >= (3583199 - 32 * 1)) AND nos_name = 'Allnodes'\nORDER BY slot_to_propose DESC, validator_pubkey",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true
+        }
+      ],
+      "title": "Validators with missed proposes (${epochs} epoch(s))",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "delta"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              },
+              {
+                "id": "unit",
+                "value": "locale"
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "status"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "validator_pubkey"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "beaconcha.in",
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                  }
+                ]
+              },
+              {
+                "id": "displayName",
+                "value": "validator"
+              },
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 16
+      },
+      "id": 222,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "delta"
+          }
+        ]
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateTimeType": "DATETIME",
+          "extrapolate": false,
+          "format": "table",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "hide": false,
+          "intervalFactor": 1,
+          "query": "SELECT\n  current.balance - previous.balance AS delta,\n  current.status,\n  current.validator_pubkey\nFROM \n  (\n    SELECT balance, validator_pubkey, status, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE \n      status != 'pending_queued' AND \n      nos_name = ${nos_name_var:singlequote} AND\n      slot = ${slot_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT balance, validator_pubkey, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE\n      status != 'pending_queued' AND \n      nos_name = ${nos_name_var:singlequote} AND\n      slot = (${slot_number_var} - ${fetch_interval_var} * 6)\n  ) AS previous\nON\n  previous.nos_id = current.nos_id AND \n  previous.validator_pubkey = current.validator_pubkey\nORDER BY delta ASC\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  current.balance - previous.balance AS delta,\n  current.status,\n  current.validator_pubkey\nFROM \n  (\n    SELECT balance, validator_pubkey, status, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE \n      status != 'pending_queued' AND \n      nos_name = 'Allnodes' AND\n      slot = 4356159\n  ) AS current\nLEFT JOIN\n  (\n    SELECT balance, validator_pubkey, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE\n      status != 'pending_queued' AND \n      nos_name = 'Allnodes' AND\n      slot = (4356159 - 32 * 6)\n  ) AS previous\nON\n  previous.nos_id = current.nos_id AND \n  previous.validator_pubkey = current.validator_pubkey\nORDER BY delta ASC\nLIMIT 100",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true
+        }
+      ],
+      "title": "Validators with worst balance delta",
       "type": "table"
     },
     {
@@ -1461,7 +1292,7 @@
       "gridPos": {
         "h": 8,
         "w": 12,
-        "x": 12,
+        "x": 0,
         "y": 22
       },
       "id": 1699,
@@ -1475,7 +1306,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -1487,8 +1318,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    status,\n    CAST(validator_pubkey, 'FixedString(100)') as validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and slot = ${slot_number_var} AND nos_name in (${nos_name_var})",
-          "rawQuery": "SELECT\n    status,\n    CAST(validator_pubkey, 'FixedString(100)') as validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and slot = 3288287 AND nos_name in ()",
+          "query": "SELECT\n    status,\n    CAST(validator_pubkey, 'FixedString(100)') as validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and slot = ${slot_number_var} AND nos_name = '${nos_name_var}'",
+          "rawQuery": "SELECT\n    status,\n    CAST(validator_pubkey, 'FixedString(100)') as validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and slot = 4356063 AND nos_name = 'ChainLayer'",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1498,7 +1329,7 @@
       "type": "table"
     }
   ],
-  "refresh": false,
+  "refresh": "",
   "schemaVersion": 35,
   "style": "dark",
   "tags": [],
@@ -1507,22 +1338,18 @@
       {
         "current": {
           "selected": false,
-          "text": [
-            "All"
-          ],
-          "value": [
-            "$__all"
-          ]
+          "text": "Allnodes",
+          "value": "Allnodes"
         },
         "definition": "lido_validators",
         "hide": 0,
-        "includeAll": true,
+        "includeAll": false,
         "label": "Node Operator",
-        "multi": true,
+        "multi": false,
         "name": "nos_name_var",
         "options": [],
         "query": {
-          "query": "lido_validators",
+          "query": "ethereum_validators_monitoring_lido_validators",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
@@ -1534,8 +1361,8 @@
       {
         "current": {
           "selected": false,
-          "text": "3943903",
-          "value": "3943903"
+          "text": "3583199",
+          "value": "3583199"
         },
         "definition": "query_result(slot_number)",
         "description": "Last slot number",
@@ -1546,7 +1373,7 @@
         "name": "slot_number_var",
         "options": [],
         "query": {
-          "query": "query_result(slot_number)",
+          "query": "query_result(ethereum_validators_monitoring_slot_number)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -1570,7 +1397,7 @@
         "name": "fetch_interval_var",
         "options": [],
         "query": {
-          "query": "query_result(fetch_interval)",
+          "query": "query_result(ethereum_validators_monitoring_fetch_interval)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -1594,7 +1421,7 @@
         "name": "sync_participation_distance_var",
         "options": [],
         "query": {
-          "query": "query_result(sync_participation_distance_down_from_chain_avg)",
+          "query": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -1606,8 +1433,8 @@
       {
         "current": {
           "selected": false,
-          "text": "97.81",
-          "value": "97.81"
+          "text": "85.19",
+          "value": "85.19"
         },
         "definition": "query_result(chain_sync_participation_avg_percent)",
         "description": "Blockchain Sync participation average",
@@ -1618,7 +1445,7 @@
         "name": "chain_sync_participation_var",
         "options": [],
         "query": {
-          "query": "query_result(chain_sync_participation_avg_percent)",
+          "query": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -1626,6 +1453,50 @@
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "1",
+          "value": "1"
+        },
+        "datasource": {
+          "type": "vertamedia-clickhouse-datasource",
+          "uid": "PDEE91DDB90597936"
+        },
+        "definition": "WITH epoch_range AS (\n    SELECT\n      ((${__to:date:seconds} - ${__from:date:seconds}) / 600)::int as val\n)\nSELECT IF (val = 0, 1, val) from epoch_range",
+        "hide": 2,
+        "includeAll": false,
+        "label": "Epoch range",
+        "multi": false,
+        "name": "epochs",
+        "options": [],
+        "query": "WITH epoch_range AS (\n    SELECT\n      ((${__to:date:seconds} - ${__from:date:seconds}) / 600)::int as val\n)\nSELECT IF (val = 0, 1, val) from epoch_range",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "100",
+          "value": "100"
+        },
+        "hide": 0,
+        "label": "Row limit",
+        "name": "limit",
+        "options": [
+          {
+            "selected": true,
+            "text": "100",
+            "value": "100"
+          }
+        ],
+        "query": "100",
+        "skipUrlSync": false,
+        "type": "textbox"
       }
     ]
   },
@@ -1633,9 +1504,11 @@
     "from": "now-1h",
     "to": "now"
   },
-  "timepicker": {},
+  "timepicker": {
+    "refresh_intervals": []
+  },
   "timezone": "",
   "title": "NodeOperators",
   "uid": "3wimU2H7h",
-  "version": 10
+  "version": 11
 }
