@@ -361,8 +361,12 @@ export class Eth2Client {
       .catch(() => retry(() => callback(this.rpcUrls.main)))
       .catch((e: any) => {
         if (fallbackConditionCallback(e)) {
-          this.logger.error('Error while doing ETH2 RPC request. Will try to switch to another RPC if exists');
-          return retry(() => callback(this.rpcUrls.backup || this.rpcUrls.main));
+          if (!this.rpcUrls.backup) {
+            this.logger.warn('Backup ETH2 RPC url not passed');
+            throw e;
+          }
+          this.logger.error('Error while doing ETH2 RPC request. Will try to switch to another RPC');
+          return retry(() => callback(this.rpcUrls.backup));
         }
         throw e;
       });
