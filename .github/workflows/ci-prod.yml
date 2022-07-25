@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        
+
       - name: Tag name
         id: tag_name
         run: |
@@ -37,7 +37,7 @@ jobs:
           else
             echo ::set-output name=TAG::${{ inputs.tag }}
           fi
-      
+
       - name: Build prod image
         uses: lidofinance/dispatch-workflow@v1
         env:
@@ -45,4 +45,5 @@ jobs:
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           TARGET_REPO: "lidofinance/infra-mainnet"
           TAG: "${{ steps.tag_name.outputs.TAG }}"
+          TARGET: "main"
           TARGET_WORKFLOW: "build_mainnet_eth2_validators_monitoring.yaml"
