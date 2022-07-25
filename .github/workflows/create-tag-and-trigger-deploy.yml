@@ -2,7 +2,7 @@ name: Create tag and trigger deploy
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   bump:
