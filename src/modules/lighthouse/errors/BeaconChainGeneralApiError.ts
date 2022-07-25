@@ -1,11 +1,8 @@
-export const errGet = (errBody: string, endpoint: string): string => (
-  `ErrorBody: ${errBody} | Endpoint: ${endpoint}`
+export const errRequest = (errBody: string, endpoint: string, rpcUrl: string): string => (
+  `ErrorBody: ${errBody} | Endpoint: ${endpoint} | Target: ${new URL(rpcUrl).hostname}`
 );
-export const errPost = ( errBody: string, endpoint: string, reqParams: Record<string, any> | undefined): string => (
-  `ErrorBody: ${errBody} | Endpoint: ${endpoint} | RequestParams: ${reqParams}`
-);
-export const errCommon = (errMessage: string, endpoint: string): string => (
-  `ErrorMessage: ${errMessage} | Endpoint: ${endpoint}}`
+export const errCommon = (errMessage: string, endpoint: string, rpcUrl: string): string => (
+  `ErrorMessage: ${errMessage} | Endpoint: ${endpoint} | Target: ${new URL(rpcUrl).hostname}`
 );
 
 export class BeaconChainGeneralApiError extends Error {

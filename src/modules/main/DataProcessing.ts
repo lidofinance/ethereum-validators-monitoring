@@ -91,6 +91,7 @@ export class DataProcessor {
       } catch (e) {
         this.logger.error('Error while fetching and writing new finalized slot or epoch info');
         this.logger.error(e as Error);
+        throw e;
       }
     });
   }
