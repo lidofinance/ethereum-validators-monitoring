@@ -14,8 +14,8 @@ import {
   Min,
   MinLength,
   IsOptional,
-  validateOrReject, IsBoolean
-}                                    from 'class-validator';
+  validateOrReject, IsBoolean, IsArray
+} from 'class-validator';
 import { container }                 from '../../container';
 import { ILogger }                   from '../logger/ILogger';
 import dotenv                        from 'dotenv';
@@ -120,6 +120,10 @@ export class Environment {
   @IsNotEmpty()
   @IsString()
   public ETH1_RPC_URL!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  public ALERTMANAGER_URL?: string;
 
   @IsOptional()
   @IsString()
@@ -239,6 +243,20 @@ export class Environment {
   @Max(10)
   @Transform(({value}) => parseInt(value, 10), {toClassOnly: true})
   public BAD_ATTESTATION_EPOCHS = 3;
+
+  /**
+   * Critical alerts will be sent for NOs with validators count greater this value
+   */
+  @IsNumber()
+  @Transform(({value}) => parseInt(value, 10), {toClassOnly: true})
+  public CRITICAL_ALERTS_MIN_VAL_COUNT = 100;
+
+  /**
+   * List of critical alert names that will be disabled
+   */
+  @IsArray()
+  @Transform(({value}) => value.split(','), {toClassOnly: true})
+  public CRITICAL_ALERTS_MUTE_LIST: string[] = [];
 
   public static create(): Environment {
     return plainToClass(this, process.env);

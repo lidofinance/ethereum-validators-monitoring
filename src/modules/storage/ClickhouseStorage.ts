@@ -10,6 +10,7 @@ import migration_000004_proposes             from './migrations/migration_000004
 import { KeysIndexed }                       from '../eth-rpc/KeysIndexed';
 import { retrier }                           from '../common/functions/retrier';
 import {
+  lidoNodeOperatorsProposesStatsLastNEpochQuery,
   lidoNodeOperatorsStatsQuery,
   lidoValidatorIDsQuery,
   lidoValidatorsSummaryStatsQuery,
@@ -37,6 +38,7 @@ type NodeOperatorValMissPropose = { nos_name: string, miss_propose_count: number
 type SyncCommitteeParticipationAvgPercents = { lido: number, chain: number };
 type NodeOperatorStats = { active_ongoing: number, pending: number, slashed: number };
 type NamedNodeOperatorStats = { nos_name: string } & NodeOperatorStats;
+type NodeOperatorProposesStats = { nos_name: string, all: number, missed: number };
 export type ValidatorID = { validator_id: string, validator_pubkey: string };
 export type CheckSyncCommitteeParticipationResult = {
   all_avg_participation: string
@@ -398,5 +400,18 @@ export class ClickhouseStorage {
   public async getLidoValidatorIDs(slot: bigint): Promise<ValidatorID[]> {
     const ret = await this.retry(async () => await this.db.query(lidoValidatorIDsQuery(slot.toString())).toPromise());
     return <ValidatorID[]>ret;
+  }
+
+  /**
+   * Send query to Clickhouse and receives information about
+   * Lido Node Operator proposes stats in the last N epochs
+   */
+  public async getLidoNodeOperatorsProposesStats(slot: bigint, epochInterval = 120): Promise<NodeOperatorProposesStats[]> {
+    const ret = await this.retry(
+      async () => await this.db.query(
+        lidoNodeOperatorsProposesStatsLastNEpochQuery(this.environment.FETCH_INTERVAL_SLOTS, slot.toString(), epochInterval)
+      ).toPromise()
+    );
+    return <NodeOperatorProposesStats[]>ret;
   }
 }
