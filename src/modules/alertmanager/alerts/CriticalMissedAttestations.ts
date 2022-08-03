@@ -18,7 +18,8 @@ export class CriticalMissedAttestations extends Alert {
     );
     for (const operator of operators.filter((o) => o.active_ongoing > this.env.CRITICAL_ALERTS_MIN_VAL_COUNT)) {
       const missedAtt = missedAttValidatorsCount.find(a => a.nos_name == operator.nos_name);
-      if (missedAtt && missedAtt.miss_attestation_count > operator.active_ongoing / 3) {
+      if (!missedAtt) continue;
+      if (missedAtt.miss_attestation_count > operator.active_ongoing / 3) {
         result[operator.nos_name] = {ongoing: operator.active_ongoing, missedAtt: missedAtt.miss_attestation_count};
       }
     }

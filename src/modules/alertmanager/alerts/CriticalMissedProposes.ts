@@ -16,7 +16,8 @@ export class CriticalMissedProposes extends Alert {
     const proposes = await this.storage.getLidoNodeOperatorsProposesStats(bySlot);
     for (const operator of operators.filter((o) => o.active_ongoing > this.env.CRITICAL_ALERTS_MIN_VAL_COUNT)) {
       const proposeStats = proposes.find(a => a.nos_name == operator.nos_name);
-      if (proposeStats && proposeStats.missed > proposeStats.all / 3) {
+      if (!proposeStats) continue;
+      if (proposeStats.missed > proposeStats.all / 3) {
         result[operator.nos_name] = {all: proposeStats.all, missed: proposeStats.missed};
       }
     }

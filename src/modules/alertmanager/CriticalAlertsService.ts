@@ -41,7 +41,6 @@ export class CriticalAlertsService {
     this.logger.info('Send critical alerts if exist')
     try {
       for (const alert of this.alerts) {
-        if (this.env.CRITICAL_ALERTS_MUTE_LIST.includes(alert.alertname)) continue;
         const toSend = await alert.toSend(bySlot);
         if (toSend) await this.fire(toSend.body).then(() => sentAlerts[alert.alertname] = toSend);
       }

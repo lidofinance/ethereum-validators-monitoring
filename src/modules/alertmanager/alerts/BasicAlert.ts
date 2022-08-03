@@ -8,8 +8,8 @@ export type PreparedToSendAlert = { timestamp: number, body: AlertRequestBody, r
 export type AlertRuleResult = { [operator: string]: any };
 
 export abstract class Alert {
-  public readonly alertname: string = '';
-  protected sendTimestamp: number = 0;
+  public readonly alertname: string;
+  protected sendTimestamp = 0;
   protected readonly env: Environment;
   protected readonly storage: ClickhouseStorage;
 

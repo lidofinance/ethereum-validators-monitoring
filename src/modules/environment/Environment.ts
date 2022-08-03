@@ -251,13 +251,6 @@ export class Environment {
   @Transform(({value}) => parseInt(value, 10), {toClassOnly: true})
   public CRITICAL_ALERTS_MIN_VAL_COUNT = 100;
 
-  /**
-   * List of critical alert names that will be disabled
-   */
-  @IsArray()
-  @Transform(({value}) => value.split(','), {toClassOnly: true})
-  public CRITICAL_ALERTS_MUTE_LIST: string[] = [];
-
   public static create(): Environment {
     return plainToClass(this, process.env);
   }

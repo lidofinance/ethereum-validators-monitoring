@@ -16,7 +16,8 @@ export class CriticalNegativeDelta extends Alert {
     const negativeValidatorsCount = await this.storage.getValidatorsCountWithNegativeDelta(bySlot);
     for (const operator of operators.filter((o) => o.active_ongoing > this.env.CRITICAL_ALERTS_MIN_VAL_COUNT)) {
       const negDelta = negativeValidatorsCount.find(a => a.nos_name == operator.nos_name);
-      if (negDelta && negDelta.neg_count > operator.active_ongoing / 3) {
+      if (!negDelta) continue;
+      if (negDelta.neg_count > operator.active_ongoing / 3) {
         result[operator.nos_name] = {ongoing: operator.active_ongoing, negDelta: negDelta.neg_count};
       }
     }
