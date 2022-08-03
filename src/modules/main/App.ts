@@ -7,6 +7,7 @@ import { sleep }                             from '../common/functions/sleep';
 import { DataProcessor }                     from './DataProcessing';
 import { StatsProcessor }                    from './StatsProcessing';
 import { IHttpServer }                       from '../HttpServer/IHttpServer';
+import { CriticalAlertsService }             from '../alertmanager/CriticalAlertsService';
 
 @injectable()
 export class App {
@@ -18,7 +19,8 @@ export class App {
     @inject(Eth2Client) protected lighthouse: Eth2Client,
     @inject(ClickhouseStorage) protected storage: ClickhouseStorage,
     @inject(DataProcessor) protected dataProcessor: DataProcessor,
-    @inject(StatsProcessor) protected statsProcessor: StatsProcessor
+    @inject(StatsProcessor) protected statsProcessor: StatsProcessor,
+    @inject(CriticalAlertsService) protected criticalAlertService: CriticalAlertsService
   ) {
   }
 
@@ -49,6 +51,7 @@ export class App {
             await this.statsProcessor.calculateLidoStats(slotToWrite, possibleHighRewardValidators);
             await this.statsProcessor.calculateOtherStats(res.otherCounts);
             await this.statsProcessor.finalizeAppIterate(slotToWrite);
+            await this.criticalAlertService.sendCriticalAlerts(slotToWrite);
           }
         }
       } catch (e) {

@@ -13,6 +13,7 @@ import { NodeOperatorsContract } from './modules/eth-rpc/NodeOperatorsContract';
 import { StEthContract }         from './modules/eth-rpc/StEthContract';
 import { DataProcessor }         from './modules/main/DataProcessing';
 import { StatsProcessor }        from './modules/main/StatsProcessing';
+import { CriticalAlertsService } from './modules/alertmanager/CriticalAlertsService';
 
 export const container = new Container();
 
@@ -38,6 +39,7 @@ container.bind(ClickhouseStorage).toSelf().inSingletonScope();
 container.bind(Prometheus).toSelf().inSingletonScope();
 container.bind(DataProcessor).toSelf().inSingletonScope();
 container.bind(StatsProcessor).toSelf().inSingletonScope();
+container.bind(CriticalAlertsService).toSelf().inSingletonScope();
 container.bind(App).toSelf().inSingletonScope();
 
 

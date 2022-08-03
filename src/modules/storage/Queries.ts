@@ -261,6 +261,24 @@ export const lidoValidatorsSummaryStatsQuery = (slot: string): string => `
   )
 `;
 
+export const lidoNodeOperatorsProposesStatsLastNEpochQuery = (fetchInterval: number, slot: string, epochInterval = 120): string => `
+  SELECT
+    nos_name,
+    SUM(a) as all,
+    SUM(m) as missed
+  FROM
+  (
+    SELECT
+      nos_name,
+      count(proposed) as a,
+      IF(proposed = 0, count(proposed), 0) as m
+    FROM stats.validator_proposes
+    WHERE (slot_to_propose <= ${slot} AND slot_to_propose > (${slot} - ${fetchInterval} * ${epochInterval}))
+    GROUP BY nos_name, proposed
+  )
+  GROUP by nos_name
+`;
+
 export const lidoValidatorIDsQuery = (slot: string): string => `
   SELECT validator_id, validator_pubkey
   FROM stats.validator_balances
