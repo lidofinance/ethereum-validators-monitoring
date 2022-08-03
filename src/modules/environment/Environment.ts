@@ -121,7 +121,7 @@ export class Environment {
   @IsString()
   public ETH1_RPC_URL!: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   public ALERTMANAGER_URL?: string;
 
