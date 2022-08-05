@@ -3,10 +3,10 @@ FROM node:16-alpine as building
 WORKDIR /app
 
 COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --non-interactive
+
 COPY ./tsconfig*.json ./
 COPY ./src ./src
-
-RUN yarn install --frozen-lockfile --non-interactive && yarn cache clean
 RUN yarn build
 
 FROM node:16-alpine

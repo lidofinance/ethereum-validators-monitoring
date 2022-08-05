@@ -50,7 +50,7 @@ export class EnvironmentVariables {
   NODE_ENV: Environment = Environment.development;
 
   @IsNumber()
-  @Min(1)
+  @Min(1025)
   @Max(65535)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public HTTP_PORT = 8080;
