@@ -1,6 +1,6 @@
 {
   "name": "ethereum-validators-monitoring",
-  "version": "2.0.0",
+  "version": "1.3.2",
   "main": "./dist/main.js",
   "private": true,
   "scripts": {
@@ -16,7 +16,7 @@
   },
   "author": "Lido",
   "license": "MIT",
-  "description": "Grabs Eth2.0 Validator balances every N slots and stores them in storage, ",
+  "description": "Consensus layer validators monitoring bot, that fetches Lido Node Operator keys from Execution layer and checks their performance in Consensus layer by: balance delta, attestations, proposes, sync committee participation.",
   "dependencies": {
     "@chainsafe/ssz": "^0.8.20",
     "@discoveryjs/json-ext": "^0.5.7",

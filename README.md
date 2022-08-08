@@ -39,6 +39,8 @@ docker-compose up -d clickhouse
 ## Application Env variables
 | **Variable**                                    | **Description**                                                                                                    | **Required** | **Default** |
 |-------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|--------------|-------------|
+| LOG_LEVEL                                       | Balval log level                                                                                                   |              |             |
+| LOG_FORMAT                                      | Balval log format (simple or json)                                                                                 |              |             |
 | DB_HOST                                         | Clickhouse server host                                                                                             | true         |             |
 | DB_USER                                         | Clickhouse server user                                                                                             | true         |             |
 | DB_PASSWORD                                     | Clickhouse server password                                                                                         | true         |             |
@@ -50,17 +52,17 @@ docker-compose up -d clickhouse
 | DB_MAX_BACKOFF_SEC                              | Max backoff for DB query retrier                                                                                   | false        | 120         |
 | LOG_LEVEL                                       | Logging level                                                                                                      | false        | info        |
 | DRY_RUN                                         | Option to run Balval in dry mode. This means that Balval runs a main cycle once every 24 hours                     | false        | false       |
-| ETH_NETWORK                                     | Ethereum network ID for connection execution layer RPC                                                                        | true         |             |
-| ETH1_RPC_URL                                    | Ethereum execution layer RPC url                                                                                   | true         |             |
-| ETH1_RPC_URL_BACKUP                             | Ethereum execution layer backup RPC url                                                                            | false        |             |
-| ETH1_RPC_RETRY_DELAY_MS                         | Ethereum execution layer request retry delay                                                                       | false        | 500         |
+| ETH_NETWORK                                     | Ethereum network ID for connection execution layer RPC                                                             | true         |             |
+| EL_RPC_URL                                      | Ethereum execution layer RPC url                                                                                   | true         |             |
+| EL_RPC_URL_BACKUP                               | Ethereum execution layer backup RPC url                                                                            | false        |             |
+| EL_RPC_RETRY_DELAY_MS                           | Ethereum execution layer request retry delay                                                                       | false        | 500         |
 | REGISTRY_CONCURRENCY_LIMIT                      | Count of concurrency requests to contract for fetching NOs keys                                                    | false        | 200         |
-| ETH2_BEACON_RPC_URL                             | Ethereum consensus layer RPC url                                                                                   | true         |             |
-| ETH2_BEACON_RPC_URL_BACKUP                      | Ethereum consensus layer backup RPC url                                                                            | false        |             |
-| ETH2_BEACON_RPC_RETRY_DELAY_MS                  | Ethereum consensus layer request retry delay                                                                       | false        | 500         |
-| ETH2_GET_RESPONSE_TIMEOUT                       | Ethereum consensus layer GET response (header) timeout                                                             | false        | 15 * 1000   |
-| ETH2_POST_RESPONSE_TIMEOUT                      | Ethereum consensus layer POST response (header) timeout                                                            | false        | 15 * 1000   |
-| ETH2_POST_REQUEST_CHUNK_SIZE                    | Ethereum consensus layer data chunk size for large POST requests                                                   | false        | 30000       |
+| CL_BEACON_RPC_URL                               | Ethereum consensus layer RPC url                                                                                   | true         |             |
+| CL_BEACON_RPC_URL_BACKUP                        | Ethereum consensus layer backup RPC url                                                                            | false        |             |
+| CL_BEACON_RPC_RETRY_DELAY_MS                    | Ethereum consensus layer request retry delay                                                                       | false        | 500         |
+| CL_GET_RESPONSE_TIMEOUT                         | Ethereum consensus layer GET response (header) timeout                                                             | false        | 15 * 1000   |
+| CL_POST_RESPONSE_TIMEOUT                        | Ethereum consensus layer POST response (header) timeout                                                            | false        | 15 * 1000   |
+| CL_POST_REQUEST_CHUNK_SIZE                      | Ethereum consensus layer data chunk size for large POST requests                                                   | false        | 30000       |
 | FETCH_INTERVAL_SLOTS                            | Count of slots in Ethereum consensus layer epoch                                                                   | false        | 32          |
 | CHAIN_SLOT_TIME_SECONDS                         | Ethereum consensus layer time slot size                                                                            | false        | 12          |
 | START_SLOT                                      | Ethereum consensus layer slot for start Balval                                                                     | false        | 1518000     |
@@ -68,6 +70,8 @@ docker-compose up -d clickhouse
 | SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG   | Number epochs after which we think that our sync participation is bad and alert about that                         | false        | 3           |
 | ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY        | Maximum inclusion delay after which we think that attestation is bad                                               | false        | 5           |
 | BAD_ATTESTATION_EPOCHS                          | Number epochs after which we think that our attestation is bad and alert about that                                | false        | 3           |
+| CRITICAL_ALERTS_ALERTMANAGER_URL                | If passed, Balval sends additional critical alerts about validators performance to Alertmanager                    |              |             |
+| CRITICAL_ALERTS_MIN_VAL_COUNT                   | Critical alerts will be sent for Node Operators with validators count greater this value                           |              |             |
 
 ## Application metrics
 
@@ -106,4 +110,4 @@ To create new release:
 1. When action execution is finished, navigate to Repo => Pull requests
 1. Find pull request named "chore(release): X.X.X" review and merge it with "Rebase and merge" (or "Squash and merge")
 1. After merge release action will be triggered automatically
-1. Navigate to Repo => Actions and see last actions logs for further details 
+1. Navigate to Repo => Actions and see last actions logs for further details
