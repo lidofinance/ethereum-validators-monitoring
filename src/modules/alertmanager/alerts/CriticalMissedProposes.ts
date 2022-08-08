@@ -26,18 +26,16 @@ export class CriticalMissedProposes extends Alert {
 
   sendRule(ruleResult: AlertRuleResult): boolean {
     const defaultInterval = 6 * 60 * 60 * 1000; // 6h
-    const ifIncreasedInterval = 60 * 60 * 1000; // 1h
     this.sendTimestamp = Date.now();
     if (Object.values(ruleResult).length > 0) {
       const prevSendTimestamp = sentAlerts[this.alertname]?.timestamp ?? 0;
-      if (this.sendTimestamp - prevSendTimestamp > defaultInterval) return true;
       for (const [operator, operatorResult] of Object.entries(ruleResult)) {
         const prevAll = sentAlerts[this.alertname]?.ruleResult[operator]?.all ?? 0;
         const prevMissed = sentAlerts[this.alertname]?.ruleResult[operator]?.missed ?? 0;
         // if math relation of missed to all increased
         if (
           (operatorResult.missed / operatorResult.all) > (prevMissed / prevAll) &&
-          this.sendTimestamp - prevSendTimestamp > ifIncreasedInterval
+          this.sendTimestamp - prevSendTimestamp > defaultInterval
         ) return true;
       }
     }
