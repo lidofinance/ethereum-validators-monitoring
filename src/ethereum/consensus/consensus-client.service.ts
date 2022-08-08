@@ -49,8 +49,8 @@ export class ConsensusClientService {
     protected readonly prometheus: PrometheusService,
   ) {
     this.rpcUrls = {
-      main: config.get('ETH2_BEACON_RPC_URL'),
-      backup: config.get('ETH2_BEACON_RPC_URL_BACKUP') || '',
+      main: config.get('CL_BEACON_RPC_URL'),
+      backup: config.get('CL_BEACON_RPC_URL_BACKUP') || '',
     };
   }
 
@@ -70,7 +70,7 @@ export class ConsensusClientService {
     const genesisTime = BigInt(
       (await this.retryRequest<GenesisResponse>((rpcURL: string) => this.apiGet(rpcURL, this.endpoints.genesis))).genesis_time,
     );
-    this.logger.log(`Got genesis time [${genesisTime}] from Eth2 Client API`);
+    this.logger.log(`Got genesis time [${genesisTime}] from Consensus Layer Client API`);
     return (this.genesisTime = genesisTime);
   }
 
@@ -229,7 +229,7 @@ export class ConsensusClientService {
 
   public async getBlockInfo(block: string | bigint): Promise<ShortBeaconBlockInfo> {
     return <ShortBeaconBlockInfo>await this.retryRequest((rpcURL: string) => this.apiGet(rpcURL, this.endpoints.blockInfo(block)), {
-      maxRetries: this.config.get('ETH2_GET_BLOCK_INFO_MAX_RETRIES'),
+      maxRetries: this.config.get('CL_GET_BLOCK_INFO_MAX_RETRIES'),
       fallbackConditionCallback: (e) => 404 != e.$httpCode,
     }).catch((e) => {
       if (404 != e.$httpCode) {
@@ -274,7 +274,7 @@ export class ConsensusClientService {
     let result: AttesterDutyInfo[] = [];
     const chunked = [...indexes];
     while (chunked.length > 0) {
-      const chunk = chunked.splice(0, this.config.get('ETH2_POST_REQUEST_CHUNK_SIZE')); // large payload may cause endpoint exception
+      const chunk = chunked.splice(0, this.config.get('CL_POST_REQUEST_CHUNK_SIZE')); // large payload may cause endpoint exception
       result = result.concat(await this.getCanonicalAttesterDuties(epoch, dependentRoot, chunk));
     }
     return result;
@@ -284,7 +284,7 @@ export class ConsensusClientService {
     let result: SyncCommitteeDutyInfo[] = [];
     const chunked = [...indexes];
     while (chunked.length > 0) {
-      const chunk = chunked.splice(0, this.config.get('ETH2_POST_REQUEST_CHUNK_SIZE')); // large payload may cause endpoint exception
+      const chunk = chunked.splice(0, this.config.get('CL_POST_REQUEST_CHUNK_SIZE')); // large payload may cause endpoint exception
       result = result.concat(
         <SyncCommitteeDutyInfo[]>await this.retryRequest((rpcURL: string) =>
           this.apiLargePost(rpcURL, this.endpoints.syncCommitteeDuties(epoch), { body: JSON.stringify(chunk) }),
@@ -332,15 +332,15 @@ export class ConsensusClientService {
     ];
     const retry = retrier(this.logger, maxRetries, 100, 10000, true);
     const res = await callback(this.rpcUrls.main)
-      .catch(rejectDelay(this.config.get('ETH2_BEACON_RPC_RETRY_DELAY_MS')))
+      .catch(rejectDelay(this.config.get('CL_BEACON_RPC_RETRY_DELAY_MS')))
       .catch(() => retry(() => callback(this.rpcUrls.main)))
       .catch((e: any) => {
         if (fallbackConditionCallback(e)) {
           if (!this.rpcUrls.backup) {
-            this.logger.warn('Backup ETH2 RPC url not passed');
+            this.logger.warn('Backup CL RPC url not passed');
             throw e;
           }
-          this.logger.error('Error while doing ETH2 RPC request. Will try to switch to another RPC');
+          this.logger.error('Error while doing CL RPC request. Will try to switch to another RPC');
           return retry(() => callback(this.rpcUrls.backup));
         }
         throw e;
@@ -353,7 +353,7 @@ export class ConsensusClientService {
   protected apiGet = async <T>(rpcUrl: string, subUrl: string): Promise<T> => {
     return await this.prometheus.trackCLRequest(rpcUrl, subUrl, async () => {
       const res = await got
-        .get(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('ETH2_GET_RESPONSE_TIMEOUT') } })
+        .get(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('CL_GET_RESPONSE_TIMEOUT') } })
         .catch((e) => {
           if (e.response) {
             throw new BeaconChainGeneralApiError(errRequest(e.response.body, subUrl, rpcUrl), e.response.statusCode);
@@ -374,7 +374,7 @@ export class ConsensusClientService {
   protected apiPost = async <T>(rpcUrl: string, subUrl: string, params?: Record<string, any>): Promise<T> => {
     return await this.prometheus.trackCLRequest(rpcUrl, subUrl, async () => {
       const res = await got
-        .post(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('ETH2_POST_RESPONSE_TIMEOUT') }, ...params })
+        .post(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('CL_POST_RESPONSE_TIMEOUT') }, ...params })
         .catch((e) => {
           if (e.response) {
             throw new BeaconChainGeneralApiError(errRequest(e.response.body, subUrl, rpcUrl), e.response.statusCode);
@@ -396,7 +396,7 @@ export class ConsensusClientService {
     return await this.prometheus.trackCLRequest(rpcUrl, subUrl, async () => {
       return await parseChunked(
         got.stream
-          .get(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('ETH2_GET_RESPONSE_TIMEOUT') } })
+          .get(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('CL_GET_RESPONSE_TIMEOUT') } })
           .on('response', (r: Response) => {
             if (r.statusCode != 200) throw new HTTPError(r);
           }),
@@ -413,7 +413,7 @@ export class ConsensusClientService {
     return await this.prometheus.trackCLRequest(rpcUrl, subUrl, async () => {
       return await parseChunked(
         got.stream
-          .post(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('ETH2_POST_RESPONSE_TIMEOUT') }, ...params })
+          .post(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('CL_POST_RESPONSE_TIMEOUT') }, ...params })
           .on('response', (r: Response) => {
             if (r.statusCode != 200) throw new HTTPError(r);
           }),

@@ -56,7 +56,7 @@ export class NodeOperatorsContractService implements OnModuleInit {
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
   ) {
-    this.rpcUrls = [this.config.get('ETH1_RPC_URL'), this.config.get('ETH1_RPC_URL_BACKUP') || ''].filter(
+    this.rpcUrls = [this.config.get('EL_RPC_URL'), this.config.get('EL_RPC_URL_BACKUP') || ''].filter(
       (val) => val && val.toString().length > 0,
     );
   }
@@ -88,10 +88,10 @@ export class NodeOperatorsContractService implements OnModuleInit {
 
   public async getAllKeysIndexed(): Promise<KeysIndexed> {
     return this.getOperatorsKeysIndexed()
-      .catch(rejectDelay(this.config.get('ETH1_RPC_RETRY_DELAY_MS')))
+      .catch(rejectDelay(this.config.get('EL_RPC_RETRY_DELAY_MS')))
       .catch(() => this.getOperatorsKeysIndexed())
       .catch((e) => {
-        this.logger.error('Error while doing ETH1 RPC request. Will try to switch to another RPC');
+        this.logger.error('Error while doing EL RPC request. Will try to switch to another RPC');
         this.logger.error(e);
         this.switchToNextContractRPC();
         throw e;
@@ -110,11 +110,11 @@ export class NodeOperatorsContractService implements OnModuleInit {
 
   protected switchToNextContractRPC(): void {
     if (this.contractRPCs.length === 1) {
-      this.logger.log('Will not switch to next RPC url for ETH1. No backup RPC provided.');
+      this.logger.log('Will not switch to next RPC url for EL. No backup RPC provided.');
       return;
     }
     this.activeContractRPC++;
-    this.logger.log('Switched to next RPC url for ETH1');
+    this.logger.log('Switched to next RPC url for EL');
   }
 
   protected async callWithRetry<T>(callback: () => Promise<T>, retryCount = 3): Promise<T> {
