@@ -93,7 +93,7 @@ tests:
               emoji: ⏳
               summary: "Data actuality greater then 1 hour"
               description: "It's not OK. Please, check app health"
-              resolved_summary: "Data actuality less then 1 hour"
+              resolved_summary: "Data actuality is back to normal and now less then 1 hour"
               resolved_description: "It's OK"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: DataActuality
