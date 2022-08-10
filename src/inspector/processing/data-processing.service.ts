@@ -37,7 +37,7 @@ export class DataProcessingService implements OnModuleInit {
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
-    protected readonly lighthouse: ConsensusClientService,
+    protected readonly clClient: ConsensusClientService,
     protected readonly storage: ClickhouseStorageService,
     protected readonly nodeOperatorsContract: NodeOperatorsContractService,
   ) {}
@@ -48,7 +48,7 @@ export class DataProcessingService implements OnModuleInit {
   }
 
   public async getSlotTime(slot: bigint): Promise<bigint> {
-    return await this.lighthouse.getSlotTime(slot);
+    return await this.clClient.getSlotTime(slot);
   }
 
   public async processAndWriteFinalizedData(
@@ -96,7 +96,7 @@ export class DataProcessingService implements OnModuleInit {
       for (const i of valIDs) {
         valIndexes.push(i.validator_id);
       }
-      const propDependentRoot = await this.lighthouse.getDutyDependentRoot(headEpoch);
+      const propDependentRoot = await this.clClient.getDutyDependentRoot(headEpoch);
       const [sync, prop] = await Promise.all([
         this.getSyncCommitteeDutyInfo(valIndexes, headEpoch),
         this.getProposerDutyInfo(valIndexes, propDependentRoot, headEpoch),
@@ -106,16 +106,16 @@ export class DataProcessingService implements OnModuleInit {
   }
 
   protected async getSyncCommitteeDutyInfo(valIndexes: string[], epoch: bigint): Promise<SyncCommitteeDutyInfo[]> {
-    return await this.lighthouse.getSyncCommitteeDuties(epoch, valIndexes);
+    return await this.clClient.getSyncCommitteeDuties(epoch, valIndexes);
   }
 
   protected async getProposerDutyInfo(valIndexes: string[], dependentRoot: string, epoch: bigint): Promise<ProposerDutyInfo[]> {
-    const proposersDutyInfo = await this.lighthouse.getCanonicalProposerDuties(epoch, dependentRoot);
+    const proposersDutyInfo = await this.clClient.getCanonicalProposerDuties(epoch, dependentRoot);
     return proposersDutyInfo.filter((p) => valIndexes.includes(p.validator_index));
   }
 
   protected async getAttestersDutyInfo(valIndexes: string[], dependentRoot: string, epoch: bigint): Promise<AttesterDutyInfo[]> {
-    return await this.lighthouse.getChunkedAttesterDuties(epoch, dependentRoot, valIndexes);
+    return await this.clClient.getChunkedAttesterDuties(epoch, dependentRoot, valIndexes);
   }
 
   protected async getSyncCommitteeIndexedValidators(
@@ -123,7 +123,7 @@ export class DataProcessingService implements OnModuleInit {
     stateRoot: string,
     lidoIndexes: string[],
   ): Promise<SyncCommitteeValidator[][]> {
-    const syncCommitteeInfo = await this.lighthouse.getSyncCommitteeInfo(stateRoot, epoch);
+    const syncCommitteeInfo = await this.clClient.getSyncCommitteeInfo(stateRoot, epoch);
     const lidoSyncCommitteeVals: SyncCommitteeValidator[] = [];
     const allSyncCommitteeVals: SyncCommitteeValidator[] = [];
     syncCommitteeInfo.validators.forEach((v, i) => {
@@ -149,7 +149,7 @@ export class DataProcessingService implements OnModuleInit {
     return {
       fetchSlotData: async () => {
         this.logger.log('Start getting all validators balances');
-        return await this.lighthouse.getBalances(stateRoot);
+        return await this.clClient.getBalances(stateRoot);
       },
       writeSlotData: async (slotRes: StateValidatorResponse[]) => {
         this.logger.log(`Start validators balance processing for slot ${slot} (state root ${stateRoot} from slot ${slotNumber})`);
@@ -162,7 +162,7 @@ export class DataProcessingService implements OnModuleInit {
         }
         const [attesterDutyDependentRoot, proposerDutyDependentRoot] = await Promise.all(
           // for attester we should get root of previous epoch, for proposer - current
-          [this.lighthouse.getDutyDependentRoot(epoch - 1n), this.lighthouse.getDutyDependentRoot(epoch)],
+          [this.clClient.getDutyDependentRoot(epoch - 1n), this.clClient.getDutyDependentRoot(epoch)],
         );
         this.logger.log(`Attester Duty root: ${attesterDutyDependentRoot}`);
         this.logger.log(`Proposer Duty root: ${proposerDutyDependentRoot}`);
@@ -208,7 +208,7 @@ export class DataProcessingService implements OnModuleInit {
         if (lastBlockInfo && lastBlockInfo.message.slot > slotToCheck.toString()) {
           continue; // If we have lastBlockInfo > slotToCheck it means we have already processed this
         }
-        [lastBlockInfo, lastMissedSlots] = await this.lighthouse.getBlockInfoWithSlotAttestations(slotToCheck);
+        [lastBlockInfo, lastMissedSlots] = await this.clClient.getBlockInfoWithSlotAttestations(slotToCheck);
         allMissedSlots = allMissedSlots.concat(lastMissedSlots);
         if (!lastBlockInfo) {
           continue; // Couldn't get information on the 8 nearest blocks
@@ -253,7 +253,7 @@ export class DataProcessingService implements OnModuleInit {
       this.logger.log(`Processing Lido proposers duties info`);
       for (const lidoProp of lidoProposersDutyInfo) {
         lidoProp.proposed = false;
-        const blockInfo: ShortBeaconBlockInfo = await this.lighthouse.getBlockInfo(lidoProp.slot);
+        const blockInfo: ShortBeaconBlockInfo = await this.clClient.getBlockInfo(lidoProp.slot);
         if (!blockInfo) continue; // it means that block is missed
         if (blockInfo.message.proposer_index == lidoProp.validator_index) lidoProp.proposed = true;
         else {
@@ -288,7 +288,7 @@ export class DataProcessingService implements OnModuleInit {
       const missedSlots: bigint[] = [];
       const startSlot = epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
       for (let slot = startSlot; slot < startSlot + BigInt(this.config.get('FETCH_INTERVAL_SLOTS')); slot = slot + 1n) {
-        const blockInfo: ShortBeaconBlockInfo = await this.lighthouse.getBlockInfo(slot);
+        const blockInfo: ShortBeaconBlockInfo = await this.clClient.getBlockInfo(slot);
         blockInfo ? epochBlocks.push(blockInfo) : missedSlots.push(slot);
       }
       this.logger.log(`All missed slots in getting sync committee info process: ${missedSlots}`);

@@ -15,7 +15,7 @@ export class InspectorService implements OnModuleInit {
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
-    protected readonly lighthouse: ConsensusClientService,
+    protected readonly clClient: ConsensusClientService,
     protected readonly storage: ClickhouseStorageService,
     protected readonly dataProcessor: DataProcessingService,
     protected readonly statsProcessor: StatsProcessingService,
@@ -29,7 +29,7 @@ export class InspectorService implements OnModuleInit {
   public async startLoop(): Promise<never> {
     this.logger.log(`DRY RUN ${this.config.get('DRY_RUN') ? 'enabled' : 'disabled'}`);
 
-    const version = await this.lighthouse.getVersion();
+    const version = await this.clClient.getVersion();
     this.logger.log(`Beacon chain API info [${version}]`);
     this.logger.log(
       `Calculated slot step [${this.config.get('FETCH_INTERVAL_SLOTS')}] based on $FETCH_INTERVAL_SECONDS / $CHAIN_SLOT_TIME_SECONDS`,
@@ -69,14 +69,14 @@ export class InspectorService implements OnModuleInit {
   }
 
   protected async waitForNextFinalizedSlot(nextSlot: bigint): Promise<{ slotToWrite: bigint; stateRoot: string; slotNumber: bigint }> {
-    const latestFinalizedBeaconBlock = await this.lighthouse.getBeaconBlockHeader('finalized');
+    const latestFinalizedBeaconBlock = await this.clClient.getBeaconBlockHeader('finalized');
 
     if (latestFinalizedBeaconBlock.slotNumber >= nextSlot && nextSlot > this.dataProcessor.latestSlotInDb) {
       this.logger.log(
         `Latest finalized slot [${latestFinalizedBeaconBlock.slotNumber}] found. Next slot [${nextSlot}]. Latest DB slot [${this.dataProcessor.latestSlotInDb}]`,
       );
 
-      const [nextFinalizedBeaconBlock, isMissed] = await this.lighthouse.getBeaconBlockHeaderOrPreviousIfMissed(nextSlot);
+      const [nextFinalizedBeaconBlock, isMissed] = await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(nextSlot);
 
       if (!isMissed) {
         this.logger.log(
@@ -143,7 +143,7 @@ export class InspectorService implements OnModuleInit {
   }
 
   protected async calculateHeadEpoch(): Promise<bigint> {
-    const actualSlotHeader = await this.lighthouse.getBeaconBlockHeader('head');
+    const actualSlotHeader = await this.clClient.getBeaconBlockHeader('head');
     return actualSlotHeader.slotNumber / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
   }
 }
