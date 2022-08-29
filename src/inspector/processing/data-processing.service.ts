@@ -13,7 +13,6 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from '../../common/config';
 import { PrometheusService } from '../../common/prometheus';
 import { ConsensusClientService } from '../../ethereum/consensus/consensus-client.service';
-import { KeysIndexed, NodeOperatorsContractService } from '../../ethereum/execution/node-operators-contract.service';
 import { ProposerDutyInfo } from '../../ethereum/consensus/types/ProposerDutyInfo';
 import { SyncCommitteeDutyInfo } from '../../ethereum/consensus/types/SyncCommitteeDutyInfo';
 import { AttesterDutyInfo } from '../../ethereum/consensus/types/AttesterDutyInfo';
@@ -21,6 +20,7 @@ import { SyncCommitteeValidator } from '../../ethereum/consensus/types/SyncCommi
 import { StateValidatorResponse } from '../../ethereum/consensus/types/StateValidatorResponse';
 import { BeaconBlockAttestation, ShortBeaconBlockInfo } from '../../ethereum/consensus/types/ShortBeaconBlockInfo';
 import { bigintRange } from '../../common/functions/range';
+import { KeysIndexed, RegistryService } from '../../validators/registry';
 
 type FetchFinalizedEpochDataResult = {
   attestations: CheckAttestersDutyResult;
@@ -39,7 +39,7 @@ export class DataProcessingService implements OnModuleInit {
     protected readonly prometheus: PrometheusService,
     protected readonly clClient: ConsensusClientService,
     protected readonly storage: ClickhouseStorageService,
-    protected readonly nodeOperatorsContract: NodeOperatorsContractService,
+    protected readonly registryService: RegistryService,
   ) {}
 
   public async onModuleInit(): Promise<void> {
@@ -62,13 +62,13 @@ export class DataProcessingService implements OnModuleInit {
           this.logger.log(`Will not save slot [${slotToWrite}]. We already have that slot in db. Skipping...`);
           return;
         }
-        const keysIndexed = await this.nodeOperatorsContract.getAllKeysIndexed();
+        const keysIndexed = await this.registryService.getAllKeysIndexed();
         const slotTime = await this.getSlotTime(slotToWrite);
         const epoch = slotToWrite / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
         const fetcherWriter = this.fetcherWriter(slotToWrite, epoch, stateRoot, slotNumber, slotTime, keysIndexed);
         let lidoIDs, otherCounts;
-        if (this.latestSlotInDb == 0n) {
-          // First iteration. We should fetch general validators info firstly
+        if (this.latestSlotInDb == 0n || keysIndexed.size != lidoIDs?.length) {
+          // First iteration or new validators fetched. We should fetch general validators info firstly (id)
           const slotRes = await fetcherWriter.fetchSlotData();
           otherCounts = await fetcherWriter.writeSlotData(slotRes);
           lidoIDs = await this.storage.getLidoValidatorIDs(slotToWrite);

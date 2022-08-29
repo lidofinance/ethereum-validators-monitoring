@@ -27,8 +27,8 @@ import { AttesterDutyInfo } from '../ethereum/consensus/types/AttesterDutyInfo';
 import { StateValidatorResponse } from '../ethereum/consensus/types/StateValidatorResponse';
 import { ValStatus } from '../ethereum/consensus/types/ValidatorStatus';
 import { retrier } from '../common/functions/retrier';
-import { KeysIndexed } from '../ethereum/execution/node-operators-contract.service';
 import { ProposerDutyInfo } from '../ethereum/consensus/types/ProposerDutyInfo';
+import { KeysIndexed } from '../validators/registry';
 
 type NodeOperatorDelta = { nos_name: string; delta: number };
 type NodeOperatorNegativeDelta = { nos_name: string; neg_count: number };
@@ -170,13 +170,14 @@ export class ClickhouseStorageService implements OnModuleInit {
             'INSERT INTO stats.validator_balances ' +
               '(validator_id, validator_pubkey, validator_slashed, status, balance, slot, slot_time, nos_id, nos_name) VALUES',
           )
+          // todo: make migration for rename nos_id -> operatorIndex, nos_name -> operatorName
           .stream();
         for (const b of chunk) {
           if (keysIndexed.has(b.validator.pubkey)) {
             await ws.writeRow(
               `('${b.index || ''}', '${b.validator.pubkey || ''}', ${b.validator.slashed ? 1 : 0}, '${b.status}', ${b.balance}, ` +
-                `${slot}, ${slotTime}, ${keysIndexed.get(b.validator.pubkey)?.nos_id ?? 'NULL'},
-            '${keysIndexed.get(b.validator.pubkey)?.nos_name || 'NULL'}')`,
+                `${slot}, ${slotTime}, ${keysIndexed.get(b.validator.pubkey)?.operatorIndex ?? 'NULL'},
+            '${keysIndexed.get(b.validator.pubkey)?.operatorName || 'NULL'}')`,
             );
             lidoCount++;
           } else {
@@ -235,7 +236,7 @@ export class ClickhouseStorageService implements OnModuleInit {
             `(${slotTime}, '${a.pubkey || ''}', '${a.validator_index || ''}', ${parseInt(a.committee_index)}, ` +
               `${parseInt(a.committee_length)}, ${parseInt(a.committees_at_slot)}, ${parseInt(a.validator_committee_index)}, ` +
               `${parseInt(a.slot)}, ${a.attested ? 1 : 0}, ${a.in_block ? parseInt(a.in_block) : 'NULL'}, ` +
-              `${keysIndexed.get(a.pubkey)?.nos_id ?? 'NULL'}, '${keysIndexed.get(a.pubkey)?.nos_name || 'NULL'}')`,
+              `${keysIndexed.get(a.pubkey)?.operatorIndex ?? 'NULL'}, '${keysIndexed.get(a.pubkey)?.operatorName || 'NULL'}')`,
           );
         }
         await this.retry(async () => await ws.exec());
@@ -254,7 +255,7 @@ export class ClickhouseStorageService implements OnModuleInit {
       for (const p of proposesDutiesResult) {
         await ws.writeRow(
           `(${slotTime}, '${p.pubkey || ''}', '${p.validator_index || ''}', ${parseInt(p.slot)}, ${p.proposed}, ` +
-            `${keysIndexed.get(p.pubkey)?.nos_id ?? 'NULL'}, '${keysIndexed.get(p.pubkey)?.nos_name || 'NULL'}')`,
+            `${keysIndexed.get(p.pubkey)?.operatorIndex ?? 'NULL'}, '${keysIndexed.get(p.pubkey)?.operatorName || 'NULL'}')`,
         );
       }
       await this.retry(async () => await ws.exec());
@@ -283,7 +284,7 @@ export class ClickhouseStorageService implements OnModuleInit {
         await ws.writeRow(
           `(${slotTime}, '${pubKey}', '${p.validator_index || ''}', ${last_slot_of_epoch}, ${p.epoch_participation_percent}, ` +
             `${syncResult.all_avg_participation},
-          ${keysIndexed.get(pubKey)?.nos_id ?? 'NULL'}, '${keysIndexed.get(pubKey)?.nos_name || 'NULL'}')`,
+          ${keysIndexed.get(pubKey)?.operatorIndex ?? 'NULL'}, '${keysIndexed.get(pubKey)?.operatorName || 'NULL'}')`,
         );
       }
       await this.retry(async () => await ws.exec());

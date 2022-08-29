@@ -56,7 +56,6 @@ docker-compose up -d clickhouse
 | EL_RPC_URL                                      | Ethereum execution layer RPC url                                                                                   | true         |             |
 | EL_RPC_URL_BACKUP                               | Ethereum execution layer backup RPC url                                                                            | false        |             |
 | EL_RPC_RETRY_DELAY_MS                           | Ethereum execution layer request retry delay                                                                       | false        | 500         |
-| REGISTRY_CONCURRENCY_LIMIT                      | Count of concurrency requests to contract for fetching NOs keys                                                    | false        | 200         |
 | CL_BEACON_RPC_URL                               | Ethereum consensus layer RPC url                                                                                   | true         |             |
 | CL_BEACON_RPC_URL_BACKUP                        | Ethereum consensus layer backup RPC url                                                                            | false        |             |
 | CL_BEACON_RPC_RETRY_DELAY_MS                    | Ethereum consensus layer request retry delay                                                                       | false        | 500         |
