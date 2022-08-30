@@ -2,7 +2,7 @@
 apiVersion: 1
 
 providers:
-  - name: 'eth2-validators-monitoring'
+  - name: 'ethereum-validators-monitoring'
     orgId: 1
     folder: ''
     type: file

@@ -30,7 +30,7 @@
       "keepTime": false,
       "tags": [],
       "targetBlank": false,
-      "title": "Dahboard",
+      "title": "Dashboard",
       "tooltip": "",
       "type": "dashboards",
       "url": ""
@@ -178,7 +178,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validators{owner=\"lido\",status=\"slashed\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"slashed\"}",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -238,7 +238,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validators{owner=\"lido\",status=\"pending\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"pending\"}",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -298,7 +298,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validators{owner=\"lido\",status=\"ongoing\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"ongoing\"}",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -358,7 +358,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "steth_buffered_ether_total",
+          "expr": "ethereum_validators_monitoring_steth_buffered_ether_total",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -423,7 +423,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": false,
-          "expr": "sort_desc(sum by (nos_name, status) (lido_validators{status=~\"ongoing|pending\"}))",
+          "expr": "sort_desc(sum by (nos_name, status) (ethereum_validators_monitoring_lido_validators{status=~\"ongoing|pending\"}))",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -529,7 +529,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "data_actuality",
+          "expr": "ethereum_validators_monitoring_data_actuality",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -592,7 +592,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validators{owner=\"lido\",status=\"slashed\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"slashed\"}",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -603,7 +603,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validators{owner=\"other\",status=\"slashed\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"other\",status=\"slashed\"}",
           "hide": false,
           "interval": "",
           "legendFormat": "{{owner}}",
@@ -668,7 +668,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validators{owner=\"lido\",status=\"pending\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"pending\"}",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -679,7 +679,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validators{owner=\"other\",status=\"pending\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"other\",status=\"pending\"}",
           "hide": false,
           "interval": "",
           "legendFormat": "{{owner}}",
@@ -744,7 +744,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validators{owner=\"lido\",status=\"ongoing\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"ongoing\"}",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -755,7 +755,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validators{owner=\"other\",status=\"ongoing\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"other\",status=\"ongoing\"}",
           "hide": false,
           "interval": "",
           "legendFormat": "{{owner}}",
@@ -816,7 +816,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "contract_keys_total{type=\"used\"}",
+          "expr": "ethereum_validators_monitoring_contract_keys_total{type=\"used\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -876,7 +876,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "slot_number",
+          "expr": "ethereum_validators_monitoring_slot_number",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -936,7 +936,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "contract_keys_total{type=\"total\"}",
+          "expr": "ethereum_validators_monitoring_contract_keys_total{type=\"total\"}",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -1001,7 +1001,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "total_balance_24h_difference / 10 ^ 9",
+          "expr": "ethereum_validators_monitoring_total_balance_24h_difference / 10 ^ 9",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -1085,7 +1085,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "sort_desc(validator_balances_delta)",
+          "expr": "sort_desc(ethereum_validators_monitoring_validator_balances_delta)",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -1173,7 +1173,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validator_count_with_negative_balances_delta",
+          "expr": "ethereum_validators_monitoring_validator_count_with_negative_balances_delta",
           "interval": "",
           "legendFormat": "{{nos_name}}",
           "refId": "A"
@@ -1411,7 +1411,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validator_quantile_001_balances_delta",
+          "expr": "ethereum_validators_monitoring_validator_quantile_001_balances_delta",
           "interval": "",
           "legendFormat": "{{nos_name}}",
           "refId": "A"
@@ -1496,7 +1496,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "lido_sync_participation_avg_percent",
+          "expr": "ethereum_validators_monitoring_lido_sync_participation_avg_percent",
           "format": "time_series",
           "interval": "",
           "legendFormat": "",
@@ -1569,7 +1569,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "chain_sync_participation_avg_percent",
+          "expr": "ethereum_validators_monitoring_chain_sync_participation_avg_percent",
           "format": "time_series",
           "interval": "",
           "legendFormat": "",
@@ -1988,7 +1988,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validator_count_with_sync_participation_less_avg",
+          "expr": "ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg",
           "interval": "",
           "legendFormat": "{{nos_name}}",
           "refId": "A"
@@ -2365,7 +2365,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validator_count_miss_attestation",
+          "expr": "ethereum_validators_monitoring_validator_count_miss_attestation",
           "interval": "",
           "legendFormat": "{{nos_name}}",
           "refId": "A"
@@ -2742,7 +2742,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validator_count_miss_propose",
+          "expr": "ethereum_validators_monitoring_validator_count_miss_propose",
           "interval": "",
           "legendFormat": "{{nos_name}}",
           "refId": "A"
@@ -2841,7 +2841,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "data_actuality",
+          "expr": "ethereum_validators_monitoring_data_actuality",
           "interval": "",
           "legendFormat": "data_actuality",
           "refId": "A"
@@ -2927,7 +2927,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "validators{owner=\"lido\",status=\"slashed\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"slashed\"}",
           "interval": "",
           "legendFormat": "Number of slashed validators",
           "refId": "A"
@@ -3112,7 +3112,7 @@
         "name": "slot_number_var",
         "options": [],
         "query": {
-          "query": "query_result(slot_number)",
+          "query": "query_result(ethereum_validators_monitoring_slot_number)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -3136,7 +3136,7 @@
         "name": "chain_sync_participation_var",
         "options": [],
         "query": {
-          "query": "query_result(chain_sync_participation_avg_percent)",
+          "query": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -3160,7 +3160,7 @@
         "name": "fetch_interval_var",
         "options": [],
         "query": {
-          "query": "query_result(fetch_interval)",
+          "query": "query_result(ethereum_validators_monitoring_fetch_interval)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -3184,7 +3184,7 @@
         "name": "sync_participation_distance_var",
         "options": [],
         "query": {
-          "query": "query_result(sync_participation_distance_down_from_chain_avg)",
+          "query": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,

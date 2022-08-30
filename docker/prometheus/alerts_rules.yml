@@ -3,7 +3,7 @@ groups:
     rules:
 
       - alert: LidoSlashedValidators
-        expr: lido_validators{status="slashed"} > 0 AND ON(nos_name) delta(lido_validators{status="slashed"}[1m]) > 0
+        expr: ethereum_validators_monitoring_lido_validators{status="slashed"} > 0 AND ON(nos_name) delta(ethereum_validators_monitoring_lido_validators{status="slashed"}[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -15,20 +15,20 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: DataActuality
-        expr: data_actuality > 3600000
+        expr: ethereum_validators_monitoring_data_actuality > 3600000
         for: 30m
         labels:
           severity: critical
         annotations:
           emoji: ⏳
           summary: "Data actuality greater then 1 hour"
-          resolved_summary: "Data actuality less then 1 hour"
+          resolved_summary: "Data actuality is back to normal and now less then 1 hour"
           description: "It's not OK. Please, check app health"
           resolved_description: "It's OK"
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: NumValidatorsWithNegativeDelta
-        expr: validator_count_with_negative_balances_delta > 0
+        expr: ethereum_validators_monitoring_validator_count_with_negative_balances_delta > 0
         labels:
           severity: critical
         annotations:
@@ -42,7 +42,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: NumValidatorsWithMissAttestationLastNEpoch
-        expr: validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -56,7 +56,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: NumValidatorsWithMissPropose
-        expr: validator_count_miss_propose > 0 AND ON() changes(slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -70,7 +70,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: NumValidatorsWithSyncParticipationLessAvgLastNEpoch
-        expr: validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -84,7 +84,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: HighRewardNumValidatorsWithSyncParticipationLessAvgLastNEpoch
-        expr: high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -98,7 +98,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: HighRewardNumValidatorsWithMissAttestationLastNEpoch
-        expr: high_reward_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -112,7 +112,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: HighRewardNumValidatorsWithMissPropose
-        expr: high_reward_validator_count_miss_propose > 0 AND ON() changes(slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_high_reward_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
         labels:
           severity: critical
         annotations:
