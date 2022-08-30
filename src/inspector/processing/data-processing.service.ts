@@ -67,18 +67,21 @@ export class DataProcessingService implements OnModuleInit {
         const epoch = slotToWrite / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
         const fetcherWriter = this.fetcherWriter(slotToWrite, epoch, stateRoot, slotNumber, slotTime, keysIndexed);
         let otherCounts;
+        let slotRes;
+        let epochRes;
         let lidoIDs = await this.storage.getLidoValidatorIDs(slotToWrite);
         if (this.latestSlotInDb == 0n || lidoIDs?.length == 0 || keysIndexed.size != lidoIDs?.length) {
           // First iteration or new validators fetched. We should fetch general validators info firstly (id)
-          const slotRes = await fetcherWriter.fetchSlotData();
+          slotRes = await fetcherWriter.fetchSlotData();
           otherCounts = await fetcherWriter.writeSlotData(slotRes);
           lidoIDs = await this.storage.getLidoValidatorIDs(slotToWrite);
-          const epochRes = await fetcherWriter.fetchEpochData(lidoIDs);
-          await fetcherWriter.writeEpochData(lidoIDs, epochRes);
-        } else {
-          const [slotRes, epochRes] = await Promise.all([fetcherWriter.fetchSlotData(), fetcherWriter.fetchEpochData(lidoIDs)]);
-          [otherCounts] = await Promise.all([fetcherWriter.writeSlotData(slotRes), fetcherWriter.writeEpochData(lidoIDs, epochRes)]);
         }
+        // eslint-disable-next-line prefer-const
+        [slotRes, epochRes] = await Promise.all([slotRes || fetcherWriter.fetchSlotData(), fetcherWriter.fetchEpochData(lidoIDs)]);
+        [otherCounts] = await Promise.all([
+          otherCounts || fetcherWriter.writeSlotData(slotRes),
+          fetcherWriter.writeEpochData(lidoIDs, epochRes),
+        ]);
         this.latestSlotInDb = slotToWrite;
         return { lidoIDs, otherCounts };
       } catch (e) {

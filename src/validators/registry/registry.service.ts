@@ -41,7 +41,7 @@ export class RegistryService {
         // Here we can get a timeout error or something else
         this.logger.warn('Failed to update validators');
         const curr = await this.keyStorageService.findUsed();
-        if (curr.length == 0) {
+        if (curr?.length == 0) {
           // throw error and run main cycle again
           throw error;
         } else {
@@ -70,9 +70,9 @@ export class RegistryService {
    * Updates cached operators map
    */
   protected async updateOperatorsMap(): Promise<void> {
-    const operators = await this.operatorStorageService.findAll();
+    const operators = await this.getOperators();
 
-    this.operatorsMap = operators.reduce((operatorsMap, operator) => {
+    this.operatorsMap = operators?.reduce((operatorsMap, operator) => {
       operatorsMap[operator.index] = operator;
       return operatorsMap;
     }, {});
@@ -82,7 +82,7 @@ export class RegistryService {
     await this.updateValidators();
     const indexedKeys: any = new Map<string, KeyWithOperatorName>();
     const allKeys = await this.keyStorageService.findUsed();
-    for (const k of allKeys) {
+    for (const k of allKeys ?? []) {
       indexedKeys.set(k.key, { ...k, operatorName: this.operatorsMap[k.operatorIndex].name });
     }
     return indexedKeys as KeysIndexed;
