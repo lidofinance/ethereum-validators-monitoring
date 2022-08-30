@@ -7,6 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
 import { ConfigService } from '../config';
 import { ClickhouseStorageService } from '../../storage/clickhouse-storage.service';
+import { PrometheusService } from '../prometheus';
 
 type SentAlerts = { [alertname: string]: PreparedToSendAlert };
 
@@ -20,6 +21,7 @@ export class CriticalAlertsService {
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly storage: ClickhouseStorageService,
+    protected readonly prometheus: PrometheusService,
   ) {
     this.baseUrl = this.config.get('CRITICAL_ALERTS_ALERTMANAGER_URL') ?? '';
   }
@@ -33,6 +35,10 @@ export class CriticalAlertsService {
   }
 
   public async sendCriticalAlerts(bySlot: bigint) {
+    if (this.prometheus.getSlotTimeDiffWithNow() > 3600000) {
+      this.logger.warn(`Data actuality greater then 1 hour. Сritical alerts are suppresed`);
+      return;
+    }
     if (!this.baseUrl) {
       this.logger.warn(`Env var 'CRITICAL_ALERTS_ALERTMANAGER_URL' is not set. Unable to send critical alerts`);
       return;

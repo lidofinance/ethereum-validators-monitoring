@@ -72,9 +72,10 @@ export class PrometheusService {
   private prefix = METRICS_PREFIX;
 
   public slotTime = 0n; // latest fetched slot time
+  public getSlotTimeDiffWithNow = () => Date.now() - Number(this.slotTime) * 1000;
 
   constructor(@Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService, private config: ConfigService) {
-    const getSlotTime = () => Number(this.slotTime) * 1000;
+    const getSlotTimeDiffWithNow = () => this.getSlotTimeDiffWithNow();
     this.getOrCreateMetric('Gauge', {
       name: METRIC_DATA_ACTUALITY,
       help: 'Data actuality',
@@ -82,7 +83,7 @@ export class PrometheusService {
       collect() {
         // Invoked when the registry collects its metrics' values.
         // This can be synchronous or it can return a promise/be an async function.
-        this.set(Date.now() - getSlotTime());
+        this.set(getSlotTimeDiffWithNow());
       },
     });
 
