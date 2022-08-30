@@ -36,7 +36,7 @@ export class CriticalAlertsService {
 
   public async sendCriticalAlerts(bySlot: bigint) {
     if (this.prometheus.getSlotTimeDiffWithNow() > 3600000) {
-      this.logger.warn(`Data actuality greater then 1 hour. Unable to send outdated critical alerts`);
+      this.logger.warn(`Data actuality greater then 1 hour. Сritical alerts are suppresed`);
       return;
     }
     if (!this.baseUrl) {
