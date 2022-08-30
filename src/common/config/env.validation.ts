@@ -230,8 +230,7 @@ export class EnvironmentVariables {
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public CRITICAL_ALERTS_MIN_VAL_COUNT = 100;
 
-  @ValidateIf((env) => env.CRITICAL_ALERTS_ALERTMANAGER_URL.length)
-  @IsUrl()
+  @IsString()
   public CRITICAL_ALERTS_ALERTMANAGER_URL = '';
 }
 
