@@ -212,7 +212,7 @@ export class DataProcessingService implements OnModuleInit {
         [lastBlockInfo, lastMissedSlots] = await this.clClient.getBlockInfoWithSlotAttestations(slotToCheck);
         allMissedSlots = allMissedSlots.concat(lastMissedSlots);
         if (!lastBlockInfo) {
-          continue; // Couldn't get information on the 8 nearest blocks
+          continue; // Failed to get info about the nearest existing block
         }
         // A committee attestation can be included in a block as multiple parts.
         // It is necessary to group such attestations
