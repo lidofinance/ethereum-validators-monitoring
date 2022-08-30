@@ -28,6 +28,7 @@ export class ConsensusClientService {
   protected rpcUrls: { main: string; backup: string };
   protected version = '';
   protected genesisTime = 0n;
+  protected defaultMaxSlotDeepCount = 32 * 5;
 
   protected endpoints = {
     version: 'eth/v1/node/version',
@@ -128,7 +129,7 @@ export class ConsensusClientService {
     }
   }
 
-  public async getNextNotMissedBlockHeader(slot: bigint, maxDeep = 32): Promise<ShortBeaconBlockHeader> {
+  public async getNextNotMissedBlockHeader(slot: bigint, maxDeep = this.defaultMaxSlotDeepCount): Promise<ShortBeaconBlockHeader> {
     try {
       this.logger.log(`Getting next not missed slot [${slot}] max deep [${maxDeep}]`);
       return await this.getBeaconBlockHeader(slot);
@@ -144,7 +145,7 @@ export class ConsensusClientService {
     }
   }
 
-  public async getPreviousNotMissedBlockHeader(slot: bigint, maxDeep = 32): Promise<ShortBeaconBlockHeader> {
+  public async getPreviousNotMissedBlockHeader(slot: bigint, maxDeep = this.defaultMaxSlotDeepCount): Promise<ShortBeaconBlockHeader> {
     try {
       this.logger.log(`Getting previous not missed slot [${slot}] max deep [${maxDeep}]`);
       return await this.getBeaconBlockHeader(slot);
@@ -173,9 +174,11 @@ export class ConsensusClientService {
    * Trying to get nearest block with slot attestation info.
    * Assumed that the ideal attestation is included in the next non-missed block
    */
-  public async getBlockInfoWithSlotAttestations(slot: bigint): Promise<[ShortBeaconBlockInfo | void, Array<string>]> {
+  public async getBlockInfoWithSlotAttestations(
+    slot: bigint,
+    maxDeep = this.defaultMaxSlotDeepCount,
+  ): Promise<[ShortBeaconBlockInfo | void, Array<string>]> {
     const nearestBlockIncludedAttestations = slot + 1n; // good attestation should be included to the next block
-    const maxDeep = 8;
     let missedSlots: bigint[] = [];
     const blockInfo = await this.getNextNotMissedBlockInfo(nearestBlockIncludedAttestations, maxDeep);
     if (!blockInfo) {
@@ -189,7 +192,7 @@ export class ConsensusClientService {
     return [blockInfo, missedSlots.map((v) => v.toString())];
   }
 
-  public async getNextNotMissedBlockInfo(slot: bigint, maxDeep = 32): Promise<ShortBeaconBlockInfo | undefined> {
+  public async getNextNotMissedBlockInfo(slot: bigint, maxDeep = this.defaultMaxSlotDeepCount): Promise<ShortBeaconBlockInfo | undefined> {
     const blockInfo = await this.getBlockInfo(slot);
     if (!blockInfo) {
       if (maxDeep < 1) {

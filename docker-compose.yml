@@ -145,6 +145,7 @@ services:
         soft: 262144
         hard: 262144
     environment:
+      - LOG_FORMAT=${LOG_FORMAT}
       - DB_HOST=${DB_HOST}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}

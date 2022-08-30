@@ -4,19 +4,20 @@ import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common'
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from '../../common/config';
 import { Owner, PrometheusService } from '../../common/prometheus';
-import { NodeOperatorsContractService } from '../../ethereum/execution/node-operators-contract.service';
-import { StethContractService } from '../../ethereum/execution/steth-contract-service';
 import { PrometheusValStatus } from '../../ethereum/consensus/types/ValidatorStatus';
+import { RegistryService } from '../../validators/registry';
+import { LIDO_CONTRACT_TOKEN, Lido } from '@lido-nestjs/contracts';
 
 @Injectable()
 export class StatsProcessingService implements OnModuleInit {
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
+    @Inject(LIDO_CONTRACT_TOKEN) private lidoContract: Lido,
+
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
     protected readonly dataProcessor: DataProcessingService,
-    protected readonly nodeOperatorsContract: NodeOperatorsContractService,
-    protected readonly stEthContract: StethContractService,
+    protected readonly registryService: RegistryService,
     protected readonly storage: ClickhouseStorageService,
   ) {}
 
@@ -29,19 +30,19 @@ export class StatsProcessingService implements OnModuleInit {
    * Calc stats by storage (validators info, att and prop duties) and push them to Prometheus
    */
   async calculateLidoStats(slot: bigint, possibleHighRewardValidators: string[]): Promise<void> {
-    const operators = await this.nodeOperatorsContract.getOperators();
+    const operators = await this.registryService.getOperators();
     this.prometheus.contractKeysTotal.set(
       { type: 'total' },
-      operators.reduce((sum, o) => sum + o.totalSigningKeys.toNumber(), 0),
+      operators.reduce((sum, o) => sum + o.totalSigningKeys, 0),
     );
     this.prometheus.contractKeysTotal.set(
       { type: 'used' },
-      operators.reduce((sum, o) => sum + o.usedSigningKeys.toNumber(), 0),
+      operators.reduce((sum, o) => sum + o.usedSigningKeys, 0),
     );
 
     // only for operators with 0 used keys
     operators.forEach((operator) => {
-      if (operator.usedSigningKeys.eq(0)) {
+      if (operator.usedSigningKeys == 0) {
         this.prometheus.lidoValidators.set({ nos_name: operator.name, status: PrometheusValStatus.Ongoing }, 0);
       }
     });
@@ -167,7 +168,7 @@ export class StatsProcessingService implements OnModuleInit {
       this.prometheus.totalBalance24hDifference.set(totalBalance24hDifference);
     }
 
-    const bufferedEther = (await this.stEthContract.getBufferedEther()).div(1e9).div(1e9);
+    const bufferedEther = (await this.lidoContract.getBufferedEther()).div(1e9).div(1e9);
     this.prometheus.bufferedEther.set(bufferedEther.toNumber());
   }
 

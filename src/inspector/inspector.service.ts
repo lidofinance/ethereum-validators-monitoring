@@ -42,14 +42,15 @@ export class InspectorService implements OnModuleInit {
         const { slotToWrite, stateRoot, slotNumber } = await this.waitForNextFinalizedSlot(nextFinalizedSlot);
         if (slotToWrite > 0) {
           const res = await this.dataProcessor.processAndWriteFinalizedData(slotToWrite, stateRoot, slotNumber);
+          let possibleHighRewardValidators: string[] = [];
           if (res?.lidoIDs.length) {
             const headEpoch = await this.calculateHeadEpoch();
-            const possibleHighRewardValidators = await this.dataProcessor.getPossibleHighRewardValidatorIndexes(res.lidoIDs, headEpoch);
-            await this.statsProcessor.calculateLidoStats(slotToWrite, possibleHighRewardValidators);
-            await this.statsProcessor.calculateOtherStats(res.otherCounts);
-            await this.statsProcessor.finalizeAppIterate(slotToWrite);
-            await this.criticalAlertService.sendCriticalAlerts(slotToWrite);
+            possibleHighRewardValidators = await this.dataProcessor.getPossibleHighRewardValidatorIndexes(res.lidoIDs, headEpoch);
           }
+          await this.statsProcessor.calculateLidoStats(slotToWrite, possibleHighRewardValidators);
+          await this.statsProcessor.calculateOtherStats(res.otherCounts);
+          await this.statsProcessor.finalizeAppIterate(slotToWrite);
+          await this.criticalAlertService.sendCriticalAlerts(slotToWrite);
         }
       } catch (e) {
         this.logger.error('Error in main loop');

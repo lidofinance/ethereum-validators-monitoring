@@ -6,9 +6,10 @@ import { StatsProcessingService } from './processing/stats-processing.service';
 import { EthereumModule } from '../ethereum/ethereum.module';
 import { CriticalAlertsModule } from '../common/alertmanager/critical-alerts.module';
 import { StorageModule } from '../storage/storage.module';
+import { RegistryModule } from '../validators/registry';
 
 @Module({
-  imports: [PrometheusModule, EthereumModule, CriticalAlertsModule, StorageModule],
+  imports: [PrometheusModule, EthereumModule, CriticalAlertsModule, StorageModule, RegistryModule],
   providers: [InspectorService, DataProcessingService, StatsProcessingService],
   exports: [InspectorService],
 })

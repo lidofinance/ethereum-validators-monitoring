@@ -15,7 +15,12 @@ import {
   validateSync,
 } from 'class-validator';
 import { Environment, LogFormat, LogLevel } from './interfaces';
-import { Network } from '../../ethereum/execution/execution.constants';
+
+export enum Network {
+  Mainnet = 1,
+  Görli = 5,
+  Kintsugi = 1337702,
+}
 
 const toBoolean = (value: any): boolean => {
   if (typeof value === 'boolean') {
@@ -166,11 +171,6 @@ export class EnvironmentVariables {
   @Min(1)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public CHAIN_SLOT_TIME_SECONDS = 12;
-
-  @IsInt()
-  @Min(1)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public REGISTRY_CONCURRENCY_LIMIT = 200;
 
   /**
    * Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad

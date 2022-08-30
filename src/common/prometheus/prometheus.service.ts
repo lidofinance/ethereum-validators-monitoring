@@ -42,7 +42,7 @@ export enum Owner {
   OTHER = 'other',
 }
 
-enum RequestStatus {
+export enum RequestStatus {
   COMPLETE = 'complete',
   ERROR = 'error',
 }
