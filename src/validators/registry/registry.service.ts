@@ -38,10 +38,16 @@ export class RegistryService {
       try {
         await this.validatorService.update('latest');
       } catch (error) {
-        // Here we can get a timeout error or something else.
-        // We just print error and use only well fetched validators,
-        // the rest of validators will be fetched at next iteration
-        this.logger.error(error.error?.reason ?? error);
+        // Here we can get a timeout error or something else
+        this.logger.warn('Failed to update validators');
+        const curr = await this.keyStorageService.findUsed();
+        if (curr.length == 0) {
+          // throw error and run main cycle again
+          throw error;
+        } else {
+          // print error and continue to use current keys from storage
+          this.logger.error(error.error?.reason ?? error);
+        }
       }
 
       // Update cached data to quick access
