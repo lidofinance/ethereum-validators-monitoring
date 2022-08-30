@@ -66,8 +66,9 @@ export class DataProcessingService implements OnModuleInit {
         const slotTime = await this.getSlotTime(slotToWrite);
         const epoch = slotToWrite / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
         const fetcherWriter = this.fetcherWriter(slotToWrite, epoch, stateRoot, slotNumber, slotTime, keysIndexed);
-        let lidoIDs, otherCounts;
-        if (this.latestSlotInDb == 0n || keysIndexed.size != lidoIDs?.length) {
+        let otherCounts;
+        let lidoIDs = await this.storage.getLidoValidatorIDs(slotToWrite);
+        if (this.latestSlotInDb == 0n || lidoIDs?.length == 0 || keysIndexed.size != lidoIDs?.length) {
           // First iteration or new validators fetched. We should fetch general validators info firstly (id)
           const slotRes = await fetcherWriter.fetchSlotData();
           otherCounts = await fetcherWriter.writeSlotData(slotRes);
@@ -75,7 +76,6 @@ export class DataProcessingService implements OnModuleInit {
           const epochRes = await fetcherWriter.fetchEpochData(lidoIDs);
           await fetcherWriter.writeEpochData(lidoIDs, epochRes);
         } else {
-          lidoIDs = await this.storage.getLidoValidatorIDs(this.latestSlotInDb);
           const [slotRes, epochRes] = await Promise.all([fetcherWriter.fetchSlotData(), fetcherWriter.fetchEpochData(lidoIDs)]);
           [otherCounts] = await Promise.all([fetcherWriter.writeSlotData(slotRes), fetcherWriter.writeEpochData(lidoIDs, epochRes)]);
         }
