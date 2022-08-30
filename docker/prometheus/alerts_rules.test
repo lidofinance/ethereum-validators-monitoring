@@ -103,6 +103,8 @@ tests:
     input_series:
       - series: ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name="Operator 1"}
         values: 0+0x48 1+0x48 2+0x48 0+0x48
+      - series: ethereum_validators_monitoring_slot_number
+        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
     alert_rule_test:
       - alertname: NumValidatorsWithNegativeDelta
         eval_time: 5m

@@ -28,7 +28,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: NumValidatorsWithNegativeDelta
-        expr: ethereum_validators_monitoring_validator_count_with_negative_balances_delta > 0
+        expr: ethereum_validators_monitoring_validator_count_with_negative_balances_delta > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
         labels:
           severity: critical
         annotations:
