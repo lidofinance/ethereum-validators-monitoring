@@ -1,28 +1,26 @@
-FROM node:14.17.1-alpine3.13 as building
+FROM node:16-alpine as building
 
-# needed for git dependencies
-RUN apk update && apk upgrade && \
-    apk add --no-cache bash=5.1.16-r0 git=2.30.5-r0 openssh=8.4_p1-r4
+WORKDIR /app
 
-WORKDIR /usr/src/app
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --non-interactive
 
-# we need specific npm version for git dependencies
-RUN npm i -g npm@7.19.0
-
-COPY ./package*.json ./
-RUN npm ci
-
-COPY ./tsconfig.json ./
+COPY ./tsconfig*.json ./
 COPY ./src ./src
-RUN npm run build
-RUN npm prune --production
+RUN yarn build
 
-FROM node:14.17.1-alpine3.13
+FROM node:16-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY --from=building /usr/src/app/dist ./dist
-COPY --from=building /usr/src/app/node_modules ./node_modules
-COPY ./package*.json ./
+COPY --from=building /app/dist ./dist
+COPY --from=building /app/node_modules ./node_modules
+COPY ./package.json ./
 
-CMD ["node", "./dist/index.js"]
+USER node
+
+HEALTHCHECK --interval=60s --timeout=10s --retries=3 \
+  CMD sh -c "wget -nv -t1 --spider http://localhost:$HTTP_PORT/health" || exit 1
+
+CMD ["yarn", "start:prod"]
+
