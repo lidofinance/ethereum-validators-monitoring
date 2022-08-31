@@ -68,7 +68,7 @@ export class DataProcessingService implements OnModuleInit {
         const fetcherWriter = this.fetcherWriter(slotToWrite, epoch, stateRoot, slotNumber, slotTime, keysIndexed);
         let otherCounts;
         // todo: optimize it
-        let lidoIDs = await this.storage.getLidoValidatorIDs(slotToWrite);
+        let lidoIDs = await this.storage.getLidoValidatorIDs(this.latestSlotInDb);
         if (this.latestSlotInDb == 0n || lidoIDs?.length == 0 || keysIndexed.size != lidoIDs?.length) {
           // First iteration or new validators fetched. We should fetch general validators info firstly (id)
           const slotRes = await fetcherWriter.fetchSlotData();
