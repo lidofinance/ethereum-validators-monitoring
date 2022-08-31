@@ -69,7 +69,7 @@ export class DataProcessingService implements OnModuleInit {
         let otherCounts;
         // todo: optimize it
         let lidoIDs = await this.storage.getLidoValidatorIDs(this.latestSlotInDb);
-        if (this.latestSlotInDb == 0n || lidoIDs?.length == 0 || keysIndexed.size != lidoIDs?.length) {
+        if (this.latestSlotInDb == 0n || lidoIDs?.length == 0) {
           // First iteration or new validators fetched. We should fetch general validators info firstly (id)
           const slotRes = await fetcherWriter.fetchSlotData();
           otherCounts = await fetcherWriter.writeSlotData(slotRes);
