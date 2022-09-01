@@ -6,10 +6,9 @@ import { HealthModule } from '../common/health';
 import { AppService } from './app.service';
 import { LoggerModule } from '../common/logger';
 import { InspectorModule } from '../inspector';
-import { EthereumModule } from '../ethereum/ethereum.module';
-import { ValidatorsModule } from '../validators/validators.module';
 import { ContractsModule } from '../common/contracts';
-import { ExecutionProviderModule } from '../common/execution-provider';
+import { EthProvidersModule } from '../common/eth-providers';
+import { StorageModule } from '../storage';
 
 @Module({
   imports: [
@@ -17,11 +16,10 @@ import { ExecutionProviderModule } from '../common/execution-provider';
     HealthModule,
     PrometheusModule,
     ConfigModule,
-    EthereumModule,
     InspectorModule,
-    ValidatorsModule,
+    StorageModule,
     ContractsModule,
-    ExecutionProviderModule,
+    EthProvidersModule,
   ],
   providers: [AppService],
 })

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ValidatorRegistryModule } from '@lido-nestjs/registry';
-import { ExecutionProvider } from 'common/execution-provider';
+import { ExecutionProvider } from 'common/eth-providers/execution-provider';
 import { RegistryService } from './registry.service';
 
 @Module({

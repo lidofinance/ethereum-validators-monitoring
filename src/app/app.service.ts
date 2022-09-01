@@ -5,7 +5,7 @@ import { ConfigService } from '../common/config';
 import { APP_NAME, APP_VERSION } from './app.constants';
 import { PrometheusService } from '../common/prometheus';
 import { InspectorService } from '../inspector';
-import { ExecutionProviderService } from '../common/execution-provider';
+import { ExecutionProviderService } from '../common/eth-providers';
 
 @Injectable()
 export class AppService implements OnModuleInit, OnApplicationBootstrap {

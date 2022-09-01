@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ClickhouseStorageService } from './clickhouse-storage.service';
+import { DatabaseModule, DatabaseService } from './database';
+import { ClickhouseModule, ClickhouseService } from './clickhouse';
 
 @Module({
-  imports: [],
-  providers: [ClickhouseStorageService],
-  exports: [ClickhouseStorageService],
+  imports: [DatabaseModule, ClickhouseModule],
+  providers: [DatabaseService, ClickhouseService],
+  exports: [ClickhouseService],
 })
 export class StorageModule {}

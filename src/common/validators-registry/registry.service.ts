@@ -11,9 +11,9 @@ import { PrometheusService } from 'common/prometheus';
 import { ConfigService } from 'common/config';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 
-export type KeyWithOperatorName = RegistryKey & {
+export interface KeyWithOperatorName extends RegistryKey {
   operatorName: string;
-};
+}
 
 export type KeysIndexed = Map<string, KeyWithOperatorName>;
 
@@ -31,7 +31,7 @@ export class RegistryService {
   ) {}
 
   /**
-   * Collects updates from the registry contract and saves the changes to the database
+   * Collects updates from Lido validators registry contract and saves the changes to the database
    */
   public async updateValidators(): Promise<void> {
     await this.prometheusService.trackTask('update-validators', async () => {
@@ -59,7 +59,7 @@ export class RegistryService {
   protected operatorsMap: Record<number, RegistryOperator> = {};
 
   /**
-   * Updates timestamp of the last registry update
+   * Updates timestamp of last Lido validators registry update
    */
   protected async updateTimestamp() {
     const meta = await this.metaStorageService.get();

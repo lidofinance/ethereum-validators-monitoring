@@ -2,10 +2,10 @@ import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 import { join } from 'lodash';
 import { sentAlerts } from '../critical-alerts.service';
 import { ConfigService } from '../../config';
-import { ClickhouseStorageService } from '../../../storage/clickhouse-storage.service';
+import { ClickhouseService } from '../../../storage';
 
 export class CriticalMissedAttestations extends Alert {
-  constructor(config: ConfigService, storage: ClickhouseStorageService) {
+  constructor(config: ConfigService, storage: ClickhouseService) {
     super(CriticalMissedAttestations.name, config, storage);
   }
 
