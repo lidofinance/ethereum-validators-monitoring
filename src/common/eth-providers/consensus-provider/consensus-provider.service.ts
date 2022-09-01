@@ -1,30 +1,36 @@
 import got, { HTTPError, Response } from 'got';
-import { BlockHeaderResponse } from './types/BlockHeaderResponse';
-import { StateValidatorResponse } from './types/StateValidatorResponse';
-import { VersionResponse } from './types/VersionResponse';
-import { GenesisResponse } from './types/GenesisResponse';
-import { FinalityCheckpointsResponse } from './types/FinalityCheckpointsResponse';
-import { BeaconChainGeneralApiError, errCommon, errRequest } from './errors/BeaconChainGeneralApiError';
-import { ShortBeaconBlockHeader } from './types/ShortBeaconBlockHeader';
-import { ShortBeaconBlockInfo } from './types/ShortBeaconBlockInfo';
-import { AttesterDutyInfo } from './types/AttesterDutyInfo';
-import { ProposerDutyInfo } from './types/ProposerDutyInfo';
-import { SyncCommitteeDutyInfo } from './types/SyncCommitteeDutyInfo';
-import { SyncCommitteeInfo } from './types/SyncCommitteeInfo';
+import { ResponseError, errCommon, errRequest } from './errors';
 import { parseChunked } from '@discoveryjs/json-ext';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { PrometheusService } from '../../common/prometheus';
-import { ConfigService } from '../../common/config';
-import { bigintRange } from '../../common/functions/range';
-import { retrier } from '../../common/functions/retrier';
-import { rejectDelay } from '../../common/functions/rejectDelay';
-import { urljoin } from '../../common/functions/urljoin';
+import { PrometheusService } from '../../prometheus';
+import { ConfigService } from '../../config';
+import { bigintRange } from '../../functions/range';
+import { retrier } from '../../functions/retrier';
+import { rejectDelay } from '../../functions/rejectDelay';
+import { urljoin } from '../../functions/urljoin';
+import {
+  AttesterDutyInfo,
+  BlockHeaderResponse,
+  FinalityCheckpointsResponse,
+  GenesisResponse,
+  ProposerDutyInfo,
+  ShortBeaconBlockHeader,
+  ShortBeaconBlockInfo,
+  StateValidatorResponse,
+  SyncCommitteeDutyInfo,
+  SyncCommitteeInfo,
+  VersionResponse,
+} from './intefaces';
 
-type RequestRetryOptions = { maxRetries?: number; dataOnly?: boolean; fallbackConditionCallback?: (e: any) => any };
+interface RequestRetryOptions {
+  maxRetries?: number;
+  dataOnly?: boolean;
+  fallbackConditionCallback?: (e: any) => any;
+}
 
 @Injectable()
-export class ConsensusClientService {
+export class ConsensusProviderService {
   protected rpcUrls: { main: string; backup: string };
   protected version = '';
   protected genesisTime = 0n;
@@ -147,7 +153,6 @@ export class ConsensusClientService {
 
   public async getPreviousNotMissedBlockHeader(slot: bigint, maxDeep = this.defaultMaxSlotDeepCount): Promise<ShortBeaconBlockHeader> {
     try {
-      this.logger.log(`Getting previous not missed slot [${slot}] max deep [${maxDeep}]`);
       return await this.getBeaconBlockHeader(slot);
     } catch (e: any) {
       if (404 != e.$httpCode) {
@@ -157,6 +162,7 @@ export class ConsensusClientService {
       if (maxDeep < 1) {
         throw e;
       }
+      this.logger.log(`Getting previous not missed slot [${slot - 1n}] max deep [${maxDeep - 1}]`);
       return await this.getPreviousNotMissedBlockHeader(slot - 1n, maxDeep - 1);
     }
   }
@@ -359,17 +365,17 @@ export class ConsensusClientService {
         .get(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('CL_GET_RESPONSE_TIMEOUT') } })
         .catch((e) => {
           if (e.response) {
-            throw new BeaconChainGeneralApiError(errRequest(e.response.body, subUrl, rpcUrl), e.response.statusCode);
+            throw new ResponseError(errRequest(e.response.body, subUrl, rpcUrl), e.response.statusCode);
           }
-          throw new BeaconChainGeneralApiError(errCommon(e.message, subUrl, rpcUrl));
+          throw new ResponseError(errCommon(e.message, subUrl, rpcUrl));
         });
       if (res.statusCode !== 200) {
-        throw new BeaconChainGeneralApiError(errRequest(res.body, subUrl, rpcUrl), res.statusCode);
+        throw new ResponseError(errRequest(res.body, subUrl, rpcUrl), res.statusCode);
       }
       try {
         return JSON.parse(res.body);
       } catch (e) {
-        throw new BeaconChainGeneralApiError(`Error converting response body to JSON. Body: ${res.body}`);
+        throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
       }
     });
   };
@@ -380,17 +386,17 @@ export class ConsensusClientService {
         .post(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('CL_POST_RESPONSE_TIMEOUT') }, ...params })
         .catch((e) => {
           if (e.response) {
-            throw new BeaconChainGeneralApiError(errRequest(e.response.body, subUrl, rpcUrl), e.response.statusCode);
+            throw new ResponseError(errRequest(e.response.body, subUrl, rpcUrl), e.response.statusCode);
           }
-          throw new BeaconChainGeneralApiError(errCommon(e.message, subUrl, rpcUrl));
+          throw new ResponseError(errCommon(e.message, subUrl, rpcUrl));
         });
       if (res.statusCode !== 200) {
-        throw new BeaconChainGeneralApiError(errRequest(res.body, subUrl, rpcUrl), res.statusCode);
+        throw new ResponseError(errRequest(res.body, subUrl, rpcUrl), res.statusCode);
       }
       try {
         return JSON.parse(res.body);
       } catch (e) {
-        throw new BeaconChainGeneralApiError(`Error converting response body to JSON. Body: ${res.body}`);
+        throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
       }
     });
   };
@@ -405,9 +411,9 @@ export class ConsensusClientService {
           }),
       ).catch((e) => {
         if (e instanceof HTTPError) {
-          throw new BeaconChainGeneralApiError(errRequest(<string>e.response.body, subUrl, rpcUrl), e.response.statusCode);
+          throw new ResponseError(errRequest(<string>e.response.body, subUrl, rpcUrl), e.response.statusCode);
         }
-        throw new BeaconChainGeneralApiError(errCommon(e.message, subUrl, rpcUrl));
+        throw new ResponseError(errCommon(e.message, subUrl, rpcUrl));
       });
     });
   };
@@ -422,9 +428,9 @@ export class ConsensusClientService {
           }),
       ).catch((e) => {
         if (e instanceof HTTPError) {
-          throw new BeaconChainGeneralApiError(errRequest(<string>e.response.body, subUrl, rpcUrl), e.response.statusCode);
+          throw new ResponseError(errRequest(<string>e.response.body, subUrl, rpcUrl), e.response.statusCode);
         }
-        throw new BeaconChainGeneralApiError(errCommon(e.message, subUrl, rpcUrl));
+        throw new ResponseError(errCommon(e.message, subUrl, rpcUrl));
       });
     });
   };

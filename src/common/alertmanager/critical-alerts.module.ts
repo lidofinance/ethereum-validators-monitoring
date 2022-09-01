@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CriticalAlertsService } from './critical-alerts.service';
-import { StorageModule } from '../../storage/storage.module';
+import { StorageModule } from '../../storage';
 import { PrometheusModule } from '../prometheus';
 
 @Module({

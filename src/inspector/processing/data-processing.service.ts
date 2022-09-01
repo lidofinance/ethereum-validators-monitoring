@@ -1,32 +1,35 @@
-import {
-  CheckAttestersDutyResult,
-  CheckSyncCommitteeParticipationResult,
-  ClickhouseStorageService,
-  SlotAttestation,
-  ValidatorCounts,
-  ValidatorID,
-} from '../../storage/clickhouse-storage.service';
 import { BitVectorType, fromHexString } from '@chainsafe/ssz';
 import { groupBy } from 'lodash';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from '../../common/config';
 import { PrometheusService } from '../../common/prometheus';
-import { ConsensusClientService } from '../../ethereum/consensus/consensus-client.service';
-import { ProposerDutyInfo } from '../../ethereum/consensus/types/ProposerDutyInfo';
-import { SyncCommitteeDutyInfo } from '../../ethereum/consensus/types/SyncCommitteeDutyInfo';
-import { AttesterDutyInfo } from '../../ethereum/consensus/types/AttesterDutyInfo';
-import { SyncCommitteeValidator } from '../../ethereum/consensus/types/SyncCommitteeInfo';
-import { StateValidatorResponse } from '../../ethereum/consensus/types/StateValidatorResponse';
-import { BeaconBlockAttestation, ShortBeaconBlockInfo } from '../../ethereum/consensus/types/ShortBeaconBlockInfo';
+import {
+  AttesterDutyInfo,
+  BeaconBlockAttestation,
+  ConsensusProviderService,
+  ProposerDutyInfo,
+  ShortBeaconBlockInfo,
+  StateValidatorResponse,
+  SyncCommitteeDutyInfo,
+  SyncCommitteeValidator,
+} from '../../common/eth-providers';
 import { bigintRange } from '../../common/functions/range';
-import { KeysIndexed, RegistryService } from '../../validators/registry';
+import { KeysIndexed, RegistryService } from '../../common/validators-registry';
+import {
+  CheckAttestersDutyResult,
+  CheckSyncCommitteeParticipationResult,
+  ClickhouseService,
+  SlotAttestation,
+  ValidatorIdentifications,
+  ValidatorsStatusStats,
+} from '../../storage/clickhouse';
 
-type FetchFinalizedEpochDataResult = {
+interface FetchFinalizedEpochDataResult {
   attestations: CheckAttestersDutyResult;
   proposeDutiesResult: ProposerDutyInfo[];
   syncResult: CheckSyncCommitteeParticipationResult;
-};
+}
 
 @Injectable()
 export class DataProcessingService implements OnModuleInit {
@@ -37,8 +40,8 @@ export class DataProcessingService implements OnModuleInit {
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
-    protected readonly clClient: ConsensusClientService,
-    protected readonly storage: ClickhouseStorageService,
+    protected readonly clClient: ConsensusProviderService,
+    protected readonly storage: ClickhouseService,
     protected readonly registryService: RegistryService,
   ) {}
 
@@ -55,7 +58,7 @@ export class DataProcessingService implements OnModuleInit {
     slotToWrite: bigint,
     stateRoot: string,
     slotNumber: bigint,
-  ): Promise<{ lidoIDs: ValidatorID[]; otherCounts: ValidatorCounts } | undefined> {
+  ): Promise<{ lidoIDs: ValidatorIdentifications[]; otherCounts: ValidatorsStatusStats }> {
     return await this.prometheus.trackTask('process-write-finalized-data', async () => {
       try {
         if (slotToWrite <= this.latestSlotInDb) {
@@ -66,7 +69,7 @@ export class DataProcessingService implements OnModuleInit {
         const slotTime = await this.getSlotTime(slotToWrite);
         const epoch = slotToWrite / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
         const fetcherWriter = this.fetcherWriter(slotToWrite, epoch, stateRoot, slotNumber, slotTime, keysIndexed);
-        let otherCounts;
+        let otherCounts: ValidatorsStatusStats;
         // todo: optimize it
         let lidoIDs = await this.storage.getLidoValidatorIDs(this.latestSlotInDb);
         if (this.latestSlotInDb == 0n || lidoIDs?.length == 0) {
@@ -90,7 +93,7 @@ export class DataProcessingService implements OnModuleInit {
     });
   }
 
-  public async getPossibleHighRewardValidatorIndexes(valIDs: ValidatorID[], headEpoch: bigint): Promise<string[]> {
+  public async getPossibleHighRewardValidatorIndexes(valIDs: ValidatorIdentifications[], headEpoch: bigint): Promise<string[]> {
     return await this.prometheus.trackTask('high-reward-validators', async () => {
       this.logger.log('Start getting possible high reward validator indexes');
       const valIndexes: string[] = [];
@@ -156,7 +159,7 @@ export class DataProcessingService implements OnModuleInit {
         this.logger.log(`Start validators balance processing for slot ${slot} (state root ${stateRoot} from slot ${slotNumber})`);
         return await this.storage.writeBalances(slot, slotTime, slotRes, keysIndexed);
       },
-      fetchEpochData: async (lidoIDs: ValidatorID[]) => {
+      fetchEpochData: async (lidoIDs: ValidatorIdentifications[]) => {
         const lidoIndexes: string[] = [];
         for (const i of lidoIDs) {
           lidoIndexes.push(i.validator_id);
@@ -174,7 +177,7 @@ export class DataProcessingService implements OnModuleInit {
         ]);
         return { attestations, proposeDutiesResult, syncResult };
       },
-      writeEpochData: async (lidoIDs: ValidatorID[], epochRes: FetchFinalizedEpochDataResult) => {
+      writeEpochData: async (lidoIDs: ValidatorIdentifications[], epochRes: FetchFinalizedEpochDataResult) => {
         this.logger.log(`Writing Lido ${epochRes.attestations.attestersDutyInfo.length} attestations result to DB for ${epoch} epoch`);
         await this.storage.writeAttestations(epochRes.attestations, slotTime, keysIndexed);
         this.logger.log(`Writing Lido ${epochRes.proposeDutiesResult.length} proposes result to DB for ${epoch} epoch`);

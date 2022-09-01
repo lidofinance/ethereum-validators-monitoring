@@ -1,12 +1,12 @@
-import { ClickhouseStorageService, ValidatorCounts } from '../../storage/clickhouse-storage.service';
+import { ClickhouseService } from '../../storage';
 import { DataProcessingService } from './data-processing.service';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from '../../common/config';
-import { Owner, PrometheusService } from '../../common/prometheus';
-import { PrometheusValStatus } from '../../ethereum/consensus/types/ValidatorStatus';
-import { RegistryService } from '../../validators/registry';
+import { Owner, PrometheusService, PrometheusValStatus } from '../../common/prometheus';
+import { RegistryService } from '../../common/validators-registry';
 import { LIDO_CONTRACT_TOKEN, Lido } from '@lido-nestjs/contracts';
+import { ValidatorsStatusStats } from '../../storage/clickhouse';
 
 @Injectable()
 export class StatsProcessingService implements OnModuleInit {
@@ -18,7 +18,7 @@ export class StatsProcessingService implements OnModuleInit {
     protected readonly prometheus: PrometheusService,
     protected readonly dataProcessor: DataProcessingService,
     protected readonly registryService: RegistryService,
-    protected readonly storage: ClickhouseStorageService,
+    protected readonly storage: ClickhouseService,
   ) {}
 
   public async onModuleInit(): Promise<void> {
@@ -175,9 +175,9 @@ export class StatsProcessingService implements OnModuleInit {
   /**
    * Calc stats by in-memory other validators data (ongoing, pending, slashed validators)
    */
-  async calculateOtherStats(otherBalances: ValidatorCounts): Promise<void> {
-    this.logger.log(`Other ongoing validators [${otherBalances.active}]`);
-    this.prometheus.validators.set({ owner: Owner.OTHER, status: PrometheusValStatus.Ongoing }, otherBalances.active);
+  async calculateOtherStats(otherBalances: ValidatorsStatusStats): Promise<void> {
+    this.logger.log(`Other ongoing validators [${otherBalances.active_ongoing}]`);
+    this.prometheus.validators.set({ owner: Owner.OTHER, status: PrometheusValStatus.Ongoing }, otherBalances.active_ongoing);
     this.prometheus.validators.set({ owner: Owner.OTHER, status: PrometheusValStatus.Pending }, otherBalances.pending);
     this.prometheus.validators.set({ owner: Owner.OTHER, status: PrometheusValStatus.Slashed }, otherBalances.slashed);
   }

@@ -1,11 +1,11 @@
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 import { join } from 'lodash';
 import { ConfigService } from '../../config';
-import { ClickhouseStorageService } from '../../../storage/clickhouse-storage.service';
+import { ClickhouseService } from '../../../storage';
 import { sentAlerts } from '../critical-alerts.service';
 
 export class CriticalNegativeDelta extends Alert {
-  constructor(config: ConfigService, storage: ClickhouseStorageService) {
+  constructor(config: ConfigService, storage: ClickhouseService) {
     super(CriticalNegativeDelta.name, config, storage);
   }
 

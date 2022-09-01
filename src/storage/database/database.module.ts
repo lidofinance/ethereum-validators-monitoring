@@ -1,8 +1,7 @@
-import { FlushMode } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Global, Module } from '@nestjs/common';
-import { ValidatorsService } from './validators.service';
-import { RegistryModule } from './registry';
+import { DatabaseService } from './database.service';
+import { FlushMode } from '@mikro-orm/core';
 
 @Global()
 @Module({
@@ -19,9 +18,8 @@ import { RegistryModule } from './registry';
         };
       },
     }),
-    RegistryModule,
   ],
-  providers: [ValidatorsService],
-  exports: [ValidatorsService],
+  providers: [DatabaseService],
+  exports: [DatabaseService],
 })
-export class ValidatorsModule {}
+export class DatabaseModule {}

@@ -1,4 +1,4 @@
-import { ValStatus } from '../ethereum/consensus/types/ValidatorStatus';
+import { ValStatus } from '../../common/eth-providers';
 
 export const validatorBalancesDeltaQuery = (fetchInterval: number, slot: string): string => `
   SELECT

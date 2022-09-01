@@ -47,6 +47,12 @@ export enum RequestStatus {
   ERROR = 'error',
 }
 
+export enum PrometheusValStatus {
+  Ongoing = 'ongoing',
+  Pending = 'pending',
+  Slashed = 'slashed',
+}
+
 enum TaskStatus {
   COMPLETE = 'complete',
   ERROR = 'error',
@@ -81,7 +87,7 @@ export class PrometheusService {
       help: 'Data actuality',
       labelNames: [],
       collect() {
-        // Invoked when the registry collects its metrics' values.
+        // Invoked when the validators collects its metrics' values.
         // This can be synchronous or it can return a promise/be an async function.
         this.set(getSlotTimeDiffWithNow());
       },
@@ -126,7 +132,7 @@ export class PrometheusService {
   public outgoingELRequestsDuration = this.getOrCreateMetric('Histogram', {
     name: METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS,
     help: 'Duration of outgoing execution layer requests',
-    buckets: [0.01, 0.1, 0.2, 0.5, 1, 1.5, 2, 5, 15],
+    buckets: [0.01, 0.1, 0.5, 1, 2, 5, 15, 30, 60],
     labelNames: ['name', 'target'] as const,
   });
 
@@ -139,7 +145,7 @@ export class PrometheusService {
   public outgoingCLRequestsDuration = this.getOrCreateMetric('Histogram', {
     name: METRIC_OUTGOING_CL_REQUESTS_DURATION_SECONDS,
     help: 'Duration of outgoing consensus layer requests',
-    buckets: [0.01, 0.1, 0.2, 0.5, 1, 1.5, 2, 5, 15],
+    buckets: [0.01, 0.1, 0.5, 1, 2, 5, 15, 30, 60],
     labelNames: ['name', 'target'] as const,
   });
 
@@ -292,32 +298,6 @@ export class PrometheusService {
         this.taskCount.inc({
           name: name,
           status: TaskStatus.ERROR,
-        });
-        throw e;
-      })
-      .finally(() => stop());
-  }
-
-  public async trackELRequest(rpcUrl: string, subUrl: string, callback: () => any) {
-    const [targetName, reqName] = requestLabels(rpcUrl, subUrl);
-    const stop = this.outgoingELRequestsDuration.startTimer({
-      name: reqName,
-      target: targetName,
-    });
-    return await callback()
-      .then((r: any) => {
-        this.outgoingELRequestsCount.inc({
-          name: reqName,
-          target: targetName,
-          status: RequestStatus.COMPLETE,
-        });
-        return r;
-      })
-      .catch((e: any) => {
-        this.outgoingELRequestsCount.inc({
-          name: reqName,
-          target: targetName,
-          status: RequestStatus.ERROR,
         });
         throw e;
       })

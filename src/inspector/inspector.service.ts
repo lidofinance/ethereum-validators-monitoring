@@ -5,8 +5,8 @@ import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common'
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from '../common/config';
 import { PrometheusService } from '../common/prometheus';
-import { ConsensusClientService } from '../ethereum/consensus/consensus-client.service';
-import { ClickhouseStorageService } from '../storage/clickhouse-storage.service';
+import { ConsensusProviderService } from '../common/eth-providers';
+import { ClickhouseService } from '../storage';
 import { CriticalAlertsService } from '../common/alertmanager/critical-alerts.service';
 
 @Injectable()
@@ -15,8 +15,8 @@ export class InspectorService implements OnModuleInit {
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
-    protected readonly clClient: ConsensusClientService,
-    protected readonly storage: ClickhouseStorageService,
+    protected readonly clClient: ConsensusProviderService,
+    protected readonly storage: ClickhouseService,
     protected readonly dataProcessor: DataProcessingService,
     protected readonly statsProcessor: StatsProcessingService,
     protected readonly criticalAlertService: CriticalAlertsService,
