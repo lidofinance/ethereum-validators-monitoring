@@ -96,16 +96,12 @@ export class ConsensusProviderService {
       (rpcURL: string) => this.apiGet(rpcURL, this.endpoints.beaconHeaders(state)),
       { maxRetries, fallbackConditionCallback: (e) => 404 != e.$httpCode },
     );
-    const slotNumber = BigInt(blockHeader.header.message.slot);
-    const stateRoot = blockHeader.header.message.state_root;
-    const blockRoot = blockHeader.root;
-    const parentRoot = blockHeader.header.message.parent_root;
 
     return {
-      slotNumber,
-      stateRoot,
-      blockRoot,
-      parentRoot,
+      slotNumber: BigInt(blockHeader.header.message.slot),
+      stateRoot: blockHeader.header.message.state_root,
+      blockRoot: blockHeader.root,
+      parentRoot: blockHeader.header.message.parent_root,
     };
   }
 
@@ -137,7 +133,6 @@ export class ConsensusProviderService {
 
   public async getNextNotMissedBlockHeader(slot: bigint, maxDeep = this.defaultMaxSlotDeepCount): Promise<ShortBeaconBlockHeader> {
     try {
-      this.logger.log(`Getting next not missed slot [${slot}] max deep [${maxDeep}]`);
       return await this.getBeaconBlockHeader(slot);
     } catch (e: any) {
       if (404 != e.$httpCode) {
@@ -147,6 +142,7 @@ export class ConsensusProviderService {
       if (maxDeep < 1) {
         throw e;
       }
+      this.logger.log(`Getting next not missed slot [${slot + 1n}] max deep [${maxDeep - 1}]`);
       return await this.getNextNotMissedBlockHeader(slot + 1n, maxDeep - 1);
     }
   }
