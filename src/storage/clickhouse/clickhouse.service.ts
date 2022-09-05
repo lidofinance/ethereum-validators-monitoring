@@ -23,7 +23,6 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from '../../common/config';
 import { PrometheusService } from '../../common/prometheus';
 import { retrier } from '../../common/functions/retrier';
-import { KeysIndexed } from '../../common/validators-registry';
 import { ProposerDutyInfo, StateValidatorResponse, ValStatus } from '../../common/eth-providers';
 import {
   CheckAttestersDutyResult,
@@ -38,7 +37,8 @@ import {
   NOsValidatorsSyncLessChainAvgCount,
   SyncCommitteeParticipationAvgPercents,
   ValidatorIdentifications,
-} from './clickhouse.types';
+}                                    from './clickhouse.types';
+import { RegistrySourceKeysIndexed } from '../../common/validators-registry/registry-source.interface';
 
 export const status = {
   isActive(val: StateValidatorResponse): boolean {
@@ -121,7 +121,7 @@ export class ClickhouseService implements OnModuleInit {
     slot: bigint,
     slotTime: bigint,
     balances: StateValidatorResponse[],
-    keysIndexed: KeysIndexed,
+    keysIndexed: RegistrySourceKeysIndexed,
   ): Promise<ValidatorsStatusStats> {
     return await this.prometheus.trackTask('write-balances', async () => {
       const otherCounts: ValidatorsStatusStats = {
@@ -160,7 +160,7 @@ export class ClickhouseService implements OnModuleInit {
     });
   }
 
-  public async writeAttestations(attDutyResult: CheckAttestersDutyResult, slotTime: bigint, keysIndexed: KeysIndexed): Promise<void> {
+  public async writeAttestations(attDutyResult: CheckAttestersDutyResult, slotTime: bigint, keysIndexed: RegistrySourceKeysIndexed): Promise<void> {
     return await this.prometheus.trackTask('write-attestations', async () => {
       while (attDutyResult.attestersDutyInfo.length > 0) {
         const chunk = attDutyResult.attestersDutyInfo.splice(0, this.chunkSize);
@@ -211,7 +211,7 @@ export class ClickhouseService implements OnModuleInit {
     });
   }
 
-  public async writeProposes(proposesDutiesResult: ProposerDutyInfo[], slotTime: bigint, keysIndexed: KeysIndexed): Promise<void> {
+  public async writeProposes(proposesDutiesResult: ProposerDutyInfo[], slotTime: bigint, keysIndexed: RegistrySourceKeysIndexed): Promise<void> {
     return await this.prometheus.trackTask('write-proposes', async () => {
       const ws = this.db
         .insert(
@@ -232,7 +232,7 @@ export class ClickhouseService implements OnModuleInit {
   public async writeSyncs(
     syncResult: CheckSyncCommitteeParticipationResult,
     slotTime: bigint,
-    keysIndexed: KeysIndexed,
+    keysIndexed: RegistrySourceKeysIndexed,
     lidoIDs: ValidatorIdentifications[],
     epoch: bigint,
   ): Promise<void> {

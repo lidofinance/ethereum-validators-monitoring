@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { FallbackProviderModule } from '@lido-nestjs/execution';
-import { PrometheusService, RequestStatus } from 'common/prometheus';
-import { ConfigService } from 'common/config';
+import { PrometheusService, RequestStatus } from '../../prometheus';
+import { ConfigService } from '../../config';
 import { ExecutionProviderService } from './execution-provider.service';
 
 @Global()

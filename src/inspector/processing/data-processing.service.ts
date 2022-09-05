@@ -15,7 +15,7 @@ import {
   SyncCommitteeValidator,
 } from '../../common/eth-providers';
 import { bigintRange } from '../../common/functions/range';
-import { KeysIndexed, RegistryService } from '../../common/validators-registry';
+import { RegistryService } from '../../common/validators-registry';
 import {
   CheckAttestersDutyResult,
   CheckSyncCommitteeParticipationResult,
@@ -24,6 +24,7 @@ import {
   ValidatorIdentifications,
   ValidatorsStatusStats,
 } from '../../storage/clickhouse';
+import { RegistrySourceKeysIndexed } from '../../common/validators-registry/registry-source.interface';
 
 interface FetchFinalizedEpochDataResult {
   attestations: CheckAttestersDutyResult;
@@ -65,9 +66,9 @@ export class DataProcessingService implements OnModuleInit {
           this.logger.log(`Will not save slot [${slotToWrite}]. We already have that slot in db. Skipping...`);
           return;
         }
-        const keysIndexed = await this.registryService.getAllKeysIndexed();
         const slotTime = await this.getSlotTime(slotToWrite);
         const epoch = slotToWrite / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
+        const keysIndexed = await this.registryService.getActualKeysIndexed(Number(slotTime));
         const fetcherWriter = this.fetcherWriter(slotToWrite, epoch, stateRoot, slotNumber, slotTime, keysIndexed);
         let otherCounts: ValidatorsStatusStats;
         // todo: optimize it
@@ -148,7 +149,7 @@ export class DataProcessingService implements OnModuleInit {
     stateRoot: string,
     slotNumber: bigint,
     slotTime: bigint,
-    keysIndexed: KeysIndexed,
+    keysIndexed: RegistrySourceKeysIndexed,
   ) => {
     return {
       fetchSlotData: async () => {

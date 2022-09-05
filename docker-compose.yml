@@ -157,6 +157,8 @@ services:
       - CL_BEACON_RPC_URL=${CL_BEACON_RPC_URL}
     ports:
       - "8080:8080"
+    volumes:
+      - ./docker/validators/:/app/docker/validators
     expose:
       - 8080
     depends_on:
