@@ -10,13 +10,18 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./src",
+    "paths": {
+        // https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping
+        "build-info": ["../build-info.json"],
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*"

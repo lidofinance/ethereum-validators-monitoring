@@ -126,7 +126,7 @@ export class PrometheusService {
   public buildInfo = this.getOrCreateMetric('Counter', {
     name: METRIC_BUILD_INFO,
     help: 'Build information',
-    labelNames: ['name', 'version', 'env', 'network'],
+    labelNames: ['name', 'version', 'commit', 'branch', 'env', 'network'],
   });
 
   public outgoingELRequestsDuration = this.getOrCreateMetric('Histogram', {
