@@ -2,11 +2,11 @@ import { Inject, Injectable, LoggerService, OnApplicationBootstrap, OnModuleInit
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 
 import * as buildInfo from 'build-info';
-import { ConfigService } from '../common/config';
+import { ConfigService } from 'common/config';
 import { APP_NAME } from './app.constants';
-import { PrometheusService } from '../common/prometheus';
+import { PrometheusService } from 'common/prometheus';
+import { ExecutionProviderService } from 'common/eth-providers';
 import { InspectorService } from '../inspector';
-import { ExecutionProviderService } from '../common/eth-providers';
 
 @Injectable()
 export class AppService implements OnModuleInit, OnApplicationBootstrap {

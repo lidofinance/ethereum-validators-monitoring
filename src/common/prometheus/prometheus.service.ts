@@ -33,7 +33,7 @@ import {
 } from './prometheus.constants';
 import { Metric, Options } from './interfaces';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '../config';
+import { ConfigService } from 'common/config';
 import { join } from 'lodash';
 import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
 

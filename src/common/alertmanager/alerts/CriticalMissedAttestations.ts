@@ -1,7 +1,7 @@
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 import { join } from 'lodash';
 import { sentAlerts } from '../critical-alerts.service';
-import { ConfigService } from '../../config';
+import { ConfigService } from 'common/config';
 import { ClickhouseService } from '../../../storage';
 
 export class CriticalMissedAttestations extends Alert {

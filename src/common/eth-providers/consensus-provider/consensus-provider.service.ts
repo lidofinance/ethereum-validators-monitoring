@@ -3,12 +3,12 @@ import { ResponseError, errCommon, errRequest } from './errors';
 import { parseChunked } from '@discoveryjs/json-ext';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { PrometheusService } from '../../prometheus';
-import { ConfigService } from '../../config';
-import { bigintRange } from '../../functions/range';
-import { retrier } from '../../functions/retrier';
-import { rejectDelay } from '../../functions/rejectDelay';
-import { urljoin } from '../../functions/urljoin';
+import { PrometheusService } from 'common/prometheus';
+import { ConfigService } from 'common/config';
+import { bigintRange } from 'common/functions/range';
+import { retrier } from 'common/functions/retrier';
+import { rejectDelay } from 'common/functions/rejectDelay';
+import { urljoin } from 'common/functions/urljoin';
 import {
   AttesterDutyInfo,
   BlockHeaderResponse,

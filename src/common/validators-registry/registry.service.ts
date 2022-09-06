@@ -1,6 +1,6 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { PrometheusService } from '../prometheus';
+import { PrometheusService } from 'common/prometheus';
 import { REGISTRY_SOURCE, RegistrySource, RegistrySourceKeysIndexed } from './registry-source.interface';
 
 @Injectable()

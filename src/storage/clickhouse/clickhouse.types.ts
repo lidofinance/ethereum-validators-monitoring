@@ -1,4 +1,4 @@
-import { AttesterDutyInfo, SyncCommitteeValidator } from '../../common/eth-providers';
+import { AttesterDutyInfo, SyncCommitteeValidator } from 'common/eth-providers';
 
 export interface ValidatorsStatusStats {
   active_ongoing: number;

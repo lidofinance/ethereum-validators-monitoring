@@ -2,7 +2,7 @@ import { PrometheusModule as PrometheusModuleSource } from '@willsoto/nestjs-pro
 import { METRICS_PREFIX, METRICS_URL } from './prometheus.constants';
 import { PrometheusController } from './prometheus.controller';
 import { PrometheusService } from './prometheus.service';
-import { ConfigModule } from '../config';
+import { ConfigModule } from 'common/config';
 
 export const PrometheusModule = PrometheusModuleSource.register({
   controller: PrometheusController,

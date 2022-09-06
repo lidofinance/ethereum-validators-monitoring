@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { RegistryService } from './registry.service';
-import { ConfigService } from '../config';
+import { ConfigService } from 'common/config';
 import { LidoSourceModule, LidoSourceService } from './lido-source';
 import { REGISTRY_SOURCE, RegistrySource } from './registry-source.interface';
 import { FileSourceModule, FileSourceService } from './file-source';

@@ -1,12 +1,12 @@
-import { ClickhouseService } from '../../storage';
+import { ClickhouseService } from 'storage';
 import { DataProcessingService } from './data-processing.service';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { ConfigService } from '../../common/config';
-import { Owner, PrometheusService, PrometheusValStatus } from '../../common/prometheus';
-import { RegistryService } from '../../common/validators-registry';
+import { ConfigService } from 'common/config';
+import { Owner, PrometheusService, PrometheusValStatus } from 'common/prometheus';
+import { RegistryService } from 'common/validators-registry';
 import { LIDO_CONTRACT_TOKEN, Lido } from '@lido-nestjs/contracts';
-import { ValidatorsStatusStats } from '../../storage/clickhouse';
+import { ValidatorsStatusStats } from 'storage/clickhouse';
 
 @Injectable()
 export class StatsProcessingService implements OnModuleInit {

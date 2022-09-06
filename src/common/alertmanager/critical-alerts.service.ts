@@ -5,9 +5,9 @@ import { CriticalMissedProposes } from './alerts/CriticalMissedProposes';
 import { CriticalMissedAttestations } from './alerts/CriticalMissedAttestations';
 import { Inject, Injectable } from '@nestjs/common';
 import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
-import { ConfigService } from '../config';
+import { ConfigService } from 'common/config';
 import { ClickhouseService } from '../../storage';
-import { PrometheusService } from '../prometheus';
+import { PrometheusService } from 'common/prometheus';
 
 interface SentAlerts {
   [alertname: string]: PreparedToSendAlert;

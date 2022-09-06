@@ -1,13 +1,13 @@
-import { sleep } from '../common/functions/sleep';
+import { sleep } from 'common/functions/sleep';
 import { DataProcessingService } from './processing/data-processing.service';
 import { StatsProcessingService } from './processing/stats-processing.service';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { ConfigService } from '../common/config';
-import { PrometheusService } from '../common/prometheus';
-import { ConsensusProviderService } from '../common/eth-providers';
-import { ClickhouseService } from '../storage';
-import { CriticalAlertsService } from '../common/alertmanager/critical-alerts.service';
+import { ConfigService } from 'common/config';
+import { PrometheusService } from 'common/prometheus';
+import { ConsensusProviderService } from 'common/eth-providers';
+import { ClickhouseService } from 'storage';
+import { CriticalAlertsService } from 'common/alertmanager/critical-alerts.service';
 
 @Injectable()
 export class InspectorService implements OnModuleInit {

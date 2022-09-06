@@ -1,4 +1,4 @@
-import { ConfigService } from '../../config';
+import { ConfigService } from 'common/config';
 import { ClickhouseService } from '../../../storage';
 
 export interface AlertRequestBody {

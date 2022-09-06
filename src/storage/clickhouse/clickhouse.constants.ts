@@ -1,4 +1,4 @@
-import { ValStatus } from '../../common/eth-providers';
+import { ValStatus } from 'common/eth-providers';
 
 export const validatorBalancesDeltaQuery = (fetchInterval: number, slot: string): string => `
   SELECT

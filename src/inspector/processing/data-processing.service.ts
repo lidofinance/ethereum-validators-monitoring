@@ -2,8 +2,8 @@ import { BitVectorType, fromHexString } from '@chainsafe/ssz';
 import { groupBy } from 'lodash';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { ConfigService } from '../../common/config';
-import { PrometheusService } from '../../common/prometheus';
+import { ConfigService } from 'common/config';
+import { PrometheusService } from 'common/prometheus';
 import {
   AttesterDutyInfo,
   BeaconBlockAttestation,
@@ -13,9 +13,9 @@ import {
   StateValidatorResponse,
   SyncCommitteeDutyInfo,
   SyncCommitteeValidator,
-} from '../../common/eth-providers';
-import { bigintRange } from '../../common/functions/range';
-import { RegistryService } from '../../common/validators-registry';
+} from 'common/eth-providers';
+import { bigintRange } from 'common/functions/range';
+import { RegistryService } from 'common/validators-registry';
 import {
   CheckAttestersDutyResult,
   CheckSyncCommitteeParticipationResult,
