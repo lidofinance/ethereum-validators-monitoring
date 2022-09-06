@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import {
   RegistrySource,
   RegistrySourceKey,
@@ -6,9 +6,10 @@ import {
   RegistrySourceKeyWithOperatorName,
   RegistrySourceOperator,
 } from '../registry-source.interface';
-import { ConfigService } from '../../config';
 import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
+import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
+import { ConfigService } from 'common/config';
 
 interface FileContent {
   operators: {
@@ -17,15 +18,32 @@ interface FileContent {
   }[];
 }
 
+const isValid = (data) => {
+  let valid = false;
+  data?.operators?.map((o) => {
+    o.name && o.keys?.length ? (valid = true) : (valid = false);
+  });
+  return valid;
+};
+
 @Injectable()
 export class FileSourceService implements RegistrySource {
-  constructor(protected readonly configService: ConfigService) {}
+  constructor(@Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService, protected readonly configService: ConfigService) {}
 
   protected data: FileContent;
+  protected lastSuccessDataReadTimestamp: number;
 
   public async update() {
     const fileContent = readFileSync(this.configService.get('VALIDATOR_REGISTRY_FILE_SOURCE_PATH'), 'utf-8');
-    this.data = <FileContent>load(fileContent);
+    const data = <FileContent>load(fileContent);
+    if (!isValid(data)) throw new Error('Error when parsing validators registry file source');
+    this.logger.log(
+      `Successful reading validators registry file source. Keys count per operator - ${data.operators
+        .map((o) => `${o.name}: [${o.keys.length}]`)
+        .join(', ')}`,
+    );
+    this.lastSuccessDataReadTimestamp = Date.now();
+    this.data = data;
   }
 
   public async getIndexedKeys() {
@@ -39,9 +57,9 @@ export class FileSourceService implements RegistrySource {
 
   public async getKeys() {
     const keys: RegistrySourceKey[] = [];
-    this.data.operators.map((o, operatorIndex) =>
+    this.data?.operators?.map((o, operatorIndex) =>
       keys.push(
-        ...o.keys.map((key, index) => {
+        ...o.keys?.map((key, index) => {
           return { index, operatorIndex, key };
         }),
       ),
@@ -50,17 +68,19 @@ export class FileSourceService implements RegistrySource {
   }
 
   public async sourceTimestamp() {
-    return Date.now();
+    return this.lastSuccessDataReadTimestamp;
   }
 
   public async getOperators(): Promise<RegistrySourceOperator[]> {
-    return this.data.operators.map((o, index) => {
-      return {
+    const operators: RegistrySourceOperator[] = [];
+    this.data?.operators?.map((o, index) =>
+      operators.push({
         index,
         name: o.name,
         totalSigningKeys: o.keys.length,
         usedSigningKeys: o.keys.length,
-      };
-    });
+      }),
+    );
+    return operators;
   }
 }
