@@ -14,7 +14,7 @@ export const METRIC_TASK_RESULT_COUNT = `task_result_count`;
 export const METRIC_DATA_ACTUALITY = `data_actuality`;
 
 export const METRIC_VALIDATORS = `validators`;
-export const METRIC_LIDO_VALIDATORS = `lido_validators`;
+export const METRIC_USER_VALIDATORS = `user_validators`;
 export const METRIC_FETCH_INTERVAL = `fetch_interval`;
 export const METRIC_SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG = `sync_participation_distance_down_from_chain_avg`;
 export const METRIC_VALIDATOR_BALANCES_DELTA = `validator_balances_delta`;
@@ -28,7 +28,7 @@ export const METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOC
 export const METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH = `high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch`;
 export const METRIC_VALIDATOR_COUNT_MISS_PROPOSE = `validator_count_miss_propose`;
 export const METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE = `high_reward_validator_count_miss_propose`;
-export const METRIC_LIDO_SYNC_PARTICIPATION_AVG_PERCENT = `lido_sync_participation_avg_percent`;
+export const METRIC_USER_SYNC_PARTICIPATION_AVG_PERCENT = `user_sync_participation_avg_percent`;
 export const METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT = `chain_sync_participation_avg_percent`;
 export const METRIC_SLOT_NUMBER = `slot_number`;
 export const METRIC_TOTAL_BALANCE_24H_DIFFERENCE = `total_balance_24h_difference`;

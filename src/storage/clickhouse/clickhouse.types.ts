@@ -54,7 +54,7 @@ export interface SlotAttestation {
 
 export interface CheckSyncCommitteeParticipationResult {
   all_avg_participation: string;
-  lido_validators: SyncCommitteeValidator[];
+  user_validators: SyncCommitteeValidator[];
 }
 
 export interface CheckAttestersDutyResult {
@@ -64,6 +64,6 @@ export interface CheckAttestersDutyResult {
 }
 
 export interface SyncCommitteeParticipationAvgPercents {
-  lido: number;
+  user: number;
   chain: number;
 }

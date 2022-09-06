@@ -187,8 +187,8 @@ export class EnvironmentVariables {
    * Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad
    * For example:
    *  Blockchain Sync participation = 99%
-   *  Lido validator 1 = 78%
-   *  Lido validator 2 = 98%
+   *  User validator 1 = 78%
+   *  User validator 2 = 98%
    *  DISTANCE_DOWN_FROM_CHAIN_SYNC_PARTICIPATION = 10
    *  Validator 1 participation is bad, because 78 < (99 - 10)
    *  Validator 2 participation is ok, because 98 > (99 - 10)

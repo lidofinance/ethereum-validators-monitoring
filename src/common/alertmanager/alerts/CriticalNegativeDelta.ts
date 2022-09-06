@@ -11,7 +11,7 @@ export class CriticalNegativeDelta extends Alert {
 
   async alertRule(bySlot: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
-    const operators = await this.storage.getLidoNodeOperatorsStats(bySlot);
+    const operators = await this.storage.getUserNodeOperatorsStats(bySlot);
     const negativeValidatorsCount = await this.storage.getValidatorsCountWithNegativeDelta(bySlot);
     for (const operator of operators.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
       const negDelta = negativeValidatorsCount.find((a) => a.nos_name == operator.nos_name);

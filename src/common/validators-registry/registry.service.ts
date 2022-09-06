@@ -7,7 +7,7 @@ import { REGISTRY_SOURCE, RegistrySource, RegistrySourceKeysIndexed } from './re
 export class RegistryService {
   constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
-    @Inject(REGISTRY_SOURCE) protected readonly source: RegistrySource,
+    @Inject(REGISTRY_SOURCE) public readonly source: RegistrySource,
     protected readonly prometheusService: PrometheusService,
   ) {}
 
@@ -26,7 +26,7 @@ export class RegistryService {
   protected lastTimestamp = 0;
 
   /**
-   * Collects updates from Lido validators registry contract and saves the changes to the database
+   * Collects updates from source validators registry contract and saves the changes to the database
    */
   protected async updateValidators(): Promise<void> {
     await this.prometheusService.trackTask('update-validators', async () => {
@@ -49,7 +49,7 @@ export class RegistryService {
   }
 
   /**
-   * Updates timestamp of last Lido validators registry update
+   * Updates timestamp of last source validators registry update
    */
   protected async updateTimestamp() {
     const source = await this.source.sourceTimestamp();

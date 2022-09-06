@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   ValidatorRegistryService,
   RegistryKeyStorageService,
@@ -7,10 +7,13 @@ import {
   RegistryOperator,
 } from '@lido-nestjs/registry';
 import { RegistrySource, RegistrySourceKeysIndexed, RegistrySourceKeyWithOperatorName } from '../registry-source.interface';
+import { Lido, LIDO_CONTRACT_TOKEN } from '@lido-nestjs/contracts';
 
 @Injectable()
 export class LidoSourceService implements RegistrySource {
   constructor(
+    @Inject(LIDO_CONTRACT_TOKEN) public contract: Lido,
+
     protected readonly validatorService: ValidatorRegistryService,
     protected readonly keyStorageService: RegistryKeyStorageService,
     protected readonly metaStorageService: RegistryMetaStorageService,

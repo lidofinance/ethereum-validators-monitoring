@@ -11,7 +11,7 @@ export class CriticalMissedAttestations extends Alert {
 
   async alertRule(bySlot: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
-    const operators = await this.storage.getLidoNodeOperatorsStats(bySlot);
+    const operators = await this.storage.getUserNodeOperatorsStats(bySlot);
     const missedAttValidatorsCount = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(
       bySlot,
       this.config.get('BAD_ATTESTATION_EPOCHS'),

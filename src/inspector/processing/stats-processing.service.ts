@@ -5,14 +5,13 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from 'common/config';
 import { Owner, PrometheusService, PrometheusValStatus } from 'common/prometheus';
 import { RegistryService } from 'common/validators-registry';
-import { LIDO_CONTRACT_TOKEN, Lido } from '@lido-nestjs/contracts';
 import { ValidatorsStatusStats } from 'storage/clickhouse';
+import { LidoSourceService } from '../../common/validators-registry/lido-source';
 
 @Injectable()
 export class StatsProcessingService implements OnModuleInit {
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
-    @Inject(LIDO_CONTRACT_TOKEN) private lidoContract: Lido,
 
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
@@ -29,7 +28,7 @@ export class StatsProcessingService implements OnModuleInit {
   /**
    * Calc stats by storage (validators info, att and prop duties) and push them to Prometheus
    */
-  async calculateLidoStats(slot: bigint, possibleHighRewardValidators: string[]): Promise<void> {
+  async calculateUserStats(slot: bigint, possibleHighRewardValidators: string[]): Promise<void> {
     const operators = await this.registryService.getOperators();
     this.prometheus.contractKeysTotal.set(
       { type: 'total' },
@@ -43,22 +42,22 @@ export class StatsProcessingService implements OnModuleInit {
     // only for operators with 0 used keys
     operators.forEach((operator) => {
       if (operator.usedSigningKeys == 0) {
-        this.prometheus.lidoValidators.set({ nos_name: operator.name, status: PrometheusValStatus.Ongoing }, 0);
+        this.prometheus.userValidators.set({ nos_name: operator.name, status: PrometheusValStatus.Ongoing }, 0);
       }
     });
 
-    const nosStats = await this.storage.getLidoNodeOperatorsStats(slot);
+    const nosStats = await this.storage.getUserNodeOperatorsStats(slot);
     for (const nosStat of nosStats) {
-      this.prometheus.lidoValidators.set({ nos_name: nosStat.nos_name, status: PrometheusValStatus.Slashed }, nosStat.slashed);
-      this.prometheus.lidoValidators.set({ nos_name: nosStat.nos_name, status: PrometheusValStatus.Ongoing }, nosStat.active_ongoing);
-      this.prometheus.lidoValidators.set({ nos_name: nosStat.nos_name, status: PrometheusValStatus.Pending }, nosStat.pending);
+      this.prometheus.userValidators.set({ nos_name: nosStat.nos_name, status: PrometheusValStatus.Slashed }, nosStat.slashed);
+      this.prometheus.userValidators.set({ nos_name: nosStat.nos_name, status: PrometheusValStatus.Ongoing }, nosStat.active_ongoing);
+      this.prometheus.userValidators.set({ nos_name: nosStat.nos_name, status: PrometheusValStatus.Pending }, nosStat.pending);
     }
 
-    const lidoValidatorsStats = await this.storage.getLidoValidatorsSummaryStats(slot);
-    this.logger.log(`Lido ongoing validators [${lidoValidatorsStats.active_ongoing}]`);
-    this.prometheus.validators.set({ owner: Owner.LIDO, status: PrometheusValStatus.Slashed }, lidoValidatorsStats.slashed);
-    this.prometheus.validators.set({ owner: Owner.LIDO, status: PrometheusValStatus.Ongoing }, lidoValidatorsStats.active_ongoing);
-    this.prometheus.validators.set({ owner: Owner.LIDO, status: PrometheusValStatus.Pending }, lidoValidatorsStats.pending);
+    const userValidatorsStats = await this.storage.getUserValidatorsSummaryStats(slot);
+    this.logger.log(`User ongoing validators [${userValidatorsStats.active_ongoing}]`);
+    this.prometheus.validators.set({ owner: Owner.USER, status: PrometheusValStatus.Slashed }, userValidatorsStats.slashed);
+    this.prometheus.validators.set({ owner: Owner.USER, status: PrometheusValStatus.Ongoing }, userValidatorsStats.active_ongoing);
+    this.prometheus.validators.set({ owner: Owner.USER, status: PrometheusValStatus.Pending }, userValidatorsStats.pending);
 
     const deltas = await this.storage.getValidatorBalancesDelta(slot);
     for (const delta of deltas) {
@@ -78,7 +77,7 @@ export class StatsProcessingService implements OnModuleInit {
 
     // Validator Sync Committee participation
     const syncParticipationAvgPercents = await this.storage.getSyncParticipationAvgPercents(slot);
-    this.prometheus.lidoSyncParticipationAvgPercent.set(syncParticipationAvgPercents.lido ?? 0);
+    this.prometheus.userSyncParticipationAvgPercent.set(syncParticipationAvgPercents.user ?? 0);
     this.prometheus.chainSyncParticipationAvgPercent.set(syncParticipationAvgPercents.chain ?? 0);
 
     const syncParticipationLastEpoch = await this.storage.getValidatorsCountWithSyncParticipationLessChainAvgLastNEpoch(slot, 1);
@@ -168,8 +167,10 @@ export class StatsProcessingService implements OnModuleInit {
       this.prometheus.totalBalance24hDifference.set(totalBalance24hDifference);
     }
 
-    const bufferedEther = (await this.lidoContract.getBufferedEther()).div(1e9).div(1e9);
-    this.prometheus.bufferedEther.set(bufferedEther.toNumber());
+    if (this.registryService.source instanceof LidoSourceService) {
+      const bufferedEther = (await this.registryService.source.contract.getBufferedEther()).div(1e9).div(1e9);
+      this.prometheus.bufferedEther.set(bufferedEther.toNumber());
+    }
   }
 
   /**
