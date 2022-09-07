@@ -13,8 +13,6 @@ export interface RegistrySourceKeyWithOperatorName extends RegistrySourceKey {
 export interface RegistrySourceOperator {
   index: number;
   name: string;
-  totalSigningKeys: number;
-  usedSigningKeys: number;
 }
 
 export type RegistrySourceKeysIndexed = Map<string, RegistrySourceKeyWithOperatorName>;

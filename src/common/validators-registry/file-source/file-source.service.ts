@@ -77,8 +77,6 @@ export class FileSourceService implements RegistrySource {
       operators.push({
         index,
         name: o.name,
-        totalSigningKeys: o.keys.length,
-        usedSigningKeys: o.keys.length,
       }),
     );
     return operators;

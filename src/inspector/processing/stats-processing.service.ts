@@ -7,6 +7,7 @@ import { Owner, PrometheusService, PrometheusValStatus } from 'common/prometheus
 import { RegistryService } from 'common/validators-registry';
 import { ValidatorsStatusStats } from 'storage/clickhouse';
 import { LidoSourceService } from '../../common/validators-registry/lido-source';
+import { RegistryOperator } from '@lido-nestjs/registry';
 
 @Injectable()
 export class StatsProcessingService implements OnModuleInit {
@@ -30,21 +31,6 @@ export class StatsProcessingService implements OnModuleInit {
    */
   async calculateUserStats(slot: bigint, possibleHighRewardValidators: string[]): Promise<void> {
     const operators = await this.registryService.getOperators();
-    this.prometheus.contractKeysTotal.set(
-      { type: 'total' },
-      operators.reduce((sum, o) => sum + o.totalSigningKeys, 0),
-    );
-    this.prometheus.contractKeysTotal.set(
-      { type: 'used' },
-      operators.reduce((sum, o) => sum + o.usedSigningKeys, 0),
-    );
-
-    // only for operators with 0 used keys
-    operators.forEach((operator) => {
-      if (operator.usedSigningKeys == 0) {
-        this.prometheus.userValidators.set({ nos_name: operator.name, status: PrometheusValStatus.Ongoing }, 0);
-      }
-    });
 
     const nosStats = await this.storage.getUserNodeOperatorsStats(slot);
     for (const nosStat of nosStats) {
@@ -168,6 +154,21 @@ export class StatsProcessingService implements OnModuleInit {
     }
 
     if (this.registryService.source instanceof LidoSourceService) {
+      this.prometheus.contractKeysTotal.set(
+        { type: 'total' },
+        operators.reduce((sum, o: RegistryOperator) => sum + o.totalSigningKeys, 0),
+      );
+      this.prometheus.contractKeysTotal.set(
+        { type: 'used' },
+        operators.reduce((sum, o: RegistryOperator) => sum + o.usedSigningKeys, 0),
+      );
+      // only for operators with 0 used keys
+      operators.forEach((operator: RegistryOperator) => {
+        if (operator.usedSigningKeys == 0) {
+          this.prometheus.userValidators.set({ nos_name: operator.name, status: PrometheusValStatus.Ongoing }, 0);
+        }
+      });
+
       const bufferedEther = (await this.registryService.source.contract.getBufferedEther()).div(1e9).div(1e9);
       this.prometheus.bufferedEther.set(bufferedEther.toNumber());
     }
