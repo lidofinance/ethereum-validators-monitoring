@@ -1,6 +1,6 @@
 # ethereum-validators-monitoring (aka balval)
 
-Consensus layer validators monitoring bot, that fetches Lido or User Node Operator keys
+Consensus layer validators monitoring bot, that fetches Lido or Custom Users Node Operators keys
 from Execution layer and checks their performance in Consensus
 layer by: balance delta, attestations, proposes, sync committee participation.
 
