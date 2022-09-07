@@ -40,7 +40,7 @@ docker-compose up -d clickhouse
 ## Use custom validators list
 
 By default, monitoring bot fetches validator keys from Lido contract, but you can monitor your own validators:
-1. Set `file` value to `VALIDATOR_REGISTRY_SOURCE` env var
+1. Set `VALIDATOR_REGISTRY_SOURCE` env var to `file`
 2. Create file with keys by example [here](docker/validators/custom_mainnet.yaml)
 3. Set `<path to your file>` to `VALIDATOR_REGISTRY_FILE_SOURCE_PATH` env var
 
