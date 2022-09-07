@@ -1,6 +1,6 @@
 # ethereum-validators-monitoring (aka balval)
 
-Consensus layer validators monitoring bot, that fetches Lido Node Operator keys
+Consensus layer validators monitoring bot, that fetches Lido or User Node Operator keys
 from Execution layer and checks their performance in Consensus
 layer by: balance delta, attestations, proposes, sync committee participation.
 
@@ -27,50 +27,62 @@ chown -R 472:472 .volumes/grafana
 
 ## Run via node
 
-1. Install dependencies via `npm ci`
-2. Run `npm run build`
+1. Install dependencies via `yarn install`
+2. Run `yarn build`
 3. Tweak `.env` file from `.env.example`
 4. Run Clickhouse to use as bot DB
 ```bash
 docker-compose up -d clickhouse
-5. Change `DB_HOST` value to `http://localhost`
-6. Run `node dist/index.js`
 ```
+5. Change `DB_HOST` value to `http://localhost`
+6. Run `yarn start:prod`
+
+## Use custom validators list
+
+By default, monitoring bot fetches validator keys from Lido contract, but you can monitor your own validators:
+1. Set `file` value to `VALIDATOR_REGISTRY_SOURCE` env var
+2. Create file with keys by example [here](docker/validators/custom_mainnet.yaml)
+3. Set `<path to your file>` to `VALIDATOR_REGISTRY_FILE_SOURCE_PATH` env var
+
+If you want to implement your own source, it must match [RegistrySource interface](src/common/validators-registry/registry-source.interface.ts) and be included in [RegistryModule providers](src/common/validators-registry/registry.module.ts)
+
 ## Application Env variables
-| **Variable**                                    | **Description**                                                                                                    | **Required** | **Default** |
-|-------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|--------------|-------------|
-| LOG_LEVEL                                       | Balval log level                                                                                                   |              |             |
-| LOG_FORMAT                                      | Balval log format (simple or json)                                                                                 |              |             |
-| DB_HOST                                         | Clickhouse server host                                                                                             | true         |             |
-| DB_USER                                         | Clickhouse server user                                                                                             | true         |             |
-| DB_PASSWORD                                     | Clickhouse server password                                                                                         | true         |             |
-| DB_NAME                                         | Clickhouse server name                                                                                             | true         |             |
-| DB_PORT                                         | Clickhouse server port                                                                                             | false        | 8123        |
-| HTTP_PORT                                       | Port for Prometheus HTTP server in Balval                                                                          | false        | 8080        |
-| DB_MAX_RETRIES                                  | Max retries for each query to DB                                                                                   | false        | 10          |
-| DB_MIN_BACKOFF_SEC                              | Min backoff for DB query retrier                                                                                   | false        | 1           |
-| DB_MAX_BACKOFF_SEC                              | Max backoff for DB query retrier                                                                                   | false        | 120         |
-| LOG_LEVEL                                       | Logging level                                                                                                      | false        | info        |
-| DRY_RUN                                         | Option to run Balval in dry mode. This means that Balval runs a main cycle once every 24 hours                     | false        | false       |
-| ETH_NETWORK                                     | Ethereum network ID for connection execution layer RPC                                                             | true         |             |
-| EL_RPC_URL                                      | Ethereum execution layer RPC url                                                                                   | true         |             |
-| EL_RPC_URL_BACKUP                               | Ethereum execution layer backup RPC url                                                                            | false        |             |
-| EL_RPC_RETRY_DELAY_MS                           | Ethereum execution layer request retry delay                                                                       | false        | 500         |
-| CL_BEACON_RPC_URL                               | Ethereum consensus layer RPC url                                                                                   | true         |             |
-| CL_BEACON_RPC_URL_BACKUP                        | Ethereum consensus layer backup RPC url                                                                            | false        |             |
-| CL_BEACON_RPC_RETRY_DELAY_MS                    | Ethereum consensus layer request retry delay                                                                       | false        | 500         |
-| CL_GET_RESPONSE_TIMEOUT                         | Ethereum consensus layer GET response (header) timeout                                                             | false        | 15 * 1000   |
-| CL_POST_RESPONSE_TIMEOUT                        | Ethereum consensus layer POST response (header) timeout                                                            | false        | 15 * 1000   |
-| CL_POST_REQUEST_CHUNK_SIZE                      | Ethereum consensus layer data chunk size for large POST requests                                                   | false        | 30000       |
-| FETCH_INTERVAL_SLOTS                            | Count of slots in Ethereum consensus layer epoch                                                                   | false        | 32          |
-| CHAIN_SLOT_TIME_SECONDS                         | Ethereum consensus layer time slot size                                                                            | false        | 12          |
-| START_SLOT                                      | Ethereum consensus layer slot for start Balval                                                                     | false        | 1518000     |
-| SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG | Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad | false        | 0           |
-| SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG   | Number epochs after which we think that our sync participation is bad and alert about that                         | false        | 3           |
-| ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY        | Maximum inclusion delay after which we think that attestation is bad                                               | false        | 5           |
-| BAD_ATTESTATION_EPOCHS                          | Number epochs after which we think that our attestation is bad and alert about that                                | false        | 3           |
-| CRITICAL_ALERTS_ALERTMANAGER_URL                | If passed, Balval sends additional critical alerts about validators performance to Alertmanager                    | false        |             |
-| CRITICAL_ALERTS_MIN_VAL_COUNT                   | Critical alerts will be sent for Node Operators with validators count greater this value                           | false        |             |
+| **Variable**                                    | **Description**                                                                                                    | **Required** | **Default**                             |
+|-------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|--------------|-----------------------------------------|
+| LOG_LEVEL                                       | Balval log level                                                                                                   |              |                                         |
+| LOG_FORMAT                                      | Balval log format (simple or json)                                                                                 |              |                                         |
+| DB_HOST                                         | Clickhouse server host                                                                                             | true         |                                         |
+| DB_USER                                         | Clickhouse server user                                                                                             | true         |                                         |
+| DB_PASSWORD                                     | Clickhouse server password                                                                                         | true         |                                         |
+| DB_NAME                                         | Clickhouse server name                                                                                             | true         |                                         |
+| DB_PORT                                         | Clickhouse server port                                                                                             | false        | 8123                                    |
+| HTTP_PORT                                       | Port for Prometheus HTTP server in Balval                                                                          | false        | 8080                                    |
+| DB_MAX_RETRIES                                  | Max retries for each query to DB                                                                                   | false        | 10                                      |
+| DB_MIN_BACKOFF_SEC                              | Min backoff for DB query retrier                                                                                   | false        | 1                                       |
+| DB_MAX_BACKOFF_SEC                              | Max backoff for DB query retrier                                                                                   | false        | 120                                     |
+| LOG_LEVEL                                       | Logging level                                                                                                      | false        | info                                    |
+| DRY_RUN                                         | Option to run Balval in dry mode. This means that Balval runs a main cycle once every 24 hours                     | false        | false                                   |
+| ETH_NETWORK                                     | Ethereum network ID for connection execution layer RPC                                                             | true         |                                         |
+| EL_RPC_URL                                      | Ethereum execution layer RPC url                                                                                   | true         |                                         |
+| EL_RPC_URL_BACKUP                               | Ethereum execution layer backup RPC url                                                                            | false        |                                         |
+| EL_RPC_RETRY_DELAY_MS                           | Ethereum execution layer request retry delay                                                                       | false        | 500                                     |
+| CL_BEACON_RPC_URL                               | Ethereum consensus layer RPC url                                                                                   | true         |                                         |
+| CL_BEACON_RPC_URL_BACKUP                        | Ethereum consensus layer backup RPC url                                                                            | false        |                                         |
+| CL_BEACON_RPC_RETRY_DELAY_MS                    | Ethereum consensus layer request retry delay                                                                       | false        | 500                                     |
+| CL_GET_RESPONSE_TIMEOUT                         | Ethereum consensus layer GET response (header) timeout                                                             | false        | 15 * 1000                               |
+| CL_POST_RESPONSE_TIMEOUT                        | Ethereum consensus layer POST response (header) timeout                                                            | false        | 15 * 1000                               |
+| CL_POST_REQUEST_CHUNK_SIZE                      | Ethereum consensus layer data chunk size for large POST requests                                                   | false        | 30000                                   |
+| FETCH_INTERVAL_SLOTS                            | Count of slots in Ethereum consensus layer epoch                                                                   | false        | 32                                      |
+| CHAIN_SLOT_TIME_SECONDS                         | Ethereum consensus layer time slot size                                                                            | false        | 12                                      |
+| START_SLOT                                      | Ethereum consensus layer slot for start Balval                                                                     | false        | 1518000                                 |
+| VALIDATOR_REGISTRY_SOURCE                       | Validators registry source. Possible values: lido (Lido contract), file                                            | false        | lido                                    |
+| VALIDATOR_REGISTRY_FILE_SOURCE_PATH             | Validators registry file source path. Required if you set 'file' to `VALIDATOR_REGISTRY_SOURCE`                    | false        | ./docker/validators/custom_mainnet.yaml |
+| SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG | Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad | false        | 0                                       |
+| SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG   | Number epochs after which we think that our sync participation is bad and alert about that                         | false        | 3                                       |
+| ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY        | Maximum inclusion delay after which we think that attestation is bad                                               | false        | 5                                       |
+| BAD_ATTESTATION_EPOCHS                          | Number epochs after which we think that our attestation is bad and alert about that                                | false        | 3                                       |
+| CRITICAL_ALERTS_ALERTMANAGER_URL                | If passed, Balval sends additional critical alerts about validators performance to Alertmanager                    | false        |                                         |
+| CRITICAL_ALERTS_MIN_VAL_COUNT                   | Critical alerts will be sent for Node Operators with validators count greater this value                           | false        |                                         |
 
 
 ## Application critical alerts (via Alertmanager)
@@ -93,26 +105,26 @@ And if `ethereum_validators_monitoring_data_actuality < 1h` it allows you to rec
 | Metric                                                                                                   | Labels                   | Description                                                                                                                                                                                  |
 |----------------------------------------------------------------------------------------------------------|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ethereum_validators_monitoring_validators                                                                | owner, status            | Count of validators in chain                                                                                                                                                                 |
-| ethereum_validators_monitoring_lido_validators                                                           | nos_name, status         | Count of validators for each Lido Node Operator                                                                                                                                              |
+| ethereum_validators_monitoring_user_validators                                                           | nos_name, status         | Count of validators for each user Node Operator                                                                                                                                              |
 | ethereum_validators_monitoring_data_actuality                                                            |                          | Application data actuality in ms                                                                                                                                                             |
 | ethereum_validators_monitoring_fetch_interval                                                            |                          | The same as `FETCH_INTERVAL_SLOTS`                                                                                                                                                           |
 | ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg                           |                          | The same as `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`                                                                                                                                |
 | ethereum_validators_monitoring_slot_number                                                               |                          | Current slot number in app work process                                                                                                                                                      |
-| ethereum_validators_monitoring_contract_keys_total                                                       |                          | Total validators keys in Lido contract                                                                                                                                                       |
+| ethereum_validators_monitoring_contract_keys_total                                                       |                          | Total user validators keys                                                                                                                                                                   |
 | ethereum_validators_monitoring_steth_buffered_ether_total                                                |                          | Buffered Ether (ETH) in Lido contract                                                                                                                                                        |
-| ethereum_validators_monitoring_total_balance_24h_difference                                              |                          | Total Lido validators balance difference (24 hours)                                                                                                                                          |
-| ethereum_validators_monitoring_validator_balances_delta                                                  | nos_name                 | Validators balance delta for each Lido Node Operator                                                                                                                                         |
-| ethereum_validators_monitoring_validator_quantile_001_balances_delta                                     | nos_name                 | Validators 0.1% quantile balances delta for each Lido Node Operator                                                                                                                          |
-| ethereum_validators_monitoring_validator_count_with_negative_balances_delta                              | nos_name                 | Number of validators with negative balances delta for each Lido Node Operator                                                                                                                |
-| ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg                          | nos_name                 | Number of validators with sync committee participation less avg for each Lido Node Operator                                                                                                  |
-| ethereum_validators_monitoring_validator_count_miss_attestation                                          | nos_name                 | Number of validators miss attestation for each Lido Node Operator                                                                                                                            |
-| ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch                             | nos_name, epoch_interval | Number of validators miss attestation last `BAD_ATTESTATION_EPOCHS` epoch for each Lido Node Operator                                                                                        |
-| ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch                 | nos_name, epoch_interval | Number of validators miss attestation last `BAD_ATTESTATION_EPOCHS` epoch  (with possible high reward in the future) for each Lido Node Operator                                             |
-| ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch             | nos_name, epoch_interval | Number of validators with sync participation less than avg last `SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` epoch for each Lido Node Operator                                            |
-| ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch | nos_name, epoch_interval | Number of validators with sync participation less than avg last `SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` epoch  (with possible high reward in the future) for each Lido Node Operator |
-| ethereum_validators_monitoring_validator_count_miss_propose                                              | nos_name                 | Number of validators miss propose for each Lido Node Operator                                                                                                                                |
+| ethereum_validators_monitoring_total_balance_24h_difference                                              |                          | Total user validators balance difference (24 hours)                                                                                                                                          |
+| ethereum_validators_monitoring_validator_balances_delta                                                  | nos_name                 | Validators balance delta for each user Node Operator                                                                                                                                         |
+| ethereum_validators_monitoring_validator_quantile_001_balances_delta                                     | nos_name                 | Validators 0.1% quantile balances delta for each user Node Operator                                                                                                                          |
+| ethereum_validators_monitoring_validator_count_with_negative_balances_delta                              | nos_name                 | Number of validators with negative balances delta for each user Node Operator                                                                                                                |
+| ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg                          | nos_name                 | Number of validators with sync committee participation less avg for each user Node Operator                                                                                                  |
+| ethereum_validators_monitoring_validator_count_miss_attestation                                          | nos_name                 | Number of validators miss attestation for each user Node Operator                                                                                                                            |
+| ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch                             | nos_name, epoch_interval | Number of validators miss attestation last `BAD_ATTESTATION_EPOCHS` epoch for each user Node Operator                                                                                        |
+| ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch                 | nos_name, epoch_interval | Number of validators miss attestation last `BAD_ATTESTATION_EPOCHS` epoch  (with possible high reward in the future) for each user Node Operator                                             |
+| ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch             | nos_name, epoch_interval | Number of validators with sync participation less than avg last `SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` epoch for each user Node Operator                                            |
+| ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch | nos_name, epoch_interval | Number of validators with sync participation less than avg last `SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` epoch  (with possible high reward in the future) for each user Node Operator |
+| ethereum_validators_monitoring_validator_count_miss_propose                                              | nos_name                 | Number of validators miss propose for each user Node Operator                                                                                                                                |
 | ethereum_validators_monitoring_high_reward_validator_count_miss_propose                                  | nos_name                 | Number of validators miss propose (with possible high reward in the future)                                                                                                                  |
-| ethereum_validators_monitoring_lido_sync_participation_avg_percent                                       |                          | Lido sync committee validators participation avg percent                                                                                                                                     |
+| ethereum_validators_monitoring_user_sync_participation_avg_percent                                       |                          | User sync committee validators participation avg percent                                                                                                                                     |
 | ethereum_validators_monitoring_chain_sync_participation_avg_percent                                      |                          | All sync committee validators participation avg percent                                                                                                                                      |
 
 ## Release flow
