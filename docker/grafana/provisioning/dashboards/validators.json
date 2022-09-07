@@ -2927,7 +2927,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"User\",status=\"slashed\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"}",
           "interval": "",
           "legendFormat": "Number of slashed validators",
           "refId": "A"
