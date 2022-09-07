@@ -2,8 +2,8 @@ groups:
   - name: test-alerts
     rules:
 
-      - alert: LidoSlashedValidators
-        expr: ethereum_validators_monitoring_lido_validators{status="slashed"} > 0 AND ON(nos_name) delta(ethereum_validators_monitoring_lido_validators{status="slashed"}[1m]) > 0
+      - alert: UserSlashedValidators
+        expr: ethereum_validators_monitoring_user_validators{status="slashed"} > 0 AND ON(nos_name) delta(ethereum_validators_monitoring_user_validators{status="slashed"}[1m]) > 0
         labels:
           severity: critical
         annotations:

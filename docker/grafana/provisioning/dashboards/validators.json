@@ -178,13 +178,13 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"slashed\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"}",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
         }
       ],
-      "title": "Slashed Lido Validators",
+      "title": "Slashed User Validators",
       "type": "stat"
     },
     {
@@ -238,13 +238,13 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"pending\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"pending\"}",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
         }
       ],
-      "title": "Pending Lido Validators",
+      "title": "Pending User Validators",
       "type": "stat"
     },
     {
@@ -298,13 +298,13 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"ongoing\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"ongoing\"}",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
         }
       ],
-      "title": "Ongoing Lido Validators",
+      "title": "Ongoing User Validators",
       "type": "stat"
     },
     {
@@ -423,7 +423,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": false,
-          "expr": "sort_desc(sum by (nos_name, status) (ethereum_validators_monitoring_lido_validators{status=~\"ongoing|pending\"}))",
+          "expr": "sort_desc(sum by (nos_name, status) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending\"}))",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -592,7 +592,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"slashed\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"}",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -668,7 +668,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"pending\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"pending\"}",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -744,7 +744,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"ongoing\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"ongoing\"}",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -1496,14 +1496,14 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_lido_sync_participation_avg_percent",
+          "expr": "ethereum_validators_monitoring_user_sync_participation_avg_percent",
           "format": "time_series",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Lido Sync Committee validators participation (last finalized epoch)",
+      "title": "User Sync Committee validators participation (last finalized epoch)",
       "type": "gauge"
     },
     {
@@ -1584,7 +1584,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "Lido only",
+      "description": "User only",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1911,7 +1911,7 @@
       "type": "table"
     },
     {
-      "description": "Lido only",
+      "description": "User only",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2015,7 +2015,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "Lido only",
+      "description": "User only",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2183,7 +2183,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "Lido only",
+      "description": "User only",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2288,7 +2288,7 @@
       "type": "table"
     },
     {
-      "description": "Lido only",
+      "description": "User only",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2392,7 +2392,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "Lido only",
+      "description": "User only",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2560,7 +2560,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "Lido only",
+      "description": "User only",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2665,7 +2665,7 @@
       "type": "table"
     },
     {
-      "description": "Lido only",
+      "description": "User only",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2927,7 +2927,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"lido\",status=\"slashed\"}",
+          "expr": "ethereum_validators_monitoring_validators{owner=\"User\",status=\"slashed\"}",
           "interval": "",
           "legendFormat": "Number of slashed validators",
           "refId": "A"
@@ -2941,7 +2941,7 @@
           "visible": true
         }
       ],
-      "title": "Slashed validators (Lido) (historic)",
+      "title": "Slashed validators (User) (historic)",
       "type": "timeseries"
     },
     {
@@ -3087,7 +3087,7 @@
           "skip_comments": true
         }
       ],
-      "title": "Slashed validators (Lido)",
+      "title": "Slashed validators (User)",
       "type": "table"
     }
   ],

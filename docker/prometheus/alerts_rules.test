@@ -5,15 +5,15 @@ rule_files:
 tests:
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_lido_validators{nos_name="Operator 1", status="slashed"}
+      - series: ethereum_validators_monitoring_user_validators{nos_name="Operator 1", status="slashed"}
         values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
-      - series: ethereum_validators_monitoring_lido_validators{nos_name="Operator 2", status="slashed"}
+      - series: ethereum_validators_monitoring_user_validators{nos_name="Operator 2", status="slashed"}
         values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
     alert_rule_test:
       - eval_time: 5m
-        alertname: LidoSlashedValidators
+        alertname: UserSlashedValidators
       - eval_time: 9m
-        alertname: LidoSlashedValidators
+        alertname: UserSlashedValidators
         exp_alerts:
           - exp_labels:
               severity: critical
@@ -38,9 +38,9 @@ tests:
               field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=-360000.000000&to=540000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - eval_time: 14m
-        alertname: LidoSlashedValidators
+        alertname: UserSlashedValidators
       - eval_time: 17m
-        alertname: LidoSlashedValidators
+        alertname: UserSlashedValidators
         exp_alerts:
           - exp_labels:
               severity: critical
@@ -65,7 +65,7 @@ tests:
               field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=120000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - eval_time: 25m
-        alertname: LidoSlashedValidators
+        alertname: UserSlashedValidators
         exp_alerts:
           - exp_labels:
               severity: critical
