@@ -1,15 +1,14 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import {
   RegistrySource,
-  RegistrySourceKey,
   RegistrySourceKeysIndexed,
   RegistrySourceKeyWithOperatorName,
   RegistrySourceOperator,
 } from '../registry-source.interface';
-import { readFileSync } from 'fs';
 import { load } from 'js-yaml';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from 'common/config';
+import { readFile } from 'fs/promises';
 
 interface FileContent {
   operators: {
@@ -34,7 +33,7 @@ export class FileSourceService implements RegistrySource {
   protected lastSuccessDataReadTimestamp: number;
 
   public async update() {
-    const fileContent = readFileSync(this.configService.get('VALIDATOR_REGISTRY_FILE_SOURCE_PATH'), 'utf-8');
+    const fileContent = await readFile(this.configService.get('VALIDATOR_REGISTRY_FILE_SOURCE_PATH'), 'utf-8');
     const data = <FileContent>load(fileContent);
     if (!isValid(data)) throw new Error('Error when parsing validators registry file source');
     this.logger.log(
@@ -50,17 +49,17 @@ export class FileSourceService implements RegistrySource {
     const indexedKeys: any = new Map<string, RegistrySourceKeyWithOperatorName>();
     const allKeys = await this.getKeys();
     for (const k of allKeys ?? []) {
-      indexedKeys.set(k.key, { ...k, operatorName: this.data.operators[k.operatorIndex].name });
+      indexedKeys.set(k.key, k);
     }
     return indexedKeys as RegistrySourceKeysIndexed;
   }
 
   public async getKeys() {
-    const keys: RegistrySourceKey[] = [];
+    const keys: RegistrySourceKeyWithOperatorName[] = [];
     this.data?.operators?.map((o, operatorIndex) =>
       keys.push(
         ...o.keys?.map((key, index) => {
-          return { index, operatorIndex, key };
+          return { index, operatorIndex, key, operatorName: this.data.operators[operatorIndex].name };
         }),
       ),
     );
