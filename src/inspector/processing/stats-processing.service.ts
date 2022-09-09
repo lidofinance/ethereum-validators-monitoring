@@ -9,6 +9,8 @@ import { ValidatorsStatusStats } from 'storage/clickhouse';
 import { LidoSourceService } from 'common/validators-registry/lido-source';
 import { RegistryOperator } from '@lido-nestjs/registry';
 
+const GWEI_WEI_RATIO = 1e9;
+
 @Injectable()
 export class StatsProcessingService implements OnModuleInit {
   public constructor(
@@ -169,7 +171,7 @@ export class StatsProcessingService implements OnModuleInit {
         }
       });
 
-      const bufferedEther = (await this.registryService.source.contract.getBufferedEther()).div(1e9).div(1e9);
+      const bufferedEther = (await this.registryService.source.contract.getBufferedEther()).div(GWEI_WEI_RATIO).div(GWEI_WEI_RATIO);
       this.prometheus.bufferedEther.set(bufferedEther.toNumber());
     }
   }
