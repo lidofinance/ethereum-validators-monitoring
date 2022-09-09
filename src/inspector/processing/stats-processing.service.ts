@@ -6,7 +6,7 @@ import { ConfigService } from 'common/config';
 import { Owner, PrometheusService, PrometheusValStatus } from 'common/prometheus';
 import { RegistryService } from 'common/validators-registry';
 import { ValidatorsStatusStats } from 'storage/clickhouse';
-import { LidoSourceService } from '../../common/validators-registry/lido-source';
+import { LidoSourceService } from 'common/validators-registry/lido-source';
 import { RegistryOperator } from '@lido-nestjs/registry';
 
 @Injectable()

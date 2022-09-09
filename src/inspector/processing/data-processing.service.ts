@@ -23,8 +23,8 @@ import {
   SlotAttestation,
   ValidatorIdentifications,
   ValidatorsStatusStats,
-} from '../../storage/clickhouse';
-import { RegistrySourceKeysIndexed } from '../../common/validators-registry/registry-source.interface';
+} from 'storage/clickhouse';
+import { RegistrySourceKeysIndexed } from 'common/validators-registry/registry-source.interface';
 
 interface FetchFinalizedEpochDataResult {
   attestations: CheckAttestersDutyResult;

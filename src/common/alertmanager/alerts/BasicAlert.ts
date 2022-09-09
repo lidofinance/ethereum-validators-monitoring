@@ -1,5 +1,5 @@
 import { ConfigService } from 'common/config';
-import { ClickhouseService } from '../../../storage';
+import { ClickhouseService } from 'storage';
 
 export interface AlertRequestBody {
   startsAt: string;
