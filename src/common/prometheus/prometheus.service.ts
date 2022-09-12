@@ -8,7 +8,7 @@ import {
   METRIC_OUTGOING_CL_REQUESTS_DURATION_SECONDS,
   METRIC_OUTGOING_CL_REQUESTS_COUNT,
   METRIC_VALIDATORS,
-  METRIC_LIDO_VALIDATORS,
+  METRIC_USER_VALIDATORS,
   METRIC_DATA_ACTUALITY,
   METRIC_FETCH_INTERVAL,
   METRIC_SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG,
@@ -23,7 +23,7 @@ import {
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_MISS_PROPOSE,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
-  METRIC_LIDO_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_USER_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_SLOT_NUMBER,
   METRIC_TOTAL_BALANCE_24H_DIFFERENCE,
@@ -33,12 +33,12 @@ import {
 } from './prometheus.constants';
 import { Metric, Options } from './interfaces';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '../config';
+import { ConfigService } from 'common/config';
 import { join } from 'lodash';
 import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
 
 export enum Owner {
-  LIDO = 'lido',
+  USER = 'user',
   OTHER = 'other',
 }
 
@@ -174,9 +174,9 @@ export class PrometheusService {
     labelNames: ['owner', 'status'],
   });
 
-  public lidoValidators = this.getOrCreateMetric('Gauge', {
-    name: METRIC_LIDO_VALIDATORS,
-    help: 'Validators number',
+  public userValidators = this.getOrCreateMetric('Gauge', {
+    name: METRIC_USER_VALIDATORS,
+    help: 'User validators number',
     labelNames: ['nos_name', 'status'],
   });
 
@@ -246,9 +246,9 @@ export class PrometheusService {
     labelNames: ['nos_name'],
   });
 
-  public lidoSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
-    name: METRIC_LIDO_SYNC_PARTICIPATION_AVG_PERCENT,
-    help: 'Lido sync committee validators participation avg percent',
+  public userSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
+    name: METRIC_USER_SYNC_PARTICIPATION_AVG_PERCENT,
+    help: 'User sync committee validators participation avg percent',
     labelNames: [],
   });
 

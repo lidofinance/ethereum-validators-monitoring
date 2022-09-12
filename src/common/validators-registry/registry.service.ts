@@ -1,46 +1,42 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
-import {
-  ValidatorRegistryService,
-  RegistryKeyStorageService,
-  RegistryMetaStorageService,
-  RegistryOperatorStorageService,
-  RegistryOperator,
-  RegistryKey,
-} from '@lido-nestjs/registry';
-import { PrometheusService } from 'common/prometheus';
-import { ConfigService } from 'common/config';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-
-export interface KeyWithOperatorName extends RegistryKey {
-  operatorName: string;
-}
-
-export type KeysIndexed = Map<string, KeyWithOperatorName>;
+import { PrometheusService } from 'common/prometheus';
+import { REGISTRY_SOURCE, RegistrySource, RegistrySourceKeysIndexed } from './registry-source.interface';
 
 @Injectable()
 export class RegistryService {
   constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
-
-    protected readonly validatorService: ValidatorRegistryService,
-    protected readonly keyStorageService: RegistryKeyStorageService,
-    protected readonly metaStorageService: RegistryMetaStorageService,
-    protected readonly operatorStorageService: RegistryOperatorStorageService,
+    @Inject(REGISTRY_SOURCE) public readonly source: RegistrySource,
     protected readonly prometheusService: PrometheusService,
-    protected readonly configService: ConfigService,
   ) {}
 
+  public async getActualKeysIndexed(timestamp: number): Promise<RegistrySourceKeysIndexed | undefined> {
+    await this.updateValidators();
+    if (timestamp > this.lastTimestamp) {
+      this.logger.warn(`Registry data is too old. Last update - ${new Date(this.lastTimestamp).toISOString()}`);
+    }
+    return await this.source.getIndexedKeys();
+  }
+
+  public async getOperators() {
+    return await this.source.getOperators();
+  }
+
+  protected lastTimestamp = 0;
+
   /**
-   * Collects updates from Lido validators registry contract and saves the changes to the database
+   * Collects updates from source validators registry contract and saves the changes to the database
    */
-  public async updateValidators(): Promise<void> {
+  protected async updateValidators(): Promise<void> {
     await this.prometheusService.trackTask('update-validators', async () => {
       try {
-        await this.validatorService.update('latest');
+        await this.source.update();
+        await this.updateTimestamp();
       } catch (error) {
         // Here we can get a timeout error or something else
         this.logger.warn('Failed to update validators');
-        const curr = await this.keyStorageService.findUsed();
+        const curr = await this.source.getKeys();
         if (curr?.length == 0) {
           // throw error and run main cycle again
           throw error;
@@ -49,46 +45,14 @@ export class RegistryService {
           this.logger.error(error.error?.reason ?? error);
         }
       }
-
-      // Update cached data to quick access
-      await Promise.all([this.updateTimestamp(), this.updateOperatorsMap()]);
     });
   }
 
-  protected lastTimestamp = 0;
-  protected operatorsMap: Record<number, RegistryOperator> = {};
-
   /**
-   * Updates timestamp of last Lido validators registry update
+   * Updates timestamp of last source validators registry update
    */
   protected async updateTimestamp() {
-    const meta = await this.metaStorageService.get();
-    this.lastTimestamp = meta?.timestamp ?? this.lastTimestamp;
-  }
-
-  /**
-   * Updates cached operators map
-   */
-  protected async updateOperatorsMap(): Promise<void> {
-    const operators = await this.getOperators();
-
-    this.operatorsMap = operators?.reduce((operatorsMap, operator) => {
-      operatorsMap[operator.index] = operator;
-      return operatorsMap;
-    }, {});
-  }
-
-  public async getAllKeysIndexed(): Promise<KeysIndexed | undefined> {
-    await this.updateValidators();
-    const indexedKeys: any = new Map<string, KeyWithOperatorName>();
-    const allKeys = await this.keyStorageService.findUsed();
-    for (const k of allKeys ?? []) {
-      indexedKeys.set(k.key, { ...k, operatorName: this.operatorsMap[k.operatorIndex].name });
-    }
-    return indexedKeys as KeysIndexed;
-  }
-
-  public async getOperators(): Promise<RegistryOperator[]> {
-    return await this.operatorStorageService.findAll();
+    const source = await this.source.sourceTimestamp();
+    this.lastTimestamp = source ?? this.lastTimestamp;
   }
 }

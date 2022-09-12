@@ -22,6 +22,11 @@ export enum Network {
   Kintsugi = 1337702,
 }
 
+export enum ValidatorRegistrySource {
+  Lido = 'lido',
+  File = 'file',
+}
+
 const toBoolean = (value: any): boolean => {
   if (typeof value === 'boolean') {
     return value;
@@ -172,12 +177,18 @@ export class EnvironmentVariables {
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public CHAIN_SLOT_TIME_SECONDS = 12;
 
+  @IsEnum(ValidatorRegistrySource)
+  public VALIDATOR_REGISTRY_SOURCE: ValidatorRegistrySource = ValidatorRegistrySource.Lido;
+
+  @IsString()
+  public VALIDATOR_REGISTRY_FILE_SOURCE_PATH = './docker/validators/custom_mainnet.yaml';
+
   /**
    * Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad
    * For example:
    *  Blockchain Sync participation = 99%
-   *  Lido validator 1 = 78%
-   *  Lido validator 2 = 98%
+   *  User validator 1 = 78%
+   *  User validator 2 = 98%
    *  DISTANCE_DOWN_FROM_CHAIN_SYNC_PARTICIPATION = 10
    *  Validator 1 participation is bad, because 78 < (99 - 10)
    *  Validator 2 participation is ok, because 98 > (99 - 10)

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CriticalAlertsService } from './critical-alerts.service';
-import { StorageModule } from '../../storage';
 import { PrometheusModule } from '../prometheus';
+import { ClickhouseModule } from 'storage/clickhouse';
 
 @Module({
-  imports: [StorageModule, PrometheusModule],
+  imports: [ClickhouseModule, PrometheusModule],
   providers: [CriticalAlertsService],
   exports: [CriticalAlertsService],
 })

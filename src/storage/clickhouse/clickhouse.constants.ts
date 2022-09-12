@@ -1,4 +1,4 @@
-import { ValStatus } from '../../common/eth-providers';
+import { ValStatus } from 'common/eth-providers';
 
 export const validatorBalancesDeltaQuery = (fetchInterval: number, slot: string): string => `
   SELECT
@@ -189,7 +189,7 @@ export const validatorsCountWithMissProposeQuery = (fetchInterval: number, slot:
 
 export const syncParticipationAvgPercentsQuery = (slot: string | bigint | number): string => `
     SELECT
-        avg(epoch_participation_percent) as lido,
+        avg(epoch_participation_percent) as user,
         max(epoch_chain_participation_percent_avg) as chain
     FROM
         stats.validator_sync
@@ -229,7 +229,7 @@ export const totalBalance24hDifferenceQuery = (slot: string): string => `
   curr_total_balance - prev_total_balance as total_diff
 `;
 
-export const lidoNodeOperatorsStatsQuery = (slot: string): string => `
+export const userNodeOperatorsStatsQuery = (slot: string): string => `
   SELECT
     nos_name,
     SUM(a) as active_ongoing,
@@ -249,7 +249,7 @@ export const lidoNodeOperatorsStatsQuery = (slot: string): string => `
   GROUP by nos_name
 `;
 
-export const lidoValidatorsSummaryStatsQuery = (slot: string): string => `
+export const userValidatorsSummaryStatsQuery = (slot: string): string => `
   SELECT
     SUM(a) as active_ongoing,
     SUM(p) as pending,
@@ -266,7 +266,7 @@ export const lidoValidatorsSummaryStatsQuery = (slot: string): string => `
   )
 `;
 
-export const lidoNodeOperatorsProposesStatsLastNEpochQuery = (fetchInterval: number, slot: string, epochInterval = 120): string => `
+export const userNodeOperatorsProposesStatsLastNEpochQuery = (fetchInterval: number, slot: string, epochInterval = 120): string => `
   SELECT
     nos_name,
     SUM(a) as all,
@@ -284,7 +284,7 @@ export const lidoNodeOperatorsProposesStatsLastNEpochQuery = (fetchInterval: num
   GROUP by nos_name
 `;
 
-export const lidoValidatorIDsQuery = (slot: string): string => `
+export const userValidatorIDsQuery = (slot: string): string => `
   SELECT validator_id, validator_pubkey
   FROM stats.validator_balances
   WHERE nos_id IS NOT NULL and slot = ${slot}

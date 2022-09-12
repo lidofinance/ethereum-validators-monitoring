@@ -5,10 +5,10 @@ import migration_000003_attestations from './migrations/migration_000003_attesta
 import migration_000004_proposes from './migrations/migration_000004_proposes';
 import migration_000005_sync from './migrations/migration_000005_sync';
 import {
-  lidoNodeOperatorsProposesStatsLastNEpochQuery,
-  lidoNodeOperatorsStatsQuery,
-  lidoValidatorIDsQuery,
-  lidoValidatorsSummaryStatsQuery,
+  userNodeOperatorsProposesStatsLastNEpochQuery,
+  userNodeOperatorsStatsQuery,
+  userValidatorIDsQuery,
+  userValidatorsSummaryStatsQuery,
   syncParticipationAvgPercentsQuery,
   totalBalance24hDifferenceQuery,
   validatorBalancesDeltaQuery,
@@ -20,11 +20,10 @@ import {
 } from './clickhouse.constants';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { ConfigService } from '../../common/config';
-import { PrometheusService } from '../../common/prometheus';
-import { retrier } from '../../common/functions/retrier';
-import { KeysIndexed } from '../../common/validators-registry';
-import { ProposerDutyInfo, StateValidatorResponse, ValStatus } from '../../common/eth-providers';
+import { ConfigService } from 'common/config';
+import { PrometheusService } from 'common/prometheus';
+import { retrier } from 'common/functions/retrier';
+import { ProposerDutyInfo, StateValidatorResponse, ValStatus } from 'common/eth-providers';
 import {
   CheckAttestersDutyResult,
   CheckSyncCommitteeParticipationResult,
@@ -39,6 +38,7 @@ import {
   SyncCommitteeParticipationAvgPercents,
   ValidatorIdentifications,
 } from './clickhouse.types';
+import { RegistrySourceKeysIndexed } from 'common/validators-registry/registry-source.interface';
 
 export const status = {
   isActive(val: StateValidatorResponse): boolean {
@@ -121,7 +121,7 @@ export class ClickhouseService implements OnModuleInit {
     slot: bigint,
     slotTime: bigint,
     balances: StateValidatorResponse[],
-    keysIndexed: KeysIndexed,
+    keysIndexed: RegistrySourceKeysIndexed,
   ): Promise<ValidatorsStatusStats> {
     return await this.prometheus.trackTask('write-balances', async () => {
       const otherCounts: ValidatorsStatusStats = {
@@ -129,7 +129,7 @@ export class ClickhouseService implements OnModuleInit {
         pending: 0,
         slashed: 0,
       };
-      let lidoCount = 0;
+      let userCount = 0;
       while (balances.length > 0) {
         const chunk = balances.splice(0, this.chunkSize);
         const ws = this.db
@@ -146,7 +146,7 @@ export class ClickhouseService implements OnModuleInit {
                 `${slot}, ${slotTime}, ${keysIndexed.get(b.validator.pubkey)?.operatorIndex ?? 'NULL'},
             '${keysIndexed.get(b.validator.pubkey)?.operatorName || 'NULL'}')`,
             );
-            lidoCount++;
+            userCount++;
           } else {
             if (status.isActive(b)) otherCounts.active_ongoing++;
             else if (status.isPending(b)) otherCounts.pending++;
@@ -155,12 +155,16 @@ export class ClickhouseService implements OnModuleInit {
         }
         await this.retry(async () => await ws.exec());
       }
-      this.logger.log(`Wrote Lido ${lidoCount} balances to DB and counted others`);
+      this.logger.log(`Wrote ${userCount} balances to DB and counted others`);
       return otherCounts;
     });
   }
 
-  public async writeAttestations(attDutyResult: CheckAttestersDutyResult, slotTime: bigint, keysIndexed: KeysIndexed): Promise<void> {
+  public async writeAttestations(
+    attDutyResult: CheckAttestersDutyResult,
+    slotTime: bigint,
+    keysIndexed: RegistrySourceKeysIndexed,
+  ): Promise<void> {
     return await this.prometheus.trackTask('write-attestations', async () => {
       while (attDutyResult.attestersDutyInfo.length > 0) {
         const chunk = attDutyResult.attestersDutyInfo.splice(0, this.chunkSize);
@@ -211,7 +215,11 @@ export class ClickhouseService implements OnModuleInit {
     });
   }
 
-  public async writeProposes(proposesDutiesResult: ProposerDutyInfo[], slotTime: bigint, keysIndexed: KeysIndexed): Promise<void> {
+  public async writeProposes(
+    proposesDutiesResult: ProposerDutyInfo[],
+    slotTime: bigint,
+    keysIndexed: RegistrySourceKeysIndexed,
+  ): Promise<void> {
     return await this.prometheus.trackTask('write-proposes', async () => {
       const ws = this.db
         .insert(
@@ -232,8 +240,8 @@ export class ClickhouseService implements OnModuleInit {
   public async writeSyncs(
     syncResult: CheckSyncCommitteeParticipationResult,
     slotTime: bigint,
-    keysIndexed: KeysIndexed,
-    lidoIDs: ValidatorIdentifications[],
+    keysIndexed: RegistrySourceKeysIndexed,
+    userIDs: ValidatorIdentifications[],
     epoch: bigint,
   ): Promise<void> {
     return await this.prometheus.trackTask('write-syncs', async () => {
@@ -246,8 +254,8 @@ export class ClickhouseService implements OnModuleInit {
         .stream();
       const last_slot_of_epoch =
         epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS')) + BigInt(this.config.get('FETCH_INTERVAL_SLOTS')) - 1n;
-      for (const p of syncResult.lido_validators) {
-        const pubKey = lidoIDs.find((v) => v.validator_id === p.validator_index)?.validator_pubkey || '';
+      for (const p of syncResult.user_validators) {
+        const pubKey = userIDs.find((v) => v.validator_id === p.validator_index)?.validator_pubkey || '';
         await ws.writeRow(
           `(${slotTime}, '${pubKey}', '${p.validator_index || ''}', ${last_slot_of_epoch}, ${p.epoch_participation_percent}, ` +
             `${syncResult.all_avg_participation},
@@ -290,7 +298,7 @@ export class ClickhouseService implements OnModuleInit {
 
   /**
    * Send query to Clickhouse and receives information about
-   * how many Lido Node Operator validators have Sync Committee participation less when chain average last N epoch
+   * how many User Node Operator validators have Sync Committee participation less when chain average last N epoch
    */
   public async getValidatorsCountWithSyncParticipationLessChainAvgLastNEpoch(
     slot: bigint,
@@ -315,7 +323,7 @@ export class ClickhouseService implements OnModuleInit {
 
   /**
    * Send query to Clickhouse and receives information about
-   * how many Lido Node Operator validators missed attestation last N epoch
+   * how many User Node Operator validators missed attestation last N epoch
    */
   public async getValidatorCountWithMissedAttestationsLastNEpoch(
     slot: bigint,
@@ -339,7 +347,7 @@ export class ClickhouseService implements OnModuleInit {
 
   /**
    * Send query to Clickhouse and receives information about
-   * how many Lido Node Operator validators miss proposes at our last processed epoch
+   * how many User Node Operator validators miss proposes at our last processed epoch
    */
   public async getValidatorsCountWithMissedProposes(
     slot: bigint,
@@ -385,39 +393,39 @@ export class ClickhouseService implements OnModuleInit {
 
   /**
    * Send query to Clickhouse and receives information about
-   * how many Lido Node Operator validators have active, slashed, pending status
+   * how many User Node Operator validators have active, slashed, pending status
    */
-  public async getLidoNodeOperatorsStats(slot: bigint): Promise<NOsValidatorsStatusStats[]> {
-    const ret = await this.retry(async () => await this.db.query(lidoNodeOperatorsStatsQuery(slot.toString())).toPromise());
+  public async getUserNodeOperatorsStats(slot: bigint): Promise<NOsValidatorsStatusStats[]> {
+    const ret = await this.retry(async () => await this.db.query(userNodeOperatorsStatsQuery(slot.toString())).toPromise());
     return <NOsValidatorsStatusStats[]>ret;
   }
 
   /**
    * Send query to Clickhouse and receives information about summary
-   * how many Lido Node Operator validators have active, slashed, pending status
+   * how many User Node Operator validators have active, slashed, pending status
    */
-  public async getLidoValidatorsSummaryStats(slot: bigint): Promise<ValidatorsStatusStats> {
-    const ret = await this.retry(async () => await this.db.query(lidoValidatorsSummaryStatsQuery(slot.toString())).toPromise());
+  public async getUserValidatorsSummaryStats(slot: bigint): Promise<ValidatorsStatusStats> {
+    const ret = await this.retry(async () => await this.db.query(userValidatorsSummaryStatsQuery(slot.toString())).toPromise());
     return <ValidatorsStatusStats>ret[0];
   }
 
   /**
-   * Send query to Clickhouse and receives information about Lido validators (validator_id, pubkey)
+   * Send query to Clickhouse and receives information about User validators (validator_id, pubkey)
    **/
-  public async getLidoValidatorIDs(slot: bigint): Promise<ValidatorIdentifications[]> {
-    const ret = await this.retry(async () => await this.db.query(lidoValidatorIDsQuery(slot.toString())).toPromise());
+  public async getUserValidatorIDs(slot: bigint): Promise<ValidatorIdentifications[]> {
+    const ret = await this.retry(async () => await this.db.query(userValidatorIDsQuery(slot.toString())).toPromise());
     return <ValidatorIdentifications[]>ret;
   }
 
   /**
    * Send query to Clickhouse and receives information about
-   * Lido Node Operator proposes stats in the last N epochs
+   * User Node Operator proposes stats in the last N epochs
    */
-  public async getLidoNodeOperatorsProposesStats(slot: bigint, epochInterval = 120): Promise<NOsProposesStats[]> {
+  public async getUserNodeOperatorsProposesStats(slot: bigint, epochInterval = 120): Promise<NOsProposesStats[]> {
     const ret = await this.retry(
       async () =>
         await this.db
-          .query(lidoNodeOperatorsProposesStatsLastNEpochQuery(this.config.get('FETCH_INTERVAL_SLOTS'), slot.toString(), epochInterval))
+          .query(userNodeOperatorsProposesStatsLastNEpochQuery(this.config.get('FETCH_INTERVAL_SLOTS'), slot.toString(), epochInterval))
           .toPromise(),
     );
     return <NOsProposesStats[]>ret;
