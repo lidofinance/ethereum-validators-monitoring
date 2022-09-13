@@ -3,6 +3,7 @@ import { FallbackProviderModule } from '@lido-nestjs/execution';
 import { PrometheusService, RequestStatus } from 'common/prometheus';
 import { ConfigService } from 'common/config';
 import { ExecutionProviderService } from './execution-provider.service';
+import { NonEmptyArray } from '@lido-nestjs/execution/dist/interfaces/non-empty-array';
 
 @Global()
 @Module({
@@ -10,7 +11,7 @@ import { ExecutionProviderService } from './execution-provider.service';
     FallbackProviderModule.forRootAsync({
       async useFactory(configService: ConfigService, prometheusService: PrometheusService) {
         return {
-          urls: [configService.get('EL_RPC_URL'), configService.get('EL_RPC_URL_BACKUP')],
+          urls: configService.get('EL_RPC_URLS') as NonEmptyArray<string>,
           network: configService.get('ETH_NETWORK'),
           fetchMiddlewares: [
             // todo: metrics middleware with request name and rpc url
