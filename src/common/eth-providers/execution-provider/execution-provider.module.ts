@@ -3,7 +3,7 @@ import { FallbackProviderModule } from '@lido-nestjs/execution';
 import { PrometheusService, RequestStatus } from 'common/prometheus';
 import { ConfigService } from 'common/config';
 import { ExecutionProviderService } from './execution-provider.service';
-import { NonEmptyArray } from '@lido-nestjs/execution/dist/interfaces/non-empty-array';
+import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
 
 @Global()
 @Module({

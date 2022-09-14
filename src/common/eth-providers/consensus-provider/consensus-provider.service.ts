@@ -22,6 +22,7 @@ import {
   SyncCommitteeInfo,
   VersionResponse,
 } from './intefaces';
+import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
 
 interface RequestRetryOptions {
   maxRetries?: number;
@@ -55,7 +56,7 @@ export class ConsensusProviderService {
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
   ) {
-    this.apiUrls = config.get('CL_API_URLS');
+    this.apiUrls = config.get('CL_API_URLS') as NonEmptyArray<string>;
   }
 
   public async getVersion(): Promise<string> {
