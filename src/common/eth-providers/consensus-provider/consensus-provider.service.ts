@@ -341,8 +341,8 @@ export class ConsensusProviderService {
         .catch(() => retry(() => callback(this.rpcUrls[i])))
         .catch((e: any) => {
           if (fallbackConditionCallback(e)) {
-            if (!this.rpcUrls.length) {
-              this.logger.warn('Backup CL RPC url not passed');
+            if (this.rpcUrls.length == 1) {
+              this.logger.warn('Backup CL API URLs not passed');
               throw e;
             }
             this.logger.error('Error while doing CL RPC request. Will try to switch to another RPC');
