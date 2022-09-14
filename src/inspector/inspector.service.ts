@@ -1,13 +1,13 @@
-import { sleep } from '../common/functions/sleep';
+import { sleep } from 'common/functions/sleep';
 import { DataProcessingService } from './processing/data-processing.service';
 import { StatsProcessingService } from './processing/stats-processing.service';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { ConfigService } from '../common/config';
-import { PrometheusService } from '../common/prometheus';
-import { ConsensusClientService } from '../ethereum/consensus/consensus-client.service';
-import { ClickhouseStorageService } from '../storage/clickhouse-storage.service';
-import { CriticalAlertsService } from '../common/alertmanager/critical-alerts.service';
+import { ConfigService } from 'common/config';
+import { PrometheusService } from 'common/prometheus';
+import { ConsensusProviderService } from 'common/eth-providers';
+import { ClickhouseService } from 'storage';
+import { CriticalAlertsService } from 'common/alertmanager/critical-alerts.service';
 
 @Injectable()
 export class InspectorService implements OnModuleInit {
@@ -15,8 +15,8 @@ export class InspectorService implements OnModuleInit {
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
-    protected readonly clClient: ConsensusClientService,
-    protected readonly storage: ClickhouseStorageService,
+    protected readonly clClient: ConsensusProviderService,
+    protected readonly storage: ClickhouseService,
     protected readonly dataProcessor: DataProcessingService,
     protected readonly statsProcessor: StatsProcessingService,
     protected readonly criticalAlertService: CriticalAlertsService,
@@ -43,11 +43,11 @@ export class InspectorService implements OnModuleInit {
         if (slotToWrite > 0) {
           const res = await this.dataProcessor.processAndWriteFinalizedData(slotToWrite, stateRoot, slotNumber);
           let possibleHighRewardValidators: string[] = [];
-          if (res?.lidoIDs.length) {
+          if (res?.userIDs.length) {
             const headEpoch = await this.calculateHeadEpoch();
-            possibleHighRewardValidators = await this.dataProcessor.getPossibleHighRewardValidatorIndexes(res.lidoIDs, headEpoch);
+            possibleHighRewardValidators = await this.dataProcessor.getPossibleHighRewardValidatorIndexes(res.userIDs, headEpoch);
           }
-          await this.statsProcessor.calculateLidoStats(slotToWrite, possibleHighRewardValidators);
+          await this.statsProcessor.calculateUserStats(slotToWrite, possibleHighRewardValidators);
           await this.statsProcessor.calculateOtherStats(res.otherCounts);
           await this.statsProcessor.finalizeAppIterate(slotToWrite);
           await this.criticalAlertService.sendCriticalAlerts(slotToWrite);
@@ -71,7 +71,6 @@ export class InspectorService implements OnModuleInit {
 
   protected async waitForNextFinalizedSlot(nextSlot: bigint): Promise<{ slotToWrite: bigint; stateRoot: string; slotNumber: bigint }> {
     const latestFinalizedBeaconBlock = await this.clClient.getBeaconBlockHeader('finalized');
-
     if (latestFinalizedBeaconBlock.slotNumber >= nextSlot && nextSlot > this.dataProcessor.latestSlotInDb) {
       this.logger.log(
         `Latest finalized slot [${latestFinalizedBeaconBlock.slotNumber}] found. Next slot [${nextSlot}]. Latest DB slot [${this.dataProcessor.latestSlotInDb}]`,
@@ -104,9 +103,10 @@ export class InspectorService implements OnModuleInit {
       };
     }
 
-    const sleepTime = this.getSleepTimeForNextSlot(nextSlot, latestFinalizedBeaconBlock.slotNumber);
+    // just wait `CHAIN_SLOT_TIME_SECONDS` until finality happens
+    const sleepTime = this.config.get('CHAIN_SLOT_TIME_SECONDS');
     this.logger.log(
-      `Latest finalized slot [${latestFinalizedBeaconBlock.slotNumber}] found. Latest DB slot [${this.dataProcessor.latestSlotInDb}]. Waiting [${sleepTime}] seconds for next slot [${nextSlot}]`,
+      `Latest finalized slot [${latestFinalizedBeaconBlock.slotNumber}] found. Latest DB slot [${this.dataProcessor.latestSlotInDb}]. Waiting [${sleepTime}] seconds for next finalized slot [${nextSlot}]`,
     );
 
     return new Promise((resolve) => {
@@ -129,18 +129,6 @@ export class InspectorService implements OnModuleInit {
     this.logger.log(`Starting slot (end of epoch [${epoch}]). Recalculated [${latestSlotInEpoch}]`);
 
     return latestSlotInEpoch == startingSlot ? latestSlotInEpoch + step : latestSlotInEpoch;
-  }
-
-  protected getSleepTimeForNextSlot(nextSlot: bigint, latestFinalizedSlot: bigint): number {
-    let sleepTime =
-      Math.abs(Number(nextSlot - latestFinalizedSlot)) * this.config.get('CHAIN_SLOT_TIME_SECONDS') +
-      this.config.get('CHAIN_SLOT_TIME_SECONDS');
-
-    if (sleepTime > 400) {
-      sleepTime = 10;
-    }
-
-    return sleepTime;
   }
 
   protected async calculateHeadEpoch(): Promise<bigint> {

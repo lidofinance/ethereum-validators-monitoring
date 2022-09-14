@@ -1,19 +1,30 @@
-import { ConfigService } from '../../config';
-import { ClickhouseStorageService } from '../../../storage/clickhouse-storage.service';
+import { ConfigService } from 'common/config';
+import { ClickhouseService } from 'storage';
 
-export type AlertRequestBody = { startsAt: string; endsAt: string; labels: any; annotations: any };
+export interface AlertRequestBody {
+  startsAt: string;
+  endsAt: string;
+  labels: any;
+  annotations: any;
+}
 
-export type PreparedToSendAlert = { timestamp: number; body: AlertRequestBody; ruleResult: AlertRuleResult };
+export interface PreparedToSendAlert {
+  timestamp: number;
+  body: AlertRequestBody;
+  ruleResult: AlertRuleResult;
+}
 
-export type AlertRuleResult = { [operator: string]: any };
+export interface AlertRuleResult {
+  [operator: string]: any;
+}
 
 export abstract class Alert {
   public readonly alertname: string;
   protected sendTimestamp = 0;
   protected readonly config: ConfigService;
-  protected readonly storage: ClickhouseStorageService;
+  protected readonly storage: ClickhouseService;
 
-  protected constructor(name: string, config: ConfigService, storage: ClickhouseStorageService) {
+  protected constructor(name: string, config: ConfigService, storage: ClickhouseService) {
     this.alertname = name;
     this.config = config;
     this.storage = storage;

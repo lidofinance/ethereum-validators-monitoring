@@ -1,17 +1,17 @@
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 import { join } from 'lodash';
-import { ConfigService } from '../../config';
-import { ClickhouseStorageService } from '../../../storage/clickhouse-storage.service';
+import { ConfigService } from 'common/config';
+import { ClickhouseService } from 'storage';
 import { sentAlerts } from '../critical-alerts.service';
 
 export class CriticalNegativeDelta extends Alert {
-  constructor(config: ConfigService, storage: ClickhouseStorageService) {
+  constructor(config: ConfigService, storage: ClickhouseService) {
     super(CriticalNegativeDelta.name, config, storage);
   }
 
   async alertRule(bySlot: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
-    const operators = await this.storage.getLidoNodeOperatorsStats(bySlot);
+    const operators = await this.storage.getUserNodeOperatorsStats(bySlot);
     const negativeValidatorsCount = await this.storage.getValidatorsCountWithNegativeDelta(bySlot);
     for (const operator of operators.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
       const negDelta = negativeValidatorsCount.find((a) => a.nos_name == operator.nos_name);

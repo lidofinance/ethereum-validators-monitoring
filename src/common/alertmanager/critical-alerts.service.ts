@@ -5,11 +5,13 @@ import { CriticalMissedProposes } from './alerts/CriticalMissedProposes';
 import { CriticalMissedAttestations } from './alerts/CriticalMissedAttestations';
 import { Inject, Injectable } from '@nestjs/common';
 import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
-import { ConfigService } from '../config';
-import { ClickhouseStorageService } from '../../storage/clickhouse-storage.service';
-import { PrometheusService } from '../prometheus';
+import { ConfigService } from 'common/config';
+import { ClickhouseService } from 'storage';
+import { PrometheusService } from 'common/prometheus';
 
-type SentAlerts = { [alertname: string]: PreparedToSendAlert };
+interface SentAlerts {
+  [alertname: string]: PreparedToSendAlert;
+}
 
 export const sentAlerts: SentAlerts = {};
 
@@ -20,7 +22,7 @@ export class CriticalAlertsService {
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
-    protected readonly storage: ClickhouseStorageService,
+    protected readonly storage: ClickhouseService,
     protected readonly prometheus: PrometheusService,
   ) {
     this.baseUrl = this.config.get('CRITICAL_ALERTS_ALERTMANAGER_URL') ?? '';

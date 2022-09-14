@@ -625,7 +625,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "Lido only",
+      "description": "User only",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -793,7 +793,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "Lido only",
+      "description": "User only",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -961,7 +961,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "Lido only",
+      "description": "User only",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1341,7 +1341,7 @@
           "text": "Allnodes",
           "value": "Allnodes"
         },
-        "definition": "lido_validators",
+        "definition": "user_validators",
         "hide": 0,
         "includeAll": false,
         "label": "Node Operator",
@@ -1349,7 +1349,7 @@
         "name": "nos_name_var",
         "options": [],
         "query": {
-          "query": "ethereum_validators_monitoring_lido_validators",
+          "query": "ethereum_validators_monitoring_user_validators",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,

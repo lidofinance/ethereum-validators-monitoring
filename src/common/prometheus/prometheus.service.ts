@@ -8,7 +8,7 @@ import {
   METRIC_OUTGOING_CL_REQUESTS_DURATION_SECONDS,
   METRIC_OUTGOING_CL_REQUESTS_COUNT,
   METRIC_VALIDATORS,
-  METRIC_LIDO_VALIDATORS,
+  METRIC_USER_VALIDATORS,
   METRIC_DATA_ACTUALITY,
   METRIC_FETCH_INTERVAL,
   METRIC_SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG,
@@ -23,7 +23,7 @@ import {
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_MISS_PROPOSE,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
-  METRIC_LIDO_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_USER_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_SLOT_NUMBER,
   METRIC_TOTAL_BALANCE_24H_DIFFERENCE,
@@ -33,12 +33,12 @@ import {
 } from './prometheus.constants';
 import { Metric, Options } from './interfaces';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '../config';
+import { ConfigService } from 'common/config';
 import { join } from 'lodash';
 import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
 
 export enum Owner {
-  LIDO = 'lido',
+  USER = 'user',
   OTHER = 'other',
 }
 
@@ -47,13 +47,19 @@ export enum RequestStatus {
   ERROR = 'error',
 }
 
+export enum PrometheusValStatus {
+  Ongoing = 'ongoing',
+  Pending = 'pending',
+  Slashed = 'slashed',
+}
+
 enum TaskStatus {
   COMPLETE = 'complete',
   ERROR = 'error',
 }
 
-export function requestLabels(rpcUrl: string, subUrl: string) {
-  const targetName = new URL(rpcUrl).hostname;
+export function requestLabels(apiUrl: string, subUrl: string) {
+  const targetName = new URL(apiUrl).hostname;
   const reqName = join(
     subUrl
       .split('?')[0]
@@ -81,7 +87,7 @@ export class PrometheusService {
       help: 'Data actuality',
       labelNames: [],
       collect() {
-        // Invoked when the registry collects its metrics' values.
+        // Invoked when the validators collects its metrics' values.
         // This can be synchronous or it can return a promise/be an async function.
         this.set(getSlotTimeDiffWithNow());
       },
@@ -120,13 +126,13 @@ export class PrometheusService {
   public buildInfo = this.getOrCreateMetric('Counter', {
     name: METRIC_BUILD_INFO,
     help: 'Build information',
-    labelNames: ['name', 'version', 'env', 'network'],
+    labelNames: ['name', 'version', 'commit', 'branch', 'env', 'network'],
   });
 
   public outgoingELRequestsDuration = this.getOrCreateMetric('Histogram', {
     name: METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS,
     help: 'Duration of outgoing execution layer requests',
-    buckets: [0.01, 0.1, 0.2, 0.5, 1, 1.5, 2, 5, 15],
+    buckets: [0.01, 0.1, 0.5, 1, 2, 5, 15, 30, 60],
     labelNames: ['name', 'target'] as const,
   });
 
@@ -139,7 +145,7 @@ export class PrometheusService {
   public outgoingCLRequestsDuration = this.getOrCreateMetric('Histogram', {
     name: METRIC_OUTGOING_CL_REQUESTS_DURATION_SECONDS,
     help: 'Duration of outgoing consensus layer requests',
-    buckets: [0.01, 0.1, 0.2, 0.5, 1, 1.5, 2, 5, 15],
+    buckets: [0.01, 0.1, 0.5, 1, 2, 5, 15, 30, 60],
     labelNames: ['name', 'target'] as const,
   });
 
@@ -168,9 +174,9 @@ export class PrometheusService {
     labelNames: ['owner', 'status'],
   });
 
-  public lidoValidators = this.getOrCreateMetric('Gauge', {
-    name: METRIC_LIDO_VALIDATORS,
-    help: 'Validators number',
+  public userValidators = this.getOrCreateMetric('Gauge', {
+    name: METRIC_USER_VALIDATORS,
+    help: 'User validators number',
     labelNames: ['nos_name', 'status'],
   });
 
@@ -240,9 +246,9 @@ export class PrometheusService {
     labelNames: ['nos_name'],
   });
 
-  public lidoSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
-    name: METRIC_LIDO_SYNC_PARTICIPATION_AVG_PERCENT,
-    help: 'Lido sync committee validators participation avg percent',
+  public userSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
+    name: METRIC_USER_SYNC_PARTICIPATION_AVG_PERCENT,
+    help: 'User sync committee validators participation avg percent',
     labelNames: [],
   });
 
@@ -298,34 +304,8 @@ export class PrometheusService {
       .finally(() => stop());
   }
 
-  public async trackELRequest(rpcUrl: string, subUrl: string, callback: () => any) {
-    const [targetName, reqName] = requestLabels(rpcUrl, subUrl);
-    const stop = this.outgoingELRequestsDuration.startTimer({
-      name: reqName,
-      target: targetName,
-    });
-    return await callback()
-      .then((r: any) => {
-        this.outgoingELRequestsCount.inc({
-          name: reqName,
-          target: targetName,
-          status: RequestStatus.COMPLETE,
-        });
-        return r;
-      })
-      .catch((e: any) => {
-        this.outgoingELRequestsCount.inc({
-          name: reqName,
-          target: targetName,
-          status: RequestStatus.ERROR,
-        });
-        throw e;
-      })
-      .finally(() => stop());
-  }
-
-  public async trackCLRequest(rpcUrl: string, subUrl: string, callback: () => any) {
-    const [targetName, reqName] = requestLabels(rpcUrl, subUrl);
+  public async trackCLRequest(apiUrl: string, subUrl: string, callback: () => any) {
+    const [targetName, reqName] = requestLabels(apiUrl, subUrl);
     const stop = this.outgoingCLRequestsDuration.startTimer({
       name: reqName,
       target: targetName,

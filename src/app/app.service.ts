@@ -1,11 +1,12 @@
 import { Inject, Injectable, LoggerService, OnApplicationBootstrap, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 
-import { ConfigService } from '../common/config';
-import { APP_NAME, APP_VERSION } from './app.constants';
-import { PrometheusService } from '../common/prometheus';
+import * as buildInfo from 'build-info';
+import { ConfigService } from 'common/config';
+import { APP_NAME } from './app.constants';
+import { PrometheusService } from 'common/prometheus';
+import { ExecutionProviderService } from 'common/eth-providers';
 import { InspectorService } from '../inspector';
-import { ExecutionProviderService } from '../common/execution-provider';
 
 @Injectable()
 export class AppService implements OnModuleInit, OnApplicationBootstrap {
@@ -21,10 +22,12 @@ export class AppService implements OnModuleInit, OnApplicationBootstrap {
     const env = this.configService.get('NODE_ENV');
     const startSlot = this.configService.get('START_SLOT');
     const network = await this.executionProviderService.getNetworkName();
-    const version = APP_VERSION;
+    const version = buildInfo.version;
+    const commit = buildInfo.commit;
+    const branch = buildInfo.branch;
     const name = APP_NAME;
 
-    this.promService.buildInfo.labels({ env, name, version }).inc();
+    this.promService.buildInfo.labels({ env, name, version, commit, branch }).inc();
     this.logger.log('Init app', { env, network, name, version, startSlot });
   }
 

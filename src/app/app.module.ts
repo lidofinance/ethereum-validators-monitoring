@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 
-import { PrometheusModule } from '../common/prometheus';
-import { ConfigModule } from '../common/config';
-import { HealthModule } from '../common/health';
+import { PrometheusModule } from 'common/prometheus';
+import { ConfigModule } from 'common/config';
+import { HealthModule } from 'common/health';
 import { AppService } from './app.service';
-import { LoggerModule } from '../common/logger';
+import { LoggerModule } from 'common/logger';
 import { InspectorModule } from '../inspector';
-import { EthereumModule } from '../ethereum/ethereum.module';
-import { ValidatorsModule } from '../validators/validators.module';
-import { ContractsModule } from '../common/contracts';
-import { ExecutionProviderModule } from '../common/execution-provider';
+import { ContractsModule } from 'common/contracts';
+import { EthProvidersModule } from 'common/eth-providers';
+import { ClickhouseModule } from 'storage/clickhouse';
+import { DatabaseModule } from 'storage/database';
 
 @Module({
   imports: [
@@ -17,11 +17,11 @@ import { ExecutionProviderModule } from '../common/execution-provider';
     HealthModule,
     PrometheusModule,
     ConfigModule,
-    EthereumModule,
+    DatabaseModule,
+    ClickhouseModule,
     InspectorModule,
-    ValidatorsModule,
     ContractsModule,
-    ExecutionProviderModule,
+    EthProvidersModule,
   ],
   providers: [AppService],
 })
