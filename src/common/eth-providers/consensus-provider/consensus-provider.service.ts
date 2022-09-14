@@ -31,7 +31,7 @@ interface RequestRetryOptions {
 
 @Injectable()
 export class ConsensusProviderService {
-  protected rpcUrls: string[];
+  protected apiUrls: string[];
   protected version = '';
   protected genesisTime = 0n;
   protected defaultMaxSlotDeepCount = 32 * 5;
@@ -55,14 +55,14 @@ export class ConsensusProviderService {
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
   ) {
-    this.rpcUrls = config.get('CL_API_URLS');
+    this.apiUrls = config.get('CL_API_URLS');
   }
 
   public async getVersion(): Promise<string> {
     if (this.version) {
       return this.version;
     }
-    const version = (await this.retryRequest<VersionResponse>((rpcURL: string) => this.apiGet(rpcURL, this.endpoints.version))).version;
+    const version = (await this.retryRequest<VersionResponse>((apiURL: string) => this.apiGet(apiURL, this.endpoints.version))).version;
     return (this.version = version);
   }
 
@@ -72,7 +72,7 @@ export class ConsensusProviderService {
     }
 
     const genesisTime = BigInt(
-      (await this.retryRequest<GenesisResponse>((rpcURL: string) => this.apiGet(rpcURL, this.endpoints.genesis))).genesis_time,
+      (await this.retryRequest<GenesisResponse>((apiURL: string) => this.apiGet(apiURL, this.endpoints.genesis))).genesis_time,
     );
     this.logger.log(`Got genesis time [${genesisTime}] from Consensus Layer Client API`);
     return (this.genesisTime = genesisTime);
@@ -81,8 +81,8 @@ export class ConsensusProviderService {
   public async getFinalizedEpoch(): Promise<bigint> {
     return BigInt(
       (
-        await this.retryRequest<FinalityCheckpointsResponse>((rpcURL: string) =>
-          this.apiGet(rpcURL, this.endpoints.beaconHeadFinalityCheckpoints),
+        await this.retryRequest<FinalityCheckpointsResponse>((apiURL: string) =>
+          this.apiGet(apiURL, this.endpoints.beaconHeadFinalityCheckpoints),
         )
       ).finalized.epoch,
     );
@@ -90,7 +90,7 @@ export class ConsensusProviderService {
 
   public async getBeaconBlockHeader(state: bigint | string, maxRetries = 3): Promise<ShortBeaconBlockHeader> {
     const blockHeader = await this.retryRequest<BlockHeaderResponse>(
-      (rpcURL: string) => this.apiGet(rpcURL, this.endpoints.beaconHeaders(state)),
+      (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(state)),
       { maxRetries, fallbackConditionCallback: (e) => 404 != e.$httpCode },
     );
 
@@ -226,11 +226,11 @@ export class ConsensusProviderService {
   }
 
   public async getBalances(stateRoot: string): Promise<StateValidatorResponse[]> {
-    return await this.retryRequest((rpcURL: string) => this.apiLargeGet(rpcURL, this.endpoints.balances(stateRoot)));
+    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.balances(stateRoot)));
   }
 
   public async getBlockInfo(block: string | bigint): Promise<ShortBeaconBlockInfo> {
-    return <ShortBeaconBlockInfo>await this.retryRequest((rpcURL: string) => this.apiGet(rpcURL, this.endpoints.blockInfo(block)), {
+    return <ShortBeaconBlockInfo>await this.retryRequest((apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(block)), {
       maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
       fallbackConditionCallback: (e) => 404 != e.$httpCode,
     }).catch((e) => {
@@ -242,7 +242,7 @@ export class ConsensusProviderService {
   }
 
   public async getSyncCommitteeInfo(stateRoot: string, epoch: string | bigint): Promise<SyncCommitteeInfo> {
-    return await this.retryRequest((rpcURL: string) => this.apiGet(rpcURL, this.endpoints.syncCommittee(stateRoot, epoch)));
+    return await this.retryRequest((apiURL: string) => this.apiGet(apiURL, this.endpoints.syncCommittee(stateRoot, epoch)));
   }
 
   public async getCanonicalAttesterDuties(
@@ -255,7 +255,7 @@ export class ConsensusProviderService {
     const request = async () => {
       const res = <{ dependent_root: string; data: AttesterDutyInfo[] }>(
         await this.retryRequest(
-          (rpcURL: string) => this.apiLargePost(rpcURL, this.endpoints.attesterDuties(epoch), { body: JSON.stringify(indexes) }),
+          (apiURL: string) => this.apiLargePost(apiURL, this.endpoints.attesterDuties(epoch), { body: JSON.stringify(indexes) }),
           { dataOnly: false },
         )
       );
@@ -288,8 +288,8 @@ export class ConsensusProviderService {
     while (chunked.length > 0) {
       const chunk = chunked.splice(0, this.config.get('CL_API_POST_REQUEST_CHUNK_SIZE')); // large payload may cause endpoint exception
       result = result.concat(
-        <SyncCommitteeDutyInfo[]>await this.retryRequest((rpcURL: string) =>
-          this.apiLargePost(rpcURL, this.endpoints.syncCommitteeDuties(epoch), { body: JSON.stringify(chunk) }),
+        <SyncCommitteeDutyInfo[]>await this.retryRequest((apiURL: string) =>
+          this.apiLargePost(apiURL, this.endpoints.syncCommitteeDuties(epoch), { body: JSON.stringify(chunk) }),
         ).catch((e) => {
           this.logger.error('Unexpected status code while fetching sync committee duties info');
           throw e;
@@ -303,7 +303,7 @@ export class ConsensusProviderService {
     const retry = retrier(this.logger, maxRetries, 100, 10000, true);
     const request = async () => {
       const res = <{ dependent_root: string; data: ProposerDutyInfo[] }>await this.retryRequest(
-        (rpcURL: string) => this.apiGet(rpcURL, this.endpoints.proposerDutes(epoch)),
+        (apiURL: string) => this.apiGet(apiURL, this.endpoints.proposerDutes(epoch)),
         { maxRetries, dataOnly: false },
       ).catch((e) => {
         this.logger.error('Unexpected status code while fetching proposer duties info');
@@ -326,7 +326,7 @@ export class ConsensusProviderService {
     return (await this.getGenesisTime()) + slot * BigInt(this.config.get('CHAIN_SLOT_TIME_SECONDS'));
   }
 
-  protected async retryRequest<T>(callback: (rpcURL: string) => any, options?: RequestRetryOptions): Promise<T> {
+  protected async retryRequest<T>(callback: (apiURL: string) => any, options?: RequestRetryOptions): Promise<T> {
     const [maxRetries, dataOnly, fallbackConditionCallback] = [
       options?.maxRetries ?? 5,
       options?.dataOnly != undefined ? options.dataOnly : true,
@@ -334,24 +334,24 @@ export class ConsensusProviderService {
     ];
     const retry = retrier(this.logger, maxRetries, 100, 10000, true);
     let res;
-    for (let i = 0; i < this.rpcUrls.length; i++) {
+    for (let i = 0; i < this.apiUrls.length; i++) {
       if (res) break;
-      res = await callback(this.rpcUrls[i])
+      res = await callback(this.apiUrls[i])
         .catch(rejectDelay(this.config.get('CL_API_RETRY_DELAY_MS')))
-        .catch(() => retry(() => callback(this.rpcUrls[i])))
+        .catch(() => retry(() => callback(this.apiUrls[i])))
         .catch((e: any) => {
           if (fallbackConditionCallback(e)) {
-            if (this.rpcUrls.length == 1) {
+            if (this.apiUrls.length == 1) {
               this.logger.warn('Backup CL API URLs not passed');
               throw e;
             }
-            this.logger.error('Error while doing CL RPC request. Will try to switch to another RPC');
+            this.logger.error('Error while doing CL API request. Will try to switch to another API URL');
             return undefined;
           }
           throw e;
         });
-      if (i == this.rpcUrls.length - 1 && !res) {
-        throw Error('Error while doing CL RPC request on all passed RPC URLs');
+      if (i == this.apiUrls.length - 1 && !res) {
+        throw Error('Error while doing CL API request on all passed URLs');
       }
     }
 
@@ -359,18 +359,18 @@ export class ConsensusProviderService {
     else return res;
   }
 
-  protected apiGet = async <T>(rpcUrl: string, subUrl: string): Promise<T> => {
-    return await this.prometheus.trackCLRequest(rpcUrl, subUrl, async () => {
+  protected apiGet = async <T>(apiURL: string, subUrl: string): Promise<T> => {
+    return await this.prometheus.trackCLRequest(apiURL, subUrl, async () => {
       const res = await got
-        .get(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
+        .get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
         .catch((e) => {
           if (e.response) {
-            throw new ResponseError(errRequest(e.response.body, subUrl, rpcUrl), e.response.statusCode);
+            throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
           }
-          throw new ResponseError(errCommon(e.message, subUrl, rpcUrl));
+          throw new ResponseError(errCommon(e.message, subUrl, apiURL));
         });
       if (res.statusCode !== 200) {
-        throw new ResponseError(errRequest(res.body, subUrl, rpcUrl), res.statusCode);
+        throw new ResponseError(errRequest(res.body, subUrl, apiURL), res.statusCode);
       }
       try {
         return JSON.parse(res.body);
@@ -380,18 +380,18 @@ export class ConsensusProviderService {
     });
   };
 
-  protected apiPost = async <T>(rpcUrl: string, subUrl: string, params?: Record<string, any>): Promise<T> => {
-    return await this.prometheus.trackCLRequest(rpcUrl, subUrl, async () => {
+  protected apiPost = async <T>(apiURL: string, subUrl: string, params?: Record<string, any>): Promise<T> => {
+    return await this.prometheus.trackCLRequest(apiURL, subUrl, async () => {
       const res = await got
-        .post(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') }, ...params })
+        .post(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') }, ...params })
         .catch((e) => {
           if (e.response) {
-            throw new ResponseError(errRequest(e.response.body, subUrl, rpcUrl), e.response.statusCode);
+            throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
           }
-          throw new ResponseError(errCommon(e.message, subUrl, rpcUrl));
+          throw new ResponseError(errCommon(e.message, subUrl, apiURL));
         });
       if (res.statusCode !== 200) {
-        throw new ResponseError(errRequest(res.body, subUrl, rpcUrl), res.statusCode);
+        throw new ResponseError(errRequest(res.body, subUrl, apiURL), res.statusCode);
       }
       try {
         return JSON.parse(res.body);
@@ -401,36 +401,36 @@ export class ConsensusProviderService {
     });
   };
 
-  protected apiLargeGet = async (rpcUrl: string, subUrl: string): Promise<any> => {
-    return await this.prometheus.trackCLRequest(rpcUrl, subUrl, async () => {
+  protected apiLargeGet = async (apiURL: string, subUrl: string): Promise<any> => {
+    return await this.prometheus.trackCLRequest(apiURL, subUrl, async () => {
       return await parseChunked(
         got.stream
-          .get(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
+          .get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
           .on('response', (r: Response) => {
             if (r.statusCode != 200) throw new HTTPError(r);
           }),
       ).catch((e) => {
         if (e instanceof HTTPError) {
-          throw new ResponseError(errRequest(<string>e.response.body, subUrl, rpcUrl), e.response.statusCode);
+          throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
         }
-        throw new ResponseError(errCommon(e.message, subUrl, rpcUrl));
+        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
       });
     });
   };
 
-  protected apiLargePost = async (rpcUrl: string, subUrl: string, params?: Record<string, any>): Promise<any> => {
-    return await this.prometheus.trackCLRequest(rpcUrl, subUrl, async () => {
+  protected apiLargePost = async (apiURL: string, subUrl: string, params?: Record<string, any>): Promise<any> => {
+    return await this.prometheus.trackCLRequest(apiURL, subUrl, async () => {
       return await parseChunked(
         got.stream
-          .post(urljoin(rpcUrl, subUrl), { timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') }, ...params })
+          .post(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') }, ...params })
           .on('response', (r: Response) => {
             if (r.statusCode != 200) throw new HTTPError(r);
           }),
       ).catch((e) => {
         if (e instanceof HTTPError) {
-          throw new ResponseError(errRequest(<string>e.response.body, subUrl, rpcUrl), e.response.statusCode);
+          throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
         }
-        throw new ResponseError(errCommon(e.message, subUrl, rpcUrl));
+        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
       });
     });
   };

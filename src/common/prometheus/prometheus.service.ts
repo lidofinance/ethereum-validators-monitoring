@@ -58,8 +58,8 @@ enum TaskStatus {
   ERROR = 'error',
 }
 
-export function requestLabels(rpcUrl: string, subUrl: string) {
-  const targetName = new URL(rpcUrl).hostname;
+export function requestLabels(apiUrl: string, subUrl: string) {
+  const targetName = new URL(apiUrl).hostname;
   const reqName = join(
     subUrl
       .split('?')[0]
@@ -304,8 +304,8 @@ export class PrometheusService {
       .finally(() => stop());
   }
 
-  public async trackCLRequest(rpcUrl: string, subUrl: string, callback: () => any) {
-    const [targetName, reqName] = requestLabels(rpcUrl, subUrl);
+  public async trackCLRequest(apiUrl: string, subUrl: string, callback: () => any) {
+    const [targetName, reqName] = requestLabels(apiUrl, subUrl);
     const stop = this.outgoingCLRequestsDuration.startTimer({
       name: reqName,
       target: targetName,
