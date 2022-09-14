@@ -1,8 +1,8 @@
-export const errRequest = (errBody: string, endpoint: string, rpcUrl: string): string =>
-  `ErrorBody: ${errBody} | Endpoint: ${endpoint} | Target: ${new URL(rpcUrl).hostname}`;
+export const errRequest = (errBody: string, endpoint: string, apiUrl: string): string =>
+  `ErrorBody: ${errBody} | Endpoint: ${endpoint} | Target: ${new URL(apiUrl).hostname}`;
 
-export const errCommon = (errMessage: string, endpoint: string, rpcUrl: string): string =>
-  `ErrorMessage: ${errMessage} | Endpoint: ${endpoint} | Target: ${new URL(rpcUrl).hostname}`;
+export const errCommon = (errMessage: string, endpoint: string, apiUrl: string): string =>
+  `ErrorMessage: ${errMessage} | Endpoint: ${endpoint} | Target: ${new URL(apiUrl).hostname}`;
 
 export class ResponseError extends Error {
   protected $service: string;

@@ -1,5 +1,7 @@
 import { plainToInstance, Transform } from 'class-transformer';
 import {
+  ArrayMinSize,
+  IsArray,
   IsBoolean,
   IsEnum,
   IsInt,
@@ -7,11 +9,9 @@ import {
   IsNumber,
   IsPort,
   IsString,
-  IsUrl,
   Max,
   Min,
   MinLength,
-  ValidateIf,
   validateSync,
 } from 'class-validator';
 import { Environment, LogFormat, LogLevel } from './interfaces';
@@ -119,48 +119,38 @@ export class EnvironmentVariables {
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public ETH_NETWORK!: Network;
 
-  @IsNotEmpty()
-  @IsUrl()
-  public EL_RPC_URL!: string;
+  @IsArray()
+  @ArrayMinSize(1)
+  @Transform(({ value }) => value.split(','))
+  public EL_RPC_URLS!: string[];
 
-  @ValidateIf((env) => env.EL_RPC_URL_BACKUP.length)
-  @IsUrl()
-  public EL_RPC_URL_BACKUP = '';
-
-  @IsInt()
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public EL_RPC_RETRY_DELAY_MS = 500;
-
-  @IsNotEmpty()
-  @IsUrl({ require_tld: false })
-  public CL_BEACON_RPC_URL!: string;
-
-  @ValidateIf((env) => env.CL_BEACON_RPC_URL_BACKUP.length)
-  @IsUrl()
-  public CL_BEACON_RPC_URL_BACKUP = '';
+  @IsArray()
+  @ArrayMinSize(1)
+  @Transform(({ value }) => value.split(','))
+  public CL_API_URLS!: string[];
 
   @IsInt()
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public CL_BEACON_RPC_RETRY_DELAY_MS = 500;
+  public CL_API_RETRY_DELAY_MS = 500;
 
   @IsNumber()
   @Min(5000)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public CL_GET_RESPONSE_TIMEOUT = 15000;
+  public CL_API_GET_RESPONSE_TIMEOUT = 15000;
 
   @IsNumber()
   @Min(10000)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public CL_POST_RESPONSE_TIMEOUT = 15000;
+  public CL_API_POST_RESPONSE_TIMEOUT = 15000;
 
   @IsNumber()
   @Min(10000)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public CL_POST_REQUEST_CHUNK_SIZE = 30000;
+  public CL_API_POST_REQUEST_CHUNK_SIZE = 30000;
 
   @IsNumber()
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public CL_GET_BLOCK_INFO_MAX_RETRIES = 5;
+  public CL_API_GET_BLOCK_INFO_MAX_RETRIES = 5;
 
   @IsNumber()
   @Min(18950)

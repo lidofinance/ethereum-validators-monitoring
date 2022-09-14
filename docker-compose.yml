@@ -151,10 +151,11 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
       - START_SLOT=${START_SLOT}
-      - EL_RPC_URL=${EL_RPC_URL}
       - ETH_NETWORK=${ETH_NETWORK}
       - CL_BEACON_RPC_URL=${CL_BEACON_RPC_URL}
       - VALIDATOR_REGISTRY_SOURCE=${VALIDATOR_REGISTRY_SOURCE}
+      - EL_RPC_URLS=${EL_RPC_URLS}
+      - CL_API_URLS=${CL_API_URLS}
     ports:
       - "8080:8080"
     volumes:
