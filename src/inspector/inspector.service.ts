@@ -71,7 +71,6 @@ export class InspectorService implements OnModuleInit {
 
   protected async waitForNextFinalizedSlot(nextSlot: bigint): Promise<{ slotToWrite: bigint; stateRoot: string; slotNumber: bigint }> {
     const latestFinalizedBeaconBlock = await this.clClient.getBeaconBlockHeader('finalized');
-
     if (latestFinalizedBeaconBlock.slotNumber >= nextSlot && nextSlot > this.dataProcessor.latestSlotInDb) {
       this.logger.log(
         `Latest finalized slot [${latestFinalizedBeaconBlock.slotNumber}] found. Next slot [${nextSlot}]. Latest DB slot [${this.dataProcessor.latestSlotInDb}]`,
@@ -104,9 +103,10 @@ export class InspectorService implements OnModuleInit {
       };
     }
 
-    const sleepTime = this.getSleepTimeForNextSlot(nextSlot, latestFinalizedBeaconBlock.slotNumber);
+    // just wait `CHAIN_SLOT_TIME_SECONDS` until finality happens
+    const sleepTime = this.config.get('CHAIN_SLOT_TIME_SECONDS');
     this.logger.log(
-      `Latest finalized slot [${latestFinalizedBeaconBlock.slotNumber}] found. Latest DB slot [${this.dataProcessor.latestSlotInDb}]. Waiting [${sleepTime}] seconds for next slot [${nextSlot}]`,
+      `Latest finalized slot [${latestFinalizedBeaconBlock.slotNumber}] found. Latest DB slot [${this.dataProcessor.latestSlotInDb}]. Waiting [${sleepTime}] seconds for next finalized slot [${nextSlot}]`,
     );
 
     return new Promise((resolve) => {
@@ -129,18 +129,6 @@ export class InspectorService implements OnModuleInit {
     this.logger.log(`Starting slot (end of epoch [${epoch}]). Recalculated [${latestSlotInEpoch}]`);
 
     return latestSlotInEpoch == startingSlot ? latestSlotInEpoch + step : latestSlotInEpoch;
-  }
-
-  protected getSleepTimeForNextSlot(nextSlot: bigint, latestFinalizedSlot: bigint): number {
-    let sleepTime =
-      Math.abs(Number(nextSlot - latestFinalizedSlot)) * this.config.get('CHAIN_SLOT_TIME_SECONDS') +
-      this.config.get('CHAIN_SLOT_TIME_SECONDS');
-
-    if (sleepTime > 400) {
-      sleepTime = 10;
-    }
-
-    return sleepTime;
   }
 
   protected async calculateHeadEpoch(): Promise<bigint> {
