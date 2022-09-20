@@ -1,4 +1,4 @@
-import { AttesterDutyInfo, SyncCommitteeValidator } from 'common/eth-providers';
+import { AttesterDutyInfo } from 'common/eth-providers';
 
 export interface ValidatorsStatusStats {
   active_ongoing: number;
@@ -14,6 +14,11 @@ export interface NOsDelta {
 export interface NOsValidatorsNegDeltaCount {
   nos_name: string;
   neg_count: number;
+}
+
+export interface NOsValidatorsSyncAvgPercent {
+  nos_name: string;
+  avg_percent: number;
 }
 
 export interface NOsValidatorsSyncLessChainAvgCount {
@@ -52,11 +57,6 @@ export interface SlotAttestation {
   committee_index: string;
 }
 
-export interface CheckSyncCommitteeParticipationResult {
-  all_avg_participation: string;
-  user_validators: SyncCommitteeValidator[];
-}
-
 export interface CheckAttestersDutyResult {
   attestersDutyInfo: AttesterDutyInfo[];
   blocksAttestations: { [blockNum: string]: SlotAttestation[] };
@@ -64,6 +64,5 @@ export interface CheckAttestersDutyResult {
 }
 
 export interface SyncCommitteeParticipationAvgPercents {
-  user: number;
-  chain: number;
+  avg_percent: number;
 }

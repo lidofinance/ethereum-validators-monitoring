@@ -30,6 +30,8 @@ import {
   METRIC_CONTRACT_KEYS_TOTAL,
   METRIC_STETH_BUFFERED_ETHER_TOTAL,
   METRIC_BUILD_INFO,
+  METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
 } from './prometheus.constants';
 import { Metric, Options } from './interfaces';
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
@@ -254,9 +256,15 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: [],
   });
 
+  public operatorSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
+    help: 'Operator sync committee validators participation avg percent',
+    labelNames: ['nos_name'],
+  });
+
   public chainSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
     name: METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
-    help: 'All sync committee validators participation avg percent',
+    help: 'Other sync committee validators participation avg percent',
     labelNames: [],
   });
 
@@ -270,6 +278,12 @@ export class PrometheusService implements OnApplicationBootstrap {
     name: METRIC_TOTAL_BALANCE_24H_DIFFERENCE,
     help: 'Total balance difference (24 hours)',
     labelNames: [],
+  });
+
+  public operatorBalance24hDifference = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
+    help: 'Operator balance difference (24 hours)',
+    labelNames: ['nos_name'],
   });
 
   public contractKeysTotal = this.getOrCreateMetric('Gauge', {
