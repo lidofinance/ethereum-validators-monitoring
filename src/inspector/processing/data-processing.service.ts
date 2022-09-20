@@ -49,6 +49,8 @@ export class DataProcessingService implements OnModuleInit {
   public async onModuleInit(): Promise<void> {
     this.latestSlotInDb = await this.storage.getMaxSlot();
     this.firstSlotInDb = await this.storage.getMinSlot();
+    this.prometheus.slotTime = await this.getSlotTime(this.latestSlotInDb);
+    this.prometheus.slotNumber.set(Number(this.latestSlotInDb));
   }
 
   public async getSlotTime(slot: bigint): Promise<bigint> {
