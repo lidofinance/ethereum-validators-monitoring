@@ -15,7 +15,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: DataActuality
-        expr: ethereum_validators_monitoring_data_actuality > 3600000
+        expr: ethereum_validators_monitoring_data_actuality > 3600000 OR absent(ethereum_validators_monitoring_data_actuality)
         for: 30m
         labels:
           severity: critical
