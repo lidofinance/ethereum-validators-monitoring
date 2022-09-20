@@ -1,6 +1,6 @@
 import { ClickhouseService } from 'storage';
 import { DataProcessingService } from './data-processing.service';
-import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from 'common/config';
 import { Owner, PrometheusService, PrometheusValStatus } from 'common/prometheus';
@@ -12,7 +12,7 @@ import { RegistryOperator } from '@lido-nestjs/registry';
 const GWEI_WEI_RATIO = 1e9;
 
 @Injectable()
-export class StatsProcessingService implements OnModuleInit {
+export class StatsProcessingService {
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
 
@@ -22,11 +22,6 @@ export class StatsProcessingService implements OnModuleInit {
     protected readonly registryService: RegistryService,
     protected readonly storage: ClickhouseService,
   ) {}
-
-  public async onModuleInit(): Promise<void> {
-    this.prometheus.slotTime = await this.dataProcessor.getSlotTime(this.dataProcessor.latestSlotInDb);
-    this.prometheus.slotNumber.set(Number(this.dataProcessor.latestSlotInDb));
-  }
 
   /**
    * Calc stats by storage (validators info, att and prop duties) and push them to Prometheus

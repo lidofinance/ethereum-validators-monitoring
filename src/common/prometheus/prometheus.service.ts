@@ -32,7 +32,7 @@ import {
   METRIC_BUILD_INFO,
 } from './prometheus.constants';
 import { Metric, Options } from './interfaces';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from 'common/config';
 import { join } from 'lodash';
 import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
@@ -74,13 +74,15 @@ export function requestLabels(apiUrl: string, subUrl: string) {
 }
 
 @Injectable()
-export class PrometheusService {
+export class PrometheusService implements OnApplicationBootstrap {
   private prefix = METRICS_PREFIX;
 
   public slotTime = 0n; // latest fetched slot time
   public getSlotTimeDiffWithNow = () => Date.now() - Number(this.slotTime) * 1000;
 
-  constructor(@Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService, private config: ConfigService) {
+  constructor(@Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService, private config: ConfigService) {}
+
+  public async onApplicationBootstrap(): Promise<void> {
     const getSlotTimeDiffWithNow = () => this.getSlotTimeDiffWithNow();
     this.getOrCreateMetric('Gauge', {
       name: METRIC_DATA_ACTUALITY,
