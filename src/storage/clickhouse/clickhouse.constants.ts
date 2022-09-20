@@ -187,13 +187,22 @@ export const validatorsCountWithMissProposeQuery = (fetchInterval: number, slot:
   `;
 };
 
-export const syncParticipationAvgPercentsQuery = (slot: string | bigint | number): string => `
+export const userSyncParticipationAvgPercentsQuery = (slot: string | bigint | number): string => `
     SELECT
-        avg(epoch_participation_percent) as user,
-        max(epoch_chain_participation_percent_avg) as chain
+        avg(epoch_participation_percent) as avg_percent
     FROM
         stats.validator_sync
     WHERE last_slot_of_epoch = ${slot}
+`;
+
+export const operatorsSyncParticipationAvgPercentsQuery = (slot: string | bigint | number): string => `
+    SELECT
+        nos_name,
+        avg(epoch_participation_percent) as avg_percent
+    FROM
+        stats.validator_sync
+    WHERE last_slot_of_epoch = ${slot}
+    GROUP BY nos_name
 `;
 
 export const totalBalance24hDifferenceQuery = (slot: string): string => `
@@ -227,6 +236,31 @@ export const totalBalance24hDifferenceQuery = (slot: string): string => `
       AND prev.nos_id IS NOT NULL
   ) as prev_total_balance,
   curr_total_balance - prev_total_balance as total_diff
+`;
+
+export const operatorBalance24hDifferenceQuery = (slot: string): string => `
+    SELECT
+        nos_name,
+        SUM(curr.balance - previous.balance) as diff
+    FROM
+      stats.validator_balances AS curr
+    INNER JOIN
+      (
+        SELECT balance, validator_id, nos_id
+        FROM stats.validator_balances
+        WHERE
+          status != '${ValStatus.PendingQueued}' AND
+          nos_name IS NOT NULL AND
+          slot = ${slot} - 7200
+    ) AS previous
+    ON
+      previous.nos_id = curr.nos_id AND
+      previous.validator_id = curr.validator_id
+    WHERE
+      curr.slot = ${slot}
+      AND curr.status != '${ValStatus.PendingQueued}'
+      AND curr.nos_id IS NOT NULL
+    GROUP BY curr.nos_name
 `;
 
 export const userNodeOperatorsStatsQuery = (slot: string): string => `

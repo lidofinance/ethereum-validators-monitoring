@@ -9,7 +9,6 @@ import {
   userNodeOperatorsStatsQuery,
   userValidatorIDsQuery,
   userValidatorsSummaryStatsQuery,
-  syncParticipationAvgPercentsQuery,
   totalBalance24hDifferenceQuery,
   validatorBalancesDeltaQuery,
   validatorCountWithMissAttestationLastNEpochQuery,
@@ -17,16 +16,18 @@ import {
   validatorsCountWithMissProposeQuery,
   validatorsCountWithNegativeDeltaQuery,
   validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery,
+  userSyncParticipationAvgPercentsQuery,
+  operatorsSyncParticipationAvgPercentsQuery,
+  operatorBalance24hDifferenceQuery,
 } from './clickhouse.constants';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from 'common/config';
 import { PrometheusService } from 'common/prometheus';
 import { retrier } from 'common/functions/retrier';
-import { ProposerDutyInfo, StateValidatorResponse, ValStatus } from 'common/eth-providers';
+import { ProposerDutyInfo, StateValidatorResponse, SyncCommitteeValidator, ValStatus } from 'common/eth-providers';
 import {
   CheckAttestersDutyResult,
-  CheckSyncCommitteeParticipationResult,
   NOsValidatorsStatusStats,
   NOsDelta,
   NOsValidatorsNegDeltaCount,
@@ -37,6 +38,7 @@ import {
   NOsValidatorsSyncLessChainAvgCount,
   SyncCommitteeParticipationAvgPercents,
   ValidatorIdentifications,
+  NOsValidatorsSyncAvgPercent,
 } from './clickhouse.types';
 import { RegistrySourceKeysIndexed } from 'common/validators-registry/registry-source.interface';
 
@@ -238,13 +240,14 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async writeSyncs(
-    syncResult: CheckSyncCommitteeParticipationResult,
+    syncResult: SyncCommitteeValidator[],
     slotTime: bigint,
     keysIndexed: RegistrySourceKeysIndexed,
     userIDs: ValidatorIdentifications[],
     epoch: bigint,
-  ): Promise<void> {
+  ): Promise<number> {
     return await this.prometheus.trackTask('write-syncs', async () => {
+      const notUserPercents = [];
       const ws = this.db
         .insert(
           'INSERT INTO stats.validator_sync ' +
@@ -254,15 +257,21 @@ export class ClickhouseService implements OnModuleInit {
         .stream();
       const last_slot_of_epoch =
         epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS')) + BigInt(this.config.get('FETCH_INTERVAL_SLOTS')) - 1n;
-      for (const p of syncResult.user_validators) {
+      for (const p of syncResult) {
         const pubKey = userIDs.find((v) => v.validator_id === p.validator_index)?.validator_pubkey || '';
-        await ws.writeRow(
-          `(${slotTime}, '${pubKey}', '${p.validator_index || ''}', ${last_slot_of_epoch}, ${p.epoch_participation_percent}, ` +
-            `${syncResult.all_avg_participation},
-          ${keysIndexed.get(pubKey)?.operatorIndex ?? 'NULL'}, '${keysIndexed.get(pubKey)?.operatorName || 'NULL'}')`,
-        );
+        if (pubKey) {
+          const other = syncResult.filter((s) => s.validator_index != p.validator_index);
+          const otherAvg = other.reduce((a, b) => a + b.epoch_participation_percent, 0) / other.length;
+          await ws.writeRow(
+            `(${slotTime}, '${pubKey}', '${p.validator_index || ''}', ${last_slot_of_epoch}, ${p.epoch_participation_percent}, ` +
+              `${otherAvg}, ${keysIndexed.get(pubKey)?.operatorIndex ?? 'NULL'}, '${keysIndexed.get(pubKey)?.operatorName || 'NULL'}')`,
+          );
+        } else {
+          notUserPercents.push(p.epoch_participation_percent);
+        }
       }
       await this.retry(async () => await ws.exec());
+      return notUserPercents.reduce((a, b) => a + b, 0) / notUserPercents.length;
     });
   }
 
@@ -294,6 +303,22 @@ export class ClickhouseService implements OnModuleInit {
       this.db.query(validatorsCountWithNegativeDeltaQuery(this.config.get('FETCH_INTERVAL_SLOTS'), slot.toString())).toPromise(),
     );
     return <NOsValidatorsNegDeltaCount[]>ret;
+  }
+
+  /**
+   * Send query to Clickhouse and receives information about User Sync Committee participants
+   */
+  public async getUserSyncParticipationAvgPercents(slot: bigint): Promise<SyncCommitteeParticipationAvgPercents> {
+    const ret = await this.retry(async () => this.db.query(userSyncParticipationAvgPercentsQuery(slot)).toPromise());
+    return <SyncCommitteeParticipationAvgPercents>ret[0];
+  }
+
+  /**
+   * Send query to Clickhouse and receives information about Operator Sync Committee participants
+   */
+  public async getOperatorSyncParticipationAvgPercents(slot: bigint): Promise<NOsValidatorsSyncAvgPercent[]> {
+    const ret = await this.retry(async () => this.db.query(operatorsSyncParticipationAvgPercentsQuery(slot)).toPromise());
+    return <NOsValidatorsSyncAvgPercent[]>ret;
   }
 
   /**
@@ -361,14 +386,6 @@ export class ClickhouseService implements OnModuleInit {
     return <NOsValidatorsMissProposeCount[]>ret;
   }
 
-  /**
-   * Send query to Clickhouse and receives information about Sync Committee participants
-   */
-  public async getSyncParticipationAvgPercents(slot: bigint): Promise<SyncCommitteeParticipationAvgPercents> {
-    const ret = await this.retry(async () => this.db.query(syncParticipationAvgPercentsQuery(slot)).toPromise());
-    return <SyncCommitteeParticipationAvgPercents>ret[0];
-  }
-
   public async getTotalBalance24hDifference(slot: bigint): Promise<number | undefined> {
     const ret = await this.retry(async () => this.db.query(totalBalance24hDifferenceQuery(slot.toString())).toPromise());
 
@@ -389,6 +406,11 @@ export class ClickhouseService implements OnModuleInit {
     }
 
     return total_diff;
+  }
+
+  public async getOperatorBalance24hDifference(slot: bigint): Promise<{ nos_name: string; diff: number }[]> {
+    const ret = await this.retry(async () => this.db.query(operatorBalance24hDifferenceQuery(slot.toString())).toPromise());
+    return <{ nos_name: string; diff: number }[]>ret;
   }
 
   /**

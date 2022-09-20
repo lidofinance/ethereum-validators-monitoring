@@ -48,7 +48,7 @@ export class InspectorService implements OnModuleInit {
             possibleHighRewardValidators = await this.dataProcessor.getPossibleHighRewardValidatorIndexes(res.userIDs, headEpoch);
           }
           await this.statsProcessor.calculateUserStats(slotToWrite, possibleHighRewardValidators);
-          await this.statsProcessor.calculateOtherStats(res.otherCounts);
+          await this.statsProcessor.calculateOtherStats(res.otherValidatorsCounts, res.otherAvgSyncPercent);
           await this.statsProcessor.finalizeAppIterate(slotToWrite);
           await this.criticalAlertService.sendCriticalAlerts(slotToWrite);
         }

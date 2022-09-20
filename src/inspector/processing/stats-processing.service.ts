@@ -64,9 +64,13 @@ export class StatsProcessingService implements OnModuleInit {
     });
 
     // Validator Sync Committee participation
-    const syncParticipationAvgPercents = await this.storage.getSyncParticipationAvgPercents(slot);
-    this.prometheus.userSyncParticipationAvgPercent.set(syncParticipationAvgPercents.user ?? 0);
-    this.prometheus.chainSyncParticipationAvgPercent.set(syncParticipationAvgPercents.chain ?? 0);
+    const syncUserParticipationAvgPercents = await this.storage.getUserSyncParticipationAvgPercents(slot);
+    this.prometheus.userSyncParticipationAvgPercent.set(syncUserParticipationAvgPercents.avg_percent ?? 0);
+
+    const syncOperatorParticipationAvgPercents = await this.storage.getOperatorSyncParticipationAvgPercents(slot);
+    syncOperatorParticipationAvgPercents.forEach((p) => {
+      this.prometheus.operatorSyncParticipationAvgPercent.set({ nos_name: p.nos_name }, p.avg_percent);
+    });
 
     const syncParticipationLastEpoch = await this.storage.getValidatorsCountWithSyncParticipationLessChainAvgLastNEpoch(slot, 1);
     const syncParticipationLastNEpoch = await this.storage.getValidatorsCountWithSyncParticipationLessChainAvgLastNEpoch(
@@ -154,6 +158,10 @@ export class StatsProcessingService implements OnModuleInit {
     if (totalBalance24hDifference != undefined) {
       this.prometheus.totalBalance24hDifference.set(totalBalance24hDifference);
     }
+    const operatorBalance24hDifference = await this.storage.getOperatorBalance24hDifference(slot);
+    operatorBalance24hDifference.forEach((d) => {
+      this.prometheus.operatorBalance24hDifference.set({ nos_name: d.nos_name }, d.diff);
+    });
 
     if (this.registryService.source instanceof LidoSourceService) {
       this.prometheus.contractKeysTotal.set(
@@ -179,11 +187,14 @@ export class StatsProcessingService implements OnModuleInit {
   /**
    * Calc stats by in-memory other validators data (ongoing, pending, slashed validators)
    */
-  async calculateOtherStats(otherBalances: ValidatorsStatusStats): Promise<void> {
-    this.logger.log(`Other ongoing validators [${otherBalances.active_ongoing}]`);
-    this.prometheus.validators.set({ owner: Owner.OTHER, status: PrometheusValStatus.Ongoing }, otherBalances.active_ongoing);
-    this.prometheus.validators.set({ owner: Owner.OTHER, status: PrometheusValStatus.Pending }, otherBalances.pending);
-    this.prometheus.validators.set({ owner: Owner.OTHER, status: PrometheusValStatus.Slashed }, otherBalances.slashed);
+  async calculateOtherStats(otherValidatorsCounts: ValidatorsStatusStats, otherAvgSyncPercent: number): Promise<void> {
+    this.logger.log(`Other ongoing validators [${otherValidatorsCounts.active_ongoing}]`);
+    this.prometheus.validators.set({ owner: Owner.OTHER, status: PrometheusValStatus.Ongoing }, otherValidatorsCounts.active_ongoing);
+    this.prometheus.validators.set({ owner: Owner.OTHER, status: PrometheusValStatus.Pending }, otherValidatorsCounts.pending);
+    this.prometheus.validators.set({ owner: Owner.OTHER, status: PrometheusValStatus.Slashed }, otherValidatorsCounts.slashed);
+
+    // Other Sync Committee participation
+    this.prometheus.chainSyncParticipationAvgPercent.set(otherAvgSyncPercent ?? 0);
   }
 
   public async finalizeAppIterate(slot: bigint): Promise<void> {
