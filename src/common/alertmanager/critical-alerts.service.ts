@@ -8,6 +8,7 @@ import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
 import { ConfigService } from 'common/config';
 import { ClickhouseService } from 'storage';
 import { PrometheusService } from 'common/prometheus';
+import { CriticalSlashing } from './alerts/CriticalSlashing';
 
 interface SentAlerts {
   [alertname: string]: PreparedToSendAlert;
@@ -33,6 +34,7 @@ export class CriticalAlertsService {
       new CriticalNegativeDelta(this.config, this.storage),
       new CriticalMissedProposes(this.config, this.storage),
       new CriticalMissedAttestations(this.config, this.storage),
+      new CriticalSlashing(this.config, this.storage),
     ];
   }
 

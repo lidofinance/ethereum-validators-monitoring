@@ -3,7 +3,7 @@ groups:
     rules:
 
       - alert: UserSlashedValidators
-        expr: ethereum_validators_monitoring_user_validators{status="slashed"} > 0 AND ON(nos_name) delta(ethereum_validators_monitoring_user_validators{status="slashed"}[1m]) > 0
+        expr: delta(ethereum_validators_monitoring_user_validators{status="slashed"}[1m]) > 0 AND ON(nos_name) ethereum_validators_monitoring_user_validators{status="slashed"} > 0
         labels:
           severity: critical
         annotations:
@@ -11,7 +11,7 @@ groups:
           summary: "Operators have slashed validators"
           description: 'Number of slashed validators per operator'
           field_name: '{{ $labels.nos_name }}'
-          field_value: '[{{ $value }}](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 900) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          field_value: '[{{ $value | printf "%.0f" }}](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 900) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: DataActuality
