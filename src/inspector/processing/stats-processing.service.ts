@@ -64,11 +64,11 @@ export class StatsProcessingService implements OnModuleInit {
     });
 
     // Validator Sync Committee participation
-    const syncUserParticipationAvgPercents = await this.storage.getUserSyncParticipationAvgPercents(slot);
-    this.prometheus.userSyncParticipationAvgPercent.set(syncUserParticipationAvgPercents.avg_percent ?? 0);
+    const userSyncParticipationAvgPercent = await this.storage.getUserSyncParticipationAvgPercent(slot);
+    this.prometheus.userSyncParticipationAvgPercent.set(userSyncParticipationAvgPercent.avg_percent ?? 0);
 
-    const syncOperatorParticipationAvgPercents = await this.storage.getOperatorSyncParticipationAvgPercents(slot);
-    syncOperatorParticipationAvgPercents.forEach((p) => {
+    const operatorSyncParticipationAvgPercents = await this.storage.getOperatorSyncParticipationAvgPercents(slot);
+    operatorSyncParticipationAvgPercents.forEach((p) => {
       this.prometheus.operatorSyncParticipationAvgPercent.set({ nos_name: p.nos_name }, p.avg_percent);
     });
 
@@ -194,7 +194,7 @@ export class StatsProcessingService implements OnModuleInit {
     this.prometheus.validators.set({ owner: Owner.OTHER, status: PrometheusValStatus.Slashed }, otherValidatorsCounts.slashed);
 
     // Other Sync Committee participation
-    this.prometheus.chainSyncParticipationAvgPercent.set(otherAvgSyncPercent ?? 0);
+    if (otherAvgSyncPercent != undefined) this.prometheus.chainSyncParticipationAvgPercent.set(otherAvgSyncPercent);
   }
 
   public async finalizeAppIterate(slot: bigint): Promise<void> {

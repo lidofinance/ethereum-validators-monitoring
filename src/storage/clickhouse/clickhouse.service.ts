@@ -16,7 +16,7 @@ import {
   validatorsCountWithMissProposeQuery,
   validatorsCountWithNegativeDeltaQuery,
   validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery,
-  userSyncParticipationAvgPercentsQuery,
+  userSyncParticipationAvgPercentQuery,
   operatorsSyncParticipationAvgPercentsQuery,
   operatorBalance24hDifferenceQuery,
 } from './clickhouse.constants';
@@ -271,7 +271,7 @@ export class ClickhouseService implements OnModuleInit {
         }
       }
       await this.retry(async () => await ws.exec());
-      return notUserPercents.reduce((a, b) => a + b, 0) / notUserPercents.length;
+      return notUserPercents.length ? notUserPercents.reduce((a, b) => a + b, 0) / notUserPercents.length : undefined;
     });
   }
 
@@ -308,8 +308,8 @@ export class ClickhouseService implements OnModuleInit {
   /**
    * Send query to Clickhouse and receives information about User Sync Committee participants
    */
-  public async getUserSyncParticipationAvgPercents(slot: bigint): Promise<SyncCommitteeParticipationAvgPercents> {
-    const ret = await this.retry(async () => this.db.query(userSyncParticipationAvgPercentsQuery(slot)).toPromise());
+  public async getUserSyncParticipationAvgPercent(slot: bigint): Promise<SyncCommitteeParticipationAvgPercents> {
+    const ret = await this.retry(async () => this.db.query(userSyncParticipationAvgPercentQuery(slot)).toPromise());
     return <SyncCommitteeParticipationAvgPercents>ret[0];
   }
 

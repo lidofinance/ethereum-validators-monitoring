@@ -187,7 +187,7 @@ export const validatorsCountWithMissProposeQuery = (fetchInterval: number, slot:
   `;
 };
 
-export const userSyncParticipationAvgPercentsQuery = (slot: string | bigint | number): string => `
+export const userSyncParticipationAvgPercentQuery = (slot: string | bigint | number): string => `
     SELECT
         avg(epoch_participation_percent) as avg_percent
     FROM
