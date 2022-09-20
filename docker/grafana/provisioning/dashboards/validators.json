@@ -497,7 +497,7 @@
           "refId": "A"
         }
       ],
-      "title": "Ongoing Lido Validators",
+      "title": "Ongoing User Validators",
       "type": "stat"
     },
     {
@@ -557,7 +557,7 @@
           "refId": "A"
         }
       ],
-      "title": "Pending Lido Validators",
+      "title": "Pending User Validators",
       "type": "stat"
     },
     {
@@ -624,7 +624,7 @@
           "refId": "A"
         }
       ],
-      "title": "Slashed Lido Validators",
+      "title": "Slashed User Validators",
       "type": "stat"
     },
     {
@@ -862,7 +862,7 @@
           "exemplar": true,
           "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"ongoing\"}",
           "interval": "",
-          "legendFormat": "Lido",
+          "legendFormat": "User",
           "refId": "A"
         },
         {
@@ -969,7 +969,7 @@
           "exemplar": true,
           "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"pending\"}",
           "interval": "",
-          "legendFormat": "Lido",
+          "legendFormat": "User",
           "refId": "A"
         },
         {
@@ -1075,7 +1075,7 @@
           "exemplar": true,
           "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"}",
           "interval": "",
-          "legendFormat": "Lido",
+          "legendFormat": "User",
           "refId": "A"
         },
         {
@@ -1336,7 +1336,7 @@
           "skip_comments": true
         }
       ],
-      "title": "Lido proposals (${epochs} epochs range)",
+      "title": "User proposals (${epochs} epochs range)",
       "type": "piechart"
     },
     {
@@ -1364,7 +1364,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Lido"
+              "options": "User"
             },
             "properties": [
               {
@@ -1435,8 +1435,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "  SELECT\n    sum(all) as Lido,\n    (32 * ${epochs} - Lido) as Other\n  FROM (\n  SELECT\n    nos_name,\n    SUM(a) as all,\n    SUM(p) as proposed,\n    SUM(m) as missed\n  FROM\n  (\n    SELECT\n      nos_name,\n      count(proposed) as a,\n      IF(proposed = 0, count(proposed), 0) as m,\n      IF(proposed = 1, count(proposed), 0) as p\n    FROM stats.validator_proposes\n    WHERE (slot_to_propose <= ${slot_number_var} AND slot_to_propose > (${slot_number_var} - ${fetch_interval_var} * ${epochs}))\n    GROUP BY nos_name, proposed\n  )\n  GROUP by nos_name\n  )",
-          "rawQuery": "SELECT\n    sum(all) as Lido,\n    (32 * 3 - Lido) as Other\n  FROM (\n  SELECT\n    nos_name,\n    SUM(a) as all,\n    SUM(p) as proposed,\n    SUM(m) as missed\n  FROM\n  (\n    SELECT\n      nos_name,\n      count(proposed) as a,\n      IF(proposed = 0, count(proposed), 0) as m,\n      IF(proposed = 1, count(proposed), 0) as p\n    FROM stats.validator_proposes\n    WHERE (slot_to_propose <= 4730175 AND slot_to_propose > (4730175 - 32 * 3))\n    GROUP BY nos_name, proposed\n  )\n  GROUP by nos_name\n  )",
+          "query": "  SELECT\n    sum(all) as User,\n    (32 * ${epochs} - User) as Other\n  FROM (\n  SELECT\n    nos_name,\n    SUM(a) as all,\n    SUM(p) as proposed,\n    SUM(m) as missed\n  FROM\n  (\n    SELECT\n      nos_name,\n      count(proposed) as a,\n      IF(proposed = 0, count(proposed), 0) as m,\n      IF(proposed = 1, count(proposed), 0) as p\n    FROM stats.validator_proposes\n    WHERE (slot_to_propose <= ${slot_number_var} AND slot_to_propose > (${slot_number_var} - ${fetch_interval_var} * ${epochs}))\n    GROUP BY nos_name, proposed\n  )\n  GROUP by nos_name\n  )",
+          "rawQuery": "SELECT\n    sum(all) as User,\n    (32 * 3 - User) as Other\n  FROM (\n  SELECT\n    nos_name,\n    SUM(a) as all,\n    SUM(p) as proposed,\n    SUM(m) as missed\n  FROM\n  (\n    SELECT\n      nos_name,\n      count(proposed) as a,\n      IF(proposed = 0, count(proposed), 0) as m,\n      IF(proposed = 1, count(proposed), 0) as p\n    FROM stats.validator_proposes\n    WHERE (slot_to_propose <= 4730175 AND slot_to_propose > (4730175 - 32 * 3))\n    GROUP BY nos_name, proposed\n  )\n  GROUP by nos_name\n  )",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1706,7 +1706,7 @@
           "skip_comments": true
         }
       ],
-      "title": "Lido sync participation (${epochs} epochs range)",
+      "title": "User sync participation (${epochs} epochs range)",
       "type": "piechart"
     },
     {
@@ -1734,7 +1734,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Lido"
+              "options": "User"
             },
             "properties": [
               {
@@ -1805,8 +1805,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "  SELECT\n    SUM(all) as Lido,\n    (512 - Lido) as Other\n  FROM (\n    SELECT\n      nos_name,\n      SUM(a) as all\n    FROM\n    (\n      SELECT\n        nos_name,\n        count(epoch_participation_percent) as a\n        FROM\n          stats.validator_sync\n        WHERE (last_slot_of_epoch <= ${slot_number_var} AND last_slot_of_epoch > (${slot_number_var} - ${fetch_interval_var}))\n      GROUP BY nos_name, epoch_participation_percent, epoch_chain_participation_percent_avg\n    )\n    GROUP by nos_name\n  )",
-          "rawQuery": "SELECT\n    SUM(all) as Lido,\n    (512 - Lido) as Other\n  FROM (\n    SELECT\n      nos_name,\n      SUM(a) as all\n    FROM\n    (\n      SELECT\n        nos_name,\n        count(epoch_participation_percent) as a\n        FROM\n          stats.validator_sync\n        WHERE (last_slot_of_epoch <= 4730175 AND last_slot_of_epoch > (4730175 - 32))\n      GROUP BY nos_name, epoch_participation_percent, epoch_chain_participation_percent_avg\n    )\n    GROUP by nos_name\n  )",
+          "query": "  SELECT\n    SUM(all) as User,\n    (512 - User) as Other\n  FROM (\n    SELECT\n      nos_name,\n      SUM(a) as all\n    FROM\n    (\n      SELECT\n        nos_name,\n        count(epoch_participation_percent) as a\n        FROM\n          stats.validator_sync\n        WHERE (last_slot_of_epoch <= ${slot_number_var} AND last_slot_of_epoch > (${slot_number_var} - ${fetch_interval_var}))\n      GROUP BY nos_name, epoch_participation_percent, epoch_chain_participation_percent_avg\n    )\n    GROUP by nos_name\n  )",
+          "rawQuery": "SELECT\n    SUM(all) as User,\n    (512 - User) as Other\n  FROM (\n    SELECT\n      nos_name,\n      SUM(a) as all\n    FROM\n    (\n      SELECT\n        nos_name,\n        count(epoch_participation_percent) as a\n        FROM\n          stats.validator_sync\n        WHERE (last_slot_of_epoch <= 4730175 AND last_slot_of_epoch > (4730175 - 32))\n      GROUP BY nos_name, epoch_participation_percent, epoch_chain_participation_percent_avg\n    )\n    GROUP by nos_name\n  )",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -2056,7 +2056,7 @@
           "skip_comments": true
         }
       ],
-      "title": "Lido attestations (${epochs} epochs range)",
+      "title": "User attestations (${epochs} epochs range)",
       "type": "piechart"
     },
     {
@@ -2730,7 +2730,7 @@
           "type": "table"
         },
         {
-          "description": "Lido only",
+          "description": "User only",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -2897,7 +2897,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "lido"
+                  "options": "user"
                 },
                 "properties": [
                   {
@@ -2970,7 +2970,7 @@
               "exemplar": true,
               "expr": "ethereum_validators_monitoring_user_sync_participation_avg_percent",
               "interval": "",
-              "legendFormat": "lido",
+              "legendFormat": "user",
               "refId": "A"
             },
             {
@@ -2986,7 +2986,7 @@
               "refId": "B"
             }
           ],
-          "title": "Lido vs Other",
+          "title": "User vs Other",
           "type": "timeseries"
         },
         {
@@ -3422,7 +3422,7 @@
           "type": "table"
         },
         {
-          "description": "Lido only",
+          "description": "User only",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -3652,7 +3652,7 @@
               "skip_comments": true
             }
           ],
-          "title": "Slashed validators (Lido)",
+          "title": "Slashed validators (User)",
           "type": "table"
         }
       ],
@@ -3859,7 +3859,7 @@
           "visible": true
         }
       ],
-      "title": "Slashed validators (Lido) (historic)",
+      "title": "Slashed validators (User) (historic)",
       "type": "timeseries"
     }
   ],

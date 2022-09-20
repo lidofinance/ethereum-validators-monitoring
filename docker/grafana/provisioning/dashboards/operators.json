@@ -603,7 +603,7 @@
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"ongoing\",nos_name!=\"${nos_name_var}\"})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Lido (other)",
+          "legendFormat": "User (other)",
           "refId": "B"
         }
       ],
@@ -710,7 +710,7 @@
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"pending\",nos_name!=\"${nos_name_var}\"})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Lido (other)",
+          "legendFormat": "User (other)",
           "refId": "B"
         }
       ],
@@ -816,7 +816,7 @@
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"slashed\",nos_name!=\"${nos_name_var}\"})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Lido (other)",
+          "legendFormat": "User (other)",
           "refId": "B"
         }
       ],
@@ -1651,7 +1651,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Lido (other)"
+                  "options": "User (other)"
                 },
                 "properties": [
                   {
@@ -1751,7 +1751,7 @@
               "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name!='${nos_name_var}'})",
               "hide": false,
               "interval": "",
-              "legendFormat": "Lido (other)",
+              "legendFormat": "User (other)",
               "refId": "B"
             },
             {
@@ -2220,7 +2220,7 @@
           "type": "table"
         },
         {
-          "description": "Lido only",
+          "description": "User only",
           "fieldConfig": {
             "defaults": {
               "color": {
