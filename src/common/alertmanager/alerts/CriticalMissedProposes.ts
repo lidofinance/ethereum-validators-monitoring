@@ -12,7 +12,7 @@ export class CriticalMissedProposes extends Alert {
   async alertRule(bySlot: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
     const operators = await this.storage.getUserNodeOperatorsStats(bySlot);
-    const proposes = await this.storage.getUserNodeOperatorsProposesStats(bySlot);
+    const proposes = await this.storage.getUserNodeOperatorsProposesStats(bySlot); // ~12h range
     for (const operator of operators.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
       const proposeStats = proposes.find((a) => a.nos_name == operator.nos_name);
       if (!proposeStats) continue;

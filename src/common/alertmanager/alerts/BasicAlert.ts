@@ -32,7 +32,7 @@ export abstract class Alert {
 
   abstract alertRule(bySlot: bigint): Promise<AlertRuleResult>;
 
-  abstract sendRule(ruleResult: AlertRuleResult): boolean;
+  abstract sendRule(ruleResult?: AlertRuleResult): boolean;
 
   abstract alertBody(ruleResult: AlertRuleResult): AlertRequestBody;
 
