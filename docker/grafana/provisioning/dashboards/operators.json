@@ -21,8 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
-  "iteration": 1663584195545,
+  "iteration": 1663681740737,
   "links": [
     {
       "asDropdown": false,
@@ -107,7 +106,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -115,7 +114,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_data_actuality",
+          "expr": "sum(ethereum_validators_monitoring_data_actuality)",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -125,6 +124,7 @@
       "type": "stat"
     },
     {
+      "description": "Last processed for a specified time period",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -167,7 +167,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -175,7 +175,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_slot_number",
+          "expr": "sum(ethereum_validators_monitoring_slot_number)",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -185,6 +185,7 @@
       "type": "stat"
     },
     {
+      "description": "Last processed for a specified time period",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -228,7 +229,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -236,7 +237,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_slot_number",
+          "expr": "sum(ethereum_validators_monitoring_slot_number) / 32",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -299,7 +300,7 @@
         "text": {},
         "textMode": "name"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -359,7 +360,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -367,7 +368,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_user_validators{status=\"ongoing\",nos_name=\"${nos_name_var}\"}",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"ongoing\",nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -419,7 +420,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -427,7 +428,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_user_validators{status=\"pending\",nos_name=\"${nos_name_var}\"}",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"pending\",nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -486,7 +487,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -494,7 +495,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_user_validators{status=\"slashed\",nos_name=\"${nos_name_var}\"}",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"slashed\",nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -589,7 +590,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_user_validators{status=\"ongoing\",nos_name=\"${nos_name_var}\"}",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"ongoing\",nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "Selected",
           "refId": "A"
@@ -696,7 +697,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_user_validators{status=\"pending\",nos_name=\"${nos_name_var}\"}",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"pending\",nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "Selected",
           "refId": "A"
@@ -802,7 +803,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_user_validators{status=\"slashed\",nos_name=\"${nos_name_var}\"}",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"slashed\",nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "Selected",
           "refId": "A"
@@ -877,8 +878,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               },
@@ -925,7 +925,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_operator_balance_24h_difference / 10 ^ 9",
+              "expr": "sum(ethereum_validators_monitoring_operator_balance_24h_difference{nos_name=\"${nos_name_var}\"}) / 10 ^ 9",
               "hide": false,
               "interval": "",
               "legendFormat": "delta",
@@ -980,8 +980,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "transparent",
@@ -1018,7 +1017,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_validator_balances_delta{nos_name=\"${nos_name_var}\"}",
+              "expr": "sum(ethereum_validators_monitoring_validator_balances_delta{nos_name=\"${nos_name_var}\"})",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -1071,8 +1070,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "transparent",
@@ -1109,7 +1107,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_name=\"${nos_name_var}\"}",
+              "expr": "sum(ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_name=\"${nos_name_var}\"})",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -1139,8 +1137,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -1225,7 +1222,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.4.6",
           "targets": [
             {
               "datasource": {
@@ -1291,8 +1288,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-red",
-                    "value": null
+                    "color": "dark-red"
                   }
                 ]
               },
@@ -1326,7 +1322,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name=\"${nos_name_var}\"}",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name=\"${nos_name_var}\"})",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -1372,8 +1368,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -1429,7 +1424,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/s﻿﻿lot/${__value.raw}"
+                        "url": "https://beaconcha.in/slot/${__value.raw}"
                       }
                     ]
                   }
@@ -1460,7 +1455,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.4.6",
           "targets": [
             {
               "datasource": {
@@ -1523,8 +1518,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -1561,7 +1555,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_validator_count_miss_propose{nos_name='${nos_name_var}'}",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_miss_propose{nos_name='${nos_name_var}'})",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -1628,8 +1622,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "red",
@@ -1736,7 +1729,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_chain_sync_participation_avg_percent",
+              "expr": "sum(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
               "hide": false,
               "interval": "",
               "legendFormat": "Rest chain",
@@ -1760,7 +1753,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name='${nos_name_var}'}",
+              "expr": "sum(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name='${nos_name_var}'})",
               "hide": false,
               "interval": "",
               "legendFormat": "${nos_name_var}",
@@ -1826,8 +1819,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -1912,7 +1904,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.4.6",
           "targets": [
             {
               "datasource": {
@@ -1974,8 +1966,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2028,7 +2019,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_name='${nos_name_var}'}",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_name='${nos_name_var}'})",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -2107,8 +2098,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2197,7 +2187,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.4.6",
           "targets": [
             {
               "datasource": {
@@ -2260,8 +2250,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2298,7 +2287,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_validator_count_miss_attestation{nos_name='${nos_name_var}'}",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_miss_attestation{nos_name='${nos_name_var}'})",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -2416,7 +2405,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -2504,7 +2493,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/s﻿﻿lot/${__value.raw}"
+                    "url": "https://beaconcha.in/slot/${__value.raw}"
                   }
                 ]
               }
@@ -2535,7 +2524,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -2637,7 +2626,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -2649,7 +2638,7 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    status,\n    validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and nos_name = '${nos_name_var} and slot = ${slot_number_var}\nLIMIT ${limit}",
+          "query": "SELECT\n    status,\n    validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and nos_name = '${nos_name_var}' and slot = ${slot_number_var}\nLIMIT ${limit}",
           "rawQuery": "SELECT\n    status,\n    validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and nos_name = 'Allnodes' and slot = 4728479\nLIMIT 100",
           "refId": "A",
           "round": "0s",
@@ -2739,7 +2728,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -2902,7 +2891,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -2927,14 +2916,14 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 34,
+  "schemaVersion": 35,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "Allnodes",
           "value": "Allnodes"
         },
@@ -2959,8 +2948,8 @@
       {
         "current": {
           "selected": false,
-          "text": "4693375",
-          "value": "4693375"
+          "text": "3931071",
+          "value": "3931071"
         },
         "definition": "query_result(ethereum_validators_monitoring_slot_number)",
         "description": "Last slot number",
@@ -3007,8 +2996,8 @@
       {
         "current": {
           "selected": false,
-          "text": "0",
-          "value": "0"
+          "text": "10",
+          "value": "10"
         },
         "definition": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
         "description": "Sync participation distance down from Blockchain average",
@@ -3031,8 +3020,8 @@
       {
         "current": {
           "selected": false,
-          "text": "3",
-          "value": "3"
+          "text": "1",
+          "value": "1"
         },
         "datasource": {
           "type": "vertamedia-clickhouse-datasource",

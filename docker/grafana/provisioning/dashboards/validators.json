@@ -21,8 +21,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 10,
-  "iteration": 1663586195753,
+  "id": 15,
+  "iteration": 1663677853695,
   "links": [
     {
       "asDropdown": false,
@@ -115,7 +115,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_data_actuality",
+          "expr": "sum(ethereum_validators_monitoring_data_actuality)",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -176,7 +176,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_slot_number",
+          "expr": "sum(ethereum_validators_monitoring_slot_number)",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -236,7 +236,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_contract_keys_total{type=\"total\"}",
+          "expr": "sum(ethereum_validators_monitoring_contract_keys_total{type=\"total\"})",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -296,7 +296,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_steth_buffered_ether_total",
+          "expr": "sum(ethereum_validators_monitoring_steth_buffered_ether_total)",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -304,6 +304,154 @@
       ],
       "title": "Buffered ether",
       "type": "stat"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "id": 94,
+      "options": {
+        "inlineEditing": false,
+        "root": {
+          "anchor": {
+            "left": true,
+            "top": true
+          },
+          "background": {
+            "color": {
+              "fixed": "#ffffff00"
+            },
+            "image": {
+              "field": "",
+              "fixed": "",
+              "mode": "field"
+            },
+            "size": "original"
+          },
+          "elements": [
+            {
+              "anchor": {
+                "left": true,
+                "top": true
+              },
+              "background": {
+                "color": {
+                  "fixed": "#a352cc40"
+                },
+                "image": {
+                  "mode": "fixed"
+                },
+                "size": "original"
+              },
+              "config": {
+                "align": "left",
+                "valign": "middle"
+              },
+              "name": "Element 3",
+              "placement": {
+                "height": 516,
+                "left": 0,
+                "top": 0,
+                "width": 1406
+              },
+              "type": "text-box"
+            },
+            {
+              "anchor": {
+                "left": true,
+                "top": true
+              },
+              "background": {
+                "size": "original"
+              },
+              "border": {
+                "width": 0
+              },
+              "config": {
+                "fill": {
+                  "fixed": "#FFF899"
+                },
+                "path": {
+                  "fixed": "https://support.ledger.com/hc/article_attachments/4405133294609/lido.svg",
+                  "mode": "fixed"
+                }
+              },
+              "name": "Element 2",
+              "placement": {
+                "height": 114,
+                "left": 79,
+                "top": 20,
+                "width": 114
+              },
+              "type": "icon"
+            },
+            {
+              "anchor": {
+                "left": true,
+                "top": true
+              },
+              "background": {
+                "color": {
+                  "fixed": "transparent"
+                },
+                "size": "original"
+              },
+              "config": {
+                "align": "center",
+                "size": 20,
+                "text": {
+                  "fixed": "Made by Lido",
+                  "mode": "fixed"
+                },
+                "valign": "middle"
+              },
+              "name": "Element 1",
+              "placement": {
+                "height": 122,
+                "left": 12,
+                "top": 14,
+                "width": 88
+              },
+              "type": "text-box"
+            }
+          ],
+          "name": "Element 1663323860892",
+          "placement": {
+            "height": 100,
+            "left": 0,
+            "top": 0,
+            "width": 100
+          },
+          "type": "group"
+        }
+      },
+      "pluginVersion": "8.4.6",
+      "type": "canvas"
     },
     {
       "description": "Last processed for a specified time period",
@@ -358,7 +506,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_slot_number / 32",
+          "expr": "sum(ethereum_validators_monitoring_slot_number) / 32",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -418,7 +566,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_contract_keys_total{type=\"used\"}",
+          "expr": "sum(ethereum_validators_monitoring_contract_keys_total{type=\"used\"})",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -491,7 +639,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"ongoing\"}",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"ongoing\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -551,7 +699,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"pending\"}",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"pending\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -618,7 +766,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"}",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "refId": "A"
@@ -860,7 +1008,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"ongoing\"}",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"ongoing\"})",
           "interval": "",
           "legendFormat": "User",
           "refId": "A"
@@ -871,7 +1019,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"other\",status=\"ongoing\"}",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"ongoing\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
@@ -967,7 +1115,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"pending\"}",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"pending\"})",
           "interval": "",
           "legendFormat": "User",
           "refId": "A"
@@ -978,7 +1126,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"other\",status=\"pending\"}",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"pending\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
@@ -1073,7 +1221,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"}",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"})",
           "interval": "",
           "legendFormat": "User",
           "refId": "A"
@@ -1084,7 +1232,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"other\",status=\"slashed\"}",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"slashed\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
@@ -2161,7 +2309,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_total_balance_24h_difference / 10 ^ 9",
+              "expr": "sum(ethereum_validators_monitoring_total_balance_24h_difference) / 10 ^ 9",
               "hide": false,
               "interval": "",
               "legendFormat": "delta",
@@ -2338,7 +2486,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_validator_count_with_negative_balances_delta",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_negative_balances_delta)",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -2575,7 +2723,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_validator_quantile_001_balances_delta",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta)",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -2619,8 +2767,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2676,7 +2823,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/s﻿﻿lot/${__value.raw}"
+                        "url": "https://beaconcha.in/slot/${__value.raw}"
                       }
                     ]
                   }
@@ -2769,8 +2916,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -2807,7 +2953,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_validator_count_miss_propose",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose)",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -2874,8 +3020,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "red",
@@ -2968,7 +3113,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_user_sync_participation_avg_percent",
+              "expr": "sum(ethereum_validators_monitoring_user_sync_participation_avg_percent)",
               "interval": "",
               "legendFormat": "user",
               "refId": "A"
@@ -2979,7 +3124,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_chain_sync_participation_avg_percent",
+              "expr": "sum(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
               "hide": false,
               "interval": "",
               "legendFormat": "other",
@@ -3044,8 +3189,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3192,8 +3336,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -3230,7 +3373,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg)",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -3309,8 +3452,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3348,7 +3490,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://prater.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -3461,8 +3603,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -3499,7 +3640,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_validator_count_miss_attestation",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation)",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -3542,8 +3683,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -3572,7 +3712,7 @@
                     "value": [
                       {
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://prater.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   }
@@ -3749,7 +3889,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_data_actuality",
+          "expr": "sum(ethereum_validators_monitoring_data_actuality)",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -3845,7 +3985,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"}",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"})",
           "interval": "",
           "legendFormat": "Number of slashed validators",
           "refId": "A"
@@ -3863,7 +4003,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "",
+  "refresh": "1m",
   "schemaVersion": 35,
   "style": "dark",
   "tags": [],
@@ -3975,6 +4115,6 @@
   "timezone": "",
   "title": "Validators",
   "uid": "HRgPmpNnz",
-  "version": 14,
+  "version": 15,
   "weekStart": ""
 }
