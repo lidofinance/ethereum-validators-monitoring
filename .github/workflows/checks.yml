@@ -1,0 +1,9 @@
+name: Static checks
+
+on: pull_request
+
+jobs:
+  security:
+    uses: lidofinance/linters/.github/workflows/security.yml@master
+  docker:
+    uses: lidofinance/linters/.github/workflows/docker.yml@master

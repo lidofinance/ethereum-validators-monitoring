@@ -18,7 +18,6 @@ import { bigintRange } from 'common/functions/range';
 import { RegistryService } from 'common/validators-registry';
 import {
   CheckAttestersDutyResult,
-  CheckSyncCommitteeParticipationResult,
   ClickhouseService,
   SlotAttestation,
   ValidatorIdentifications,
@@ -29,7 +28,7 @@ import { RegistrySourceKeysIndexed } from 'common/validators-registry/registry-s
 interface FetchFinalizedEpochDataResult {
   attestations: CheckAttestersDutyResult;
   proposeDutiesResult: ProposerDutyInfo[];
-  syncResult: CheckSyncCommitteeParticipationResult;
+  syncResult: SyncCommitteeValidator[];
 }
 
 @Injectable()
@@ -49,6 +48,8 @@ export class DataProcessingService implements OnModuleInit {
   public async onModuleInit(): Promise<void> {
     this.latestSlotInDb = await this.storage.getMaxSlot();
     this.firstSlotInDb = await this.storage.getMinSlot();
+    this.prometheus.slotTime = await this.getSlotTime(this.latestSlotInDb);
+    this.prometheus.slotNumber.set(Number(this.latestSlotInDb));
   }
 
   public async getSlotTime(slot: bigint): Promise<bigint> {
@@ -59,7 +60,7 @@ export class DataProcessingService implements OnModuleInit {
     slotToWrite: bigint,
     stateRoot: string,
     slotNumber: bigint,
-  ): Promise<{ userIDs: ValidatorIdentifications[]; otherCounts: ValidatorsStatusStats }> {
+  ): Promise<{ userIDs: ValidatorIdentifications[]; otherValidatorsCounts: ValidatorsStatusStats; otherAvgSyncPercent: number }> {
     return await this.prometheus.trackTask('process-write-finalized-data', async () => {
       try {
         if (slotToWrite <= this.latestSlotInDb) {
@@ -70,22 +71,26 @@ export class DataProcessingService implements OnModuleInit {
         const epoch = slotToWrite / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
         const keysIndexed = await this.registryService.getActualKeysIndexed(Number(slotTime));
         const fetcherWriter = this.fetcherWriter(slotToWrite, epoch, stateRoot, slotNumber, slotTime, keysIndexed);
-        let otherCounts: ValidatorsStatusStats;
+        let otherValidatorsCounts: ValidatorsStatusStats;
+        let otherAvgSyncPercent: number;
         // todo: optimize it
         let userIDs = await this.storage.getUserValidatorIDs(this.latestSlotInDb);
         if (this.latestSlotInDb == 0n || userIDs?.length == 0) {
           // First iteration or new validators fetched. We should fetch general validators info firstly (id)
           const slotRes = await fetcherWriter.fetchSlotData();
-          otherCounts = await fetcherWriter.writeSlotData(slotRes);
+          otherValidatorsCounts = await fetcherWriter.writeSlotData(slotRes);
           userIDs = await this.storage.getUserValidatorIDs(slotToWrite);
           const epochRes = await fetcherWriter.fetchEpochData(userIDs);
-          await fetcherWriter.writeEpochData(userIDs, epochRes);
+          otherAvgSyncPercent = await fetcherWriter.writeEpochData(userIDs, epochRes);
         } else {
           const [slotRes, epochRes] = await Promise.all([fetcherWriter.fetchSlotData(), fetcherWriter.fetchEpochData(userIDs)]);
-          [otherCounts] = await Promise.all([fetcherWriter.writeSlotData(slotRes), fetcherWriter.writeEpochData(userIDs, epochRes)]);
+          [otherValidatorsCounts, otherAvgSyncPercent] = await Promise.all([
+            fetcherWriter.writeSlotData(slotRes),
+            fetcherWriter.writeEpochData(userIDs, epochRes),
+          ]);
         }
         this.latestSlotInDb = slotToWrite;
-        return { userIDs, otherCounts };
+        return { userIDs, otherValidatorsCounts, otherAvgSyncPercent };
       } catch (e) {
         this.logger.error('Error while fetching and writing new finalized slot or epoch info');
         this.logger.error(e as Error);
@@ -123,24 +128,15 @@ export class DataProcessingService implements OnModuleInit {
     return await this.clClient.getChunkedAttesterDuties(epoch, dependentRoot, valIndexes);
   }
 
-  protected async getSyncCommitteeIndexedValidators(
-    epoch: bigint,
-    stateRoot: string,
-    userIndexes: string[],
-  ): Promise<SyncCommitteeValidator[][]> {
+  protected async getSyncCommitteeIndexedValidators(epoch: bigint, stateRoot: string): Promise<SyncCommitteeValidator[]> {
     const syncCommitteeInfo = await this.clClient.getSyncCommitteeInfo(stateRoot, epoch);
-    const userSyncCommitteeVals: SyncCommitteeValidator[] = [];
-    const allSyncCommitteeVals: SyncCommitteeValidator[] = [];
-    syncCommitteeInfo.validators.forEach((v, i) => {
-      const indexed: SyncCommitteeValidator = {
+    return syncCommitteeInfo.validators.map((v, i) => {
+      return {
         in_committee_index: i,
         validator_index: v,
         epoch_participation_percent: 0,
       };
-      allSyncCommitteeVals.push(indexed);
-      if (userIndexes.includes(v)) userSyncCommitteeVals.push(indexed);
     });
-    return [userSyncCommitteeVals, allSyncCommitteeVals];
   }
 
   protected fetcherWriter = (
@@ -174,7 +170,7 @@ export class DataProcessingService implements OnModuleInit {
         const [attestations, proposeDutiesResult, syncResult] = await Promise.all([
           this.checkAttesterDuties(epoch, attesterDutyDependentRoot, userIndexes),
           this.checkProposerDuties(epoch, proposerDutyDependentRoot, userIndexes),
-          this.checkSyncCommitteeDuties(epoch, stateRoot, userIndexes),
+          this.checkSyncCommitteeDuties(epoch, stateRoot),
         ]);
         return { attestations, proposeDutiesResult, syncResult };
       },
@@ -183,10 +179,8 @@ export class DataProcessingService implements OnModuleInit {
         await this.storage.writeAttestations(epochRes.attestations, slotTime, keysIndexed);
         this.logger.log(`Writing ${epochRes.proposeDutiesResult.length} proposes result to DB for ${epoch} epoch`);
         await this.storage.writeProposes(epochRes.proposeDutiesResult, slotTime, keysIndexed);
-        this.logger.log(
-          `Writing ${epochRes.syncResult.user_validators.length} Sync Committee validators participation info to DB for ${epoch} epoch`,
-        );
-        await this.storage.writeSyncs(epochRes.syncResult, slotTime, keysIndexed, userIDs, epoch);
+        this.logger.log(`Writing Sync Committee validators participation info to DB for ${epoch} epoch`);
+        return await this.storage.writeSyncs(epochRes.syncResult, slotTime, keysIndexed, userIDs, epoch);
       },
     };
   };
@@ -276,19 +270,12 @@ export class DataProcessingService implements OnModuleInit {
   /**
    * Check Sync committee duties: get duties info by our validators keys and do bitwise check
    **/
-  protected async checkSyncCommitteeDuties(
-    epoch: bigint,
-    stateRoot: string,
-    userIndexes: string[],
-  ): Promise<CheckSyncCommitteeParticipationResult> {
+  protected async checkSyncCommitteeDuties(epoch: bigint, stateRoot: string): Promise<SyncCommitteeValidator[]> {
     return await this.prometheus.trackTask('check-sync-duties', async () => {
       this.logger.log(`Start getting sync committee participation info`);
       const SyncCommitteeBits = new BitVectorType({ length: 512 }); // sync participants count in committee
-      const [user, all] = await this.getSyncCommitteeIndexedValidators(epoch, stateRoot, userIndexes);
+      const indexedValidators = await this.getSyncCommitteeIndexedValidators(epoch, stateRoot);
       this.logger.log(`Processing sync committee participation info`);
-      if (user.length === 0) {
-        return { all_avg_participation: '', user_validators: [] };
-      }
       const epochBlocks: ShortBeaconBlockInfo[] = [];
       const missedSlots: bigint[] = [];
       const startSlot = epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
@@ -300,22 +287,14 @@ export class DataProcessingService implements OnModuleInit {
       const epochBlocksBits = epochBlocks.map((block) =>
         Array.from(SyncCommitteeBits.deserialize(fromHexString(block.message.body.sync_aggregate.sync_committee_bits))),
       );
-      for (const indexedValidator of all) {
-        indexedValidator.epoch_participation_percent = (() => {
-          let sync_count = 0;
-          for (const bits of epochBlocksBits) {
-            if (bits[indexedValidator.in_committee_index]) sync_count++;
-          }
-          return (sync_count / epochBlocksBits.length) * 100;
-        })();
+      for (const indexedValidator of indexedValidators) {
+        let sync_count = 0;
+        for (const bits of epochBlocksBits) {
+          if (bits[indexedValidator.in_committee_index]) sync_count++;
+        }
+        indexedValidator.epoch_participation_percent = (sync_count / epochBlocksBits.length) * 100;
       }
-      const allAvgParticipation = (all.reduce((a, b) => a + b.epoch_participation_percent, 0) / all.length).toFixed(2);
-      const userValidators = all.filter((v) => user.map((l) => l.validator_index).includes(v.validator_index));
-
-      return {
-        all_avg_participation: allAvgParticipation,
-        user_validators: userValidators,
-      };
+      return indexedValidators;
     });
   }
 }

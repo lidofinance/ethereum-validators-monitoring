@@ -51,7 +51,7 @@ tests:
               summary: "Operators have slashed validators"
               description: "Number of slashed validators per operator"
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=120000.000000&to=1020000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=120000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
           - exp_labels:
               severity: critical
@@ -62,7 +62,7 @@ tests:
               summary: "Operators have slashed validators"
               description: "Number of slashed validators per operator"
               field_name: "Operator 2"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=120000.000000&to=1020000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=120000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - eval_time: 25m
         alertname: UserSlashedValidators
@@ -76,7 +76,7 @@ tests:
               summary: "Operators have slashed validators"
               description: "Number of slashed validators per operator"
               field_name: "Operator 2"
-              field_value: "[3](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=600000.000000&to=1500000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=600000.000000&to=1500000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
   - interval: 10s
