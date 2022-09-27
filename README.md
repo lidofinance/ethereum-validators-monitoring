@@ -75,6 +75,7 @@ If you want to implement your own source, it must match [RegistrySource interfac
 | START_SLOT                                      | Ethereum consensus layer slot for start Balval                                                                     | false        | 1518000                                 |
 | VALIDATOR_REGISTRY_SOURCE                       | Validators registry source. Possible values: lido (Lido contract), file                                            | false        | lido                                    |
 | VALIDATOR_REGISTRY_FILE_SOURCE_PATH             | Validators registry file source path. Required if you set 'file' to `VALIDATOR_REGISTRY_SOURCE`                    | false        | ./docker/validators/custom_mainnet.yaml |
+| VALIDATOR_REGISTRY_LIDO_SOURCE_DB_STORE_PATH    | Validators registry source db store path. Required if you set 'lido' to `VALIDATOR_REGISTRY_SOURCE`                | false        | ./docker/validators/lido_mainnet.db     |
 | SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG | Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad | false        | 0                                       |
 | SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG   | Number epochs after which we think that our sync participation is bad and alert about that                         | false        | 3                                       |
 | ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY        | Maximum inclusion delay after which we think that attestation is bad                                               | false        | 5                                       |
@@ -91,11 +92,12 @@ You should pass env var `CRITICAL_ALERTS_ALERTMANAGER_URL=http://<alertmanager_h
 
 And if `ethereum_validators_monitoring_data_actuality < 1h` it allows you to receive alerts from table bellow
 
-| Alert name                 | Description                                                                                                     | If fired repeat every | If value increased repeat every |
-|----------------------------|-----------------------------------------------------------------------------------------------------------------|-----------------------|---------------------------------|
-| CriticalMissedProposes     | More than 1/3 blocks from Node Operator duties was missed in the last 12 hours                                  | 6h                    | -                               |
-| CriticalNegativeDelta      | More than 1/3 Node Operator validators with negative balance delta (between current and 6 epochs ago)           | 6h                    | 1h                              |
-| CriticalMissedAttestations | More than 1/3 Node Operator validators with missed attestations in the last {{ BAD_ATTESTATION_EPOCHS }} epochs | 6h                    | 1h                              |
+| Alert name                 | Description                                                                                                     | If fired repeat | If value increased repeat |
+|----------------------------|-----------------------------------------------------------------------------------------------------------------|-----------------|---------------------------|
+| CriticalSlashing           | At least one validator was slashed                                                                              | instant         | -                         |
+| CriticalMissedProposes     | More than 1/3 blocks from Node Operator duties was missed in the last 12 hours                                  | every 6h        | -                         |
+| CriticalNegativeDelta      | More than 1/3 Node Operator validators with negative balance delta (between current and 6 epochs ago)           | every 6h        | every 1h                  |
+| CriticalMissedAttestations | More than 1/3 Node Operator validators with missed attestations in the last {{ BAD_ATTESTATION_EPOCHS }} epochs | every 6h        | every 1h                  |
 
 
 ## Application metrics
