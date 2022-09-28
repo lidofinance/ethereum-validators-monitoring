@@ -27,7 +27,8 @@ import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
 interface RequestRetryOptions {
   maxRetries?: number;
   dataOnly?: boolean;
-  fallbackConditionCallback?: (e: any) => any;
+  useFallbackOnRejected?: (e: any) => boolean;
+  useFallbackOnResolved?: (r: any) => boolean;
 }
 
 @Injectable()
@@ -35,7 +36,8 @@ export class ConsensusProviderService {
   protected apiUrls: string[];
   protected version = '';
   protected genesisTime = 0n;
-  protected defaultMaxSlotDeepCount = 32 * 5;
+  protected defaultMaxSlotDeepCount = 32;
+  protected lastFinalizedSlot = { slot: 0n, fetchTime: 0 };
 
   protected endpoints = {
     version: 'eth/v1/node/version',
@@ -92,7 +94,22 @@ export class ConsensusProviderService {
   public async getBeaconBlockHeader(state: bigint | string, maxRetries = 3): Promise<ShortBeaconBlockHeader> {
     const blockHeader = await this.retryRequest<BlockHeaderResponse>(
       (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(state)),
-      { maxRetries, fallbackConditionCallback: (e) => 404 != e.$httpCode },
+      {
+        maxRetries,
+        useFallbackOnResolved: (r) => {
+          if (state == 'finalized') {
+            if (BigInt(r.data.header.message.slot) > this.lastFinalizedSlot.slot) {
+              this.lastFinalizedSlot = { slot: BigInt(r.data.header.message.slot), fetchTime: Number(Date.now()) };
+            } else if (Number(Date.now()) - this.lastFinalizedSlot.fetchTime > 420 * 1000) {
+              // if 'finalized' slot doesn't change ~7m we must switch to fallback
+              this.logger.error("Finalized slot hasn't changed in ~7m");
+              return true;
+            }
+          }
+          // for other states don't use fallback on resolved
+          return false;
+        },
+      },
     );
 
     return {
@@ -111,7 +128,8 @@ export class ConsensusProviderService {
         this.logger.error('Unexpected status code while fetching block header');
         throw e;
       }
-      const someNotMissedNextBlock = await this.getNextNotMissedBlockHeader(slot);
+      // if block 64 is missed, try to get next not missed block header
+      const someNotMissedNextBlock = await this.getNextNotMissedBlockHeader(slot + 1n);
 
       this.logger.log(
         `Found next not missed slot [${
@@ -119,6 +137,7 @@ export class ConsensusProviderService {
         }] root [${someNotMissedNextBlock.blockRoot.toString()}] after slot [${slot}]`,
       );
 
+      // and get the closest finalized block header in epoch by root from next
       const [isMissed, notMissedPreviousBlock] = await this.checkSlotIsMissed(slot, someNotMissedNextBlock);
 
       if (isMissed) {
@@ -233,7 +252,7 @@ export class ConsensusProviderService {
   public async getBlockInfo(block: string | bigint): Promise<ShortBeaconBlockInfo> {
     return <ShortBeaconBlockInfo>await this.retryRequest((apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(block)), {
       maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
-      fallbackConditionCallback: (e) => 404 != e.$httpCode,
+      useFallbackOnRejected: (e) => 404 != e.$httpCode,
     }).catch((e) => {
       if (404 != e.$httpCode) {
         this.logger.error('Unexpected status code while fetching block info');
@@ -328,35 +347,44 @@ export class ConsensusProviderService {
   }
 
   protected async retryRequest<T>(callback: (apiURL: string) => any, options?: RequestRetryOptions): Promise<T> {
-    const [maxRetries, dataOnly, fallbackConditionCallback] = [
-      options?.maxRetries ?? 5,
-      options?.dataOnly != undefined ? options.dataOnly : true,
-      options?.fallbackConditionCallback != undefined ? options.fallbackConditionCallback : () => true,
-    ];
-    const retry = retrier(this.logger, maxRetries, 100, 10000, true);
+    options = {
+      maxRetries: options?.maxRetries ?? 5,
+      dataOnly: options?.dataOnly ?? true,
+      useFallbackOnRejected: options?.useFallbackOnRejected ?? (() => true), //  use fallback on error as default
+      useFallbackOnResolved: options?.useFallbackOnResolved ?? (() => false), // do NOT use fallback on success as default
+    };
+    const retry = retrier(this.logger, options.maxRetries, 100, 10000, true);
     let res;
+    let err;
     for (let i = 0; i < this.apiUrls.length; i++) {
       if (res) break;
       res = await callback(this.apiUrls[i])
         .catch(rejectDelay(this.config.get('CL_API_RETRY_DELAY_MS')))
         .catch(() => retry(() => callback(this.apiUrls[i])))
         .catch((e: any) => {
-          if (fallbackConditionCallback(e)) {
-            if (this.apiUrls.length == 1) {
-              this.logger.warn('Backup CL API URLs not passed');
-              throw e;
-            }
-            this.logger.error('Error while doing CL API request. Will try to switch to another API URL');
+          if (options.useFallbackOnRejected(e)) {
+            err = e;
             return undefined;
           }
           throw e;
+        })
+        .then((r: any) => {
+          if (options.useFallbackOnResolved(r)) {
+            err = Error('Unresolved data on a successful CL API response');
+            return undefined;
+          }
+          return r;
         });
       if (i == this.apiUrls.length - 1 && !res) {
-        throw Error('Error while doing CL API request on all passed URLs');
+        err.message = `Error while doing CL API request on all passed URLs. ${err.message}`;
+        throw err;
+      }
+      if (!res) {
+        this.logger.warn('Error while doing CL API request. Will try to switch to another API URL');
       }
     }
 
-    if (dataOnly) return res.data;
+    if (options.dataOnly) return res.data;
     else return res;
   }
 
