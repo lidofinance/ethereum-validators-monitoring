@@ -174,7 +174,7 @@ export class EnvironmentVariables {
   public VALIDATOR_REGISTRY_FILE_SOURCE_PATH = './docker/validators/custom_mainnet.yaml';
 
   @IsString()
-  public VALIDATOR_REGISTRY_LIDO_SOURCE_DB_STORE_PATH = './docker/validators/lido_mainnet.db';
+  public VALIDATOR_REGISTRY_LIDO_SOURCE_SQLITE_CACHE_PATH = './docker/validators/lido_mainnet.db';
 
   /**
    * Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad

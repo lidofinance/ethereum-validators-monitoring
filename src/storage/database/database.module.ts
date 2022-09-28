@@ -10,7 +10,7 @@ import { ConfigService } from '../../common/config';
     MikroOrmModule.forRootAsync({
       async useFactory(configService: ConfigService) {
         return {
-          dbName: configService.get('VALIDATOR_REGISTRY_LIDO_SOURCE_DB_STORE_PATH'),
+          dbName: configService.get('VALIDATOR_REGISTRY_LIDO_SOURCE_SQLITE_CACHE_PATH'),
           type: 'sqlite',
           allowGlobalContext: true,
           autoLoadEntities: true,
