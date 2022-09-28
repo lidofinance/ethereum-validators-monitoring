@@ -361,19 +361,19 @@ export class ConsensusProviderService {
       res = await callback(this.apiUrls[i])
         .catch(rejectDelay(this.config.get('CL_API_RETRY_DELAY_MS')))
         .catch(() => retry(() => callback(this.apiUrls[i])))
-        .catch((e: any) => {
-          if (options.useFallbackOnRejected(e)) {
-            err = e;
-            return undefined;
-          }
-          throw e;
-        })
         .then((r: any) => {
           if (options.useFallbackOnResolved(r)) {
             err = Error('Unresolved data on a successful CL API response');
             return undefined;
           }
           return r;
+        })
+        .catch((e: any) => {
+          if (options.useFallbackOnRejected(e)) {
+            err = e;
+            return undefined;
+          }
+          throw e;
         });
       if (i == this.apiUrls.length - 1 && !res) {
         err.message = `Error while doing CL API request on all passed URLs. ${err.message}`;
