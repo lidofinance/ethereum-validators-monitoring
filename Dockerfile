@@ -16,8 +16,7 @@ WORKDIR /app
 COPY --from=building /app/dist ./dist
 COPY --from=building /app/node_modules ./node_modules
 COPY ./package.json ./
-RUN mkdir -p ./docker/validators/
-RUN chown -R node:node ./docker/validators/
+RUN mkdir -p ./docker/validators/ && chown -R node:node ./docker/validators/
 
 USER node
 
