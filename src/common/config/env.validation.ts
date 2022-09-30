@@ -150,7 +150,11 @@ export class EnvironmentVariables {
 
   @IsNumber()
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public CL_API_GET_BLOCK_INFO_MAX_RETRIES = 5;
+  public CL_API_MAX_RETRIES = 1;
+
+  @IsNumber()
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public CL_API_GET_BLOCK_INFO_MAX_RETRIES = 1;
 
   @IsNumber()
   @Min(18950)

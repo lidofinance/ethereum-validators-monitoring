@@ -91,11 +91,11 @@ export class ConsensusProviderService {
     );
   }
 
-  public async getBeaconBlockHeader(state: bigint | string, maxRetries = 3): Promise<ShortBeaconBlockHeader> {
+  public async getBeaconBlockHeader(state: bigint | string): Promise<ShortBeaconBlockHeader> {
     const blockHeader = await this.retryRequest<BlockHeaderResponse>(
       (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(state)),
       {
-        maxRetries,
+        maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
           if (state == 'finalized') {
             if (BigInt(r.data.header.message.slot) > this.lastFinalizedSlot.slot) {
@@ -269,9 +269,9 @@ export class ConsensusProviderService {
     epoch: string | bigint,
     dependentRoot: string,
     indexes: string[],
-    maxRetries = 3,
+    maxRetriesForGetCanonical = 3,
   ): Promise<AttesterDutyInfo[]> {
-    const retry = retrier(this.logger, maxRetries, 100, 10000, true);
+    const retry = retrier(this.logger, maxRetriesForGetCanonical, 100, 10000, true);
     const request = async () => {
       const res = <{ dependent_root: string; data: AttesterDutyInfo[] }>(
         await this.retryRequest(
@@ -288,7 +288,7 @@ export class ConsensusProviderService {
     return await request()
       .catch(() => retry(() => request()))
       .catch(() => {
-        throw Error(`Failed to get canonical attester duty info after ${maxRetries} retries`);
+        throw Error(`Failed to get canonical attester duty info after ${maxRetriesForGetCanonical} retries`);
       });
   }
 
@@ -319,12 +319,16 @@ export class ConsensusProviderService {
     return result;
   }
 
-  public async getCanonicalProposerDuties(epoch: string | bigint, dependentRoot: string, maxRetries = 3): Promise<ProposerDutyInfo[]> {
-    const retry = retrier(this.logger, maxRetries, 100, 10000, true);
+  public async getCanonicalProposerDuties(
+    epoch: string | bigint,
+    dependentRoot: string,
+    maxRetriesForGetCanonical = 3,
+  ): Promise<ProposerDutyInfo[]> {
+    const retry = retrier(this.logger, maxRetriesForGetCanonical, 100, 10000, true);
     const request = async () => {
       const res = <{ dependent_root: string; data: ProposerDutyInfo[] }>await this.retryRequest(
         (apiURL: string) => this.apiGet(apiURL, this.endpoints.proposerDutes(epoch)),
-        { maxRetries, dataOnly: false },
+        { dataOnly: false },
       ).catch((e) => {
         this.logger.error('Unexpected status code while fetching proposer duties info');
         throw e;
@@ -338,7 +342,7 @@ export class ConsensusProviderService {
     return await request()
       .catch(() => retry(() => request()))
       .catch(() => {
-        throw Error(`Failed to get canonical proposer duty info after ${maxRetries} retries`);
+        throw Error(`Failed to get canonical proposer duty info after ${maxRetriesForGetCanonical} retries`);
       });
   }
 
@@ -348,7 +352,7 @@ export class ConsensusProviderService {
 
   protected async retryRequest<T>(callback: (apiURL: string) => any, options?: RequestRetryOptions): Promise<T> {
     options = {
-      maxRetries: options?.maxRetries ?? 5,
+      maxRetries: options?.maxRetries ?? this.config.get('CL_API_MAX_RETRIES'),
       dataOnly: options?.dataOnly ?? true,
       useFallbackOnRejected: options?.useFallbackOnRejected ?? (() => true), //  use fallback on error as default
       useFallbackOnResolved: options?.useFallbackOnResolved ?? (() => false), // do NOT use fallback on success as default
@@ -380,7 +384,7 @@ export class ConsensusProviderService {
         throw err;
       }
       if (!res) {
-        this.logger.warn('Error while doing CL API request. Will try to switch to another API URL');
+        this.logger.warn(`${err.message}. Error while doing CL API request. Will try to switch to another API URL`);
       }
     }
 
