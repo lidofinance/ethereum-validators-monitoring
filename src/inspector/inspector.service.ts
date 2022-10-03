@@ -72,12 +72,16 @@ export class InspectorService implements OnModuleInit {
   protected async waitForNextFinalizedSlot(nextSlot: bigint): Promise<{ slotToWrite: bigint; stateRoot: string; slotNumber: bigint }> {
     const latestFinalizedBeaconBlock = await this.clClient.getBeaconBlockHeader('finalized');
     if (latestFinalizedBeaconBlock.slotNumber >= nextSlot && nextSlot > this.dataProcessor.latestSlotInDb) {
+      // if new finalized slot has happened, from which we can get information about needed
+      // for example: latestSlotInDb = 32, nextSlot = 64, latestFinalizedBeaconBlock = 65
       this.logger.log(
         `Latest finalized slot [${latestFinalizedBeaconBlock.slotNumber}] found. Next slot [${nextSlot}]. Latest DB slot [${this.dataProcessor.latestSlotInDb}]`,
       );
 
+      // try to get block 64 header
       const [nextFinalizedBeaconBlock, isMissed] = await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(nextSlot);
 
+      // if it's not missed - just return it
       if (!isMissed) {
         this.logger.log(
           `Fetched next slot [${nextFinalizedBeaconBlock.slotNumber}] with state root [${nextFinalizedBeaconBlock.stateRoot}]`,
@@ -90,6 +94,7 @@ export class InspectorService implements OnModuleInit {
         };
       }
 
+      // if it's missed that we return the closest finalized block stateRoot and slotNumber in epoch (for example - block 63)
       this.logger.log(
         `Fetched next slot [${nextFinalizedBeaconBlock.slotNumber}] with state root [${
           nextFinalizedBeaconBlock.stateRoot
@@ -103,6 +108,8 @@ export class InspectorService implements OnModuleInit {
       };
     }
 
+    // if new finalized slot hasn't happened, from which we should get information about needed
+    // for example: latestSlotInDb = 32, nextSlot = 64, latestFinalizedBeaconBlock = 33
     // just wait `CHAIN_SLOT_TIME_SECONDS` until finality happens
     const sleepTime = this.config.get('CHAIN_SLOT_TIME_SECONDS');
     this.logger.log(

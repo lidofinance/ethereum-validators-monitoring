@@ -150,7 +150,11 @@ export class EnvironmentVariables {
 
   @IsNumber()
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public CL_API_GET_BLOCK_INFO_MAX_RETRIES = 5;
+  public CL_API_MAX_RETRIES = 1;
+
+  @IsNumber()
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public CL_API_GET_BLOCK_INFO_MAX_RETRIES = 1;
 
   @IsNumber()
   @Min(18950)
@@ -172,6 +176,9 @@ export class EnvironmentVariables {
 
   @IsString()
   public VALIDATOR_REGISTRY_FILE_SOURCE_PATH = './docker/validators/custom_mainnet.yaml';
+
+  @IsString()
+  public VALIDATOR_REGISTRY_LIDO_SOURCE_SQLITE_CACHE_PATH = './docker/validators/lido_mainnet.db';
 
   /**
    * Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad
