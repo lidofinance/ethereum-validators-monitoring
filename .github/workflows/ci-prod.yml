@@ -1,7 +1,6 @@
 name: CI Build prod image
 
 on:
-  workflow_dispatch:
   workflow_call:
     inputs:
       tag:
@@ -9,13 +8,6 @@ on:
         default: ""
         required: false
         type: string
-  push:
-    branches:
-      - "!*"
-    tags:
-      - "*"
-    paths-ignore:
-      - ".github/**"
 
 jobs:
   # test:
@@ -33,10 +25,12 @@ jobs:
         id: tag_name
         run: |
           if [ '${{ inputs.tag }}' = '' ]; then
-            echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+            echo "::set-output name=TAG::${GITHUB_REF#refs/tags/}"
           else
-            echo ::set-output name=TAG::${{ inputs.tag }}
+            echo "::set-output name=TAG::$TAG"
           fi
+        env:
+          TAG: ${{ inputs.tag }}
 
       - name: Build prod image
         uses: lidofinance/dispatch-workflow@v1
