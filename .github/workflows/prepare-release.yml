@@ -1,5 +1,7 @@
 name: Prepare release
-on: workflow_dispatch
+
+on:
+  workflow_dispatch:
 
 jobs:
   prepare-release:
@@ -11,7 +13,7 @@ jobs:
 
       - name: Bump version and update CHANGELOG.MD
         id: changelog
-        uses: lidofinance/conventional-changelog-action@v3.11.0
+        uses: lidofinance/conventional-changelog-action@v3
         with:
           git-message: "chore(release): {version}"
           tag-prefix: ""
@@ -21,9 +23,17 @@ jobs:
           release-count: 10 # save all releases in the CHANGELOG.md
           git-push: false
           skip-on-empty: false
-          
+          skip-ci: false
+          create-summary: true
+
+      - name: Fail on missing args
+        if: ${{ !steps.changelog.outputs.version }}
+        run: >
+          echo "::error::No version output found for the prev step! Try restarting action" && exit 1
+
       - name: Create Pull Request
         uses: lidofinance/create-pull-request@v4
+        if: ${{ steps.changelog.outputs.version }}
         with:
           branch: pre-release-${{ steps.changelog.outputs.version }}
           title: "chore(release): ${{ steps.changelog.outputs.version }}"

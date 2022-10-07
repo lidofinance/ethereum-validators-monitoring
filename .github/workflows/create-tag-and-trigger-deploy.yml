@@ -17,9 +17,11 @@ jobs:
       - name: Get tag value
         id: tag
         run: |
-          TAG=$(grep -oP '\d+\.\d+\.\d+' <<< '${{ github.event.head_commit.message }}')
-          echo $TAG
+          TAG="$(grep -oP '\d+\.\d+\.\d+' <<< "$MESSAGE")"
+          echo "$TAG"
           echo "::set-output name=tag::${TAG}"
+        env:
+          MESSAGE: ${{ github.event.head_commit.message }}
       - name: Create and push tag
         run: |
           git tag ${{ steps.tag.outputs.tag }}
