@@ -55,6 +55,8 @@ export class InspectorService implements OnModuleInit {
       } catch (e) {
         this.logger.error('Error in main loop');
         this.logger.error(e as any);
+        // We should make a gap before running new circle. This will avoid requests and logs spam
+        await sleep(this.config.get('CHAIN_SLOT_TIME_SECONDS') * 1000);
       }
 
       if (this.config.get('DRY_RUN')) {
