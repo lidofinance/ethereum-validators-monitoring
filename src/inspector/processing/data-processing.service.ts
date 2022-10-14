@@ -20,10 +20,25 @@ import {
   CheckAttestersDutyResult,
   ClickhouseService,
   SlotAttestation,
+  status,
   ValidatorIdentifications,
   ValidatorsStatusStats,
 } from 'storage/clickhouse';
 import { RegistrySourceKeysIndexed } from 'common/validators-registry/registry-source.interface';
+
+export interface FetchFinalizedSlotDataResult {
+  balances: StateValidatorResponse[];
+  otherCounts: ValidatorsStatusStats;
+}
+
+interface SyncCommitteeValidatorWithOtherAvg extends SyncCommitteeValidator {
+  other_avg: number;
+}
+
+export interface SyncCommitteeValidatorPrepResult {
+  syncResult: SyncCommitteeValidatorWithOtherAvg[];
+  notUserAvgPercent: number;
+}
 
 interface FetchFinalizedEpochDataResult {
   attestations: CheckAttestersDutyResult;
@@ -153,8 +168,11 @@ export class DataProcessingService implements OnModuleInit {
         return await this.clClient.getBalances(stateRoot);
       },
       writeSlotData: async (slotRes: StateValidatorResponse[]) => {
-        this.logger.log(`Start validators balance processing for slot ${slot} (state root ${stateRoot} from slot ${slotNumber})`);
-        return await this.storage.writeBalances(slot, slotTime, slotRes, keysIndexed);
+        const prepBalances = await this.prepBalancesToWrite(slotRes, keysIndexed);
+        this.logger.log(
+          `Writing ${prepBalances.balances.length} validators balance for slot ${slot} (state root ${stateRoot} from slot ${slotNumber})`,
+        );
+        return await this.storage.writeBalances(slot, slotTime, prepBalances, keysIndexed);
       },
       fetchEpochData: async (userIDs: ValidatorIdentifications[]) => {
         const userIndexes: string[] = [];
@@ -176,11 +194,17 @@ export class DataProcessingService implements OnModuleInit {
       },
       writeEpochData: async (userIDs: ValidatorIdentifications[], epochRes: FetchFinalizedEpochDataResult) => {
         this.logger.log(`Writing ${epochRes.attestations.attestersDutyInfo.length} attestations result to DB for ${epoch} epoch`);
-        await this.storage.writeAttestations(epochRes.attestations, slotTime, keysIndexed);
+        await this.storage.writeAttestations(await this.prepAttestationsToWrite(epochRes.attestations), slotTime, keysIndexed);
         this.logger.log(`Writing ${epochRes.proposeDutiesResult.length} proposes result to DB for ${epoch} epoch`);
         await this.storage.writeProposes(epochRes.proposeDutiesResult, slotTime, keysIndexed);
         this.logger.log(`Writing Sync Committee validators participation info to DB for ${epoch} epoch`);
-        return await this.storage.writeSyncs(epochRes.syncResult, slotTime, keysIndexed, userIDs, epoch);
+        return await this.storage.writeSyncs(
+          await this.prepSyncCommitteeToWrite(userIDs, epochRes.syncResult),
+          slotTime,
+          keysIndexed,
+          userIDs,
+          epoch,
+        );
       },
     };
   };
@@ -296,5 +320,85 @@ export class DataProcessingService implements OnModuleInit {
       }
       return indexedValidators;
     });
+  }
+
+  protected async prepBalancesToWrite(
+    balances: StateValidatorResponse[],
+    keysIndexed: RegistrySourceKeysIndexed,
+  ): Promise<FetchFinalizedSlotDataResult> {
+    return await this.prometheus.trackTask('prep-balances', async () => {
+      const otherCounts: ValidatorsStatusStats = {
+        active_ongoing: 0,
+        pending: 0,
+        slashed: 0,
+      };
+      const filtered = balances.filter((b) => {
+        if (keysIndexed.has(b.validator.pubkey)) {
+          return true;
+        } else {
+          if (status.isActive(b)) otherCounts.active_ongoing++;
+          else if (status.isPending(b)) otherCounts.pending++;
+          else if (status.isSlashed(b)) otherCounts.slashed++;
+          return false;
+        }
+      });
+      return { balances: filtered, otherCounts };
+    });
+  }
+
+  protected async prepAttestationsToWrite(attDutyResult: CheckAttestersDutyResult) {
+    for (const a of attDutyResult.attestersDutyInfo) {
+      a.attested = false;
+      a.in_block = undefined;
+      for (const [block, blockAttestations] of Object.entries(attDutyResult.blocksAttestations)) {
+        if (BigInt(a.slot) >= BigInt(block)) continue; // Attestation cannot be included in the previous or current block
+        const committeeAttestationInfo: any = blockAttestations.find(
+          (att: any) => att.slot == a.slot && att.committee_index == a.committee_index,
+        );
+        if (committeeAttestationInfo) {
+          a.attested = committeeAttestationInfo.bits[parseInt(a.validator_committee_index)];
+          a.in_block = block;
+        }
+        if (a.attested) {
+          // We found the nearest block includes validator attestation
+          const missedSlotsOffset = attDutyResult.allMissedSlots.filter(
+            (missed) => BigInt(missed) > BigInt(a.slot) && BigInt(missed) < BigInt(block),
+          ).length;
+          // If difference between attestation slot and
+          // nearest block included attestation (not including missed slots) > ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY,
+          // then we think it is bad attestation because validator will get the least reward
+          if (
+            BigInt(block) - BigInt(a.slot) - BigInt(missedSlotsOffset) >
+            BigInt(this.config.get('ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY'))
+          )
+            a.attested = false;
+          break;
+        } // Else try to find attestation in next block
+      }
+    }
+    return attDutyResult;
+  }
+
+  protected async prepSyncCommitteeToWrite(
+    userIDs: ValidatorIdentifications[],
+    syncResult: SyncCommitteeValidator[],
+  ): Promise<SyncCommitteeValidatorPrepResult> {
+    const notUserPercents = [];
+    const userValidators = [];
+    for (const p of syncResult) {
+      const pubKey = userIDs.find((v) => v.validator_id === p.validator_index)?.validator_pubkey || '';
+      if (pubKey) {
+        const other = syncResult.filter((s) => s.validator_index != p.validator_index);
+        userValidators.push({
+          ...p,
+          other_avg: other.reduce((a, b) => a + b.epoch_participation_percent, 0) / other.length,
+        });
+      } else {
+        notUserPercents.push(p.epoch_participation_percent);
+      }
+    }
+
+    const notUserAvgPercent = notUserPercents.length ? notUserPercents.reduce((a, b) => a + b, 0) / notUserPercents.length : undefined;
+    return { syncResult: userValidators, notUserAvgPercent };
   }
 }

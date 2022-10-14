@@ -12,6 +12,7 @@ import {
   Max,
   Min,
   MinLength,
+  ValidateIf,
   validateSync,
 } from 'class-validator';
 import { Environment, LogFormat, LogLevel } from './interfaces';
@@ -78,18 +79,22 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   @IsString()
   @MinLength(2)
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public DB_HOST!: string;
 
   @IsString()
   @MinLength(3)
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public DB_USER!: string;
 
   @IsString()
   @MinLength(0)
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public DB_PASSWORD!: string;
 
   @IsNotEmpty()
   @MinLength(1)
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public DB_NAME!: string;
 
   @IsPort()
@@ -117,16 +122,19 @@ export class EnvironmentVariables {
   @Min(1)
   @Max(5000000)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public ETH_NETWORK!: Network;
 
   @IsArray()
   @ArrayMinSize(1)
   @Transform(({ value }) => value.split(','))
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public EL_RPC_URLS!: string[];
 
   @IsArray()
   @ArrayMinSize(1)
   @Transform(({ value }) => value.split(','))
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public CL_API_URLS!: string[];
 
   @IsInt()
