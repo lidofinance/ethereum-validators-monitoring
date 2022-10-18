@@ -10,7 +10,11 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main --trace-warnings --sync --sub-fin-head",
-    "test": "echo 'No tests yet'",
+    "test": "jest --detectOpenHandles --forceExit",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
   },
   "author": "Lido",
@@ -60,6 +64,7 @@
     "typechain": "^5.2.0"
   },
   "devDependencies": {
+    "@golevelup/ts-jest": "^0.3.3",
     "@nestjs/cli": "^8.2.5",
     "@nestjs/schematics": "^8.0.5",
     "@nestjs/testing": "^8.2.5",
@@ -86,5 +91,29 @@
     "tsconfig-paths": "^3.12.0",
     "typechain": "^5.2.0",
     "typescript": "^4.5.5"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ],
+    "moduleNameMapper": {
+      "^build-info$": "<rootDir>/../build-info.json"
+    },
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
   }
 }
