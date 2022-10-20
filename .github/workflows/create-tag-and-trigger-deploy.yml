@@ -4,6 +4,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   bump:
     name: Create tag and release
@@ -14,18 +17,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          persist-credentials: false
       - name: Get tag value
         id: tag
         run: |
           TAG="$(grep -oP '\d+\.\d+\.\d+' <<< "$MESSAGE")"
           echo "$TAG"
-          echo "::set-output name=tag::${TAG}"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
         env:
           MESSAGE: ${{ github.event.head_commit.message }}
       - name: Create and push tag
         run: |
           git tag ${{ steps.tag.outputs.tag }}
-          git push origin --tags
+          git push https://x-access-token:${{ github.token }}@github.com/$GITHUB_REPOSITORY --tags
       - name: Create release
         uses: lidofinance/action-gh-release@v1
         with:
@@ -38,4 +43,4 @@ jobs:
     uses: ./.github/workflows/ci-prod.yml
     secrets: inherit
     with:
-      tag: ${{ needs.bump.outputs.tag}}
+      tag: ${{ needs.bump.outputs.tag }}
