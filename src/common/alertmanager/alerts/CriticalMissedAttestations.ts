@@ -12,15 +12,16 @@ export class CriticalMissedAttestations extends Alert {
   async alertRule(bySlot: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
     const operators = await this.storage.getUserNodeOperatorsStats(bySlot);
-    const missedAttValidatorsCount = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(
+    const missedAttValidatorsCount = await this.storage.getValidatorCountByConditionAttestationsLastNEpoch(
       bySlot,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
+      'attested = 0',
     );
     for (const operator of operators.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
       const missedAtt = missedAttValidatorsCount.find((a) => a.nos_name == operator.nos_name);
       if (!missedAtt) continue;
-      if (missedAtt.miss_attestation_count > operator.active_ongoing / 3) {
-        result[operator.nos_name] = { ongoing: operator.active_ongoing, missedAtt: missedAtt.miss_attestation_count };
+      if (missedAtt.suitable > operator.active_ongoing / 3) {
+        result[operator.nos_name] = { ongoing: operator.active_ongoing, missedAtt: missedAtt.suitable };
       }
     }
     return result;

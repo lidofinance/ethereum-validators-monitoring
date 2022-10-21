@@ -1,5 +1,4 @@
 import { BitVectorType, fromHexString } from '@chainsafe/ssz';
-import { groupBy } from 'lodash';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from 'common/config';
@@ -9,7 +8,7 @@ import {
   BeaconBlockAttestation,
   ConsensusProviderService,
   ProposerDutyInfo,
-  ShortBeaconBlockInfo,
+  BlockInfoResponse,
   StateValidatorResponse,
   SyncCommitteeDutyInfo,
   SyncCommitteeValidator,
@@ -219,14 +218,11 @@ export class DataProcessingService implements OnModuleInit {
       this.logger.log(`Start processing attesters duties info`);
       const blocksAttestations: { [block: string]: SlotAttestation[] } = {};
       let allMissedSlots: string[] = [];
-      let lastBlockInfo: ShortBeaconBlockInfo | void;
+      let lastBlockInfo: BlockInfoResponse | void;
       let lastMissedSlots: string[];
-      // Check all slots from epoch start to last epoch slot + ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY
+      // Check all slots from epoch start to last epoch slot + 32 (max inclusion delay)
       const firstSlotInEpoch = epoch * 32n;
-      const slotsToCheck: bigint[] = bigintRange(
-        firstSlotInEpoch,
-        firstSlotInEpoch + 32n + BigInt(this.config.get('ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY')),
-      );
+      const slotsToCheck: bigint[] = bigintRange(firstSlotInEpoch, firstSlotInEpoch + 32n + 32n);
       for (const slotToCheck of slotsToCheck) {
         if (lastBlockInfo && lastBlockInfo.message.slot > slotToCheck.toString()) {
           continue; // If we have lastBlockInfo > slotToCheck it means we have already processed this
@@ -236,27 +232,19 @@ export class DataProcessingService implements OnModuleInit {
         if (!lastBlockInfo) {
           continue; // Failed to get info about the nearest existing block
         }
-        // A committee attestation can be included in a block as multiple parts.
-        // It is necessary to group such attestations
-        const groupedAttestations = groupBy(lastBlockInfo.message.body.attestations, (att: BeaconBlockAttestation) =>
-          [att.data.slot, att.data.index].join('_'),
-        );
-        blocksAttestations[lastBlockInfo.message.slot.toString()] = Object.values(groupedAttestations).map(
-          (group: BeaconBlockAttestation[]) => {
-            // Need to perform a bitwise OR to get the full information about the committee attestation
-            const bytesArray = fromHexString(group[0].aggregation_bits);
+        blocksAttestations[lastBlockInfo.message.slot.toString()] = lastBlockInfo.message.body.attestations.map(
+          (att: BeaconBlockAttestation) => {
+            const bytesArray = fromHexString(att.aggregation_bits);
             const CommitteeBits = new BitVectorType({
               length: bytesArray.length * 8,
             });
-            const startBits = Array.from(CommitteeBits.deserialize(bytesArray));
-            const aggregatedBits = group.reduce((bits, att) => {
-              const currBits = Array.from(CommitteeBits.deserialize(fromHexString(att.aggregation_bits)));
-              return bits.map((val: boolean, index: number) => val || currBits[index]);
-            }, startBits);
             return {
-              bits: aggregatedBits,
-              slot: group[0].data.slot,
-              committee_index: group[0].data.index,
+              bits: Array.from(CommitteeBits.deserialize(bytesArray)),
+              head: att.data.beacon_block_root,
+              target: att.data.target.root,
+              source: att.data.source.root,
+              slot: att.data.slot,
+              committee_index: att.data.index,
             };
           },
         );
@@ -276,7 +264,7 @@ export class DataProcessingService implements OnModuleInit {
       this.logger.log(`Processing proposers duties info`);
       for (const userProp of userProposersDutyInfo) {
         userProp.proposed = false;
-        const blockInfo: ShortBeaconBlockInfo = await this.clClient.getBlockInfo(userProp.slot);
+        const blockInfo = await this.clClient.getBlockInfo(userProp.slot);
         if (!blockInfo) continue; // it means that block is missed
         if (blockInfo.message.proposer_index == userProp.validator_index) userProp.proposed = true;
         else {
@@ -300,11 +288,11 @@ export class DataProcessingService implements OnModuleInit {
       const SyncCommitteeBits = new BitVectorType({ length: 512 }); // sync participants count in committee
       const indexedValidators = await this.getSyncCommitteeIndexedValidators(epoch, stateRoot);
       this.logger.log(`Processing sync committee participation info`);
-      const epochBlocks: ShortBeaconBlockInfo[] = [];
+      const epochBlocks: BlockInfoResponse[] = [];
       const missedSlots: bigint[] = [];
       const startSlot = epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
       for (let slot = startSlot; slot < startSlot + BigInt(this.config.get('FETCH_INTERVAL_SLOTS')); slot = slot + 1n) {
-        const blockInfo: ShortBeaconBlockInfo = await this.clClient.getBlockInfo(slot);
+        const blockInfo = await this.clClient.getBlockInfo(slot);
         blockInfo ? epochBlocks.push(blockInfo) : missedSlots.push(slot);
       }
       this.logger.log(`All missed slots in getting sync committee info process: ${missedSlots}`);
@@ -346,34 +334,51 @@ export class DataProcessingService implements OnModuleInit {
     });
   }
 
+  savedCanonSlotsAttProperties = {};
+
+  protected async getCanonSlotRoot(slot: bigint) {
+    const cached = this.savedCanonSlotsAttProperties[String(slot)];
+    if (cached) return cached;
+    const root = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(slot))[0].root;
+    this.savedCanonSlotsAttProperties[String(slot)] = root;
+    return root;
+  }
+
   protected async prepAttestationsToWrite(attDutyResult: CheckAttestersDutyResult) {
-    for (const a of attDutyResult.attestersDutyInfo) {
-      a.attested = false;
-      a.in_block = undefined;
-      for (const [block, blockAttestations] of Object.entries(attDutyResult.blocksAttestations)) {
-        if (BigInt(a.slot) >= BigInt(block)) continue; // Attestation cannot be included in the previous or current block
-        const committeeAttestationInfo: any = blockAttestations.find(
-          (att: any) => att.slot == a.slot && att.committee_index == a.committee_index,
+    this.savedCanonSlotsAttProperties = {};
+    const blocksAttestation = Object.entries(attDutyResult.blocksAttestations).sort(
+      (b1, b2) => parseInt(b1[0]) - parseInt(b2[0]), // Sort array by block number
+    );
+    for (const duty of attDutyResult.attestersDutyInfo) {
+      duty.attested = false;
+      duty.valid_head = undefined;
+      duty.valid_target = undefined;
+      duty.valid_source = undefined;
+      duty.in_block = undefined;
+      for (const [block, blockAttestations] of blocksAttestation.filter(
+        ([b]) => BigInt(b) > BigInt(duty.slot), // Attestation cannot be included in the previous or current block
+      )) {
+        const committeeAttestations: SlotAttestation[] = blockAttestations.filter(
+          (att: any) => att.slot == duty.slot && att.committee_index == duty.committee_index,
         );
-        if (committeeAttestationInfo) {
-          a.attested = committeeAttestationInfo.bits[parseInt(a.validator_committee_index)];
-          a.in_block = block;
-        }
-        if (a.attested) {
-          // We found the nearest block includes validator attestation
+        if (!committeeAttestations) continue;
+        for (const ca of committeeAttestations) {
+          duty.attested = ca.bits[parseInt(duty.validator_committee_index)];
+          duty.in_block = block;
+          if (!duty.attested) continue; // continue to find attestation with validator attestation
+          // and if validator attests block - calculate inclusion delay and check properties (head, target, source)
+          // calculate inclusion delay
           const missedSlotsOffset = attDutyResult.allMissedSlots.filter(
-            (missed) => BigInt(missed) > BigInt(a.slot) && BigInt(missed) < BigInt(block),
+            (missed) => BigInt(missed) > BigInt(duty.slot) && BigInt(missed) < BigInt(block),
           ).length;
-          // If difference between attestation slot and
-          // nearest block included attestation (not including missed slots) > ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY,
-          // then we think it is bad attestation because validator will get the least reward
-          if (
-            BigInt(block) - BigInt(a.slot) - BigInt(missedSlotsOffset) >
-            BigInt(this.config.get('ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY'))
-          )
-            a.attested = false;
+          duty.inclusion_delay = Number(BigInt(block) - BigInt(duty.slot)) - missedSlotsOffset;
+          // const canon = await this.getPropertiesForAttestingSlot(ca.slot);
+          duty.valid_head = ca.head == (await this.getCanonSlotRoot(BigInt(ca.slot)));
+          duty.valid_target = ca.target == (await this.getCanonSlotRoot((BigInt(ca.slot) / 32n) * 32n));
+          duty.valid_source = ca.source == (await this.getCanonSlotRoot((BigInt(ca.slot) / 32n - 1n) * 32n));
           break;
-        } // Else try to find attestation in next block
+        }
+        if (duty.attested) break;
       }
     }
     return attDutyResult;

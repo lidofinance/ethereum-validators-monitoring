@@ -26,9 +26,9 @@ export interface NOsValidatorsSyncLessChainAvgCount {
   less_chain_avg_count: number;
 }
 
-export interface NOsValidatorsMissAttestationCount {
+export interface NOsValidatorsByConditionAttestationCount {
   nos_name: string;
-  miss_attestation_count: number;
+  suitable: number;
 }
 
 export interface NOsValidatorsMissProposeCount {
@@ -53,6 +53,9 @@ export interface NOsProposesStats {
 
 export interface SlotAttestation {
   bits: boolean[];
+  head: string;
+  target: string;
+  source: string;
   slot: string;
   committee_index: string;
 }

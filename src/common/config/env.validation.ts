@@ -218,15 +218,6 @@ export class EnvironmentVariables {
   public SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG = 3;
 
   /**
-   * Maximum inclusion delay after which we think that attestation is bad
-   */
-  @IsNumber()
-  @Min(1)
-  @Max(8)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY = 5;
-
-  /**
    * Number epochs after which we think that our attestation is bad and alert about that
    * For example:
    *  Our validator have bad attestation in 3 epoch in a row

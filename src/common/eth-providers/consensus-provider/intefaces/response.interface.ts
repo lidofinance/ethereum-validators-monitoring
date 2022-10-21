@@ -24,6 +24,10 @@ export interface AttesterDutyInfo {
   validator_committee_index: string;
   slot: string;
   attested: boolean;
+  valid_head: boolean;
+  valid_target: boolean;
+  valid_source: boolean;
+  inclusion_delay: number;
   in_block: string | undefined;
 }
 
@@ -42,14 +46,7 @@ export interface BlockHeaderResponse {
   };
 }
 
-export interface ShortBeaconBlockHeader {
-  slotNumber: bigint;
-  stateRoot: string;
-  blockRoot: string;
-  parentRoot: string;
-}
-
-export interface ShortBeaconBlockInfo {
+export interface BlockInfoResponse {
   message: {
     slot: string;
     proposer_index: string;
@@ -110,6 +107,15 @@ export interface BeaconBlockAttestation {
   data: {
     slot: string;
     index: string;
+    beacon_block_root: string;
+    source: {
+      epoch: string;
+      root: string;
+    };
+    target: {
+      epoch: string;
+      root: string;
+    };
   };
 }
 

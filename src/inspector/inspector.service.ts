@@ -4,7 +4,7 @@ import { StatsProcessingService } from './processing/stats-processing.service';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from 'common/config';
-import { ConsensusProviderService } from 'common/eth-providers';
+import { BlockHeaderResponse, ConsensusProviderService, SlotsCacheService } from 'common/eth-providers';
 import { ClickhouseService } from 'storage';
 import { CriticalAlertsService } from 'common/alertmanager/critical-alerts.service';
 
@@ -18,6 +18,7 @@ export class InspectorService implements OnModuleInit {
     protected readonly dataProcessor: DataProcessingService,
     protected readonly statsProcessor: StatsProcessingService,
     protected readonly criticalAlertService: CriticalAlertsService,
+    protected readonly slotsCacheService: SlotsCacheService,
   ) {}
 
   public async onModuleInit(): Promise<void> {
@@ -37,6 +38,7 @@ export class InspectorService implements OnModuleInit {
       try {
         // Calculate finalized data stats (validator balances, attestations, proposes and etc.)
         const nextFinalizedSlot = this.calculateNextFinalizedSlot();
+        this.slotsCacheService.purgeOld(nextFinalizedSlot / 32n);
         const { slotToWrite, stateRoot, slotNumber } = await this.waitForNextFinalizedSlot(nextFinalizedSlot);
         if (slotToWrite > 0) {
           const res = await this.dataProcessor.processAndWriteFinalizedData(slotToWrite, stateRoot, slotNumber);
@@ -70,12 +72,12 @@ export class InspectorService implements OnModuleInit {
   }
 
   protected async waitForNextFinalizedSlot(nextSlot: bigint): Promise<{ slotToWrite: bigint; stateRoot: string; slotNumber: bigint }> {
-    const latestFinalizedBeaconBlock = await this.clClient.getBeaconBlockHeader('finalized');
-    if (latestFinalizedBeaconBlock.slotNumber >= nextSlot && nextSlot > this.dataProcessor.latestSlotInDb) {
+    const latestFinalizedBeaconBlock = <BlockHeaderResponse>await this.clClient.getBeaconBlockHeader('finalized');
+    if (BigInt(latestFinalizedBeaconBlock.header.message.slot) >= nextSlot && nextSlot > this.dataProcessor.latestSlotInDb) {
       // if new finalized slot has happened, from which we can get information about needed
       // for example: latestSlotInDb = 32, nextSlot = 64, latestFinalizedBeaconBlock = 65
       this.logger.log(
-        `Latest finalized slot [${latestFinalizedBeaconBlock.slotNumber}] found. Next slot [${nextSlot}]. Latest DB slot [${this.dataProcessor.latestSlotInDb}]`,
+        `Latest finalized slot [${latestFinalizedBeaconBlock.header.message.slot}] found. Next slot [${nextSlot}]. Latest DB slot [${this.dataProcessor.latestSlotInDb}]`,
       );
 
       // try to get block 64 header
@@ -84,27 +86,27 @@ export class InspectorService implements OnModuleInit {
       // if it's not missed - just return it
       if (!isMissed) {
         this.logger.log(
-          `Fetched next slot [${nextFinalizedBeaconBlock.slotNumber}] with state root [${nextFinalizedBeaconBlock.stateRoot}]`,
+          `Fetched next slot [${nextFinalizedBeaconBlock.header.message.slot}] with state root [${nextFinalizedBeaconBlock.header.message.state_root}]`,
         );
 
         return {
-          slotToWrite: nextFinalizedBeaconBlock.slotNumber,
-          stateRoot: nextFinalizedBeaconBlock.stateRoot,
-          slotNumber: nextFinalizedBeaconBlock.slotNumber,
+          slotToWrite: BigInt(nextFinalizedBeaconBlock.header.message.slot),
+          stateRoot: nextFinalizedBeaconBlock.header.message.state_root,
+          slotNumber: BigInt(nextFinalizedBeaconBlock.header.message.slot),
         };
       }
 
       // if it's missed that we return the closest finalized block stateRoot and slotNumber in epoch (for example - block 63)
       this.logger.log(
-        `Fetched next slot [${nextFinalizedBeaconBlock.slotNumber}] with state root [${
-          nextFinalizedBeaconBlock.stateRoot
-        }] instead of slot [${nextSlot}]. Difference [${nextFinalizedBeaconBlock.slotNumber - nextSlot}] slots`,
+        `Fetched next slot [${nextFinalizedBeaconBlock.header.message.slot}] with state root [${
+          nextFinalizedBeaconBlock.header.message.state_root
+        }] instead of slot [${nextSlot}]. Difference [${BigInt(nextFinalizedBeaconBlock.header.message.slot) - nextSlot}] slots`,
       );
 
       return {
         slotToWrite: nextSlot,
-        stateRoot: nextFinalizedBeaconBlock.stateRoot,
-        slotNumber: nextFinalizedBeaconBlock.slotNumber,
+        stateRoot: nextFinalizedBeaconBlock.header.message.state_root,
+        slotNumber: BigInt(nextFinalizedBeaconBlock.header.message.slot),
       };
     }
 
@@ -113,7 +115,7 @@ export class InspectorService implements OnModuleInit {
     // just wait `CHAIN_SLOT_TIME_SECONDS` until finality happens
     const sleepTime = this.config.get('CHAIN_SLOT_TIME_SECONDS');
     this.logger.log(
-      `Latest finalized slot [${latestFinalizedBeaconBlock.slotNumber}] found. Latest DB slot [${this.dataProcessor.latestSlotInDb}]. Waiting [${sleepTime}] seconds for next finalized slot [${nextSlot}]`,
+      `Latest finalized slot [${latestFinalizedBeaconBlock.header.message.slot}] found. Latest DB slot [${this.dataProcessor.latestSlotInDb}]. Waiting [${sleepTime}] seconds for next finalized slot [${nextSlot}]`,
     );
 
     return new Promise((resolve) => {
@@ -139,7 +141,7 @@ export class InspectorService implements OnModuleInit {
   }
 
   protected async calculateHeadEpoch(): Promise<bigint> {
-    const actualSlotHeader = await this.clClient.getBeaconBlockHeader('head');
-    return actualSlotHeader.slotNumber / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
+    const actualSlotHeader = <BlockHeaderResponse>await this.clClient.getBeaconBlockHeader('head');
+    return BigInt(actualSlotHeader.header.message.slot) / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
   }
 }
