@@ -264,14 +264,14 @@ export class DataProcessingService implements OnModuleInit {
       this.logger.log(`Processing proposers duties info`);
       for (const userProp of userProposersDutyInfo) {
         userProp.proposed = false;
-        const blockInfo = await this.clClient.getBlockInfo(userProp.slot);
-        if (!blockInfo) continue; // it means that block is missed
-        if (blockInfo.message.proposer_index == userProp.validator_index) userProp.proposed = true;
+        const blockHeader = await this.clClient.getBeaconBlockHeader(userProp.slot);
+        if (!blockHeader) continue; // it means that block is missed
+        if (blockHeader.header.message.proposer_index == userProp.validator_index) userProp.proposed = true;
         else {
           throw Error(
             `Proposer duty info cannot be trusted. Make sure the node is synchronized!
-          Expect block [${blockInfo.message.slot}] proposer - ${userProp.validator_index},
-          but actual - ${blockInfo.message.proposer_index}`,
+          Expect block [${blockHeader.header.message.slot}] proposer - ${userProp.validator_index},
+          but actual - ${blockHeader.header.message.proposer_index}`,
           );
         }
       }
