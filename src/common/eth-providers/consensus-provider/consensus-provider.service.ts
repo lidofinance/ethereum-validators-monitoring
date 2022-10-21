@@ -128,7 +128,7 @@ export class ConsensusProviderService {
 
     if (!['finalized', 'head'].includes(String(state))) {
       this.logger.debug(`Update ${state} header in slots cache`);
-      this.cache.update(String(state), { missed: !!!blockHeader, header: blockHeader });
+      this.cache.update(String(state), { missed: !blockHeader, header: blockHeader });
     }
 
     return blockHeader;
@@ -270,7 +270,7 @@ export class ConsensusProviderService {
 
     if (!['finalized', 'head'].includes(String(block))) {
       this.logger.debug(`Update ${block} info in slots cache`);
-      this.cache.update(String(block), { missed: !!!blockInfo, info: blockInfo });
+      this.cache.update(String(block), { missed: !blockInfo, info: blockInfo });
     }
 
     return blockInfo;
