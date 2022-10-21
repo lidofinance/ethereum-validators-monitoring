@@ -95,9 +95,10 @@ export class ConsensusProviderService {
   public async getBeaconBlockHeader(state: bigint | string): Promise<BlockHeaderResponse | void> {
     const cached: CachedSlot = this.cache.get(String(state));
     if (cached) {
-      this.logger.debug(`Get ${state} header from slots cache`);
-      if (cached.missed) return undefined;
-      if (cached.header) return cached.header;
+      if (!cached.missed && cached.header) {
+        this.logger.debug(`Get ${state} header from slots cache`);
+        return cached.header;
+      } else if (cached.missed) return undefined;
     }
 
     const blockHeader = await this.retryRequest<BlockHeaderResponse>(
@@ -252,9 +253,10 @@ export class ConsensusProviderService {
   public async getBlockInfo(block: string | bigint): Promise<BlockInfoResponse | void> {
     const cached: CachedSlot = this.cache.get(String(block));
     if (cached) {
-      this.logger.debug(`Get ${block} info from slots cache`);
-      if (cached.missed) return undefined;
-      if (cached.info) return cached.info;
+      if (!cached.missed && cached.info) {
+        this.logger.debug(`Get ${block} info from slots cache`);
+        return cached.info;
+      } else if (cached.missed) return undefined;
     }
 
     const blockInfo = await this.retryRequest<BlockInfoResponse>((apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(block)), {
