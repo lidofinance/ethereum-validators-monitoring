@@ -372,7 +372,6 @@ export class DataProcessingService implements OnModuleInit {
             (missed) => BigInt(missed) > BigInt(duty.slot) && BigInt(missed) < BigInt(block),
           ).length;
           duty.inclusion_delay = Number(BigInt(block) - BigInt(duty.slot)) - missedSlotsOffset;
-          // const canon = await this.getPropertiesForAttestingSlot(ca.slot);
           duty.valid_head = ca.head == (await this.getCanonSlotRoot(BigInt(ca.slot)));
           duty.valid_target = ca.target == (await this.getCanonSlotRoot((BigInt(ca.slot) / 32n) * 32n));
           duty.valid_source = ca.source == (await this.getCanonSlotRoot((BigInt(ca.slot) / 32n - 1n) * 32n));
