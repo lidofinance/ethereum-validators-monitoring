@@ -1,6 +1,7 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { BlockHeaderResponse, BlockInfoResponse } from './intefaces';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
+import { ConfigService } from 'common/config';
 
 export interface CachedSlot {
   missed: boolean;
@@ -10,7 +11,7 @@ export interface CachedSlot {
 
 @Injectable()
 export class SlotsCacheService {
-  constructor(@Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService) {}
+  constructor(@Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService, protected readonly config: ConfigService) {}
 
   private cache: { [slot: string]: CachedSlot } = {};
 
@@ -33,7 +34,7 @@ export class SlotsCacheService {
    */
   public purgeOld(epoch: bigint): void {
     let purged = 0;
-    const firstSlotPrev = (epoch - 1n) * 32n;
+    const firstSlotPrev = (epoch - 1n) * BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
     for (const slot of Object.keys(this.cache)) {
       // remove the oldest slots and all hashes
       if (slot.startsWith('0x') || BigInt(slot) < firstSlotPrev) {

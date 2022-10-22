@@ -183,7 +183,7 @@ export class ConsensusProviderService {
    */
   public async getDutyDependentRoot(epoch: bigint): Promise<string> {
     this.logger.log(`Getting duty dependent root for epoch ${epoch}`);
-    const dutyRootSlot = epoch * 32n - 1n;
+    const dutyRootSlot = epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS')) - 1n;
     return (await this.getPreviousNotMissedBlockHeader(dutyRootSlot)).root;
   }
 

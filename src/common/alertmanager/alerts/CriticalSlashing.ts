@@ -11,7 +11,7 @@ export class CriticalSlashing extends Alert {
   async alertRule(bySlot: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
     const currOperators = await this.storage.getUserNodeOperatorsStats(bySlot);
-    const prevOperators = await this.storage.getUserNodeOperatorsStats(bySlot - 32n); // compare with previous epoch
+    const prevOperators = await this.storage.getUserNodeOperatorsStats(bySlot - BigInt(this.config.get('FETCH_INTERVAL_SLOTS'))); // compare with previous epoch
     for (const currOperator of currOperators.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
       const prevOperator = prevOperators.find((a) => a.nos_name == currOperator.nos_name);
       // if count of slashed validators increased, we should alert about it

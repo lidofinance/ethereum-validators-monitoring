@@ -347,6 +347,7 @@ export class DataProcessingService implements OnModuleInit {
 
   protected async prepAttestationsToWrite(attDutyResult: CheckAttestersDutyResult) {
     this.savedCanonSlotsAttProperties = {};
+    const slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
     const blocksAttestation = Object.entries(attDutyResult.blocksAttestations).sort(
       (b1, b2) => parseInt(b1[0]) - parseInt(b2[0]), // Sort array by block number
     );
@@ -371,8 +372,8 @@ export class DataProcessingService implements OnModuleInit {
           duty.inclusion_delay = Number(BigInt(block) - BigInt(duty.slot)) - missedSlotsOffset;
           const [canonHead, canonTarget, canonSource] = await Promise.all([
             this.getCanonSlotRoot(BigInt(ca.slot)),
-            this.getCanonSlotRoot((BigInt(ca.slot) / 32n) * 32n),
-            this.getCanonSlotRoot((BigInt(ca.slot) / 32n - 1n) * 32n),
+            this.getCanonSlotRoot((BigInt(ca.slot) / slotsInEpoch) * slotsInEpoch),
+            this.getCanonSlotRoot((BigInt(ca.slot) / slotsInEpoch - 1n) * slotsInEpoch),
           ]);
           duty.valid_head = ca.head == canonHead;
           duty.valid_target = ca.target == canonTarget;

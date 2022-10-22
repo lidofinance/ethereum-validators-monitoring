@@ -38,7 +38,7 @@ export class InspectorService implements OnModuleInit {
       try {
         // Calculate finalized data stats (validator balances, attestations, proposes and etc.)
         const nextFinalizedSlot = this.calculateNextFinalizedSlot();
-        this.slotsCacheService.purgeOld(nextFinalizedSlot / 32n);
+        this.slotsCacheService.purgeOld(nextFinalizedSlot / BigInt(this.config.get('FETCH_INTERVAL_SLOTS')));
         const { slotToWrite, stateRoot, slotNumber } = await this.waitForNextFinalizedSlot(nextFinalizedSlot);
         if (slotToWrite > 0) {
           const res = await this.dataProcessor.processAndWriteFinalizedData(slotToWrite, stateRoot, slotNumber);
