@@ -4,6 +4,8 @@ import { sentAlerts } from '../critical-alerts.service';
 import { ConfigService } from 'common/config';
 import { ClickhouseService } from 'storage';
 
+const VALIDATORS_WITH_MISSED_ATTESTATION_COUNT_THRESHOLD = 1 / 3;
+
 export class CriticalMissedAttestations extends Alert {
   constructor(config: ConfigService, storage: ClickhouseService) {
     super(CriticalMissedAttestations.name, config, storage);
@@ -12,16 +14,12 @@ export class CriticalMissedAttestations extends Alert {
   async alertRule(bySlot: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
     const operators = await this.storage.getUserNodeOperatorsStats(bySlot);
-    const missedAttValidatorsCount = await this.storage.getValidatorCountByConditionAttestationsLastNEpoch(
-      bySlot,
-      this.config.get('BAD_ATTESTATION_EPOCHS'),
-      'attested = 0',
-    );
+    const missedAttValidatorsCount = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(bySlot);
     for (const operator of operators.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
       const missedAtt = missedAttValidatorsCount.find((a) => a.nos_name == operator.nos_name);
       if (!missedAtt) continue;
-      if (missedAtt.suitable > operator.active_ongoing / 3) {
-        result[operator.nos_name] = { ongoing: operator.active_ongoing, missedAtt: missedAtt.suitable };
+      if (missedAtt.amount > operator.active_ongoing * VALIDATORS_WITH_MISSED_ATTESTATION_COUNT_THRESHOLD) {
+        result[operator.nos_name] = { ongoing: operator.active_ongoing, missedAtt: missedAtt.amount };
       }
     }
     return result;

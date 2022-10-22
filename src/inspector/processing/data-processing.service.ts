@@ -221,8 +221,9 @@ export class DataProcessingService implements OnModuleInit {
       let lastBlockInfo: BlockInfoResponse | void;
       let lastMissedSlots: string[];
       // Check all slots from epoch start to last epoch slot + 32 (max inclusion delay)
-      const firstSlotInEpoch = epoch * 32n;
-      const slotsToCheck: bigint[] = bigintRange(firstSlotInEpoch, firstSlotInEpoch + 32n + 32n);
+      const slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
+      const firstSlotInEpoch = epoch * slotsInEpoch;
+      const slotsToCheck: bigint[] = bigintRange(firstSlotInEpoch, firstSlotInEpoch + slotsInEpoch * 2n);
       for (const slotToCheck of slotsToCheck) {
         if (lastBlockInfo && lastBlockInfo.message.slot > slotToCheck.toString()) {
           continue; // If we have lastBlockInfo > slotToCheck it means we have already processed this
@@ -339,7 +340,7 @@ export class DataProcessingService implements OnModuleInit {
   protected async getCanonSlotRoot(slot: bigint) {
     const cached = this.savedCanonSlotsAttProperties[String(slot)];
     if (cached) return cached;
-    const root = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(slot))[0].root;
+    const root = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(slot)).root;
     this.savedCanonSlotsAttProperties[String(slot)] = root;
     return root;
   }
@@ -351,10 +352,6 @@ export class DataProcessingService implements OnModuleInit {
     );
     for (const duty of attDutyResult.attestersDutyInfo) {
       duty.attested = false;
-      duty.valid_head = undefined;
-      duty.valid_target = undefined;
-      duty.valid_source = undefined;
-      duty.in_block = undefined;
       for (const [block, blockAttestations] of blocksAttestation.filter(
         ([b]) => BigInt(b) > BigInt(duty.slot), // Attestation cannot be included in the previous or current block
       )) {
@@ -372,9 +369,14 @@ export class DataProcessingService implements OnModuleInit {
             (missed) => BigInt(missed) > BigInt(duty.slot) && BigInt(missed) < BigInt(block),
           ).length;
           duty.inclusion_delay = Number(BigInt(block) - BigInt(duty.slot)) - missedSlotsOffset;
-          duty.valid_head = ca.head == (await this.getCanonSlotRoot(BigInt(ca.slot)));
-          duty.valid_target = ca.target == (await this.getCanonSlotRoot((BigInt(ca.slot) / 32n) * 32n));
-          duty.valid_source = ca.source == (await this.getCanonSlotRoot((BigInt(ca.slot) / 32n - 1n) * 32n));
+          const [canonHead, canonTarget, canonSource] = await Promise.all([
+            this.getCanonSlotRoot(BigInt(ca.slot)),
+            this.getCanonSlotRoot((BigInt(ca.slot) / 32n) * 32n),
+            this.getCanonSlotRoot((BigInt(ca.slot) / 32n - 1n) * 32n),
+          ]);
+          duty.valid_head = ca.head == canonHead;
+          duty.valid_target = ca.target == canonTarget;
+          duty.valid_source = ca.source == canonSource;
           break;
         }
         if (duty.attested) break;

@@ -306,11 +306,72 @@ export class ClickhouseService implements OnModuleInit {
     return <NOsValidatorsSyncLessChainAvgCount[]>ret;
   }
 
+  public async getValidatorCountWithMissedAttestationsLastEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, 1, 'attested = 0');
+  }
+
+  public async getValidatorCountWithHighIncDelayAttestationsLastEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, 1, 'inclusion_delay > 1');
+  }
+
+  public async getValidatorCountWithInvalidHeadAttestationsLastEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, 1, 'valid_head = 0');
+  }
+
+  public async getValidatorCountWithInvalidTargetAttestationsLastEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, 1, 'valid_target = 0');
+  }
+
+  public async getValidatorCountWithInvalidSourceAttestationsLastEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, 1, 'valid_source = 0');
+  }
+
+  public async getValidatorCountWithMissedAttestationsLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, this.config.get('BAD_ATTESTATION_EPOCHS'), 'attested = 0');
+  }
+
+  public async getValidatorCountWithHighRewardMissedAttestationsLastNEpoch(slot: bigint, possibleHighRewardValidators: string[]) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
+      slot,
+      this.config.get('BAD_ATTESTATION_EPOCHS'),
+      'attested = 0',
+      possibleHighRewardValidators,
+    );
+  }
+
+  public async getValidatorCountWithHighIncDelayAttestationsLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
+      slot,
+      this.config.get('BAD_ATTESTATION_EPOCHS'),
+      'inclusion_delay > 1',
+    );
+  }
+
+  public async getValidatorCountWithInvalidHeadAttestationsLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, this.config.get('BAD_ATTESTATION_EPOCHS'), 'valid_head = 0');
+  }
+
+  public async getValidatorCountWithInvalidTargetAttestationsLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
+      slot,
+      this.config.get('BAD_ATTESTATION_EPOCHS'),
+      'valid_target = 0',
+    );
+  }
+
+  public async getValidatorCountWithInvalidSourceAttestationsLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
+      slot,
+      this.config.get('BAD_ATTESTATION_EPOCHS'),
+      'valid_source = 0',
+    );
+  }
+
   /**
    * Send query to Clickhouse and receives information about
    * how many User Node Operator validators match condition
    */
-  public async getValidatorCountByConditionAttestationsLastNEpoch(
+  private async getValidatorCountByConditionAttestationsLastNEpoch(
     slot: bigint,
     epochInterval: number,
     condition: string,
@@ -336,14 +397,15 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about
    * how many User Node Operator validators have high avg inc. delay (>2) last N epoch
    */
-  public async getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(
-    slot: bigint,
-    epochInterval: number,
-  ): Promise<NOsValidatorsByConditionAttestationCount[]> {
+  public async getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(slot: bigint): Promise<NOsValidatorsByConditionAttestationCount[]> {
     const ret = await this.retry(async () =>
       this.db
         .query(
-          validatorCountHighAvgIncDelayAttestationOfNEpochQuery(this.config.get('FETCH_INTERVAL_SLOTS'), slot.toString(), epochInterval),
+          validatorCountHighAvgIncDelayAttestationOfNEpochQuery(
+            this.config.get('FETCH_INTERVAL_SLOTS'),
+            slot.toString(),
+            this.config.get('BAD_ATTESTATION_EPOCHS'),
+          ),
         )
         .toPromise(),
     );

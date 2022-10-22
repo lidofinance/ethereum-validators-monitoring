@@ -73,54 +73,45 @@ export class InspectorService implements OnModuleInit {
 
   protected async waitForNextFinalizedSlot(nextSlot: bigint): Promise<{ slotToWrite: bigint; stateRoot: string; slotNumber: bigint }> {
     const latestFinalizedBeaconBlock = <BlockHeaderResponse>await this.clClient.getBeaconBlockHeader('finalized');
-    if (BigInt(latestFinalizedBeaconBlock.header.message.slot) >= nextSlot && nextSlot > this.dataProcessor.latestSlotInDb) {
-      // if new finalized slot has happened, from which we can get information about needed
-      // for example: latestSlotInDb = 32, nextSlot = 64, latestFinalizedBeaconBlock = 65
+    if (BigInt(latestFinalizedBeaconBlock.header.message.slot) < nextSlot) {
+      // if new finalized slot hasn't happened, from which we should get information about needed
+      // for example: latestSlotInDb = 32, nextSlot = 64, latestFinalizedBeaconBlock = 33
+      // just wait `CHAIN_SLOT_TIME_SECONDS` until finality happens
+      const sleepTime = this.config.get('CHAIN_SLOT_TIME_SECONDS');
       this.logger.log(
-        `Latest finalized slot [${latestFinalizedBeaconBlock.header.message.slot}] found. Next slot [${nextSlot}]. Latest DB slot [${this.dataProcessor.latestSlotInDb}]`,
+        `Latest finalized slot [${latestFinalizedBeaconBlock.header.message.slot}] found. Latest DB slot [${this.dataProcessor.latestSlotInDb}]. Waiting [${sleepTime}] seconds for next finalized slot [${nextSlot}]`,
       );
 
-      // try to get block 64 header
-      const [nextFinalizedBeaconBlock, isMissed] = await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(nextSlot);
-
-      // if it's not missed - just return it
-      if (!isMissed) {
-        this.logger.log(
-          `Fetched next slot [${nextFinalizedBeaconBlock.header.message.slot}] with state root [${nextFinalizedBeaconBlock.header.message.state_root}]`,
-        );
-
-        return {
-          slotToWrite: BigInt(nextFinalizedBeaconBlock.header.message.slot),
-          stateRoot: nextFinalizedBeaconBlock.header.message.state_root,
-          slotNumber: BigInt(nextFinalizedBeaconBlock.header.message.slot),
-        };
-      }
-
-      // if it's missed that we return the closest finalized block stateRoot and slotNumber in epoch (for example - block 63)
-      this.logger.log(
-        `Fetched next slot [${nextFinalizedBeaconBlock.header.message.slot}] with state root [${
-          nextFinalizedBeaconBlock.header.message.state_root
-        }] instead of slot [${nextSlot}]. Difference [${BigInt(nextFinalizedBeaconBlock.header.message.slot) - nextSlot}] slots`,
-      );
-
-      return {
-        slotToWrite: nextSlot,
-        stateRoot: nextFinalizedBeaconBlock.header.message.state_root,
-        slotNumber: BigInt(nextFinalizedBeaconBlock.header.message.slot),
-      };
+      return new Promise((resolve) => {
+        setTimeout(() => resolve({ slotToWrite: 0n, stateRoot: '', slotNumber: 0n }), sleepTime * 1000);
+      });
     }
-
-    // if new finalized slot hasn't happened, from which we should get information about needed
-    // for example: latestSlotInDb = 32, nextSlot = 64, latestFinalizedBeaconBlock = 33
-    // just wait `CHAIN_SLOT_TIME_SECONDS` until finality happens
-    const sleepTime = this.config.get('CHAIN_SLOT_TIME_SECONDS');
+    // if new finalized slot has happened, from which we can get information about needed
+    // for example: latestSlotInDb = 32, nextSlot = 64, latestFinalizedBeaconBlock = 65
     this.logger.log(
-      `Latest finalized slot [${latestFinalizedBeaconBlock.header.message.slot}] found. Latest DB slot [${this.dataProcessor.latestSlotInDb}]. Waiting [${sleepTime}] seconds for next finalized slot [${nextSlot}]`,
+      `Latest finalized slot [${latestFinalizedBeaconBlock.header.message.slot}] found. Next slot [${nextSlot}]. Latest DB slot [${this.dataProcessor.latestSlotInDb}]`,
     );
 
-    return new Promise((resolve) => {
-      setTimeout(() => resolve({ slotToWrite: 0n, stateRoot: '', slotNumber: 0n }), sleepTime * 1000);
-    });
+    // try to get block 64 header
+    const finalizedBeaconBlockHeader = await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(nextSlot);
+
+    if (nextSlot == BigInt(finalizedBeaconBlockHeader.header.message.slot)) {
+      this.logger.log(`Fetched next slot [${nextSlot}] with state root [${finalizedBeaconBlockHeader.header.message.state_root}]`);
+    } else {
+      this.logger.log(
+        `Fetched next slot [${finalizedBeaconBlockHeader.header.message.slot}] with state root [${
+          finalizedBeaconBlockHeader.header.message.state_root
+        }] instead of slot [${nextSlot}]. Difference [${BigInt(finalizedBeaconBlockHeader.header.message.slot) - nextSlot}] slots`,
+      );
+    }
+
+    // if it's not missed - just return it
+    // if it's missed that we return the closest finalized block stateRoot and slotNumber in epoch (for example - block 63)
+    return {
+      slotToWrite: nextSlot,
+      stateRoot: finalizedBeaconBlockHeader.header.message.state_root,
+      slotNumber: BigInt(finalizedBeaconBlockHeader.header.message.slot),
+    };
   }
 
   protected calculateNextFinalizedSlot(): bigint {

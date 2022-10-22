@@ -137,7 +137,7 @@ export const validatorCountByConditionAttestationLastNEpochQuery = (
   return `
     SELECT
       nos_name,
-      count() as suitable
+      count() as amount
     FROM (
       SELECT
         validator_pubkey,
@@ -159,7 +159,7 @@ export const validatorCountByConditionAttestationLastNEpochQuery = (
     )
     WHERE count_fail = ${epochInterval}
     GROUP BY nos_name
-    ORDER BY suitable DESC
+    ORDER BY amount DESC
   `;
 };
 
@@ -171,28 +171,21 @@ export const validatorCountHighAvgIncDelayAttestationOfNEpochQuery = (
   return `
     SELECT
       nos_name,
-      count() as suitable
+      count() as amount
     FROM (
       SELECT
         validator_pubkey,
         avg(inclusion_delay) as avg_inclusion_delay,
         nos_name
-      FROM (
-        SELECT
-          validator_pubkey,
-          nos_name,
-          inclusion_delay
-        FROM stats.validator_attestations
-        WHERE
-          (slot_to_attestation <= ${slot} AND slot_to_attestation > (${slot} - ${fetchInterval} * ${epochInterval}))
-        ORDER BY slot_to_attestation DESC, validator_pubkey
-      )
+      FROM stats.validator_attestations
+      WHERE
+        (slot_to_attestation <= ${slot} AND slot_to_attestation > (${slot} - ${fetchInterval} * ${epochInterval}))
       GROUP BY validator_pubkey, nos_name
+      HAVING avg_inclusion_delay > 2
       ORDER BY avg_inclusion_delay DESC, validator_pubkey
     )
-    WHERE avg_inclusion_delay > 2
     GROUP BY nos_name
-    ORDER BY suitable DESC
+    ORDER BY amount DESC
   `;
 };
 

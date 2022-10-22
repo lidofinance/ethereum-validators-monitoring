@@ -23,6 +23,9 @@ export interface AttesterDutyInfo {
   committees_at_slot: string;
   validator_committee_index: string;
   slot: string;
+}
+
+export interface CheckedAttesterDutyInfo extends AttesterDutyInfo {
   attested: boolean;
   valid_head: boolean;
   valid_target: boolean;
