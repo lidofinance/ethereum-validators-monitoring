@@ -170,6 +170,7 @@ export class ClickhouseService implements OnModuleInit {
           )
           .stream();
         for (const a of chunk) {
+          // todo: insert without undefined values for using default column values
           await ws.writeRow(
             `(${slotTime}, '${a.pubkey || ''}', '${a.validator_index || ''}', ${parseInt(a.committee_index)}, ` +
               `${parseInt(a.committee_length)}, ${parseInt(a.committees_at_slot)}, ${parseInt(a.validator_committee_index)}, ` +

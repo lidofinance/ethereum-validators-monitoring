@@ -4,7 +4,7 @@ import { StatsProcessingService } from './processing/stats-processing.service';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { ConfigService } from 'common/config';
-import { BlockHeaderResponse, ConsensusProviderService, SlotsCacheService } from 'common/eth-providers';
+import { BlockHeaderResponse, ConsensusProviderService, BlockCacheService } from 'common/eth-providers';
 import { ClickhouseService } from 'storage';
 import { CriticalAlertsService } from 'common/alertmanager/critical-alerts.service';
 
@@ -18,7 +18,7 @@ export class InspectorService implements OnModuleInit {
     protected readonly dataProcessor: DataProcessingService,
     protected readonly statsProcessor: StatsProcessingService,
     protected readonly criticalAlertService: CriticalAlertsService,
-    protected readonly slotsCacheService: SlotsCacheService,
+    protected readonly slotsCacheService: BlockCacheService,
   ) {}
 
   public async onModuleInit(): Promise<void> {

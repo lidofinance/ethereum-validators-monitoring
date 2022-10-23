@@ -1,7 +1,4 @@
-export type BLSSignature = string;
-export type Root = string;
-export type Slot = string;
-export type ValidatorIndex = string;
+import { BLSSignature, RootHex, Slot, ValidatorIndex } from '../types';
 
 export enum ValStatus {
   ActiveOngoing = 'active_ongoing',
@@ -35,15 +32,15 @@ export interface CheckedAttesterDutyInfo extends AttesterDutyInfo {
 }
 
 export interface BlockHeaderResponse {
-  root: Root;
+  root: RootHex;
   canonical: boolean;
   header: {
     message: {
       slot: Slot;
       proposer_index: ValidatorIndex;
-      parent_root: Root;
-      state_root: Root;
-      body_root: Root;
+      parent_root: RootHex;
+      state_root: RootHex;
+      body_root: RootHex;
     };
     signature: BLSSignature;
   };
@@ -52,7 +49,7 @@ export interface BlockHeaderResponse {
 export interface BlockInfoResponse {
   message: {
     slot: string;
-    proposer_index: string;
+    proposer_index: ValidatorIndex;
     body: {
       attestations: BeaconBlockAttestation[];
       sync_aggregate: {
@@ -65,15 +62,15 @@ export interface BlockInfoResponse {
 export interface FinalityCheckpointsResponse {
   previous_justified: {
     epoch: string;
-    root: string;
+    root: RootHex;
   };
   current_justified: {
     epoch: string;
-    root: string;
+    root: RootHex;
   };
   finalized: {
     epoch: string;
-    root: string;
+    root: RootHex;
   };
 }
 
@@ -100,7 +97,7 @@ export interface GenesisResponse {
 
 export interface ProposerDutyInfo {
   pubkey: string;
-  validator_index: string;
+  validator_index: ValidatorIndex;
   slot: string;
   proposed: boolean;
 }
@@ -110,14 +107,14 @@ export interface BeaconBlockAttestation {
   data: {
     slot: string;
     index: string;
-    beacon_block_root: string;
+    beacon_block_root: RootHex;
     source: {
       epoch: string;
-      root: string;
+      root: RootHex;
     };
     target: {
       epoch: string;
-      root: string;
+      root: RootHex;
     };
   };
 }
@@ -140,7 +137,7 @@ export interface StateValidatorResponse {
 
 export interface SyncCommitteeDutyInfo {
   pubkey: string;
-  validator_index: string;
+  validator_index: ValidatorIndex;
   validator_sync_committee_indices: string[];
   results: {
     block: string;
@@ -149,12 +146,12 @@ export interface SyncCommitteeDutyInfo {
 }
 
 export interface SyncCommitteeInfo {
-  validators: string[];
+  validators: ValidatorIndex[];
 }
 
 export interface SyncCommitteeValidator {
   in_committee_index: number;
-  validator_index: string;
+  validator_index: ValidatorIndex;
   epoch_participation_percent: number;
 }
 

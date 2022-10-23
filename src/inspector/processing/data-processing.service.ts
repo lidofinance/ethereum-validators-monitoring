@@ -366,10 +366,10 @@ export class DataProcessingService implements OnModuleInit {
           if (!duty.attested) continue; // continue to find attestation with validator attestation
           // and if validator attests block - calculate inclusion delay and check properties (head, target, source)
           // calculate inclusion delay
-          const missedSlotsOffset = attDutyResult.allMissedSlots.filter(
+          const missedSlotsCount = attDutyResult.allMissedSlots.filter(
             (missed) => BigInt(missed) > BigInt(duty.slot) && BigInt(missed) < BigInt(block),
           ).length;
-          duty.inclusion_delay = Number(BigInt(block) - BigInt(duty.slot)) - missedSlotsOffset;
+          duty.inclusion_delay = Number(BigInt(block) - BigInt(duty.slot)) - missedSlotsCount;
           const [canonHead, canonTarget, canonSource] = await Promise.all([
             this.getCanonSlotRoot(BigInt(ca.slot)),
             this.getCanonSlotRoot((BigInt(ca.slot) / slotsInEpoch) * slotsInEpoch),

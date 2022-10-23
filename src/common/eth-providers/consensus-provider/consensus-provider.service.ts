@@ -22,7 +22,8 @@ import {
   VersionResponse,
 } from './intefaces';
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
-import { CachedSlot, SlotsCacheService } from './slots-cache.service';
+import { BlockCache, BlockCacheService } from './block-cache.service';
+import { BlockId, Epoch, RootHex, Slot, StateId, ValidatorIndex } from './types';
 
 interface RequestRetryOptions {
   maxRetries?: number;
@@ -43,21 +44,20 @@ export class ConsensusProviderService {
     version: 'eth/v1/node/version',
     genesis: 'eth/v1/beacon/genesis',
     beaconHeadFinalityCheckpoints: 'eth/v1/beacon/states/head/finality_checkpoints',
-    blockInfo: (block: bigint | string): string => `eth/v2/beacon/blocks/${block}`,
-    beaconHeaders: (slotOrBlockRoot: bigint | string): string => `eth/v1/beacon/headers/${slotOrBlockRoot}`,
-    balances: (slotOrStateRoot: bigint | string): string => `eth/v1/beacon/states/${slotOrStateRoot}/validators`,
-    syncCommittee: (slotOrStateRoot: bigint | string, epoch: bigint | string): string =>
-      `eth/v1/beacon/states/${slotOrStateRoot}/sync_committees?epoch=${epoch}`,
-    proposerDutes: (epoch: bigint | string): string => `eth/v1/validator/duties/proposer/${epoch}`,
-    attesterDuties: (epoch: bigint | string): string => `eth/v1/validator/duties/attester/${epoch}`,
-    syncCommitteeDuties: (epoch: bigint | string): string => `eth/v1/validator/duties/sync/${epoch}`,
+    blockInfo: (blockId: BlockId): string => `eth/v2/beacon/blocks/${blockId}`,
+    beaconHeaders: (blockId: BlockId): string => `eth/v1/beacon/headers/${blockId}`,
+    balances: (stateId: StateId): string => `eth/v1/beacon/states/${stateId}/validators`,
+    syncCommittee: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/sync_committees?epoch=${epoch}`,
+    proposerDutes: (epoch: Epoch): string => `eth/v1/validator/duties/proposer/${epoch}`,
+    attesterDuties: (epoch: Epoch): string => `eth/v1/validator/duties/attester/${epoch}`,
+    syncCommitteeDuties: (epoch: Epoch): string => `eth/v1/validator/duties/sync/${epoch}`,
   };
 
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
-    protected readonly cache: SlotsCacheService,
+    protected readonly cache: BlockCacheService,
   ) {
     this.apiUrls = config.get('CL_API_URLS') as NonEmptyArray<string>;
   }
@@ -82,7 +82,7 @@ export class ConsensusProviderService {
     return (this.genesisTime = genesisTime);
   }
 
-  public async getFinalizedEpoch(): Promise<bigint> {
+  public async getFinalizedEpoch(): Promise<Epoch> {
     return BigInt(
       (
         await this.retryRequest<FinalityCheckpointsResponse>((apiURL: string) =>
@@ -92,19 +92,19 @@ export class ConsensusProviderService {
     );
   }
 
-  public async getBeaconBlockHeader(state: bigint | string): Promise<BlockHeaderResponse | void> {
-    const cached: CachedSlot = this.cache.get(String(state));
+  public async getBeaconBlockHeader(blockId: BlockId): Promise<BlockHeaderResponse | void> {
+    const cached: BlockCache = this.cache.get(String(blockId));
     if (cached && (cached.missed || cached.header)) {
-      this.logger.debug(`Get ${state} header from slots cache`);
+      this.logger.debug(`Get ${blockId} header from slots cache`);
       return cached.missed ? undefined : cached.header;
     }
 
     const blockHeader = await this.retryRequest<BlockHeaderResponse>(
-      (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(state)),
+      (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(blockId)),
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
-          if (state == 'finalized') {
+          if (blockId == 'finalized') {
             if (BigInt(r.data.header.message.slot) > this.lastFinalizedSlot.slot) {
               this.lastFinalizedSlot = { slot: BigInt(r.data.header.message.slot), fetchTime: Number(Date.now()) };
             } else if (Number(Date.now()) - this.lastFinalizedSlot.fetchTime > 420 * 1000) {
@@ -124,10 +124,7 @@ export class ConsensusProviderService {
       }
     });
 
-    if (!['finalized', 'head'].includes(String(state))) {
-      this.logger.debug(`Update ${state} header in slots cache`);
-      this.cache.update(String(state), { missed: !blockHeader, header: blockHeader });
-    }
+    this.cache.update(String(blockId), { missed: !blockHeader, header: blockHeader });
 
     return blockHeader;
   }
@@ -137,7 +134,7 @@ export class ConsensusProviderService {
    * Since missed block has no header, we must get block header from the next block by its parent_root
    * @param slot
    */
-  public async getBeaconBlockHeaderOrPreviousIfMissed(slot: bigint): Promise<BlockHeaderResponse> {
+  public async getBeaconBlockHeaderOrPreviousIfMissed(slot: Slot): Promise<BlockHeaderResponse> {
     const header = await this.getBeaconBlockHeader(slot);
     if (header) return header;
     // if block is missed, try to get next not missed block header
@@ -154,7 +151,7 @@ export class ConsensusProviderService {
     return previousBlockHeader;
   }
 
-  public async getNextNotMissedBlockHeader(slot: bigint, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
+  public async getNextNotMissedBlockHeader(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
     const header = await this.getBeaconBlockHeader(slot);
     if (!header) {
       if (maxDeep < 1) {
@@ -166,7 +163,7 @@ export class ConsensusProviderService {
     return header;
   }
 
-  public async getPreviousNotMissedBlockHeader(slot: bigint, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
+  public async getPreviousNotMissedBlockHeader(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
     const header = await this.getBeaconBlockHeader(slot);
     if (!header) {
       if (maxDeep < 1) {
@@ -181,7 +178,7 @@ export class ConsensusProviderService {
   /**
    * Trying to get attester or proposer duty dependent block root
    */
-  public async getDutyDependentRoot(epoch: bigint): Promise<string> {
+  public async getDutyDependentRoot(epoch: Epoch): Promise<string> {
     this.logger.log(`Getting duty dependent root for epoch ${epoch}`);
     const dutyRootSlot = epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS')) - 1n;
     return (await this.getPreviousNotMissedBlockHeader(dutyRootSlot)).root;
@@ -192,7 +189,7 @@ export class ConsensusProviderService {
    * Assumed that the ideal attestation is included in the next non-missed block
    */
   public async getBlockInfoWithSlotAttestations(
-    slot: bigint,
+    slot: Slot,
     maxDeep = this.defaultMaxSlotDeepCount,
   ): Promise<[BlockInfoResponse | void, Array<string>]> {
     const nearestBlockIncludedAttestations = slot + 1n; // good attestation should be included to the next block
@@ -217,7 +214,7 @@ export class ConsensusProviderService {
     return [blockInfo, missedSlots.map((v) => v.toString())];
   }
 
-  public async getNextNotMissedBlockInfo(slot: bigint, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockInfoResponse | undefined> {
+  public async getNextNotMissedBlockInfo(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockInfoResponse | undefined> {
     const blockInfo = await this.getBlockInfo(slot);
     if (!blockInfo) {
       if (maxDeep < 1) {
@@ -229,42 +226,42 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getBalances(stateRoot: string): Promise<StateValidatorResponse[]> {
-    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.balances(stateRoot)));
+  public async getBalances(stateId: StateId): Promise<StateValidatorResponse[]> {
+    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.balances(stateId)));
   }
 
-  public async getBlockInfo(state: string | bigint): Promise<BlockInfoResponse | void> {
-    const cached: CachedSlot = this.cache.get(String(state));
+  public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse | void> {
+    const cached: BlockCache = this.cache.get(String(blockId));
     if (cached && (cached.missed || cached.info)) {
-      this.logger.debug(`Get ${state} info from slots cache`);
+      this.logger.debug(`Get ${blockId} info from slots cache`);
       return cached.missed ? undefined : cached.info;
     }
 
-    const blockInfo = await this.retryRequest<BlockInfoResponse>((apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(state)), {
-      maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
-    }).catch((e) => {
+    const blockInfo = await this.retryRequest<BlockInfoResponse>(
+      (apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(blockId)),
+      {
+        maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
+      },
+    ).catch((e) => {
       if (404 != e.$httpCode) {
         this.logger.error('Unexpected status code while fetching block info');
         throw e;
       }
     });
 
-    if (!['finalized', 'head'].includes(String(state))) {
-      this.logger.debug(`Update ${state} info in slots cache`);
-      this.cache.update(String(state), { missed: !blockInfo, info: blockInfo });
-    }
+    this.cache.update(String(blockId), { missed: !blockInfo, info: blockInfo });
 
     return blockInfo;
   }
 
-  public async getSyncCommitteeInfo(stateRoot: string, epoch: string | bigint): Promise<SyncCommitteeInfo> {
-    return await this.retryRequest((apiURL: string) => this.apiGet(apiURL, this.endpoints.syncCommittee(stateRoot, epoch)));
+  public async getSyncCommitteeInfo(stateId: StateId, epoch: Epoch): Promise<SyncCommitteeInfo> {
+    return await this.retryRequest((apiURL: string) => this.apiGet(apiURL, this.endpoints.syncCommittee(stateId, epoch)));
   }
 
   public async getCanonicalAttesterDuties(
-    epoch: string | bigint,
-    dependentRoot: string,
-    indexes: string[],
+    epoch: Epoch,
+    dependentRoot: RootHex,
+    indexes: ValidatorIndex[],
     maxRetriesForGetCanonical = 3,
   ): Promise<AttesterDutyInfo[]> {
     const retry = retrier(this.logger, maxRetriesForGetCanonical, 100, 10000, true);
@@ -288,7 +285,7 @@ export class ConsensusProviderService {
       });
   }
 
-  public async getChunkedAttesterDuties(epoch: string | bigint, dependentRoot: string, indexes: string[]): Promise<AttesterDutyInfo[]> {
+  public async getChunkedAttesterDuties(epoch: Epoch, dependentRoot: RootHex, indexes: string[]): Promise<AttesterDutyInfo[]> {
     let result: AttesterDutyInfo[] = [];
     const chunked = [...indexes];
     while (chunked.length > 0) {
@@ -298,7 +295,7 @@ export class ConsensusProviderService {
     return result;
   }
 
-  public async getSyncCommitteeDuties(epoch: string | bigint, indexes: string[]): Promise<SyncCommitteeDutyInfo[]> {
+  public async getSyncCommitteeDuties(epoch: Epoch, indexes: string[]): Promise<SyncCommitteeDutyInfo[]> {
     let result: SyncCommitteeDutyInfo[] = [];
     const chunked = [...indexes];
     while (chunked.length > 0) {
@@ -316,8 +313,8 @@ export class ConsensusProviderService {
   }
 
   public async getCanonicalProposerDuties(
-    epoch: string | bigint,
-    dependentRoot: string,
+    epoch: Epoch,
+    dependentRoot: RootHex,
     maxRetriesForGetCanonical = 3,
   ): Promise<ProposerDutyInfo[]> {
     const retry = retrier(this.logger, maxRetriesForGetCanonical, 100, 10000, true);
@@ -342,7 +339,7 @@ export class ConsensusProviderService {
       });
   }
 
-  public async getSlotTime(slot: bigint): Promise<bigint> {
+  public async getSlotTime(slot: Slot): Promise<bigint> {
     return (await this.getGenesisTime()) + slot * BigInt(this.config.get('CHAIN_SLOT_TIME_SECONDS'));
   }
 
