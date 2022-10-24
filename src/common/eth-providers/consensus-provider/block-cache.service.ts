@@ -21,7 +21,7 @@ export class BlockCacheService {
   public set(blockId: BlockCacheId, data: BlockCache): void {
     // save only by slot number or root
     if (['finalized', 'head'].includes(String(blockId))) return;
-    this.logger.debug(`Set ${blockId} ${Object.keys(data)} in slots cache`);
+    this.logger.debug(`Set ${blockId} ${Object.keys(data)} to blocks cache`);
     const existing = this.get(String(blockId)) ?? {};
     this.cache[String(blockId)] = { ...existing, ...data };
   }

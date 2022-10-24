@@ -21,8 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 15,
-  "iteration": 1663677853695,
+  "iteration": 1666597539753,
   "links": [
     {
       "asDropdown": false,
@@ -107,7 +106,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -168,7 +167,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -228,7 +227,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -288,7 +287,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -306,28 +305,6 @@
       "type": "stat"
     },
     {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -498,7 +475,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -558,7 +535,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -631,7 +608,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -691,7 +668,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -758,7 +735,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -872,7 +849,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -1359,7 +1336,7 @@
           }
         ]
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -1729,7 +1706,7 @@
           }
         ]
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -1995,7 +1972,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "nos_name"
+              "options": "Operator"
             },
             "properties": [
               {
@@ -2019,14 +1996,14 @@
               },
               {
                 "id": "custom.width",
-                "value": 75
+                "value": 90
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "Attested"
+              "options": "Perfect"
             },
             "properties": [
               {
@@ -2045,12 +2022,76 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "All"
+              "options": "High inc. delay"
             },
             "properties": [
               {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              },
+              {
                 "id": "custom.width",
-                "value": 75
+                "value": 115
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad head"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad target"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad source"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
               }
             ]
           }
@@ -2075,11 +2116,11 @@
         "sortBy": [
           {
             "desc": true,
-            "displayName": "missed"
+            "displayName": "Missed"
           }
         ]
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -2091,8 +2132,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "  SELECT\n    nos_name,\n    SUM(a) as All,\n    SUM(p) as Attested,\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      nos_name,\n      count(attested) as a,\n      IF(attested = 0, count(attested), 0) as m,\n      IF(attested = 1, count(attested), 0) as p\n    FROM stats.validator_attestations\n    WHERE (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs}))\n    GROUP BY nos_name, attested\n  )\n  GROUP by nos_name",
-          "rawQuery": "SELECT\n    nos_name,\n    SUM(a) as All,\n    SUM(p) as Attested,\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      nos_name,\n      count(attested) as a,\n      IF(attested = 0, count(attested), 0) as m,\n      IF(attested = 1, count(attested), 0) as p\n    FROM stats.validator_attestations\n    WHERE (slot_to_attestation <= 4730175 AND slot_to_attestation > (4730175 - 32 * 3))\n    GROUP BY nos_name, attested\n  )\n  GROUP by nos_name",
+          "query": "  SELECT\n    nos_name as Operator,\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      nos_name,\n      IF((attested = 1) AND (inclusion_delay = 1) AND (valid_head = 1) AND (valid_target = 1) AND (valid_source = 1), count(attested), 0) as p,\n      IF((inclusion_delay > 1) AND (valid_head = 1) AND (valid_target = 1) AND (valid_source = 1), count(attested), 0) as i,\n      IF(valid_head = 0, count(attested), 0) as bh,\n      IF(valid_target = 0, count(attested), 0) as bt,\n      IF(valid_source = 0, count(attested), 0) as bs,\n      IF(attested = 0, count(attested), 0) as m\n    FROM stats.validator_attestations\n    WHERE (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs}))\n    GROUP BY nos_name, attested, inclusion_delay, valid_head, valid_target, valid_source\n  )\n  GROUP by nos_name",
+          "rawQuery": "SELECT\n    nos_name as Operator,\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      nos_name,\n      IF((attested = 1) AND (inclusion_delay = 1) AND (valid_head = 1) AND (valid_target = 1) AND (valid_source = 1), count(attested), 0) as p,\n      IF((inclusion_delay > 1) AND (valid_head = 1) AND (valid_target = 1) AND (valid_source = 1), count(attested), 0) as i,\n      IF(valid_head = 0, count(attested), 0) as bh,\n      IF(valid_target = 0, count(attested), 0) as bt,\n      IF(valid_source = 0, count(attested), 0) as bs,\n      IF(attested = 0, count(attested), 0) as m\n    FROM stats.validator_attestations\n    WHERE (slot_to_attestation <= 4944511 AND slot_to_attestation > (4944511 - 32 * 1))\n    GROUP BY nos_name, attested, inclusion_delay, valid_head, valid_target, valid_source\n  )\n  GROUP by nos_name",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -2152,12 +2193,72 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "High inc. delay"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad head"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad target"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad source"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
       "gridPos": {
         "h": 7,
-        "w": 6,
+        "w": 12,
         "x": 12,
         "y": 31
       },
@@ -2166,7 +2267,7 @@
         "displayLabels": [],
         "legend": {
           "displayMode": "table",
-          "placement": "bottom",
+          "placement": "right",
           "values": [
             "value",
             "percent"
@@ -2197,8 +2298,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "  SELECT\n    sum(attested) as Attested,\n    sum(missed) as Missed\n  FROM (\n    SELECT\n      nos_name,\n      SUM(p) as attested,\n      SUM(m) as missed\n    FROM\n    (\n      SELECT\n        nos_name,\n        IF(attested = 0, count(attested), 0) as m,\n        IF(attested = 1, count(attested), 0) as p\n      FROM stats.validator_attestations\n      WHERE (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs}))\n      GROUP BY nos_name, attested\n    )\n    GROUP by nos_name\n  )",
-          "rawQuery": "SELECT\n    sum(attested) as Attested,\n    sum(missed) as Missed\n  FROM (\n    SELECT\n      nos_name,\n      SUM(p) as attested,\n      SUM(m) as missed\n    FROM\n    (\n      SELECT\n        nos_name,\n        IF(attested = 0, count(attested), 0) as m,\n        IF(attested = 1, count(attested), 0) as p\n      FROM stats.validator_attestations\n      WHERE (slot_to_attestation <= 4730175 AND slot_to_attestation > (4730175 - 32 * 3))\n      GROUP BY nos_name, attested\n    )\n    GROUP by nos_name\n  )",
+          "query": "  SELECT\n    sum(p) as Perfect,\n    sum(i) as \"High inc. delay\",\n    sum(bh) as \"Bad head\",\n    sum(bt) as \"Bad target\",\n    sum(bs) as \"Bad source\",\n    sum(m) as Missed\n  FROM (\n    SELECT\n      nos_name,\n      SUM(p) as p,\n      SUM(i) as i,\n      SUM(bh) as bh,\n      SUM(bt) as bt,\n      SUM(bs) as bs,\n      SUM(m) as m\n    FROM\n    (\n      SELECT\n        nos_name,\n        IF((attested = 1) AND (inclusion_delay = 1) AND (valid_head = 1) AND (valid_target = 1) AND (valid_source = 1), count(attested), 0) as p,\n        IF((inclusion_delay > 1) AND (valid_head = 1) AND (valid_target = 1) AND (valid_source = 1), count(attested), 0) as i,\n        IF(valid_head = 0, count(attested), 0) as bh,\n        IF(valid_target = 0, count(attested), 0) as bt,\n        IF(valid_source = 0, count(attested), 0) as bs,\n        IF(attested = 0, count(attested), 0) as m\n      FROM stats.validator_attestations\n      WHERE (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs}))\n      GROUP BY nos_name, attested, inclusion_delay, valid_head, valid_target, valid_source\n    )\n    GROUP by nos_name\n  )",
+          "rawQuery": "SELECT\n    sum(p) as Perfect,\n    sum(i) as \"High inc. delay\",\n    sum(bh) as \"Bad head\",\n    sum(bt) as \"Bad target\",\n    sum(bs) as \"Bad source\",\n    sum(m) as Missed\n  FROM (\n    SELECT\n      nos_name,\n      SUM(p) as p,\n      SUM(i) as i,\n      SUM(bh) as bh,\n      SUM(bt) as bt,\n      SUM(bs) as bs,\n      SUM(m) as m\n    FROM\n    (\n      SELECT\n        nos_name,\n        IF((attested = 1) AND (inclusion_delay = 1) AND (valid_head = 1) AND (valid_target = 1) AND (valid_source = 1), count(attested), 0) as p,\n        IF((inclusion_delay > 1) AND (valid_head = 1) AND (valid_target = 1) AND (valid_source = 1), count(attested), 0) as i,\n        IF(valid_head = 0, count(attested), 0) as bh,\n        IF(valid_target = 0, count(attested), 0) as bt,\n        IF(valid_source = 0, count(attested), 0) as bs,\n        IF(attested = 0, count(attested), 0) as m\n      FROM stats.validator_attestations\n      WHERE (slot_to_attestation <= 4944447 AND slot_to_attestation > (4944447 - 32 * 1))\n      GROUP BY nos_name, attested, inclusion_delay, valid_head, valid_target, valid_source\n    )\n    GROUP by nos_name\n  )",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -2261,8 +2362,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               },
@@ -2336,8 +2436,7 @@
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "yellow",
@@ -2448,8 +2547,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -2524,8 +2622,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2672,8 +2769,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -3401,7 +3497,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "",
+          "description": "TOP 100",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -3452,7 +3548,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3541,7 +3638,7 @@
               }
             ]
           },
-          "pluginVersion": "8.4.6",
+          "pluginVersion": "8.3.6",
           "targets": [
             {
               "datasource": {
@@ -3554,13 +3651,13 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\nSELECT\n  count() as count_fail,\n  nos_name,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs}))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as count_fail,\n  nos_name,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND \n    (slot_to_attestation <= 4707039 AND slot_to_attestation > (4707039 - 32 * 1))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as count_fail,\n  nos_name,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND \n    (slot_to_attestation <= 4979903 AND slot_to_attestation > (4979903 - 32 * 1))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of missed attestations (${epochs} epochs range)",
+          "title": "Number of MISSED attestations (${epochs} epochs range)",
           "type": "table"
         },
         {
@@ -3603,7 +3700,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -3646,7 +3744,1027 @@
               "refId": "A"
             }
           ],
-          "title": "Number of validators with missed attestation",
+          "title": "Number of validators with MISSED attestation",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "description": "TOP 100 (inc. delay > 1)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto",
+                "filterable": false
+              },
+              "links": [],
+              "mappings": [
+                {
+                  "options": {
+                    "from": 4,
+                    "result": {
+                      "color": "red",
+                      "index": 0
+                    },
+                    "to": 6
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 1,
+                    "result": {
+                      "color": "yellow",
+                      "index": 1
+                    },
+                    "to": 3
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 0,
+                    "result": {
+                      "color": "green",
+                      "index": 2
+                    },
+                    "to": 0
+                  },
+                  "type": "range"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "count_fail"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 60
+                  },
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "custom.displayMode",
+                    "value": "color-text"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "validator_pubkey"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "beaconcha.in",
+                        "url": "https://prater.beaconcha.in/validator/${__value.raw}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "validator"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "string"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "nos_name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 50
+          },
+          "id": 99,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": false,
+            "sortBy": [
+              {
+                "desc": false,
+                "displayName": "delta"
+              }
+            ]
+          },
+          "pluginVersion": "8.3.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "vertamedia-clickhouse-datasource",
+                "uid": "PDEE91DDB90597936"
+              },
+              "dateTimeType": "DATETIME",
+              "extrapolate": true,
+              "format": "table",
+              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+              "intervalFactor": 1,
+              "query": "\nSELECT\n  count() as count_fail,\n  nos_name,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE inclusion_delay > 1 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs}))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as count_fail,\n  nos_name,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE inclusion_delay > 1 AND \n    (slot_to_attestation <= 4945087 AND slot_to_attestation > (4945087 - 32 * 12))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "refId": "A",
+              "round": "0s",
+              "skip_comments": true
+            }
+          ],
+          "title": "Number of attestations with high INC. DELAY (${epochs} epochs range)",
+          "type": "table"
+        },
+        {
+          "description": "User only",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "pointSize": 3,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 50
+          },
+          "id": 95,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"})",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Number of validators with high attestation INC. DELAY",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "description": "TOP 100",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto",
+                "filterable": false
+              },
+              "links": [],
+              "mappings": [
+                {
+                  "options": {
+                    "from": 4,
+                    "result": {
+                      "color": "red",
+                      "index": 0
+                    },
+                    "to": 6
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 1,
+                    "result": {
+                      "color": "yellow",
+                      "index": 1
+                    },
+                    "to": 3
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 0,
+                    "result": {
+                      "color": "green",
+                      "index": 2
+                    },
+                    "to": 0
+                  },
+                  "type": "range"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "count_fail"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 60
+                  },
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "custom.displayMode",
+                    "value": "color-text"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "validator_pubkey"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "beaconcha.in",
+                        "url": "https://prater.beaconcha.in/validator/${__value.raw}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "validator"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "string"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "nos_name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 58
+          },
+          "id": 100,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": false,
+            "sortBy": [
+              {
+                "desc": false,
+                "displayName": "delta"
+              }
+            ]
+          },
+          "pluginVersion": "8.3.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "vertamedia-clickhouse-datasource",
+                "uid": "PDEE91DDB90597936"
+              },
+              "dateTimeType": "DATETIME",
+              "extrapolate": true,
+              "format": "table",
+              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+              "intervalFactor": 1,
+              "query": "\nSELECT\n  count() as count_fail,\n  nos_name,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE valid_head = 0 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs}))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as count_fail,\n  nos_name,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE valid_head = 0 AND \n    (slot_to_attestation <= 4945087 AND slot_to_attestation > (4945087 - 32 * 12))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "refId": "A",
+              "round": "0s",
+              "skip_comments": true
+            }
+          ],
+          "title": "Number of attestations with invalid HEAD (${epochs} epochs range)",
+          "type": "table"
+        },
+        {
+          "description": "User only",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "pointSize": 3,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 58
+          },
+          "id": 96,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"})",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Number of validators with invalid attestation HEAD",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "description": "TOP 100",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto",
+                "filterable": false
+              },
+              "links": [],
+              "mappings": [
+                {
+                  "options": {
+                    "from": 4,
+                    "result": {
+                      "color": "red",
+                      "index": 0
+                    },
+                    "to": 6
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 1,
+                    "result": {
+                      "color": "yellow",
+                      "index": 1
+                    },
+                    "to": 3
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 0,
+                    "result": {
+                      "color": "green",
+                      "index": 2
+                    },
+                    "to": 0
+                  },
+                  "type": "range"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "count_fail"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 60
+                  },
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "custom.displayMode",
+                    "value": "color-text"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "validator_pubkey"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "beaconcha.in",
+                        "url": "https://prater.beaconcha.in/validator/${__value.raw}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "validator"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "string"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "nos_name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 66
+          },
+          "id": 101,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": false,
+            "sortBy": [
+              {
+                "desc": false,
+                "displayName": "delta"
+              }
+            ]
+          },
+          "pluginVersion": "8.3.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "vertamedia-clickhouse-datasource",
+                "uid": "PDEE91DDB90597936"
+              },
+              "dateTimeType": "DATETIME",
+              "extrapolate": true,
+              "format": "table",
+              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+              "intervalFactor": 1,
+              "query": "\nSELECT\n  count() as count_fail,\n  nos_name,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE valid_target = 0 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs}))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as count_fail,\n  nos_name,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE valid_target = 0 AND \n    (slot_to_attestation <= 4945087 AND slot_to_attestation > (4945087 - 32 * 12))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "refId": "A",
+              "round": "0s",
+              "skip_comments": true
+            }
+          ],
+          "title": "Number of attestations with invalid TARGET (${epochs} epochs range)",
+          "type": "table"
+        },
+        {
+          "description": "User only",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "pointSize": 3,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 66
+          },
+          "id": 97,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"})",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Number of validators with invalid attestation TARGET",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "description": "TOP 100",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "displayMode": "auto",
+                "filterable": false
+              },
+              "links": [],
+              "mappings": [
+                {
+                  "options": {
+                    "from": 4,
+                    "result": {
+                      "color": "red",
+                      "index": 0
+                    },
+                    "to": 6
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 1,
+                    "result": {
+                      "color": "yellow",
+                      "index": 1
+                    },
+                    "to": 3
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 0,
+                    "result": {
+                      "color": "green",
+                      "index": 2
+                    },
+                    "to": 0
+                  },
+                  "type": "range"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "count_fail"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 60
+                  },
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "custom.displayMode",
+                    "value": "color-text"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "validator_pubkey"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "beaconcha.in",
+                        "url": "https://prater.beaconcha.in/validator/${__value.raw}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "displayName",
+                    "value": "validator"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "string"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "nos_name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 74
+          },
+          "id": 102,
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": false,
+            "sortBy": [
+              {
+                "desc": false,
+                "displayName": "delta"
+              }
+            ]
+          },
+          "pluginVersion": "8.3.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "vertamedia-clickhouse-datasource",
+                "uid": "PDEE91DDB90597936"
+              },
+              "dateTimeType": "DATETIME",
+              "extrapolate": true,
+              "format": "table",
+              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+              "intervalFactor": 1,
+              "query": "\nSELECT\n  count() as count_fail,\n  nos_name,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE valid_source = 0 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs}))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as count_fail,\n  nos_name,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE valid_source = 0 AND \n    (slot_to_attestation <= 4945087 AND slot_to_attestation > (4945087 - 32 * 12))\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "refId": "A",
+              "round": "0s",
+              "skip_comments": true
+            }
+          ],
+          "title": "Number of attestations with invalid SOURCE (${epochs} epochs range)",
+          "type": "table"
+        },
+        {
+          "description": "User only",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "pointSize": 3,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 74
+          },
+          "id": 98,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"})",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Number of validators with invalid attestation SOURCE",
           "type": "timeseries"
         }
       ],
@@ -4003,8 +5121,8 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "1m",
-  "schemaVersion": 35,
+  "refresh": "5m",
+  "schemaVersion": 34,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -4012,8 +5130,8 @@
       {
         "current": {
           "selected": false,
-          "text": "4730207",
-          "value": "4730207"
+          "text": "4980351",
+          "value": "4980351"
         },
         "definition": "query_result(ethereum_validators_monitoring_slot_number)",
         "description": "Last slot number",
@@ -4060,8 +5178,8 @@
       {
         "current": {
           "selected": false,
-          "text": "10",
-          "value": "10"
+          "text": "0",
+          "value": "0"
         },
         "definition": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
         "description": "Sync participation distance down from Blockchain average",
@@ -4084,21 +5202,21 @@
       {
         "current": {
           "selected": false,
-          "text": "1",
-          "value": "1"
+          "text": "3",
+          "value": "3"
         },
         "datasource": {
           "type": "vertamedia-clickhouse-datasource",
           "uid": "PDEE91DDB90597936"
         },
-        "definition": "\tWITH epoch_range AS ( SELECT ((${__to:date:seconds} - ${__from:date:seconds}) / 300)::int as val ) SELECT IF (val = 0, 1, val) from epoch_range",
+        "definition": "\tWITH epoch_range AS ( SELECT ((${__to:date:seconds} - ${__from:date:seconds}) / 384)::int as val ) SELECT IF (val = 0, 1, val) from epoch_range",
         "hide": 2,
         "includeAll": false,
         "label": "Epoch range",
         "multi": false,
         "name": "epochs",
         "options": [],
-        "query": "\tWITH epoch_range AS ( SELECT ((${__to:date:seconds} - ${__from:date:seconds}) / 300)::int as val ) SELECT IF (val = 0, 1, val) from epoch_range",
+        "query": "\tWITH epoch_range AS ( SELECT ((${__to:date:seconds} - ${__from:date:seconds}) / 384)::int as val ) SELECT IF (val = 0, 1, val) from epoch_range",
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
@@ -4115,6 +5233,6 @@
   "timezone": "",
   "title": "Validators",
   "uid": "HRgPmpNnz",
-  "version": 15,
+  "version": 16,
   "weekStart": ""
 }

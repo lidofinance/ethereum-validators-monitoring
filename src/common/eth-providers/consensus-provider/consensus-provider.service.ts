@@ -95,7 +95,7 @@ export class ConsensusProviderService {
   public async getBeaconBlockHeader(blockId: BlockId): Promise<BlockHeaderResponse | void> {
     const cached: BlockCache = this.cache.get(String(blockId));
     if (cached && (cached.missed || cached.header)) {
-      this.logger.debug(`Get ${blockId} header from slots cache`);
+      this.logger.debug(`Get ${blockId} header from blocks cache`);
       return cached.missed ? undefined : cached.header;
     }
 
@@ -233,7 +233,7 @@ export class ConsensusProviderService {
   public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse | void> {
     const cached: BlockCache = this.cache.get(String(blockId));
     if (cached && (cached.missed || cached.info)) {
-      this.logger.debug(`Get ${blockId} info from slots cache`);
+      this.logger.debug(`Get ${blockId} info from blocks cache`);
       return cached.missed ? undefined : cached.info;
     }
 

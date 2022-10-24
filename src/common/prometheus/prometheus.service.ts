@@ -35,6 +35,7 @@ import {
   METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
   METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_HIGH_AVG_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
+  METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_PROPERTY_LAST_N_EPOCH,
 } from './prometheus.constants';
 import { Metric, Options } from './interfaces';
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
@@ -238,6 +239,12 @@ export class PrometheusService implements OnApplicationBootstrap {
   public validatorsCountHighAvgIncDelayAttestationOfNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_HIGH_AVG_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
     help: 'number of validators with high avg inc. delay of N epochs',
+    labelNames: ['nos_name', 'epoch_interval'],
+  });
+
+  public validatorsCountInvalidAttestationPropertyOfNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_PROPERTY_LAST_N_EPOCH,
+    help: 'number of validators with some invalid attestation property (head, target, source) last N epochs',
     labelNames: ['nos_name', 'epoch_interval'],
   });
 

@@ -121,6 +121,7 @@ export class StatsProcessingService {
     const invalidTargetAttestationsLastNEpoch = await this.storage.getValidatorCountWithInvalidTargetAttestationsLastNEpoch(slot);
     const invalidSourceAttestationsLastNEpoch = await this.storage.getValidatorCountWithInvalidSourceAttestationsLastNEpoch(slot);
     const highAvgIncDelayAttestationsOfNEpoch = await this.storage.getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(slot);
+    const invalidAttestationPropertyLastNEpoch = await this.storage.getValidatorCountWithInvalidAttestationsPropertyLastNEpoch(slot);
     const highRewardMissAttestationsLastNEpoch =
       possibleHighRewardValidators.length > 0
         ? await this.storage.getValidatorCountWithHighRewardMissedAttestationsLastNEpoch(slot, possibleHighRewardValidators)
@@ -177,6 +178,11 @@ export class StatsProcessingService {
       this.prometheus.validatorsCountHighAvgIncDelayAttestationOfNEpoch.set(
         { nos_name: operator.name, epoch_interval: epochInterval },
         highAvgIncDelayAttestationsOfN ? highAvgIncDelayAttestationsOfN.amount : 0,
+      );
+      const invalidAttestationPropertyLastN = invalidAttestationPropertyLastNEpoch.find((a) => a.nos_name == operator.name);
+      this.prometheus.validatorsCountInvalidAttestationPropertyOfNEpoch.set(
+        { nos_name: operator.name, epoch_interval: epochInterval },
+        invalidAttestationPropertyLastN ? invalidAttestationPropertyLastN.amount : 0,
       );
       const highRewardMissAttestationLastN = highRewardMissAttestationsLastNEpoch.find((p) => p.nos_name == operator.name);
       this.prometheus.highRewardValidatorsCountMissAttestationLastNEpoch.set(

@@ -24,7 +24,7 @@ tests:
               summary: "Operators have slashed validators"
               description: "Number of slashed validators per operator"
               field_name: "Operator 1"
-              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-360000.000000&to=540000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
           - exp_labels:
               severity: critical
@@ -35,7 +35,7 @@ tests:
               summary: "Operators have slashed validators"
               description: "Number of slashed validators per operator"
               field_name: "Operator 2"
-              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=-360000.000000&to=540000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=-660000.000000&to=540000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - eval_time: 14m
         alertname: UserSlashedValidators
@@ -51,7 +51,7 @@ tests:
               summary: "Operators have slashed validators"
               description: "Number of slashed validators per operator"
               field_name: "Operator 1"
-              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=120000.000000&to=1020000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
           - exp_labels:
               severity: critical
@@ -62,7 +62,7 @@ tests:
               summary: "Operators have slashed validators"
               description: "Number of slashed validators per operator"
               field_name: "Operator 2"
-              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=120000.000000&to=1020000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=-180000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - eval_time: 25m
         alertname: UserSlashedValidators
@@ -76,7 +76,7 @@ tests:
               summary: "Operators have slashed validators"
               description: "Number of slashed validators per operator"
               field_name: "Operator 2"
-              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=600000.000000&to=1500000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=300000.000000&to=1500000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
   - interval: 10s
@@ -121,7 +121,7 @@ tests:
               resolved_summary: "Operators have a positive balance delta"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-360000.000000&to=540000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: NumValidatorsWithNegativeDelta
         eval_time: 17m
@@ -136,7 +136,7 @@ tests:
               resolved_summary: "Operators have a positive balance delta"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=120000.000000&to=1020000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: NumValidatorsWithNegativeDelta
         eval_time: 25m
@@ -158,13 +158,13 @@ tests:
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
-              emoji: 📝
+              emoji: 📝❌
               summary: "Operators have missed attestation in last 3 finalized epochs"
               description: "Number of validators per operator who have missed attestations."
               resolved_summary: "Operators not have missed attestation in last 3 finalized epochs"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-360000.000000&to=540000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: NumValidatorsWithMissAttestationLastNEpoch
         eval_time: 14m
@@ -176,13 +176,13 @@ tests:
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
-              emoji: 📝
+              emoji: 📝❌
               summary: "Operators have missed attestation in last 3 finalized epochs"
               description: "Number of validators per operator who have missed attestations."
               resolved_summary: "Operators not have missed attestation in last 3 finalized epochs"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=120000.000000&to=1020000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: NumValidatorsWithMissAttestationLastNEpoch
         eval_time: 20m
@@ -194,17 +194,137 @@ tests:
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
-              emoji: 📝
+              emoji: 📝❌
               summary: "Operators have missed attestation in last 3 finalized epochs"
               description: "Number of validators per operator who have missed attestations."
               resolved_summary: "Operators not have missed attestation in last 3 finalized epochs"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=600000.000000&to=1500000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: NumValidatorsWithMissAttestationLastNEpoch
         eval_time: 33m
       - alertname: NumValidatorsWithMissAttestationLastNEpoch
+        eval_time: 41m
+
+  - interval: 10s
+    input_series:
+      - series: ethereum_validators_monitoring_validator_count_high_avg_inc_delay_of_n_epoch{nos_name="Operator 1", epoch_interval="3"}
+        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+      - series: ethereum_validators_monitoring_slot_number
+        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+    alert_rule_test:
+      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+        eval_time: 5m
+      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+        eval_time: 9m
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              nos_name: Operator 1
+              epoch_interval: 3
+            exp_annotations:
+              emoji: 📝🐢
+              summary: "Operators have avg attestation inc. delay greater than 2 of last 3 finalized epochs"
+              description: "Number of validators per operator who have attestation with high avg inc. delay."
+              field_name: "Operator 1"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
+              url: "https://localhost:8082/d/HRgPmpNnz/validators"
+      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+        eval_time: 14m
+      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+        eval_time: 17m
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              nos_name: Operator 1
+              epoch_interval: 3
+            exp_annotations:
+              emoji: 📝🐢
+              summary: "Operators have avg attestation inc. delay greater than 2 of last 3 finalized epochs"
+              description: "Number of validators per operator who have attestation with high avg inc. delay."
+              field_name: "Operator 1"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
+              url: "https://localhost:8082/d/HRgPmpNnz/validators"
+      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+        eval_time: 20m
+      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+        eval_time: 25m
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              nos_name: Operator 1
+              epoch_interval: 3
+            exp_annotations:
+              emoji: 📝🐢
+              summary: "Operators have avg attestation inc. delay greater than 2 of last 3 finalized epochs"
+              description: "Number of validators per operator who have attestation with high avg inc. delay."
+              field_name: "Operator 1"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
+              url: "https://localhost:8082/d/HRgPmpNnz/validators"
+      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+        eval_time: 33m
+      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+        eval_time: 41m
+
+  - interval: 10s
+    input_series:
+      - series: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
+        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+      - series: ethereum_validators_monitoring_slot_number
+        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+    alert_rule_test:
+      - alertname: NumValidatorsWithInvalidPropertyAttestationLastNEpoch
+        eval_time: 5m
+      - alertname: NumValidatorsWithInvalidPropertyAttestationLastNEpoch
+        eval_time: 9m
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              nos_name: Operator 1
+              epoch_interval: 3
+            exp_annotations:
+              emoji: '📝🏷️'
+              summary: 'Operators have invalid attestation property in last 3 finalized epochs'
+              description: 'Number of validators per operator who have invalid attestation property.'
+              field_name: "Operator 1"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
+              url: "https://localhost:8082/d/HRgPmpNnz/validators"
+      - alertname: NumValidatorsWithInvalidPropertyAttestationLastNEpoch
+        eval_time: 14m
+      - alertname: NumValidatorsWithInvalidPropertyAttestationLastNEpoch
+        eval_time: 17m
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              nos_name: Operator 1
+              epoch_interval: 3
+            exp_annotations:
+              emoji: '📝🏷️'
+              summary: 'Operators have invalid attestation property in last 3 finalized epochs'
+              description: 'Number of validators per operator who have invalid attestation property.'
+              field_name: "Operator 1"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
+              url: "https://localhost:8082/d/HRgPmpNnz/validators"
+      - alertname: NumValidatorsWithInvalidPropertyAttestationLastNEpoch
+        eval_time: 20m
+      - alertname: NumValidatorsWithInvalidPropertyAttestationLastNEpoch
+        eval_time: 25m
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              nos_name: Operator 1
+              epoch_interval: 3
+            exp_annotations:
+              emoji: '📝🏷️'
+              summary: 'Operators have invalid attestation property in last 3 finalized epochs'
+              description: 'Number of validators per operator who have invalid attestation property.'
+              field_name: "Operator 1"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
+              url: "https://localhost:8082/d/HRgPmpNnz/validators"
+      - alertname: NumValidatorsWithInvalidPropertyAttestationLastNEpoch
+        eval_time: 33m
+      - alertname: NumValidatorsWithInvalidPropertyAttestationLastNEpoch
         eval_time: 41m
 
   - interval: 10s
@@ -229,7 +349,7 @@ tests:
               resolved_summary: "Operators not missed block propose in the last finalized epoch"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-360000.000000&to=540000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: NumValidatorsWithMissPropose
         eval_time: 14m
@@ -246,7 +366,7 @@ tests:
               resolved_summary: "Operators not missed block propose in the last finalized epoch"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=120000.000000&to=1020000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: NumValidatorsWithMissPropose
         eval_time: 20m
@@ -263,7 +383,7 @@ tests:
               resolved_summary: "Operators not missed block propose in the last finalized epoch"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=600000.000000&to=1500000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: NumValidatorsWithMissPropose
         eval_time: 33m
@@ -293,7 +413,7 @@ tests:
               resolved_summary: "Operators sync participation higher or equal than average in last 3 finalized epochs"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-360000.000000&to=540000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: NumValidatorsWithSyncParticipationLessAvgLastNEpoch
         eval_time: 14m
@@ -311,7 +431,7 @@ tests:
               resolved_summary: "Operators sync participation higher or equal than average in last 3 finalized epochs"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=120000.000000&to=1020000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: NumValidatorsWithSyncParticipationLessAvgLastNEpoch
         eval_time: 20m
@@ -329,7 +449,7 @@ tests:
               resolved_summary: "Operators sync participation higher or equal than average in last 3 finalized epochs"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=600000.000000&to=1500000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: NumValidatorsWithSyncParticipationLessAvgLastNEpoch
         eval_time: 33m
@@ -360,7 +480,7 @@ tests:
               resolved_summary: "Operators sync participation higher or equal than average in last 3 finalized epoch. Now may get high rewards in the future!"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-360000.000000&to=540000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: HighRewardNumValidatorsWithSyncParticipationLessAvgLastNEpoch
         eval_time: 14m
@@ -378,7 +498,7 @@ tests:
               resolved_summary: "Operators sync participation higher or equal than average in last 3 finalized epoch. Now may get high rewards in the future!"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=120000.000000&to=1020000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: HighRewardNumValidatorsWithSyncParticipationLessAvgLastNEpoch
         eval_time: 20m
@@ -396,7 +516,7 @@ tests:
               resolved_summary: "Operators sync participation higher or equal than average in last 3 finalized epoch. Now may get high rewards in the future!"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=600000.000000&to=1500000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: HighRewardNumValidatorsWithSyncParticipationLessAvgLastNEpoch
         eval_time: 33m
@@ -420,13 +540,13 @@ tests:
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
-              emoji: 📈📝
+              emoji: 📈📝❌
               summary: "Operators may get high rewards in the future, but missed attestation in last 3 finalized epochs!"
               description: "Number of validators per operator who have missed attestations."
               resolved_summary: "Operators not have missed attestation in last 3 finalized epochs. Now may get high rewards in the future!"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-360000.000000&to=540000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: HighRewardNumValidatorsWithMissAttestationLastNEpoch
         eval_time: 14m
@@ -438,13 +558,13 @@ tests:
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
-              emoji: 📈📝
+              emoji: 📈📝❌
               summary: "Operators may get high rewards in the future, but missed attestation in last 3 finalized epochs!"
               description: "Number of validators per operator who have missed attestations."
               resolved_summary: "Operators not have missed attestation in last 3 finalized epochs. Now may get high rewards in the future!"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=120000.000000&to=1020000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: HighRewardNumValidatorsWithMissAttestationLastNEpoch
         eval_time: 20m
@@ -456,13 +576,13 @@ tests:
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
-              emoji: 📈📝
+              emoji: 📈📝❌
               summary: "Operators may get high rewards in the future, but missed attestation in last 3 finalized epochs!"
               description: "Number of validators per operator who have missed attestations."
               resolved_summary: "Operators not have missed attestation in last 3 finalized epochs. Now may get high rewards in the future!"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=600000.000000&to=1500000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: HighRewardNumValidatorsWithMissAttestationLastNEpoch
         eval_time: 33m
@@ -491,7 +611,7 @@ tests:
               resolved_summary: "Operators not missed block propose in the last finalized epoch. Now may get high rewards in the future!"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-360000.000000&to=540000.000000)"
+              field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: HighRewardNumValidatorsWithMissPropose
         eval_time: 14m
@@ -508,7 +628,7 @@ tests:
               resolved_summary: "Operators not missed block propose in the last finalized epoch. Now may get high rewards in the future!"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=120000.000000&to=1020000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: HighRewardNumValidatorsWithMissPropose
         eval_time: 20m
@@ -525,7 +645,7 @@ tests:
               resolved_summary: "Operators not missed block propose in the last finalized epoch. Now may get high rewards in the future!"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
-              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=600000.000000&to=1500000.000000)"
+              field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
       - alertname: HighRewardNumValidatorsWithMissPropose
         eval_time: 33m

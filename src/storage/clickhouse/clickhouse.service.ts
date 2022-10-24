@@ -368,6 +368,14 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
+  public async getValidatorCountWithInvalidAttestationsPropertyLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
+      slot,
+      this.config.get('BAD_ATTESTATION_EPOCHS'),
+      '(valid_head = 0 OR valid_target = 0 OR valid_source = 0)',
+    );
+  }
+
   /**
    * Send query to Clickhouse and receives information about
    * how many User Node Operator validators match condition
