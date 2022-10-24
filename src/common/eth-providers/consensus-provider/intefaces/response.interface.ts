@@ -1,7 +1,4 @@
-export type BLSSignature = string;
-export type Root = string;
-export type Slot = string;
-export type ValidatorIndex = string;
+import { BLSSignature, RootHex, Slot, ValidatorIndex } from '../types';
 
 export enum ValStatus {
   ActiveOngoing = 'active_ongoing',
@@ -23,36 +20,36 @@ export interface AttesterDutyInfo {
   committees_at_slot: string;
   validator_committee_index: string;
   slot: string;
+}
+
+export interface CheckedAttesterDutyInfo extends AttesterDutyInfo {
   attested: boolean;
+  valid_head: boolean;
+  valid_target: boolean;
+  valid_source: boolean;
+  inclusion_delay: number;
   in_block: string | undefined;
 }
 
 export interface BlockHeaderResponse {
-  root: Root;
+  root: RootHex;
   canonical: boolean;
   header: {
     message: {
       slot: Slot;
       proposer_index: ValidatorIndex;
-      parent_root: Root;
-      state_root: Root;
-      body_root: Root;
+      parent_root: RootHex;
+      state_root: RootHex;
+      body_root: RootHex;
     };
     signature: BLSSignature;
   };
 }
 
-export interface ShortBeaconBlockHeader {
-  slotNumber: bigint;
-  stateRoot: string;
-  blockRoot: string;
-  parentRoot: string;
-}
-
-export interface ShortBeaconBlockInfo {
+export interface BlockInfoResponse {
   message: {
     slot: string;
-    proposer_index: string;
+    proposer_index: ValidatorIndex;
     body: {
       attestations: BeaconBlockAttestation[];
       sync_aggregate: {
@@ -65,15 +62,15 @@ export interface ShortBeaconBlockInfo {
 export interface FinalityCheckpointsResponse {
   previous_justified: {
     epoch: string;
-    root: string;
+    root: RootHex;
   };
   current_justified: {
     epoch: string;
-    root: string;
+    root: RootHex;
   };
   finalized: {
     epoch: string;
-    root: string;
+    root: RootHex;
   };
 }
 
@@ -100,7 +97,7 @@ export interface GenesisResponse {
 
 export interface ProposerDutyInfo {
   pubkey: string;
-  validator_index: string;
+  validator_index: ValidatorIndex;
   slot: string;
   proposed: boolean;
 }
@@ -110,6 +107,15 @@ export interface BeaconBlockAttestation {
   data: {
     slot: string;
     index: string;
+    beacon_block_root: RootHex;
+    source: {
+      epoch: string;
+      root: RootHex;
+    };
+    target: {
+      epoch: string;
+      root: RootHex;
+    };
   };
 }
 
@@ -131,7 +137,7 @@ export interface StateValidatorResponse {
 
 export interface SyncCommitteeDutyInfo {
   pubkey: string;
-  validator_index: string;
+  validator_index: ValidatorIndex;
   validator_sync_committee_indices: string[];
   results: {
     block: string;
@@ -140,12 +146,12 @@ export interface SyncCommitteeDutyInfo {
 }
 
 export interface SyncCommitteeInfo {
-  validators: string[];
+  validators: ValidatorIndex[];
 }
 
 export interface SyncCommitteeValidator {
   in_committee_index: number;
-  validator_index: string;
+  validator_index: ValidatorIndex;
   epoch_participation_percent: number;
 }
 

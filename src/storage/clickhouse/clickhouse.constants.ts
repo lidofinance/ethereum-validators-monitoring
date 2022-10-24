@@ -123,11 +123,12 @@ export const validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery = (
   `;
 };
 
-export const validatorCountWithMissAttestationLastNEpochQuery = (
+export const validatorCountByConditionAttestationLastNEpochQuery = (
   fetchInterval: number,
   slot: string,
   epochInterval: number,
   validatorIndexes: string[] = [],
+  condition: string,
 ): string => {
   let strFilterValIndexes = '';
   if (validatorIndexes.length > 0) {
@@ -136,7 +137,7 @@ export const validatorCountWithMissAttestationLastNEpochQuery = (
   return `
     SELECT
       nos_name,
-      count() as miss_attestation_count
+      count() as amount
     FROM (
       SELECT
         validator_pubkey,
@@ -148,8 +149,8 @@ export const validatorCountWithMissAttestationLastNEpochQuery = (
           nos_name
         FROM stats.validator_attestations
         WHERE
-          attested = 0 AND
-          (slot_to_attestation <= ${slot} AND slot_to_attestation > (${slot} - ${fetchInterval} * ${epochInterval}))
+          ${condition}
+          AND (slot_to_attestation <= ${slot} AND slot_to_attestation > (${slot} - ${fetchInterval} * ${epochInterval}))
           ${strFilterValIndexes}
         ORDER BY slot_to_attestation DESC, validator_pubkey
       )
@@ -158,7 +159,33 @@ export const validatorCountWithMissAttestationLastNEpochQuery = (
     )
     WHERE count_fail = ${epochInterval}
     GROUP BY nos_name
-    ORDER BY miss_attestation_count DESC
+    ORDER BY amount DESC
+  `;
+};
+
+export const validatorCountHighAvgIncDelayAttestationOfNEpochQuery = (
+  fetchInterval: number,
+  slot: string,
+  epochInterval: number,
+): string => {
+  return `
+    SELECT
+      nos_name,
+      count() as amount
+    FROM (
+      SELECT
+        validator_pubkey,
+        avg(inclusion_delay) as avg_inclusion_delay,
+        nos_name
+      FROM stats.validator_attestations
+      WHERE
+        (slot_to_attestation <= ${slot} AND slot_to_attestation > (${slot} - ${fetchInterval} * ${epochInterval}))
+      GROUP BY validator_pubkey, nos_name
+      HAVING avg_inclusion_delay > 2
+      ORDER BY avg_inclusion_delay DESC, validator_pubkey
+    )
+    GROUP BY nos_name
+    ORDER BY amount DESC
   `;
 };
 

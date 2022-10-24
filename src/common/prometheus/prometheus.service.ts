@@ -32,6 +32,10 @@ import {
   METRIC_BUILD_INFO,
   METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
+  METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
+  METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_LAST_N_EPOCH,
+  METRIC_VALIDATOR_COUNT_HIGH_AVG_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
+  METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_PROPERTY_LAST_N_EPOCH,
 } from './prometheus.constants';
 import { Metric, Options } from './interfaces';
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
@@ -214,9 +218,33 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_name'],
   });
 
+  public validatorsCountInvalidAttestation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
+    help: 'number of validators with invalid properties or high inc. delay in attestation',
+    labelNames: ['nos_name', 'reason'],
+  });
+
   public validatorsCountMissAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
     help: 'number of validators miss attestation last N epoch',
+    labelNames: ['nos_name', 'epoch_interval'],
+  });
+
+  public validatorsCountInvalidAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_LAST_N_EPOCH,
+    help: 'number of validators with invalid properties or high inc. delay in attestation last N epoch',
+    labelNames: ['nos_name', 'reason', 'epoch_interval'],
+  });
+
+  public validatorsCountHighAvgIncDelayAttestationOfNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_HIGH_AVG_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
+    help: 'number of validators with high avg inc. delay of N epochs',
+    labelNames: ['nos_name', 'epoch_interval'],
+  });
+
+  public validatorsCountInvalidAttestationPropertyOfNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_PROPERTY_LAST_N_EPOCH,
+    help: 'number of validators with some invalid attestation property (head, target, source) last N epochs',
     labelNames: ['nos_name', 'epoch_interval'],
   });
 

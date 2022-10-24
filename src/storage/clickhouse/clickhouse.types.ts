@@ -1,4 +1,4 @@
-import { AttesterDutyInfo } from 'common/eth-providers';
+import { CheckedAttesterDutyInfo } from 'common/eth-providers';
 
 export interface ValidatorsStatusStats {
   active_ongoing: number;
@@ -26,9 +26,9 @@ export interface NOsValidatorsSyncLessChainAvgCount {
   less_chain_avg_count: number;
 }
 
-export interface NOsValidatorsMissAttestationCount {
+export interface NOsValidatorsByConditionAttestationCount {
   nos_name: string;
-  miss_attestation_count: number;
+  amount: number;
 }
 
 export interface NOsValidatorsMissProposeCount {
@@ -53,12 +53,15 @@ export interface NOsProposesStats {
 
 export interface SlotAttestation {
   bits: boolean[];
+  head: string;
+  target: string;
+  source: string;
   slot: string;
   committee_index: string;
 }
 
 export interface CheckAttestersDutyResult {
-  attestersDutyInfo: AttesterDutyInfo[];
+  attestersDutyInfo: CheckedAttesterDutyInfo[];
   blocksAttestations: { [blockNum: string]: SlotAttestation[] };
   allMissedSlots: string[];
 }
