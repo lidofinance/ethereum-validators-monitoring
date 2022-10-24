@@ -15,7 +15,7 @@ You have two options to run this application: `docker-compose` or `node`
 and two sources of validator list: `lido` (by default) or `file` (see [here](#use-custom-validators-list)).
 
 Because Lido contract on `mainnet` contains a lot of validators,
-fetching and saving them to local storage can take time (depends on your CL API host) and a lot of RAM.
+fetching and saving them to local storage can take time (depends on your EL RPC host) and a lot of RAM.
 For avoiding `heap out of memory` error, you can pass `NODE_OPTIONS` env var with `--max-old-space-size=8192` value
 and when the application completes its first cycle, you can restart your instance without this env variable.
 
