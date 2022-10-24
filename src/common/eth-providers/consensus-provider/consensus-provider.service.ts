@@ -124,7 +124,7 @@ export class ConsensusProviderService {
       }
     });
 
-    this.cache.update(String(blockId), { missed: !blockHeader, header: blockHeader });
+    this.cache.set(String(blockId), { missed: !blockHeader, header: blockHeader });
 
     return blockHeader;
   }
@@ -249,7 +249,7 @@ export class ConsensusProviderService {
       }
     });
 
-    this.cache.update(String(blockId), { missed: !blockInfo, info: blockInfo });
+    this.cache.set(String(blockId), { missed: !blockInfo, info: blockInfo });
 
     return blockInfo;
   }

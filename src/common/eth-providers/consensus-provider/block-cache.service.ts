@@ -18,16 +18,12 @@ export class BlockCacheService {
 
   private cache: { [slot: string]: BlockCache } = {};
 
-  public put(blockId: BlockCacheId, cache: BlockCache): void {
-    this.cache[String(blockId)] = cache;
-  }
-
-  public update(blockId: BlockCacheId, fresh: BlockCache): void {
+  public set(blockId: BlockCacheId, data: BlockCache): void {
     // save only by slot number or root
     if (['finalized', 'head'].includes(String(blockId))) return;
-    this.logger.debug(`Update ${blockId} ${Object.keys(fresh)} in slots cache`);
-    const old = this.get(String(blockId)) ?? {};
-    this.cache[String(blockId)] = { ...old, ...fresh };
+    this.logger.debug(`Set ${blockId} ${Object.keys(data)} in slots cache`);
+    const existing = this.get(String(blockId)) ?? {};
+    this.cache[String(blockId)] = { ...existing, ...data };
   }
 
   public get(blockId: BlockCacheId): BlockCache {
