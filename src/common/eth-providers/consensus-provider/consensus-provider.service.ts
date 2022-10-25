@@ -1,28 +1,30 @@
-import got, { HTTPError, Response } from 'got';
-import { ResponseError, errCommon, errRequest, MaxDeepError } from './errors';
 import { parseChunked } from '@discoveryjs/json-ext';
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { PrometheusService } from 'common/prometheus';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
+import got, { HTTPError, Response } from 'got';
+
 import { ConfigService } from 'common/config';
 import { bigintRange } from 'common/functions/range';
-import { retrier } from 'common/functions/retrier';
 import { rejectDelay } from 'common/functions/rejectDelay';
+import { retrier } from 'common/functions/retrier';
 import { urljoin } from 'common/functions/urljoin';
+import { PrometheusService } from 'common/prometheus';
+
+import { BlockCache, BlockCacheService } from './block-cache.service';
+import { MaxDeepError, ResponseError, errCommon, errRequest } from './errors';
 import {
   AttesterDutyInfo,
   BlockHeaderResponse,
+  BlockInfoResponse,
   FinalityCheckpointsResponse,
   GenesisResponse,
   ProposerDutyInfo,
-  BlockInfoResponse,
   StateValidatorResponse,
   SyncCommitteeDutyInfo,
   SyncCommitteeInfo,
   VersionResponse,
 } from './intefaces';
-import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
-import { BlockCache, BlockCacheService } from './block-cache.service';
 import { BlockId, Epoch, RootHex, Slot, StateId, ValidatorIndex } from './types';
 
 interface RequestRetryOptions {

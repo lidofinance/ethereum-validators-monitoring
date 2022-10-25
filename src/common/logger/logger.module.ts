@@ -1,4 +1,5 @@
-import { jsonTransport, simpleTransport, LoggerModule as Logger } from '@lido-nestjs/logger';
+import { LoggerModule as Logger, jsonTransport, simpleTransport } from '@lido-nestjs/logger';
+
 import { ConfigModule, ConfigService, LogFormat } from 'common/config';
 
 export const LoggerModule = Logger.forRootAsync({

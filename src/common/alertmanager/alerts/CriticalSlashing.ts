@@ -1,7 +1,9 @@
-import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 import { join } from 'lodash';
+
 import { ConfigService } from 'common/config';
 import { ClickhouseService } from 'storage';
+
+import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
 export class CriticalSlashing extends Alert {
   constructor(config: ConfigService, storage: ClickhouseService) {

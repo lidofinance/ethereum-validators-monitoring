@@ -1,5 +1,5 @@
-import { SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
 import { CHAINS } from '@lido-nestjs/constants';
+import { SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
