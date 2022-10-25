@@ -7,6 +7,7 @@ import {
   IsInt,
   IsNotEmpty,
   IsNumber,
+  IsObject,
   IsPort,
   IsString,
   Max,
@@ -240,6 +241,14 @@ export class EnvironmentVariables {
 
   @IsString()
   public CRITICAL_ALERTS_ALERTMANAGER_URL = '';
+
+  /**
+   * Additional labels for critical alerts. Must be in JSON string format.
+   * For example - '{"a":"valueA","b":"valueB"}'
+   */
+  @IsObject()
+  @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
+  public CRITICAL_ALERTS_ALERTMANAGER_LABELS = {};
 }
 
 export function validate(config: Record<string, unknown>) {

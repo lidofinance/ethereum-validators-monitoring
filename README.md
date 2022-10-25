@@ -92,6 +92,7 @@ If you want to implement your own source, it must match [RegistrySource interfac
 | BAD_ATTESTATION_EPOCHS                           | Number epochs after which we think that our attestation is bad and alert about that                                                        | false        | 3                                       |
 | CRITICAL_ALERTS_ALERTMANAGER_URL                 | If passed, Balval sends additional critical alerts about validators performance to Alertmanager                                            | false        |                                         |
 | CRITICAL_ALERTS_MIN_VAL_COUNT                    | Critical alerts will be sent for Node Operators with validators count greater this value                                                   | false        |                                         |
+| CRITICAL_ALERTS_ALERTMANAGER_LABELS              | Additional labels for critical alerts. Must be in JSON string format.For example - '{"a":"valueA","b":"valueB"}'                           | false        |                                         |
 
 
 ## Application critical alerts (via Alertmanager)
