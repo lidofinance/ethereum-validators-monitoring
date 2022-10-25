@@ -1,49 +1,51 @@
+import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
+import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { ClickHouse } from 'clickhouse';
+
+import { ConfigService } from 'common/config';
+import { ProposerDutyInfo, StateValidatorResponse, ValStatus } from 'common/eth-providers';
+import { retrier } from 'common/functions/retrier';
+import { PrometheusService } from 'common/prometheus';
+import { RegistrySourceKeysIndexed } from 'common/validators-registry/registry-source.interface';
+
+import { FetchFinalizedSlotDataResult, SyncCommitteeValidatorPrepResult } from '../../inspector';
+import {
+  operatorBalance24hDifferenceQuery,
+  operatorsSyncParticipationAvgPercentsQuery,
+  totalBalance24hDifferenceQuery,
+  userNodeOperatorsProposesStatsLastNEpochQuery,
+  userNodeOperatorsStatsQuery,
+  userSyncParticipationAvgPercentQuery,
+  userValidatorIDsQuery,
+  userValidatorsSummaryStatsQuery,
+  validatorBalancesDeltaQuery,
+  validatorCountByConditionAttestationLastNEpochQuery,
+  validatorCountHighAvgIncDelayAttestationOfNEpochQuery,
+  validatorQuantile0001BalanceDeltasQuery,
+  validatorsCountWithMissProposeQuery,
+  validatorsCountWithNegativeDeltaQuery,
+  validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery,
+} from './clickhouse.constants';
+import {
+  CheckAttestersDutyResult,
+  NOsDelta,
+  NOsProposesStats,
+  NOsValidatorsByConditionAttestationCount,
+  NOsValidatorsMissProposeCount,
+  NOsValidatorsNegDeltaCount,
+  NOsValidatorsStatusStats,
+  NOsValidatorsSyncAvgPercent,
+  NOsValidatorsSyncLessChainAvgCount,
+  SyncCommitteeParticipationAvgPercents,
+  ValidatorIdentifications,
+  ValidatorsStatusStats,
+} from './clickhouse.types';
 import migration_000001_init from './migrations/migration_000001_init';
 import migration_000002_validators from './migrations/migration_000002_validators';
 import migration_000003_attestations from './migrations/migration_000003_attestations';
 import migration_000004_proposes from './migrations/migration_000004_proposes';
 import migration_000005_sync from './migrations/migration_000005_sync';
 import migration_000006_attestations from './migrations/migration_000006_attestations';
-import {
-  userNodeOperatorsProposesStatsLastNEpochQuery,
-  userNodeOperatorsStatsQuery,
-  userValidatorIDsQuery,
-  userValidatorsSummaryStatsQuery,
-  totalBalance24hDifferenceQuery,
-  validatorBalancesDeltaQuery,
-  validatorCountByConditionAttestationLastNEpochQuery,
-  validatorQuantile0001BalanceDeltasQuery,
-  validatorsCountWithMissProposeQuery,
-  validatorsCountWithNegativeDeltaQuery,
-  validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery,
-  userSyncParticipationAvgPercentQuery,
-  operatorsSyncParticipationAvgPercentsQuery,
-  operatorBalance24hDifferenceQuery,
-  validatorCountHighAvgIncDelayAttestationOfNEpochQuery,
-} from './clickhouse.constants';
-import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
-import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { ConfigService } from 'common/config';
-import { PrometheusService } from 'common/prometheus';
-import { retrier } from 'common/functions/retrier';
-import { ProposerDutyInfo, StateValidatorResponse, ValStatus } from 'common/eth-providers';
-import {
-  CheckAttestersDutyResult,
-  NOsValidatorsStatusStats,
-  NOsDelta,
-  NOsValidatorsNegDeltaCount,
-  NOsProposesStats,
-  ValidatorsStatusStats,
-  NOsValidatorsMissProposeCount,
-  NOsValidatorsSyncLessChainAvgCount,
-  SyncCommitteeParticipationAvgPercents,
-  ValidatorIdentifications,
-  NOsValidatorsSyncAvgPercent,
-  NOsValidatorsByConditionAttestationCount,
-} from './clickhouse.types';
-import { RegistrySourceKeysIndexed } from 'common/validators-registry/registry-source.interface';
-import { FetchFinalizedSlotDataResult, SyncCommitteeValidatorPrepResult } from '../../inspector';
 
 export const status = {
   isActive(val: StateValidatorResponse): boolean {

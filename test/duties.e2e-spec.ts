@@ -1,19 +1,20 @@
-import { LoggerModule, nullTransport } from '@lido-nestjs/logger';
-import { Test } from '@nestjs/testing';
-import { ConfigModule, ConfigService } from 'common/config';
-import { PrometheusModule } from 'common/prometheus/prometheus.module';
-
-import { DataProcessingService, InspectorModule } from '../src/inspector';
+import { getNetwork } from '@ethersproject/providers';
+import { createMock } from '@golevelup/ts-jest';
 import { FallbackProviderModule, SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { LoggerModule, nullTransport } from '@lido-nestjs/logger';
 import { RegistryKeyRepository } from '@lido-nestjs/registry';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { createMock } from '@golevelup/ts-jest';
 import { SqlEntityManager } from '@mikro-orm/knex';
-import { RegistryService } from 'common/validators-registry';
-import { getNetwork } from '@ethersproject/providers';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { Test } from '@nestjs/testing';
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
+
+import { ConfigModule, ConfigService } from 'common/config';
+import { PrometheusModule } from 'common/prometheus/prometheus.module';
+import { RegistryService } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
+
+import { DataProcessingService, InspectorModule } from '../src/inspector';
 
 const MikroORMMockProvider = {
   provide: MikroORM,

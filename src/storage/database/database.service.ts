@@ -1,9 +1,10 @@
+import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { MikroORM } from '@mikro-orm/core';
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, LoggerService, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
-  constructor(private readonly orm: MikroORM) {}
+  constructor(@Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService, private readonly orm: MikroORM) {}
 
   public async onModuleInit(): Promise<void> {
     const generator = this.orm.getSchemaGenerator();
@@ -13,6 +14,8 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   public async onModuleDestroy(): Promise<void> {
     try {
       await this.orm.close();
-    } catch (error) {}
+    } catch (error) {
+      this.logger.debug(error);
+    }
   }
 }

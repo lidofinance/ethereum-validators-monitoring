@@ -1,4 +1,4 @@
-import { plainToInstance, Transform } from 'class-transformer';
+import { Transform, plainToInstance } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
@@ -15,6 +15,7 @@ import {
   ValidateIf,
   validateSync,
 } from 'class-validator';
+
 import { Environment, LogFormat, LogLevel } from './interfaces';
 
 export enum Network {

@@ -1,9 +1,11 @@
-import { Global, Module } from '@nestjs/common';
 import { FallbackProviderModule } from '@lido-nestjs/execution';
-import { PrometheusService, RequestStatus } from 'common/prometheus';
-import { ConfigService } from 'common/config';
-import { ExecutionProviderService } from './execution-provider.service';
+import { Global, Module } from '@nestjs/common';
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
+
+import { ConfigService } from 'common/config';
+import { PrometheusService, RequestStatus } from 'common/prometheus';
+
+import { ExecutionProviderService } from './execution-provider.service';
 
 @Global()
 @Module({

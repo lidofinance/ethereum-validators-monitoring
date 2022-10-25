@@ -1,14 +1,17 @@
+import { readFile } from 'fs/promises';
+
+import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { load } from 'js-yaml';
+
+import { ConfigService } from 'common/config';
+
 import {
   RegistrySource,
-  RegistrySourceKeysIndexed,
   RegistrySourceKeyWithOperatorName,
+  RegistrySourceKeysIndexed,
   RegistrySourceOperator,
 } from '../registry-source.interface';
-import { load } from 'js-yaml';
-import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { ConfigService } from 'common/config';
-import { readFile } from 'fs/promises';
 
 interface FileContent {
   operators: {
@@ -56,13 +59,15 @@ export class FileSourceService implements RegistrySource {
 
   public async getKeys() {
     const keys: RegistrySourceKeyWithOperatorName[] = [];
-    this.data?.operators?.map((o, operatorIndex) =>
-      keys.push(
-        ...o.keys?.map((key, index) => {
-          return { index, operatorIndex, key, operatorName: this.data.operators[operatorIndex].name };
-        }),
-      ),
-    );
+    this.data?.operators?.forEach((o, operatorIndex) => {
+      if (o.keys) {
+        keys.push(
+          ...o.keys.map((key, index) => {
+            return { index, operatorIndex, key, operatorName: this.data.operators[operatorIndex].name };
+          }),
+        );
+      }
+    });
     return keys;
   }
 

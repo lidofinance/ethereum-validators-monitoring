@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { RegistryService } from './registry.service';
+
 import { ConfigService, ValidatorRegistrySource } from 'common/config';
+
+import { FileSourceModule, FileSourceService } from './file-source';
 import { LidoSourceModule, LidoSourceService } from './lido-source';
 import { REGISTRY_SOURCE, RegistrySource } from './registry-source.interface';
-import { FileSourceModule, FileSourceService } from './file-source';
+import { RegistryService } from './registry.service';
 
 @Module({
   imports: [LidoSourceModule, FileSourceModule],

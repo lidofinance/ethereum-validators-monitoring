@@ -1,29 +1,29 @@
 import { BitVectorType, fromHexString } from '@chainsafe/ssz';
-import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
+import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
+
 import { ConfigService } from 'common/config';
-import { PrometheusService } from 'common/prometheus';
 import {
   AttesterDutyInfo,
   BeaconBlockAttestation,
+  BlockInfoResponse,
   ConsensusProviderService,
   ProposerDutyInfo,
-  BlockInfoResponse,
   StateValidatorResponse,
   SyncCommitteeDutyInfo,
   SyncCommitteeValidator,
 } from 'common/eth-providers';
 import { bigintRange } from 'common/functions/range';
-import { RegistryService } from 'common/validators-registry';
+import { PrometheusService } from 'common/prometheus';
+import { RegistryService, RegistrySourceKeysIndexed } from 'common/validators-registry';
 import {
   CheckAttestersDutyResult,
   ClickhouseService,
   SlotAttestation,
-  status,
   ValidatorIdentifications,
   ValidatorsStatusStats,
+  status,
 } from 'storage/clickhouse';
-import { RegistrySourceKeysIndexed } from 'common/validators-registry/registry-source.interface';
 
 export interface FetchFinalizedSlotDataResult {
   balances: StateValidatorResponse[];

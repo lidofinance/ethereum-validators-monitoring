@@ -1,12 +1,14 @@
+import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
+import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
+
+import { CriticalAlertsService } from 'common/alertmanager';
+import { ConfigService } from 'common/config';
+import { BlockCacheService, BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
 import { sleep } from 'common/functions/sleep';
+import { ClickhouseService } from 'storage';
+
 import { DataProcessingService } from './processing/data-processing.service';
 import { StatsProcessingService } from './processing/stats-processing.service';
-import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
-import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { ConfigService } from 'common/config';
-import { BlockHeaderResponse, ConsensusProviderService, BlockCacheService } from 'common/eth-providers';
-import { ClickhouseService } from 'storage';
-import { CriticalAlertsService } from 'common/alertmanager/critical-alerts.service';
 
 @Injectable()
 export class InspectorService implements OnModuleInit {
@@ -34,6 +36,7 @@ export class InspectorService implements OnModuleInit {
       `Calculated slot step [${this.config.get('FETCH_INTERVAL_SLOTS')}] based on $FETCH_INTERVAL_SECONDS / $CHAIN_SLOT_TIME_SECONDS`,
     );
 
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
         // Calculate finalized data stats (validator balances, attestations, proposes and etc.)
