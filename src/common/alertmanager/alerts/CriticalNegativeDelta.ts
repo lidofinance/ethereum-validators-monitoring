@@ -48,7 +48,7 @@ export class CriticalNegativeDelta extends Alert {
     return {
       startsAt: new Date(this.sendTimestamp).toISOString(),
       endsAt: new Date(new Date(this.sendTimestamp).setMinutes(new Date(this.sendTimestamp).getMinutes() + 1)).toISOString(),
-      labels: { alertname: this.alertname, severity: 'critical' },
+      labels: { alertname: this.alertname, severity: 'critical', ...this.config.get('CRITICAL_ALERTS_ALERTMANAGER_LABELS') },
       annotations: {
         summary: `${Object.values(ruleResult).length} Node Operators with CRITICAL count of validators with negative delta`,
         description: join(
