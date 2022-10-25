@@ -209,62 +209,65 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_high_avg_inc_delay_of_n_epoch{nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_validator_count_invalid_attestation_last_n_epoch{reason='high_inclusion_delay', nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
       - series: ethereum_validators_monitoring_slot_number
         values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
     alert_rule_test:
-      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+      - alertname: NumValidatorsWithHighIncDelayAttestationLastNEpoch
         eval_time: 5m
-      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+      - alertname: NumValidatorsWithHighIncDelayAttestationLastNEpoch
         eval_time: 9m
         exp_alerts:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
               epoch_interval: 3
+              reason: high_inclusion_delay
             exp_annotations:
               emoji: 📝🐢
-              summary: "Operators have avg attestation inc. delay greater than 2 of last 3 finalized epochs"
-              description: "Number of validators per operator who have attestation with high avg inc. delay."
+              summary: "Operators have attestation inc. delay greater than 1 in last 3 finalized epochs"
+              description: "Number of validators per operator who have attestation with high inc. delay."
               field_name: "Operator 1"
               field_value: "[1](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
-      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+      - alertname: NumValidatorsWithHighIncDelayAttestationLastNEpoch
         eval_time: 14m
-      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+      - alertname: NumValidatorsWithHighIncDelayAttestationLastNEpoch
         eval_time: 17m
         exp_alerts:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
               epoch_interval: 3
+              reason: high_inclusion_delay
             exp_annotations:
               emoji: 📝🐢
-              summary: "Operators have avg attestation inc. delay greater than 2 of last 3 finalized epochs"
-              description: "Number of validators per operator who have attestation with high avg inc. delay."
+              summary: "Operators have attestation inc. delay greater than 1 in last 3 finalized epochs"
+              description: "Number of validators per operator who have attestation with high inc. delay."
               field_name: "Operator 1"
               field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
-      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+      - alertname: NumValidatorsWithHighIncDelayAttestationLastNEpoch
         eval_time: 20m
-      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+      - alertname: NumValidatorsWithHighIncDelayAttestationLastNEpoch
         eval_time: 25m
         exp_alerts:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
               epoch_interval: 3
+              reason: high_inclusion_delay
             exp_annotations:
               emoji: 📝🐢
-              summary: "Operators have avg attestation inc. delay greater than 2 of last 3 finalized epochs"
-              description: "Number of validators per operator who have attestation with high avg inc. delay."
+              summary: "Operators have attestation inc. delay greater than 1 in last 3 finalized epochs"
+              description: "Number of validators per operator who have attestation with high inc. delay."
               field_name: "Operator 1"
               field_value: "[2](http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
               url: "https://localhost:8082/d/HRgPmpNnz/validators"
-      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+      - alertname: NumValidatorsWithHighIncDelayAttestationLastNEpoch
         eval_time: 33m
-      - alertname: NumValidatorsWithHighAvgIncDelayAttestationOfNEpoch
+      - alertname: NumValidatorsWithHighIncDelayAttestationLastNEpoch
         eval_time: 41m
 
   - interval: 10s

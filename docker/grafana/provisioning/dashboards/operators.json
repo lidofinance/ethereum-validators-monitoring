@@ -21,7 +21,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1666597799831,
+  "id": 4,
+  "iteration": 1666686085737,
   "links": [
     {
       "asDropdown": false,
@@ -185,6 +186,64 @@
       "type": "stat"
     },
     {
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 14,
+        "x": 10,
+        "y": 1
+      },
+      "id": 1725,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "name"
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name=\"${nos_name_var}\"})",
+          "interval": "",
+          "legendFormat": "🏖️  ${nos_name_var}",
+          "refId": "A"
+        }
+      ],
+      "title": "Node operator",
+      "type": "stat"
+    },
+    {
       "description": "Last processed for a specified time period",
       "fieldConfig": {
         "defaults": {
@@ -263,64 +322,6 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 24,
-        "x": 0,
-        "y": 6
-      },
-      "id": 1725,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "name"
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name=\"${nos_name_var}\"})",
-          "interval": "",
-          "legendFormat": "🏖️  ${nos_name_var}",
-          "refId": "A"
-        }
-      ],
-      "title": "Node operator",
-      "type": "stat"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
             "fixedColor": "green",
             "mode": "fixed"
           },
@@ -342,7 +343,7 @@
         "h": 3,
         "w": 5,
         "x": 0,
-        "y": 9
+        "y": 6
       },
       "id": 1713,
       "options": {
@@ -360,7 +361,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -402,7 +403,7 @@
         "h": 3,
         "w": 5,
         "x": 5,
-        "y": 9
+        "y": 6
       },
       "id": 1717,
       "options": {
@@ -469,7 +470,7 @@
         "h": 3,
         "w": 5,
         "x": 10,
-        "y": 9
+        "y": 6
       },
       "id": 1721,
       "options": {
@@ -557,7 +558,7 @@
         "h": 7,
         "w": 5,
         "x": 0,
-        "y": 12
+        "y": 9
       },
       "id": 1715,
       "options": {
@@ -664,7 +665,7 @@
         "h": 7,
         "w": 5,
         "x": 5,
-        "y": 12
+        "y": 9
       },
       "id": 1719,
       "options": {
@@ -771,7 +772,7 @@
         "h": 7,
         "w": 5,
         "x": 10,
-        "y": 12
+        "y": 9
       },
       "id": 1723,
       "options": {
@@ -825,12 +826,843 @@
       "type": "piechart"
     },
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "id": 1753,
+      "panels": [],
+      "title": "💔 Alerting only",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "description": "Delta: current slot - 192 slot",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "validator_pubkey"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "beaconcha.in",
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                  }
+                ]
+              },
+              {
+                "id": "displayName",
+                "value": "validator"
+              },
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "GWei"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 17
+      },
+      "id": 1759,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "delta"
+          }
+        ]
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateTimeType": "DATETIME",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n  current.balance - previous.balance AS GWei,\n  current.validator_pubkey as validator_pubkey\nFROM \n  (\n    SELECT balance, validator_pubkey, status, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE \n      status != 'pending_queued' AND \n      nos_name = '${nos_name_var}' AND\n      slot = ${slot_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT balance, validator_pubkey, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE\n      status != 'pending_queued' AND \n      nos_name = '${nos_name_var}' AND\n      slot = (${slot_number_var} - ${fetch_interval_var} * 6)\n  ) AS previous\nON\n  previous.nos_id = current.nos_id AND \n  previous.validator_pubkey = current.validator_pubkey\nHAVING (current.balance - previous.balance) < 0\nORDER BY GWei ASC\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  current.balance - previous.balance AS GWei,\n  current.validator_pubkey as validator_pubkey\nFROM \n  (\n    SELECT balance, validator_pubkey, status, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE \n      status != 'pending_queued' AND \n      nos_name = 'Allnodes' AND\n      slot = 4728767\n  ) AS current\nLEFT JOIN\n  (\n    SELECT balance, validator_pubkey, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE\n      status != 'pending_queued' AND \n      nos_name = 'Allnodes' AND\n      slot = (4728767 - 32 * 6)\n  ) AS previous\nON\n  previous.nos_id = current.nos_id AND \n  previous.validator_pubkey = current.validator_pubkey\nHAVING (current.balance - previous.balance) < 0\nORDER BY GWei ASC\nLIMIT 100",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true
+        }
+      ],
+      "title": "Negative balance delta",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "validator_pubkey"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "beaconcha.in",
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                  }
+                ]
+              },
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "slot_to_propose"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "beaconcha.in",
+                    "url": "https://beaconcha.in/slot/${__value.raw}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 17
+      },
+      "id": 1761,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "delta"
+          }
+        ]
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateTimeType": "DATETIME",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n  slot_to_propose,\n  validator_pubkey\nFROM stats.validator_proposes\nWHERE proposed = 0 AND (slot_to_propose <= ${slot_number_var} AND slot_to_propose >= (${slot_number_var} - ${fetch_interval_var})) AND nos_name = '${nos_name_var}'\nORDER BY slot_to_propose DESC, validator_pubkey",
+          "rawQuery": "SELECT\n  slot_to_propose,\n  validator_pubkey\nFROM stats.validator_proposes\nWHERE proposed = 0 AND (slot_to_propose <= 4728543 AND slot_to_propose >= (4728543 - 32)) AND nos_name = 'stakefish'\nORDER BY slot_to_propose DESC, validator_pubkey",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true
+        }
+      ],
+      "title": "Missed proposals",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto"
+          },
+          "links": [],
+          "mappings": [
+            {
+              "options": {
+                "from": 0,
+                "result": {
+                  "color": "red",
+                  "index": 0
+                },
+                "to": 60
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 60,
+                "result": {
+                  "color": "yellow",
+                  "index": 1
+                },
+                "to": 90
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 90,
+                "result": {
+                  "color": "green",
+                  "index": 2
+                },
+                "to": 100
+              },
+              "type": "range"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "validator_pubkey"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "beaconcha.in",
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                  }
+                ]
+              },
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "nos_name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "epoch_participation_percent"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
+                "id": "custom.width",
+                "value": 60
+              },
+              {
+                "id": "unit",
+                "value": "percent"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 17
+      },
+      "id": 1762,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "delta"
+          }
+        ]
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateTimeType": "DATETIME",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "hide": false,
+          "intervalFactor": 1,
+          "query": "SELECT\n  validator_pubkey\nFROM (\n  SELECT\n    validator_pubkey,\n    count() AS count_fail\n  FROM\n    stats.validator_sync\n  WHERE\n    epoch_participation_percent < (epoch_chain_participation_percent_avg - ${sync_participation_distance_var}) AND\n    (last_slot_of_epoch <= ${slot_number_var} AND last_slot_of_epoch > (${slot_number_var} - ${fetch_interval_var} * ${sync_epochs_var})) AND\n    nos_name = '${nos_name_var}'\n  GROUP BY validator_pubkey\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, validator_pubkey",
+          "rawQuery": "SELECT\n  validator_pubkey\nFROM (\n  SELECT\n    validator_pubkey,\n    count() AS count_fail\n  FROM\n    stats.validator_sync\n  WHERE\n    epoch_participation_percent < (epoch_chain_participation_percent_avg - 10) AND\n    (last_slot_of_epoch <= 4728607 AND last_slot_of_epoch > (4728607 - 32 * 3)) AND\n    nos_name = 'Stakin'\n  GROUP BY validator_pubkey\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, validator_pubkey",
+          "refId": "B",
+          "round": "0s",
+          "skip_comments": true
+        }
+      ],
+      "title": "Bad Sync participation (${sync_epochs_var} epochs in a row)",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "validator_pubkey"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "beaconcha.in",
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                  }
+                ]
+              },
+              {
+                "id": "displayName",
+                "value": "validator"
+              },
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 25
+      },
+      "id": 1760,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "delta"
+          }
+        ]
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateTimeType": "DATETIME",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "\nSELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var})) AND\n    nos_name = '${nos_name_var}'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND \n    (slot_to_attestation <= 4728639 AND slot_to_attestation > (4728639 - 32 * 3)) AND\n    nos_name = 'Stakin'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true
+        }
+      ],
+      "title": "Missed attestation (${att_epochs_var} epochs in a row)",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "description": "inc. delay > 1",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "validator_pubkey"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "beaconcha.in",
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                  }
+                ]
+              },
+              {
+                "id": "displayName",
+                "value": "validator"
+              },
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "count_fail"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 25
+      },
+      "id": 1773,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "delta"
+          }
+        ]
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateTimeType": "DATETIME",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n  validator_pubkey,\n  count(inclusion_delay) as count_fail\nFROM stats.validator_attestations\nWHERE\n  nos_name = '${nos_name_var}' AND\n  inclusion_delay > 1 AND\n  (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var}))\nGROUP BY validator_pubkey, nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  validator_pubkey,\n  count(inclusion_delay) as count_fail\nFROM stats.validator_attestations\nWHERE\n  nos_name = 'Allnodes' AND\n  inclusion_delay > 1 AND\n  (slot_to_attestation <= 4181471 AND slot_to_attestation > (4181471 - 32 * 3))\nGROUP BY validator_pubkey, nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true
+        }
+      ],
+      "title": "High inclusion delay (${att_epochs_var} epochs in a row)",
+      "transformations": [],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "description": "head or target or source",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "validator_pubkey"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "beaconcha.in",
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                  }
+                ]
+              },
+              {
+                "id": "displayName",
+                "value": "validator"
+              },
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 25
+      },
+      "id": 1774,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "delta"
+          }
+        ]
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateTimeType": "DATETIME",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "\nSELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE (valid_head = 0 OR valid_target = 0 OR valid_source = 0) AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var})) AND\n    nos_name = '${nos_name_var}'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE (valid_head = 0 OR valid_target = 0 OR valid_source = 0) AND \n    (slot_to_attestation <= 4980095 AND slot_to_attestation > (4980095 - 32 * 3)) AND\n    nos_name = 'Allnodes'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true
+        }
+      ],
+      "title": "Invalid attestation properties (${att_epochs_var} epochs in a row)",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "validator_pubkey"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "beaconcha.in",
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                  }
+                ]
+              },
+              {
+                "id": "displayName",
+                "value": "validator"
+              },
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 33
+      },
+      "id": 1758,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": false,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "delta"
+          }
+        ]
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateTimeType": "DATETIME",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    status,\n    validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and nos_name = '${nos_name_var}' and slot = ${slot_number_var}\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n    status,\n    validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and nos_name = 'Allnodes' and slot = 4728479\nLIMIT 100",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true
+        }
+      ],
+      "title": "Slashed",
+      "type": "table"
+    },
+    {
       "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 41
       },
       "id": 1727,
       "panels": [
@@ -903,7 +1735,7 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 20
+            "y": 18
           },
           "id": 1729,
           "options": {
@@ -996,7 +1828,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 25
+            "y": 23
           },
           "id": 2,
           "options": {
@@ -1086,7 +1918,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 25
+            "y": 23
           },
           "id": 6,
           "options": {
@@ -1203,7 +2035,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 31
+            "y": 29
           },
           "id": 1733,
           "options": {
@@ -1300,7 +2132,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 31
+            "y": 29
           },
           "id": 5,
           "options": {
@@ -1343,7 +2175,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 42
       },
       "id": 1735,
       "panels": [
@@ -1436,7 +2268,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 21
+            "y": 19
           },
           "id": 1737,
           "options": {
@@ -1529,7 +2361,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 21
+            "y": 19
           },
           "id": 1739,
           "options": {
@@ -1574,7 +2406,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 43
       },
       "id": 1711,
       "panels": [
@@ -1703,7 +2535,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 22
+            "y": 20
           },
           "id": 1745,
           "options": {
@@ -1885,7 +2717,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 28
+            "y": 26
           },
           "id": 1747,
           "options": {
@@ -1993,7 +2825,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 28
+            "y": 26
           },
           "id": 1749,
           "options": {
@@ -2038,7 +2870,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 44
       },
       "id": 1751,
       "panels": [
@@ -2169,7 +3001,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 23
+            "y": 21
           },
           "id": 1755,
           "options": {
@@ -2263,7 +3095,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 23
+            "y": 21
           },
           "id": 1757,
           "options": {
@@ -2425,7 +3257,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 31
+            "y": 29
           },
           "id": 1764,
           "options": {
@@ -2519,7 +3351,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 31
+            "y": 29
           },
           "id": 1765,
           "options": {
@@ -2681,7 +3513,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 39
+            "y": 37
           },
           "id": 1770,
           "options": {
@@ -2775,7 +3607,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 39
+            "y": 37
           },
           "id": 1766,
           "options": {
@@ -2937,7 +3769,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 47
+            "y": 45
           },
           "id": 1771,
           "options": {
@@ -3031,7 +3863,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 47
+            "y": 45
           },
           "id": 1767,
           "options": {
@@ -3193,7 +4025,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 55
+            "y": 53
           },
           "id": 1772,
           "options": {
@@ -3287,7 +4119,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 55
+            "y": 53
           },
           "id": 1768,
           "options": {
@@ -3325,828 +4157,10 @@
       ],
       "title": "📝 Attestations",
       "type": "row"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 23
-      },
-      "id": 1753,
-      "panels": [],
-      "title": "💔 Alerting only",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "Delta: current slot - 192 slot",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto",
-            "filterable": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "validator_pubkey"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
-                  }
-                ]
-              },
-              {
-                "id": "displayName",
-                "value": "validator"
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "GWei"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 100
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 0,
-        "y": 24
-      },
-      "id": 1759,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n  current.balance - previous.balance AS GWei,\n  current.validator_pubkey as validator_pubkey\nFROM \n  (\n    SELECT balance, validator_pubkey, status, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE \n      status != 'pending_queued' AND \n      nos_name = '${nos_name_var}' AND\n      slot = ${slot_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT balance, validator_pubkey, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE\n      status != 'pending_queued' AND \n      nos_name = '${nos_name_var}' AND\n      slot = (${slot_number_var} - ${fetch_interval_var} * 6)\n  ) AS previous\nON\n  previous.nos_id = current.nos_id AND \n  previous.validator_pubkey = current.validator_pubkey\nHAVING (current.balance - previous.balance) < 0\nORDER BY GWei ASC\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  current.balance - previous.balance AS GWei,\n  current.validator_pubkey as validator_pubkey\nFROM \n  (\n    SELECT balance, validator_pubkey, status, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE \n      status != 'pending_queued' AND \n      nos_name = 'Allnodes' AND\n      slot = 4728767\n  ) AS current\nLEFT JOIN\n  (\n    SELECT balance, validator_pubkey, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE\n      status != 'pending_queued' AND \n      nos_name = 'Allnodes' AND\n      slot = (4728767 - 32 * 6)\n  ) AS previous\nON\n  previous.nos_id = current.nos_id AND \n  previous.validator_pubkey = current.validator_pubkey\nHAVING (current.balance - previous.balance) < 0\nORDER BY GWei ASC\nLIMIT 100",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Negative balance delta",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto"
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "validator_pubkey"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
-                  }
-                ]
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "slot_to_propose"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 80
-              },
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/slot/${__value.raw}"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 24
-      },
-      "id": 1761,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": false,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n  slot_to_propose,\n  validator_pubkey\nFROM stats.validator_proposes\nWHERE proposed = 0 AND (slot_to_propose <= ${slot_number_var} AND slot_to_propose >= (${slot_number_var} - ${fetch_interval_var})) AND nos_name = '${nos_name_var}'\nORDER BY slot_to_propose DESC, validator_pubkey",
-          "rawQuery": "SELECT\n  slot_to_propose,\n  validator_pubkey\nFROM stats.validator_proposes\nWHERE proposed = 0 AND (slot_to_propose <= 4728543 AND slot_to_propose >= (4728543 - 32)) AND nos_name = 'stakefish'\nORDER BY slot_to_propose DESC, validator_pubkey",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Missed proposals",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto"
-          },
-          "links": [],
-          "mappings": [
-            {
-              "options": {
-                "from": 0,
-                "result": {
-                  "color": "red",
-                  "index": 0
-                },
-                "to": 60
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 60,
-                "result": {
-                  "color": "yellow",
-                  "index": 1
-                },
-                "to": 90
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 90,
-                "result": {
-                  "color": "green",
-                  "index": 2
-                },
-                "to": 100
-              },
-              "type": "range"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "validator_pubkey"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
-                  }
-                ]
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "nos_name"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 120
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "epoch_participation_percent"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "color-text"
-              },
-              {
-                "id": "custom.width",
-                "value": 60
-              },
-              {
-                "id": "unit",
-                "value": "percent"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 24
-      },
-      "id": 1762,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": false,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "hide": false,
-          "intervalFactor": 1,
-          "query": "SELECT\n  validator_pubkey\nFROM (\n  SELECT\n    validator_pubkey,\n    count() AS count_fail\n  FROM\n    stats.validator_sync\n  WHERE\n    epoch_participation_percent < (epoch_chain_participation_percent_avg - ${sync_participation_distance_var}) AND\n    (last_slot_of_epoch <= ${slot_number_var} AND last_slot_of_epoch > (${slot_number_var} - ${fetch_interval_var} * ${sync_epochs_var})) AND\n    nos_name = '${nos_name_var}'\n  GROUP BY validator_pubkey\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, validator_pubkey",
-          "rawQuery": "SELECT\n  validator_pubkey\nFROM (\n  SELECT\n    validator_pubkey,\n    count() AS count_fail\n  FROM\n    stats.validator_sync\n  WHERE\n    epoch_participation_percent < (epoch_chain_participation_percent_avg - 10) AND\n    (last_slot_of_epoch <= 4728607 AND last_slot_of_epoch > (4728607 - 32 * 3)) AND\n    nos_name = 'Stakin'\n  GROUP BY validator_pubkey\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, validator_pubkey",
-          "refId": "B",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Bad Sync participation (${sync_epochs_var} epochs in a row)",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto",
-            "filterable": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "validator_pubkey"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
-                  }
-                ]
-              },
-              {
-                "id": "displayName",
-                "value": "validator"
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 0,
-        "y": 32
-      },
-      "id": 1760,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": false,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "\nSELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var})) AND\n    nos_name = '${nos_name_var}'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND \n    (slot_to_attestation <= 4728639 AND slot_to_attestation > (4728639 - 32 * 3)) AND\n    nos_name = 'Stakin'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Missed attestation (${att_epochs_var} epochs in a row)",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "avg inc. delay > 2",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto",
-            "filterable": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "validator_pubkey"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
-                  }
-                ]
-              },
-              {
-                "id": "displayName",
-                "value": "validator"
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 32
-      },
-      "id": 1773,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n  validator_pubkey,\n  avg(inclusion_delay) as avg_inclusion_delay\nFROM stats.validator_attestations\nWHERE\n  nos_name = '${nos_name_var}' AND\n  (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var}))\nGROUP BY validator_pubkey, nos_name\nHAVING avg_inclusion_delay > 2\nORDER BY avg_inclusion_delay DESC, validator_pubkey\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  validator_pubkey,\n  avg(inclusion_delay) as avg_inclusion_delay\nFROM stats.validator_attestations\nWHERE\n  nos_name = 'ConsenSys Codefi' AND\n  (slot_to_attestation <= 4980095 AND slot_to_attestation > (4980095 - 32 * 3))\nGROUP BY validator_pubkey, nos_name\nHAVING avg_inclusion_delay > 2\nORDER BY avg_inclusion_delay DESC, validator_pubkey\nLIMIT 100",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Validators with high avg inc. delay of ${att_epochs_var} epochs",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "head or target or source",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto",
-            "filterable": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "validator_pubkey"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
-                  }
-                ]
-              },
-              {
-                "id": "displayName",
-                "value": "validator"
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 32
-      },
-      "id": 1774,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": false,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "\nSELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE (valid_head = 0 OR valid_target = 0 OR valid_source = 0) AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var})) AND\n    nos_name = '${nos_name_var}'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE (valid_head = 0 OR valid_target = 0 OR valid_source = 0) AND \n    (slot_to_attestation <= 4980095 AND slot_to_attestation > (4980095 - 32 * 3)) AND\n    nos_name = 'Allnodes'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Invalid attestation properties (${att_epochs_var} epochs in a row)",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto",
-            "filterable": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "validator_pubkey"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
-                  }
-                ]
-              },
-              {
-                "id": "displayName",
-                "value": "validator"
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 0,
-        "y": 40
-      },
-      "id": 1758,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": false,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n    status,\n    validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and nos_name = '${nos_name_var}' and slot = ${slot_number_var}\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n    status,\n    validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and nos_name = 'Allnodes' and slot = 4728479\nLIMIT 100",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Slashed",
-      "type": "table"
     }
   ],
   "refresh": false,
-  "schemaVersion": 34,
+  "schemaVersion": 35,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -4178,8 +4192,8 @@
       {
         "current": {
           "selected": false,
-          "text": "4980351",
-          "value": "4980351"
+          "text": "4181471",
+          "value": "4181471"
         },
         "definition": "query_result(ethereum_validators_monitoring_slot_number)",
         "description": "Last slot number",
@@ -4226,8 +4240,8 @@
       {
         "current": {
           "selected": false,
-          "text": "0",
-          "value": "0"
+          "text": "10",
+          "value": "10"
         },
         "definition": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
         "description": "Sync participation distance down from Blockchain average",
@@ -4250,8 +4264,8 @@
       {
         "current": {
           "selected": false,
-          "text": "3",
-          "value": "3"
+          "text": "1",
+          "value": "1"
         },
         "datasource": {
           "type": "vertamedia-clickhouse-datasource",
@@ -4347,5 +4361,5 @@
   "timezone": "",
   "title": "NodeOperators",
   "uid": "3wimU2H7h",
-  "version": 13
+  "version": 14
 }
