@@ -54,8 +54,10 @@ export interface NOsProposesStats {
 export interface SlotAttestation {
   bits: boolean[];
   head: string;
-  target: string;
-  source: string;
+  target_root: string;
+  target_epoch: string;
+  source_root: string;
+  source_epoch: string;
   slot: string;
   committee_index: string;
 }
