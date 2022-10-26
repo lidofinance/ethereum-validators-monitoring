@@ -1,0 +1,38 @@
+---
+name: E2E tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --non-interactive
+
+      - name: Build components
+        run: yarn build
+
+      - name: Run e2e tests
+        run: yarn test:e2e
+        env:
+          CL_API_URLS: ${{ secrets.CL_API_URL }}
+          CL_API_GET_RESPONSE_TIMEOUT: 60000
+          TEST_SLOT_TO_WRITE: 4895327
+          TEST_SLOT_NUMBER: 4895327
+          TEST_STATE_ROOT: '0x6fc24e8dee3c5c42d9e840bf03eed298df16ab097878c498a7ad84adac63246a'
+          # stub
+          ETH_NETWORK: 1
+          EL_RPC_URLS: localhost

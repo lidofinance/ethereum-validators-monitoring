@@ -1,8 +1,10 @@
+import { FlushMode } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Global, Module } from '@nestjs/common';
+
+import { ConfigService } from 'common/config';
+
 import { DatabaseService } from './database.service';
-import { FlushMode } from '@mikro-orm/core';
-import { ConfigService } from '../../common/config';
 
 @Global()
 @Module({

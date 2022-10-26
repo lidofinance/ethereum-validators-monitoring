@@ -1,43 +1,49 @@
-import { getOrCreateMetric, Metrics } from '@willsoto/nestjs-prometheus';
+import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
+import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Metrics, getOrCreateMetric } from '@willsoto/nestjs-prometheus';
+import { join } from 'lodash';
+
+import { ConfigService } from 'common/config';
+
+import { Metric, Options } from './interfaces';
 import {
   METRICS_PREFIX,
-  METRIC_TASK_DURATION_SECONDS,
-  METRIC_TASK_RESULT_COUNT,
-  METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS,
-  METRIC_OUTGOING_EL_REQUESTS_COUNT,
-  METRIC_OUTGOING_CL_REQUESTS_DURATION_SECONDS,
-  METRIC_OUTGOING_CL_REQUESTS_COUNT,
-  METRIC_VALIDATORS,
-  METRIC_USER_VALIDATORS,
+  METRIC_BUILD_INFO,
+  METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_CONTRACT_KEYS_TOTAL,
   METRIC_DATA_ACTUALITY,
   METRIC_FETCH_INTERVAL,
+  METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
+  METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
+  METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
+  METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
+  METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_OUTGOING_CL_REQUESTS_COUNT,
+  METRIC_OUTGOING_CL_REQUESTS_DURATION_SECONDS,
+  METRIC_OUTGOING_EL_REQUESTS_COUNT,
+  METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS,
+  METRIC_SLOT_NUMBER,
+  METRIC_STETH_BUFFERED_ETHER_TOTAL,
   METRIC_SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG,
+  METRIC_TASK_DURATION_SECONDS,
+  METRIC_TASK_RESULT_COUNT,
+  METRIC_TOTAL_BALANCE_24H_DIFFERENCE,
+  METRIC_USER_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_USER_VALIDATORS,
+  METRIC_VALIDATORS,
   METRIC_VALIDATOR_BALANCES_DELTA,
-  METRIC_VALIDATOR_QUANTILE_001_BALANCES_DELTA,
-  METRIC_VALIDATOR_COUNT_WITH_NEGATIVE_BALANCES_DELTA,
-  METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG,
+  METRIC_VALIDATOR_COUNT_HIGH_AVG_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
+  METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
+  METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_LAST_N_EPOCH,
+  METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_PROPERTY_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_MISS_ATTESTATION,
   METRIC_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
-  METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
-  METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
-  METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_MISS_PROPOSE,
-  METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
-  METRIC_USER_SYNC_PARTICIPATION_AVG_PERCENT,
-  METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
-  METRIC_SLOT_NUMBER,
-  METRIC_TOTAL_BALANCE_24H_DIFFERENCE,
-  METRIC_CONTRACT_KEYS_TOTAL,
-  METRIC_STETH_BUFFERED_ETHER_TOTAL,
-  METRIC_BUILD_INFO,
-  METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
-  METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
+  METRIC_VALIDATOR_COUNT_WITH_NEGATIVE_BALANCES_DELTA,
+  METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG,
+  METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
+  METRIC_VALIDATOR_QUANTILE_001_BALANCES_DELTA,
 } from './prometheus.constants';
-import { Metric, Options } from './interfaces';
-import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { ConfigService } from 'common/config';
-import { join } from 'lodash';
-import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
 
 export enum Owner {
   USER = 'user',
@@ -214,9 +220,33 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_name'],
   });
 
+  public validatorsCountInvalidAttestation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
+    help: 'number of validators with invalid properties or high inc. delay in attestation',
+    labelNames: ['nos_name', 'reason'],
+  });
+
   public validatorsCountMissAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
     help: 'number of validators miss attestation last N epoch',
+    labelNames: ['nos_name', 'epoch_interval'],
+  });
+
+  public validatorsCountInvalidAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_LAST_N_EPOCH,
+    help: 'number of validators with invalid properties or high inc. delay in attestation last N epoch',
+    labelNames: ['nos_name', 'reason', 'epoch_interval'],
+  });
+
+  public validatorsCountHighAvgIncDelayAttestationOfNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_HIGH_AVG_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
+    help: 'number of validators with high avg inc. delay of N epochs',
+    labelNames: ['nos_name', 'epoch_interval'],
+  });
+
+  public validatorsCountInvalidAttestationPropertyOfNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_PROPERTY_LAST_N_EPOCH,
+    help: 'number of validators with some invalid attestation property (head, target, source) last N epochs',
     labelNames: ['nos_name', 'epoch_interval'],
   });
 

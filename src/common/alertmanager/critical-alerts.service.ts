@@ -1,13 +1,15 @@
-import got from 'got';
-import { AlertRequestBody, PreparedToSendAlert } from './alerts/BasicAlert';
-import { CriticalNegativeDelta } from './alerts/CriticalNegativeDelta';
-import { CriticalMissedProposes } from './alerts/CriticalMissedProposes';
-import { CriticalMissedAttestations } from './alerts/CriticalMissedAttestations';
-import { Inject, Injectable } from '@nestjs/common';
 import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
+import { Inject, Injectable } from '@nestjs/common';
+import got from 'got';
+
 import { ConfigService } from 'common/config';
-import { ClickhouseService } from 'storage';
 import { PrometheusService } from 'common/prometheus';
+import { ClickhouseService } from 'storage';
+
+import { AlertRequestBody, PreparedToSendAlert } from './alerts/BasicAlert';
+import { CriticalMissedAttestations } from './alerts/CriticalMissedAttestations';
+import { CriticalMissedProposes } from './alerts/CriticalMissedProposes';
+import { CriticalNegativeDelta } from './alerts/CriticalNegativeDelta';
 import { CriticalSlashing } from './alerts/CriticalSlashing';
 
 interface SentAlerts {

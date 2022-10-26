@@ -1,5 +1,6 @@
-import { HealthCheckService, MemoryHealthIndicator, HealthCheck } from '@nestjs/terminus';
 import { Controller, Get } from '@nestjs/common';
+import { HealthCheck, HealthCheckService, MemoryHealthIndicator } from '@nestjs/terminus';
+
 import { HEALTH_URL } from './health.constants';
 
 @Controller(HEALTH_URL)

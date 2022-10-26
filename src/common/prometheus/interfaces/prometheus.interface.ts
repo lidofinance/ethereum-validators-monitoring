@@ -1,5 +1,5 @@
-import * as client from 'prom-client';
 import { Metrics } from '@willsoto/nestjs-prometheus';
+import * as client from 'prom-client';
 export { Metrics } from '@willsoto/nestjs-prometheus';
 
 export type Options<T extends string> =

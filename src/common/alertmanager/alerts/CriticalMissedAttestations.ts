@@ -1,8 +1,12 @@
-import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 import { join } from 'lodash';
-import { sentAlerts } from '../critical-alerts.service';
+
+import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
 import { ClickhouseService } from 'storage';
+
+import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
+
+const VALIDATORS_WITH_MISSED_ATTESTATION_COUNT_THRESHOLD = 1 / 3;
 
 export class CriticalMissedAttestations extends Alert {
   constructor(config: ConfigService, storage: ClickhouseService) {
@@ -12,15 +16,12 @@ export class CriticalMissedAttestations extends Alert {
   async alertRule(bySlot: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
     const operators = await this.storage.getUserNodeOperatorsStats(bySlot);
-    const missedAttValidatorsCount = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(
-      bySlot,
-      this.config.get('BAD_ATTESTATION_EPOCHS'),
-    );
+    const missedAttValidatorsCount = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(bySlot);
     for (const operator of operators.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
       const missedAtt = missedAttValidatorsCount.find((a) => a.nos_name == operator.nos_name);
       if (!missedAtt) continue;
-      if (missedAtt.miss_attestation_count > operator.active_ongoing / 3) {
-        result[operator.nos_name] = { ongoing: operator.active_ongoing, missedAtt: missedAtt.miss_attestation_count };
+      if (missedAtt.amount > operator.active_ongoing * VALIDATORS_WITH_MISSED_ATTESTATION_COUNT_THRESHOLD) {
+        result[operator.nos_name] = { ongoing: operator.active_ongoing, missedAtt: missedAtt.amount };
       }
     }
     return result;
@@ -49,7 +50,11 @@ export class CriticalMissedAttestations extends Alert {
     return {
       startsAt: new Date(this.sendTimestamp).toISOString(),
       endsAt: new Date(new Date(this.sendTimestamp).setMinutes(new Date(this.sendTimestamp).getMinutes() + 1)).toISOString(),
-      labels: { alertname: this.alertname, severity: 'critical' },
+      labels: {
+        alertname: this.alertname,
+        severity: 'critical',
+        ...this.config.get('CRITICAL_ALERTS_ALERTMANAGER_LABELS'),
+      },
       annotations: {
         summary: `${
           Object.values(ruleResult).length

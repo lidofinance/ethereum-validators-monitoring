@@ -1,29 +1,43 @@
 import { BitVectorType, fromHexString } from '@chainsafe/ssz';
-import { groupBy } from 'lodash';
-import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
+import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
+
 import { ConfigService } from 'common/config';
-import { PrometheusService } from 'common/prometheus';
 import {
   AttesterDutyInfo,
   BeaconBlockAttestation,
+  BlockInfoResponse,
   ConsensusProviderService,
   ProposerDutyInfo,
-  ShortBeaconBlockInfo,
   StateValidatorResponse,
   SyncCommitteeDutyInfo,
   SyncCommitteeValidator,
 } from 'common/eth-providers';
 import { bigintRange } from 'common/functions/range';
-import { RegistryService } from 'common/validators-registry';
+import { PrometheusService } from 'common/prometheus';
+import { RegistryService, RegistrySourceKeysIndexed } from 'common/validators-registry';
 import {
   CheckAttestersDutyResult,
   ClickhouseService,
   SlotAttestation,
   ValidatorIdentifications,
   ValidatorsStatusStats,
+  status,
 } from 'storage/clickhouse';
-import { RegistrySourceKeysIndexed } from 'common/validators-registry/registry-source.interface';
+
+export interface FetchFinalizedSlotDataResult {
+  balances: StateValidatorResponse[];
+  otherCounts: ValidatorsStatusStats;
+}
+
+interface SyncCommitteeValidatorWithOtherAvg extends SyncCommitteeValidator {
+  other_avg: number;
+}
+
+export interface SyncCommitteeValidatorPrepResult {
+  syncResult: SyncCommitteeValidatorWithOtherAvg[];
+  notUserAvgPercent: number;
+}
 
 interface FetchFinalizedEpochDataResult {
   attestations: CheckAttestersDutyResult;
@@ -153,8 +167,11 @@ export class DataProcessingService implements OnModuleInit {
         return await this.clClient.getBalances(stateRoot);
       },
       writeSlotData: async (slotRes: StateValidatorResponse[]) => {
-        this.logger.log(`Start validators balance processing for slot ${slot} (state root ${stateRoot} from slot ${slotNumber})`);
-        return await this.storage.writeBalances(slot, slotTime, slotRes, keysIndexed);
+        const prepBalances = await this.prepBalancesToWrite(slotRes, keysIndexed);
+        this.logger.log(
+          `Writing ${prepBalances.balances.length} validators balance for slot ${slot} (state root ${stateRoot} from slot ${slotNumber})`,
+        );
+        return await this.storage.writeBalances(slot, slotTime, prepBalances, keysIndexed);
       },
       fetchEpochData: async (userIDs: ValidatorIdentifications[]) => {
         const userIndexes: string[] = [];
@@ -175,12 +192,15 @@ export class DataProcessingService implements OnModuleInit {
         return { attestations, proposeDutiesResult, syncResult };
       },
       writeEpochData: async (userIDs: ValidatorIdentifications[], epochRes: FetchFinalizedEpochDataResult) => {
+        this.logger.log(`Prepare attestations and sync committee result for writing`);
+        const prepAttestations = await this.prepAttestationsToWrite(epochRes.attestations);
+        const prepSyncs = this.prepSyncCommitteeToWrite(userIDs, epochRes.syncResult);
         this.logger.log(`Writing ${epochRes.attestations.attestersDutyInfo.length} attestations result to DB for ${epoch} epoch`);
-        await this.storage.writeAttestations(epochRes.attestations, slotTime, keysIndexed);
+        await this.storage.writeAttestations(prepAttestations, slotTime, keysIndexed);
         this.logger.log(`Writing ${epochRes.proposeDutiesResult.length} proposes result to DB for ${epoch} epoch`);
         await this.storage.writeProposes(epochRes.proposeDutiesResult, slotTime, keysIndexed);
         this.logger.log(`Writing Sync Committee validators participation info to DB for ${epoch} epoch`);
-        return await this.storage.writeSyncs(epochRes.syncResult, slotTime, keysIndexed, userIDs, epoch);
+        return await this.storage.writeSyncs(prepSyncs, slotTime, keysIndexed, userIDs, epoch);
       },
     };
   };
@@ -195,14 +215,12 @@ export class DataProcessingService implements OnModuleInit {
       this.logger.log(`Start processing attesters duties info`);
       const blocksAttestations: { [block: string]: SlotAttestation[] } = {};
       let allMissedSlots: string[] = [];
-      let lastBlockInfo: ShortBeaconBlockInfo | void;
+      let lastBlockInfo: BlockInfoResponse | void;
       let lastMissedSlots: string[];
-      // Check all slots from epoch start to last epoch slot + ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY
-      const firstSlotInEpoch = epoch * 32n;
-      const slotsToCheck: bigint[] = bigintRange(
-        firstSlotInEpoch,
-        firstSlotInEpoch + 32n + BigInt(this.config.get('ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY')),
-      );
+      // Check all slots from epoch start to last epoch slot + 32 (max inclusion delay)
+      const slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
+      const firstSlotInEpoch = epoch * slotsInEpoch;
+      const slotsToCheck: bigint[] = bigintRange(firstSlotInEpoch, firstSlotInEpoch + slotsInEpoch * 2n);
       for (const slotToCheck of slotsToCheck) {
         if (lastBlockInfo && lastBlockInfo.message.slot > slotToCheck.toString()) {
           continue; // If we have lastBlockInfo > slotToCheck it means we have already processed this
@@ -212,27 +230,21 @@ export class DataProcessingService implements OnModuleInit {
         if (!lastBlockInfo) {
           continue; // Failed to get info about the nearest existing block
         }
-        // A committee attestation can be included in a block as multiple parts.
-        // It is necessary to group such attestations
-        const groupedAttestations = groupBy(lastBlockInfo.message.body.attestations, (att: BeaconBlockAttestation) =>
-          [att.data.slot, att.data.index].join('_'),
-        );
-        blocksAttestations[lastBlockInfo.message.slot.toString()] = Object.values(groupedAttestations).map(
-          (group: BeaconBlockAttestation[]) => {
-            // Need to perform a bitwise OR to get the full information about the committee attestation
-            const bytesArray = fromHexString(group[0].aggregation_bits);
+        blocksAttestations[lastBlockInfo.message.slot.toString()] = lastBlockInfo.message.body.attestations.map(
+          (att: BeaconBlockAttestation) => {
+            const bytesArray = fromHexString(att.aggregation_bits);
             const CommitteeBits = new BitVectorType({
               length: bytesArray.length * 8,
             });
-            const startBits = Array.from(CommitteeBits.deserialize(bytesArray));
-            const aggregatedBits = group.reduce((bits, att) => {
-              const currBits = Array.from(CommitteeBits.deserialize(fromHexString(att.aggregation_bits)));
-              return bits.map((val: boolean, index: number) => val || currBits[index]);
-            }, startBits);
             return {
-              bits: aggregatedBits,
-              slot: group[0].data.slot,
-              committee_index: group[0].data.index,
+              bits: Array.from(CommitteeBits.deserialize(bytesArray)),
+              head: att.data.beacon_block_root,
+              target_root: att.data.target.root,
+              target_epoch: att.data.target.epoch,
+              source_root: att.data.source.root,
+              source_epoch: att.data.source.epoch,
+              slot: att.data.slot,
+              committee_index: att.data.index,
             };
           },
         );
@@ -252,14 +264,14 @@ export class DataProcessingService implements OnModuleInit {
       this.logger.log(`Processing proposers duties info`);
       for (const userProp of userProposersDutyInfo) {
         userProp.proposed = false;
-        const blockInfo: ShortBeaconBlockInfo = await this.clClient.getBlockInfo(userProp.slot);
-        if (!blockInfo) continue; // it means that block is missed
-        if (blockInfo.message.proposer_index == userProp.validator_index) userProp.proposed = true;
+        const blockHeader = await this.clClient.getBeaconBlockHeader(userProp.slot);
+        if (!blockHeader) continue; // it means that block is missed
+        if (blockHeader.header.message.proposer_index == userProp.validator_index) userProp.proposed = true;
         else {
           throw Error(
             `Proposer duty info cannot be trusted. Make sure the node is synchronized!
-          Expect block [${blockInfo.message.slot}] proposer - ${userProp.validator_index},
-          but actual - ${blockInfo.message.proposer_index}`,
+          Expect block [${blockHeader.header.message.slot}] proposer - ${userProp.validator_index},
+          but actual - ${blockHeader.header.message.proposer_index}`,
           );
         }
       }
@@ -276,11 +288,11 @@ export class DataProcessingService implements OnModuleInit {
       const SyncCommitteeBits = new BitVectorType({ length: 512 }); // sync participants count in committee
       const indexedValidators = await this.getSyncCommitteeIndexedValidators(epoch, stateRoot);
       this.logger.log(`Processing sync committee participation info`);
-      const epochBlocks: ShortBeaconBlockInfo[] = [];
+      const epochBlocks: BlockInfoResponse[] = [];
       const missedSlots: bigint[] = [];
       const startSlot = epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
       for (let slot = startSlot; slot < startSlot + BigInt(this.config.get('FETCH_INTERVAL_SLOTS')); slot = slot + 1n) {
-        const blockInfo: ShortBeaconBlockInfo = await this.clClient.getBlockInfo(slot);
+        const blockInfo = await this.clClient.getBlockInfo(slot);
         blockInfo ? epochBlocks.push(blockInfo) : missedSlots.push(slot);
       }
       this.logger.log(`All missed slots in getting sync committee info process: ${missedSlots}`);
@@ -296,5 +308,103 @@ export class DataProcessingService implements OnModuleInit {
       }
       return indexedValidators;
     });
+  }
+
+  protected async prepBalancesToWrite(
+    balances: StateValidatorResponse[],
+    keysIndexed: RegistrySourceKeysIndexed,
+  ): Promise<FetchFinalizedSlotDataResult> {
+    return await this.prometheus.trackTask('prep-balances', async () => {
+      const otherCounts: ValidatorsStatusStats = {
+        active_ongoing: 0,
+        pending: 0,
+        slashed: 0,
+      };
+      const filtered = balances.filter((b) => {
+        if (keysIndexed.has(b.validator.pubkey)) {
+          return true;
+        } else {
+          if (status.isActive(b)) otherCounts.active_ongoing++;
+          else if (status.isPending(b)) otherCounts.pending++;
+          else if (status.isSlashed(b)) otherCounts.slashed++;
+          return false;
+        }
+      });
+      return { balances: filtered, otherCounts };
+    });
+  }
+
+  savedCanonSlotsAttProperties = {};
+
+  protected async getCanonSlotRoot(slot: bigint) {
+    const cached = this.savedCanonSlotsAttProperties[String(slot)];
+    if (cached) return cached;
+    const root = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(slot)).root;
+    this.savedCanonSlotsAttProperties[String(slot)] = root;
+    return root;
+  }
+
+  protected async prepAttestationsToWrite(attDutyResult: CheckAttestersDutyResult) {
+    this.savedCanonSlotsAttProperties = {};
+    const slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
+    const blocksAttestation = Object.entries(attDutyResult.blocksAttestations).sort(
+      (b1, b2) => parseInt(b1[0]) - parseInt(b2[0]), // Sort array by block number
+    );
+    for (const duty of attDutyResult.attestersDutyInfo) {
+      duty.attested = false;
+      for (const [block, blockAttestations] of blocksAttestation.filter(
+        ([b]) => BigInt(b) > BigInt(duty.slot), // Attestation cannot be included in the previous or current block
+      )) {
+        const committeeAttestations: SlotAttestation[] = blockAttestations.filter(
+          (att: any) => att.slot == duty.slot && att.committee_index == duty.committee_index,
+        );
+        if (!committeeAttestations) continue;
+        for (const ca of committeeAttestations) {
+          duty.attested = ca.bits[parseInt(duty.validator_committee_index)];
+          duty.in_block = block;
+          if (!duty.attested) continue; // continue to find attestation with validator attestation
+          // and if validator attests block - calculate inclusion delay and check properties (head, target, source)
+          // calculate inclusion delay
+          const missedSlotsCount = attDutyResult.allMissedSlots.filter(
+            (missed) => BigInt(missed) > BigInt(duty.slot) && BigInt(missed) < BigInt(block),
+          ).length;
+          duty.inclusion_delay = Number(BigInt(block) - BigInt(duty.slot)) - missedSlotsCount;
+          const [canonHead, canonTarget, canonSource] = await Promise.all([
+            this.getCanonSlotRoot(BigInt(ca.slot)),
+            this.getCanonSlotRoot(BigInt(ca.target_epoch) * slotsInEpoch),
+            this.getCanonSlotRoot(BigInt(ca.source_epoch) * slotsInEpoch),
+          ]);
+          duty.valid_head = ca.head == canonHead;
+          duty.valid_target = ca.target_root == canonTarget;
+          duty.valid_source = ca.source_root == canonSource;
+          break;
+        }
+        if (duty.attested) break;
+      }
+    }
+    return attDutyResult;
+  }
+
+  protected prepSyncCommitteeToWrite(
+    userIDs: ValidatorIdentifications[],
+    syncResult: SyncCommitteeValidator[],
+  ): SyncCommitteeValidatorPrepResult {
+    const notUserPercents = [];
+    const userValidators = [];
+    for (const p of syncResult) {
+      const pubKey = userIDs.find((v) => v.validator_id === p.validator_index)?.validator_pubkey || '';
+      if (pubKey) {
+        const other = syncResult.filter((s) => s.validator_index != p.validator_index);
+        userValidators.push({
+          ...p,
+          other_avg: other.reduce((a, b) => a + b.epoch_participation_percent, 0) / other.length,
+        });
+      } else {
+        notUserPercents.push(p.epoch_participation_percent);
+      }
+    }
+
+    const notUserAvgPercent = notUserPercents.length ? notUserPercents.reduce((a, b) => a + b, 0) / notUserPercents.length : undefined;
+    return { syncResult: userValidators, notUserAvgPercent };
   }
 }

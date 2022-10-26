@@ -1,46 +1,51 @@
+import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
+import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { ClickHouse } from 'clickhouse';
+
+import { ConfigService } from 'common/config';
+import { ProposerDutyInfo, StateValidatorResponse, ValStatus } from 'common/eth-providers';
+import { retrier } from 'common/functions/retrier';
+import { PrometheusService } from 'common/prometheus';
+import { RegistrySourceKeysIndexed } from 'common/validators-registry/registry-source.interface';
+
+import { FetchFinalizedSlotDataResult, SyncCommitteeValidatorPrepResult } from '../../inspector';
+import {
+  operatorBalance24hDifferenceQuery,
+  operatorsSyncParticipationAvgPercentsQuery,
+  totalBalance24hDifferenceQuery,
+  userNodeOperatorsProposesStatsLastNEpochQuery,
+  userNodeOperatorsStatsQuery,
+  userSyncParticipationAvgPercentQuery,
+  userValidatorIDsQuery,
+  userValidatorsSummaryStatsQuery,
+  validatorBalancesDeltaQuery,
+  validatorCountByConditionAttestationLastNEpochQuery,
+  validatorCountHighAvgIncDelayAttestationOfNEpochQuery,
+  validatorQuantile0001BalanceDeltasQuery,
+  validatorsCountWithMissProposeQuery,
+  validatorsCountWithNegativeDeltaQuery,
+  validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery,
+} from './clickhouse.constants';
+import {
+  CheckAttestersDutyResult,
+  NOsDelta,
+  NOsProposesStats,
+  NOsValidatorsByConditionAttestationCount,
+  NOsValidatorsMissProposeCount,
+  NOsValidatorsNegDeltaCount,
+  NOsValidatorsStatusStats,
+  NOsValidatorsSyncAvgPercent,
+  NOsValidatorsSyncLessChainAvgCount,
+  SyncCommitteeParticipationAvgPercents,
+  ValidatorIdentifications,
+  ValidatorsStatusStats,
+} from './clickhouse.types';
 import migration_000001_init from './migrations/migration_000001_init';
 import migration_000002_validators from './migrations/migration_000002_validators';
 import migration_000003_attestations from './migrations/migration_000003_attestations';
 import migration_000004_proposes from './migrations/migration_000004_proposes';
 import migration_000005_sync from './migrations/migration_000005_sync';
-import {
-  userNodeOperatorsProposesStatsLastNEpochQuery,
-  userNodeOperatorsStatsQuery,
-  userValidatorIDsQuery,
-  userValidatorsSummaryStatsQuery,
-  totalBalance24hDifferenceQuery,
-  validatorBalancesDeltaQuery,
-  validatorCountWithMissAttestationLastNEpochQuery,
-  validatorQuantile0001BalanceDeltasQuery,
-  validatorsCountWithMissProposeQuery,
-  validatorsCountWithNegativeDeltaQuery,
-  validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery,
-  userSyncParticipationAvgPercentQuery,
-  operatorsSyncParticipationAvgPercentsQuery,
-  operatorBalance24hDifferenceQuery,
-} from './clickhouse.constants';
-import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
-import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { ConfigService } from 'common/config';
-import { PrometheusService } from 'common/prometheus';
-import { retrier } from 'common/functions/retrier';
-import { ProposerDutyInfo, StateValidatorResponse, SyncCommitteeValidator, ValStatus } from 'common/eth-providers';
-import {
-  CheckAttestersDutyResult,
-  NOsValidatorsStatusStats,
-  NOsDelta,
-  NOsValidatorsNegDeltaCount,
-  NOsProposesStats,
-  ValidatorsStatusStats,
-  NOsValidatorsMissAttestationCount,
-  NOsValidatorsMissProposeCount,
-  NOsValidatorsSyncLessChainAvgCount,
-  SyncCommitteeParticipationAvgPercents,
-  ValidatorIdentifications,
-  NOsValidatorsSyncAvgPercent,
-} from './clickhouse.types';
-import { RegistrySourceKeysIndexed } from 'common/validators-registry/registry-source.interface';
+import migration_000006_attestations from './migrations/migration_000006_attestations';
 
 export const status = {
   isActive(val: StateValidatorResponse): boolean {
@@ -122,16 +127,11 @@ export class ClickhouseService implements OnModuleInit {
   public async writeBalances(
     slot: bigint,
     slotTime: bigint,
-    balances: StateValidatorResponse[],
+    slotRes: FetchFinalizedSlotDataResult,
     keysIndexed: RegistrySourceKeysIndexed,
   ): Promise<ValidatorsStatusStats> {
     return await this.prometheus.trackTask('write-balances', async () => {
-      const otherCounts: ValidatorsStatusStats = {
-        active_ongoing: 0,
-        pending: 0,
-        slashed: 0,
-      };
-      let userCount = 0;
+      const balances = [...slotRes.balances];
       while (balances.length > 0) {
         const chunk = balances.splice(0, this.chunkSize);
         const ws = this.db
@@ -142,23 +142,15 @@ export class ClickhouseService implements OnModuleInit {
           // todo: make migration for rename nos_id -> operatorIndex, nos_name -> operatorName
           .stream();
         for (const b of chunk) {
-          if (keysIndexed.has(b.validator.pubkey)) {
-            await ws.writeRow(
-              `('${b.index || ''}', '${b.validator.pubkey || ''}', ${b.validator.slashed ? 1 : 0}, '${b.status}', ${b.balance}, ` +
-                `${slot}, ${slotTime}, ${keysIndexed.get(b.validator.pubkey)?.operatorIndex ?? 'NULL'},
+          await ws.writeRow(
+            `('${b.index || ''}', '${b.validator.pubkey || ''}', ${b.validator.slashed ? 1 : 0}, '${b.status}', ${b.balance}, ` +
+              `${slot}, ${slotTime}, ${keysIndexed.get(b.validator.pubkey)?.operatorIndex ?? 'NULL'},
             '${keysIndexed.get(b.validator.pubkey)?.operatorName || 'NULL'}')`,
-            );
-            userCount++;
-          } else {
-            if (status.isActive(b)) otherCounts.active_ongoing++;
-            else if (status.isPending(b)) otherCounts.pending++;
-            else if (status.isSlashed(b)) otherCounts.slashed++;
-          }
+          );
         }
         await this.retry(async () => await ws.exec());
       }
-      this.logger.log(`Wrote ${userCount} balances to DB and counted others`);
-      return otherCounts;
+      return slotRes.otherCounts;
     });
   }
 
@@ -168,47 +160,24 @@ export class ClickhouseService implements OnModuleInit {
     keysIndexed: RegistrySourceKeysIndexed,
   ): Promise<void> {
     return await this.prometheus.trackTask('write-attestations', async () => {
-      while (attDutyResult.attestersDutyInfo.length > 0) {
-        const chunk = attDutyResult.attestersDutyInfo.splice(0, this.chunkSize);
+      const attestersDutyInfo = [...attDutyResult.attestersDutyInfo];
+      while (attestersDutyInfo.length > 0) {
+        const chunk = attestersDutyInfo.splice(0, this.chunkSize);
         const ws = this.db
           .insert(
             'INSERT INTO stats.validator_attestations ' +
               '(start_fetch_time, validator_pubkey, validator_id, committee_index, committee_length, committees_at_slot, ' +
-              'validator_committee_index, slot_to_attestation, attested, info_from_block, nos_id, nos_name) VALUES',
+              'validator_committee_index, slot_to_attestation, attested, inclusion_delay, valid_head, valid_target, ' +
+              'valid_source, info_from_block, nos_id, nos_name) VALUES',
           )
           .stream();
         for (const a of chunk) {
-          a.attested = false;
-          a.in_block = undefined;
-          for (const [block, blockAttestations] of Object.entries(attDutyResult.blocksAttestations)) {
-            if (BigInt(a.slot) >= BigInt(block)) continue; // Attestation cannot be included in the previous or current block
-            const committeeAttestationInfo: any = blockAttestations.find(
-              (att: any) => att.slot == a.slot && att.committee_index == a.committee_index,
-            );
-            if (committeeAttestationInfo) {
-              a.attested = committeeAttestationInfo.bits[parseInt(a.validator_committee_index)];
-              a.in_block = block;
-            }
-            if (a.attested) {
-              // We found the nearest block includes validator attestation
-              const missedSlotsOffset = attDutyResult.allMissedSlots.filter(
-                (missed) => BigInt(missed) > BigInt(a.slot) && BigInt(missed) < BigInt(block),
-              ).length;
-              // If difference between attestation slot and
-              // nearest block included attestation (not including missed slots) > ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY,
-              // then we think it is bad attestation because validator will get the least reward
-              if (
-                BigInt(block) - BigInt(a.slot) - BigInt(missedSlotsOffset) >
-                BigInt(this.config.get('ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY'))
-              )
-                a.attested = false;
-              break;
-            } // Else try to find attestation in next block
-          }
+          // todo: insert without undefined values for using default column values
           await ws.writeRow(
             `(${slotTime}, '${a.pubkey || ''}', '${a.validator_index || ''}', ${parseInt(a.committee_index)}, ` +
               `${parseInt(a.committee_length)}, ${parseInt(a.committees_at_slot)}, ${parseInt(a.validator_committee_index)}, ` +
-              `${parseInt(a.slot)}, ${a.attested ? 1 : 0}, ${a.in_block ? parseInt(a.in_block) : 'NULL'}, ` +
+              `${parseInt(a.slot)}, ${a.attested}, ${a.inclusion_delay ?? 'NULL'}, ${a.valid_head ?? 'NULL'}, ` +
+              `${a.valid_target ?? 'NULL'}, ${a.valid_source ?? 'NULL'}, ${a.in_block ? parseInt(a.in_block) : 'NULL'}, ` +
               `${keysIndexed.get(a.pubkey)?.operatorIndex ?? 'NULL'}, '${keysIndexed.get(a.pubkey)?.operatorName || 'NULL'}')`,
           );
         }
@@ -240,14 +209,13 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async writeSyncs(
-    syncResult: SyncCommitteeValidator[],
+    syncPrepResult: SyncCommitteeValidatorPrepResult,
     slotTime: bigint,
     keysIndexed: RegistrySourceKeysIndexed,
     userIDs: ValidatorIdentifications[],
     epoch: bigint,
   ): Promise<number> {
     return await this.prometheus.trackTask('write-syncs', async () => {
-      const notUserPercents = [];
       const ws = this.db
         .insert(
           'INSERT INTO stats.validator_sync ' +
@@ -257,21 +225,15 @@ export class ClickhouseService implements OnModuleInit {
         .stream();
       const last_slot_of_epoch =
         epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS')) + BigInt(this.config.get('FETCH_INTERVAL_SLOTS')) - 1n;
-      for (const p of syncResult) {
+      for (const p of syncPrepResult.syncResult) {
         const pubKey = userIDs.find((v) => v.validator_id === p.validator_index)?.validator_pubkey || '';
-        if (pubKey) {
-          const other = syncResult.filter((s) => s.validator_index != p.validator_index);
-          const otherAvg = other.reduce((a, b) => a + b.epoch_participation_percent, 0) / other.length;
-          await ws.writeRow(
-            `(${slotTime}, '${pubKey}', '${p.validator_index || ''}', ${last_slot_of_epoch}, ${p.epoch_participation_percent}, ` +
-              `${otherAvg}, ${keysIndexed.get(pubKey)?.operatorIndex ?? 'NULL'}, '${keysIndexed.get(pubKey)?.operatorName || 'NULL'}')`,
-          );
-        } else {
-          notUserPercents.push(p.epoch_participation_percent);
-        }
+        await ws.writeRow(
+          `(${slotTime}, '${pubKey}', '${p.validator_index || ''}', ${last_slot_of_epoch}, ${p.epoch_participation_percent}, ` +
+            `${p.other_avg}, ${keysIndexed.get(pubKey)?.operatorIndex ?? 'NULL'}, '${keysIndexed.get(pubKey)?.operatorName || 'NULL'}')`,
+        );
       }
       await this.retry(async () => await ws.exec());
-      return notUserPercents.length ? notUserPercents.reduce((a, b) => a + b, 0) / notUserPercents.length : undefined;
+      return syncPrepResult.notUserAvgPercent;
     });
   }
 
@@ -282,6 +244,7 @@ export class ClickhouseService implements OnModuleInit {
     await this.db.query(migration_000003_attestations).toPromise();
     await this.db.query(migration_000004_proposes).toPromise();
     await this.db.query(migration_000005_sync).toPromise();
+    await this.db.query(migration_000006_attestations).toPromise();
   }
 
   public async getValidatorBalancesDelta(slot: bigint): Promise<NOsDelta[]> {
@@ -346,28 +309,118 @@ export class ClickhouseService implements OnModuleInit {
     return <NOsValidatorsSyncLessChainAvgCount[]>ret;
   }
 
+  public async getValidatorCountWithMissedAttestationsLastEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, 1, 'attested = 0');
+  }
+
+  public async getValidatorCountWithHighIncDelayAttestationsLastEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, 1, 'inclusion_delay > 1');
+  }
+
+  public async getValidatorCountWithInvalidHeadAttestationsLastEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, 1, 'valid_head = 0');
+  }
+
+  public async getValidatorCountWithInvalidTargetAttestationsLastEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, 1, 'valid_target = 0');
+  }
+
+  public async getValidatorCountWithInvalidSourceAttestationsLastEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, 1, 'valid_source = 0');
+  }
+
+  public async getValidatorCountWithMissedAttestationsLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, this.config.get('BAD_ATTESTATION_EPOCHS'), 'attested = 0');
+  }
+
+  public async getValidatorCountWithHighRewardMissedAttestationsLastNEpoch(slot: bigint, possibleHighRewardValidators: string[]) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
+      slot,
+      this.config.get('BAD_ATTESTATION_EPOCHS'),
+      'attested = 0',
+      possibleHighRewardValidators,
+    );
+  }
+
+  public async getValidatorCountWithHighIncDelayAttestationsLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
+      slot,
+      this.config.get('BAD_ATTESTATION_EPOCHS'),
+      'inclusion_delay > 1',
+    );
+  }
+
+  public async getValidatorCountWithInvalidHeadAttestationsLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(slot, this.config.get('BAD_ATTESTATION_EPOCHS'), 'valid_head = 0');
+  }
+
+  public async getValidatorCountWithInvalidTargetAttestationsLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
+      slot,
+      this.config.get('BAD_ATTESTATION_EPOCHS'),
+      'valid_target = 0',
+    );
+  }
+
+  public async getValidatorCountWithInvalidSourceAttestationsLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
+      slot,
+      this.config.get('BAD_ATTESTATION_EPOCHS'),
+      'valid_source = 0',
+    );
+  }
+
+  public async getValidatorCountWithInvalidAttestationsPropertyLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
+      slot,
+      this.config.get('BAD_ATTESTATION_EPOCHS'),
+      '(valid_head = 0 OR valid_target = 0 OR valid_source = 0)',
+    );
+  }
+
   /**
    * Send query to Clickhouse and receives information about
-   * how many User Node Operator validators missed attestation last N epoch
+   * how many User Node Operator validators match condition
    */
-  public async getValidatorCountWithMissedAttestationsLastNEpoch(
+  private async getValidatorCountByConditionAttestationsLastNEpoch(
     slot: bigint,
     epochInterval: number,
+    condition: string,
     validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsMissAttestationCount[]> {
+  ): Promise<NOsValidatorsByConditionAttestationCount[]> {
     const ret = await this.retry(async () =>
       this.db
         .query(
-          validatorCountWithMissAttestationLastNEpochQuery(
+          validatorCountByConditionAttestationLastNEpochQuery(
             this.config.get('FETCH_INTERVAL_SLOTS'),
             slot.toString(),
             epochInterval,
             validatorIndexes,
+            condition,
           ),
         )
         .toPromise(),
     );
-    return <NOsValidatorsMissAttestationCount[]>ret;
+    return <NOsValidatorsByConditionAttestationCount[]>ret;
+  }
+
+  /**
+   * Send query to Clickhouse and receives information about
+   * how many User Node Operator validators have high avg inc. delay (>2) last N epoch
+   */
+  public async getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(slot: bigint): Promise<NOsValidatorsByConditionAttestationCount[]> {
+    const ret = await this.retry(async () =>
+      this.db
+        .query(
+          validatorCountHighAvgIncDelayAttestationOfNEpochQuery(
+            this.config.get('FETCH_INTERVAL_SLOTS'),
+            slot.toString(),
+            this.config.get('BAD_ATTESTATION_EPOCHS'),
+          ),
+        )
+        .toPromise(),
+    );
+    return <NOsValidatorsByConditionAttestationCount[]>ret;
   }
 
   /**

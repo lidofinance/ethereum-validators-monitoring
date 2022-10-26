@@ -1,4 +1,4 @@
-import { plainToInstance, Transform } from 'class-transformer';
+import { Transform, plainToInstance } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
@@ -7,13 +7,16 @@ import {
   IsInt,
   IsNotEmpty,
   IsNumber,
+  IsObject,
   IsPort,
   IsString,
   Max,
   Min,
   MinLength,
+  ValidateIf,
   validateSync,
 } from 'class-validator';
+
 import { Environment, LogFormat, LogLevel } from './interfaces';
 
 export enum Network {
@@ -78,18 +81,22 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   @IsString()
   @MinLength(2)
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public DB_HOST!: string;
 
   @IsString()
   @MinLength(3)
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public DB_USER!: string;
 
   @IsString()
   @MinLength(0)
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public DB_PASSWORD!: string;
 
   @IsNotEmpty()
   @MinLength(1)
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public DB_NAME!: string;
 
   @IsPort()
@@ -117,16 +124,19 @@ export class EnvironmentVariables {
   @Min(1)
   @Max(5000000)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public ETH_NETWORK!: Network;
 
   @IsArray()
   @ArrayMinSize(1)
   @Transform(({ value }) => value.split(','))
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public EL_RPC_URLS!: string[];
 
   @IsArray()
   @ArrayMinSize(1)
   @Transform(({ value }) => value.split(','))
+  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public CL_API_URLS!: string[];
 
   @IsInt()
@@ -210,15 +220,6 @@ export class EnvironmentVariables {
   public SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG = 3;
 
   /**
-   * Maximum inclusion delay after which we think that attestation is bad
-   */
-  @IsNumber()
-  @Min(1)
-  @Max(8)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public ATTESTATION_MAX_INCLUSION_IN_BLOCK_DELAY = 5;
-
-  /**
    * Number epochs after which we think that our attestation is bad and alert about that
    * For example:
    *  Our validator have bad attestation in 3 epoch in a row
@@ -240,6 +241,14 @@ export class EnvironmentVariables {
 
   @IsString()
   public CRITICAL_ALERTS_ALERTMANAGER_URL = '';
+
+  /**
+   * Additional labels for critical alerts. Must be in JSON string format.
+   * For example - '{"a":"valueA","b":"valueB"}'
+   */
+  @IsObject()
+  @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
+  public CRITICAL_ALERTS_ALERTMANAGER_LABELS = {};
 }
 
 export function validate(config: Record<string, unknown>) {

@@ -1,5 +1,6 @@
-import { sleep } from './sleep';
 import { LoggerService } from '@nestjs/common';
+
+import { sleep } from './sleep';
 
 export const retrier = (
   logger: LoggerService,

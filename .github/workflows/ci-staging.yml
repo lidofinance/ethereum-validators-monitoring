@@ -8,6 +8,8 @@ on:
     paths-ignore:
       - ".github/**"
 
+permissions: {}
+
 jobs:
   # test:
   #   ...
@@ -17,9 +19,6 @@ jobs:
     # needs: test
     name: Build and deploy
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
       - name: Staging deploy
         uses: lidofinance/dispatch-workflow@v1
         env:
