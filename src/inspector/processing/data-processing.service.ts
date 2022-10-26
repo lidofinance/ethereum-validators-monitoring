@@ -192,18 +192,15 @@ export class DataProcessingService implements OnModuleInit {
         return { attestations, proposeDutiesResult, syncResult };
       },
       writeEpochData: async (userIDs: ValidatorIdentifications[], epochRes: FetchFinalizedEpochDataResult) => {
+        this.logger.log(`Prepare attestations and sync committee result for writing`);
+        const prepAttestations = await this.prepAttestationsToWrite(epochRes.attestations);
+        const prepSyncs = this.prepSyncCommitteeToWrite(userIDs, epochRes.syncResult);
         this.logger.log(`Writing ${epochRes.attestations.attestersDutyInfo.length} attestations result to DB for ${epoch} epoch`);
-        await this.storage.writeAttestations(await this.prepAttestationsToWrite(epochRes.attestations), slotTime, keysIndexed);
+        await this.storage.writeAttestations(prepAttestations, slotTime, keysIndexed);
         this.logger.log(`Writing ${epochRes.proposeDutiesResult.length} proposes result to DB for ${epoch} epoch`);
         await this.storage.writeProposes(epochRes.proposeDutiesResult, slotTime, keysIndexed);
         this.logger.log(`Writing Sync Committee validators participation info to DB for ${epoch} epoch`);
-        return await this.storage.writeSyncs(
-          await this.prepSyncCommitteeToWrite(userIDs, epochRes.syncResult),
-          slotTime,
-          keysIndexed,
-          userIDs,
-          epoch,
-        );
+        return await this.storage.writeSyncs(prepSyncs, slotTime, keysIndexed, userIDs, epoch);
       },
     };
   };
@@ -242,8 +239,10 @@ export class DataProcessingService implements OnModuleInit {
             return {
               bits: Array.from(CommitteeBits.deserialize(bytesArray)),
               head: att.data.beacon_block_root,
-              target: att.data.target.root,
-              source: att.data.source.root,
+              target_root: att.data.target.root,
+              target_epoch: att.data.target.epoch,
+              source_root: att.data.source.root,
+              source_epoch: att.data.source.epoch,
               slot: att.data.slot,
               committee_index: att.data.index,
             };
@@ -372,12 +371,12 @@ export class DataProcessingService implements OnModuleInit {
           duty.inclusion_delay = Number(BigInt(block) - BigInt(duty.slot)) - missedSlotsCount;
           const [canonHead, canonTarget, canonSource] = await Promise.all([
             this.getCanonSlotRoot(BigInt(ca.slot)),
-            this.getCanonSlotRoot((BigInt(ca.slot) / slotsInEpoch) * slotsInEpoch),
-            this.getCanonSlotRoot((BigInt(ca.slot) / slotsInEpoch - 1n) * slotsInEpoch),
+            this.getCanonSlotRoot(BigInt(ca.target_epoch) * slotsInEpoch),
+            this.getCanonSlotRoot(BigInt(ca.source_epoch) * slotsInEpoch),
           ]);
           duty.valid_head = ca.head == canonHead;
-          duty.valid_target = ca.target == canonTarget;
-          duty.valid_source = ca.source == canonSource;
+          duty.valid_target = ca.target_root == canonTarget;
+          duty.valid_source = ca.source_root == canonSource;
           break;
         }
         if (duty.attested) break;
@@ -386,10 +385,10 @@ export class DataProcessingService implements OnModuleInit {
     return attDutyResult;
   }
 
-  protected async prepSyncCommitteeToWrite(
+  protected prepSyncCommitteeToWrite(
     userIDs: ValidatorIdentifications[],
     syncResult: SyncCommitteeValidator[],
-  ): Promise<SyncCommitteeValidatorPrepResult> {
+  ): SyncCommitteeValidatorPrepResult {
     const notUserPercents = [];
     const userValidators = [];
     for (const p of syncResult) {
