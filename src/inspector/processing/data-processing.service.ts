@@ -1,43 +1,15 @@
-import { BitVectorType, fromHexString } from '@chainsafe/ssz';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import {
-  AttesterDutyInfo,
-  BeaconBlockAttestation,
-  BlockInfoResponse,
-  ConsensusProviderService,
-  ProposerDutyInfo,
-  StateValidatorResponse,
-  SyncCommitteeDutyInfo,
-  SyncCommitteeValidator,
-} from 'common/eth-providers';
-import { bigintRange } from 'common/functions/range';
+import { ConsensusProviderService, ProposerDutyInfo, StateValidatorResponse, SyncCommitteeValidator } from 'common/eth-providers';
 import { PrometheusService } from 'common/prometheus';
 import { RegistryService, RegistrySourceKeysIndexed } from 'common/validators-registry';
-import {
-  CheckAttestersDutyResult,
-  ClickhouseService,
-  SlotAttestation,
-  ValidatorIdentifications,
-  ValidatorsStatusStats,
-  status,
-} from 'storage/clickhouse';
-
-export interface FetchFinalizedSlotDataResult {
-  balances: StateValidatorResponse[];
-  otherCounts: ValidatorsStatusStats;
-}
-
-interface SyncCommitteeValidatorWithOtherAvg extends SyncCommitteeValidator {
-  other_avg: number;
-}
-
-export interface SyncCommitteeValidatorPrepResult {
-  syncResult: SyncCommitteeValidatorWithOtherAvg[];
-  notUserAvgPercent: number;
-}
+import { AttestationService } from 'duty/attestation';
+import { ProposeService } from 'duty/propose';
+import { StateService } from 'duty/state';
+import { SyncService } from 'duty/sync';
+import { CheckAttestersDutyResult, ClickhouseService, ValidatorIdentifications, ValidatorsStatusStats } from 'storage/clickhouse';
 
 interface FetchFinalizedEpochDataResult {
   attestations: CheckAttestersDutyResult;
@@ -57,6 +29,10 @@ export class DataProcessingService implements OnModuleInit {
     protected readonly clClient: ConsensusProviderService,
     protected readonly storage: ClickhouseService,
     protected readonly registryService: RegistryService,
+    protected readonly state: StateService,
+    protected readonly attestation: AttestationService,
+    protected readonly propose: ProposeService,
+    protected readonly sync: SyncService,
   ) {}
 
   public async onModuleInit(): Promise<void> {
@@ -122,34 +98,10 @@ export class DataProcessingService implements OnModuleInit {
       }
       const propDependentRoot = await this.clClient.getDutyDependentRoot(headEpoch);
       const [sync, prop] = await Promise.all([
-        this.getSyncCommitteeDutyInfo(valIndexes, headEpoch),
-        this.getProposerDutyInfo(valIndexes, propDependentRoot, headEpoch),
+        this.sync.getSyncCommitteeDutyInfo(valIndexes, headEpoch),
+        this.propose.getProposerDutyInfo(valIndexes, propDependentRoot, headEpoch),
       ]);
       return [...new Set([...sync, ...prop].map((v) => v.validator_index))];
-    });
-  }
-
-  protected async getSyncCommitteeDutyInfo(valIndexes: string[], epoch: bigint): Promise<SyncCommitteeDutyInfo[]> {
-    return await this.clClient.getSyncCommitteeDuties(epoch, valIndexes);
-  }
-
-  protected async getProposerDutyInfo(valIndexes: string[], dependentRoot: string, epoch: bigint): Promise<ProposerDutyInfo[]> {
-    const proposersDutyInfo = await this.clClient.getCanonicalProposerDuties(epoch, dependentRoot);
-    return proposersDutyInfo.filter((p) => valIndexes.includes(p.validator_index));
-  }
-
-  protected async getAttestersDutyInfo(valIndexes: string[], dependentRoot: string, epoch: bigint): Promise<AttesterDutyInfo[]> {
-    return await this.clClient.getChunkedAttesterDuties(epoch, dependentRoot, valIndexes);
-  }
-
-  protected async getSyncCommitteeIndexedValidators(epoch: bigint, stateRoot: string): Promise<SyncCommitteeValidator[]> {
-    const syncCommitteeInfo = await this.clClient.getSyncCommitteeInfo(stateRoot, epoch);
-    return syncCommitteeInfo.validators.map((v, i) => {
-      return {
-        in_committee_index: i,
-        validator_index: v,
-        epoch_participation_percent: 0,
-      };
     });
   }
 
@@ -163,15 +115,14 @@ export class DataProcessingService implements OnModuleInit {
   ) => {
     return {
       fetchSlotData: async () => {
-        this.logger.log('Start getting all validators balances');
-        return await this.clClient.getBalances(stateRoot);
+        return await this.state.getValidatorsState(stateRoot);
       },
       writeSlotData: async (slotRes: StateValidatorResponse[]) => {
-        const prepBalances = await this.prepBalancesToWrite(slotRes, keysIndexed);
+        const prepBalances = await this.state.prepStatesToWrite(slotRes, keysIndexed);
         this.logger.log(
-          `Writing ${prepBalances.balances.length} validators balance for slot ${slot} (state root ${stateRoot} from slot ${slotNumber})`,
+          `Writing ${prepBalances.states.length} validators states for slot ${slot} (state root ${stateRoot} from slot ${slotNumber})`,
         );
-        return await this.storage.writeBalances(slot, slotTime, prepBalances, keysIndexed);
+        return await this.storage.writeStates(slot, slotTime, prepBalances, keysIndexed);
       },
       fetchEpochData: async (userIDs: ValidatorIdentifications[]) => {
         const userIndexes: string[] = [];
@@ -185,16 +136,16 @@ export class DataProcessingService implements OnModuleInit {
         this.logger.log(`Attester Duty root: ${attesterDutyDependentRoot}`);
         this.logger.log(`Proposer Duty root: ${proposerDutyDependentRoot}`);
         const [attestations, proposeDutiesResult, syncResult] = await Promise.all([
-          this.checkAttesterDuties(epoch, attesterDutyDependentRoot, userIndexes),
-          this.checkProposerDuties(epoch, proposerDutyDependentRoot, userIndexes),
-          this.checkSyncCommitteeDuties(epoch, stateRoot),
+          this.attestation.checkAttesterDuties(epoch, attesterDutyDependentRoot, userIndexes),
+          this.propose.checkProposerDuties(epoch, proposerDutyDependentRoot, userIndexes),
+          this.sync.checkSyncCommitteeDuties(epoch, stateRoot),
         ]);
         return { attestations, proposeDutiesResult, syncResult };
       },
       writeEpochData: async (userIDs: ValidatorIdentifications[], epochRes: FetchFinalizedEpochDataResult) => {
         this.logger.log(`Prepare attestations and sync committee result for writing`);
-        const prepAttestations = await this.prepAttestationsToWrite(epochRes.attestations);
-        const prepSyncs = this.prepSyncCommitteeToWrite(userIDs, epochRes.syncResult);
+        const prepAttestations = await this.attestation.prepAttestationsToWrite(epochRes.attestations);
+        const prepSyncs = this.sync.prepSyncCommitteeToWrite(userIDs, epochRes.syncResult);
         this.logger.log(`Writing ${epochRes.attestations.attestersDutyInfo.length} attestations result to DB for ${epoch} epoch`);
         await this.storage.writeAttestations(prepAttestations, slotTime, keysIndexed);
         this.logger.log(`Writing ${epochRes.proposeDutiesResult.length} proposes result to DB for ${epoch} epoch`);
@@ -204,207 +155,4 @@ export class DataProcessingService implements OnModuleInit {
       },
     };
   };
-
-  /**
-   * Check Attesters duties: get duties info by our validators keys and do bitwise attestations check
-   **/
-  protected async checkAttesterDuties(epoch: bigint, dutyDependentRoot: string, userIndexes: string[]): Promise<CheckAttestersDutyResult> {
-    return await this.prometheus.trackTask('check-attester-duties', async () => {
-      this.logger.log(`Start getting attesters duties info`);
-      const attestersDutyInfo: AttesterDutyInfo[] = await this.getAttestersDutyInfo(userIndexes, dutyDependentRoot, epoch);
-      this.logger.log(`Start processing attesters duties info`);
-      const blocksAttestations: { [block: string]: SlotAttestation[] } = {};
-      let allMissedSlots: string[] = [];
-      let lastBlockInfo: BlockInfoResponse | void;
-      let lastMissedSlots: string[];
-      // Check all slots from epoch start to last epoch slot + 32 (max inclusion delay)
-      const slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
-      const firstSlotInEpoch = epoch * slotsInEpoch;
-      const slotsToCheck: bigint[] = bigintRange(firstSlotInEpoch, firstSlotInEpoch + slotsInEpoch * 2n);
-      for (const slotToCheck of slotsToCheck) {
-        if (lastBlockInfo && lastBlockInfo.message.slot > slotToCheck.toString()) {
-          continue; // If we have lastBlockInfo > slotToCheck it means we have already processed this
-        }
-        [lastBlockInfo, lastMissedSlots] = await this.clClient.getBlockInfoWithSlotAttestations(slotToCheck);
-        allMissedSlots = allMissedSlots.concat(lastMissedSlots);
-        if (!lastBlockInfo) {
-          continue; // Failed to get info about the nearest existing block
-        }
-        blocksAttestations[lastBlockInfo.message.slot.toString()] = lastBlockInfo.message.body.attestations.map(
-          (att: BeaconBlockAttestation) => {
-            const bytesArray = fromHexString(att.aggregation_bits);
-            const CommitteeBits = new BitVectorType({
-              length: bytesArray.length * 8,
-            });
-            return {
-              bits: Array.from(CommitteeBits.deserialize(bytesArray)),
-              head: att.data.beacon_block_root,
-              target_root: att.data.target.root,
-              target_epoch: att.data.target.epoch,
-              source_root: att.data.source.root,
-              source_epoch: att.data.source.epoch,
-              slot: att.data.slot,
-              committee_index: att.data.index,
-            };
-          },
-        );
-      }
-      this.logger.log(`All missed slots in getting attestations info process: ${allMissedSlots}`);
-      return { attestersDutyInfo, blocksAttestations, allMissedSlots };
-    });
-  }
-
-  /**
-   * Check Proposer duties and return user validators propose result
-   **/
-  protected async checkProposerDuties(epoch: bigint, dutyDependentRoot: string, valIndexes: string[]): Promise<ProposerDutyInfo[]> {
-    return await this.prometheus.trackTask('check-proposer-duties', async () => {
-      this.logger.log(`Start getting proposers duties info`);
-      const userProposersDutyInfo = await this.getProposerDutyInfo(valIndexes, dutyDependentRoot, epoch);
-      this.logger.log(`Processing proposers duties info`);
-      for (const userProp of userProposersDutyInfo) {
-        userProp.proposed = false;
-        const blockHeader = await this.clClient.getBeaconBlockHeader(userProp.slot);
-        if (!blockHeader) continue; // it means that block is missed
-        if (blockHeader.header.message.proposer_index == userProp.validator_index) userProp.proposed = true;
-        else {
-          throw Error(
-            `Proposer duty info cannot be trusted. Make sure the node is synchronized!
-          Expect block [${blockHeader.header.message.slot}] proposer - ${userProp.validator_index},
-          but actual - ${blockHeader.header.message.proposer_index}`,
-          );
-        }
-      }
-      return userProposersDutyInfo;
-    });
-  }
-
-  /**
-   * Check Sync committee duties: get duties info by our validators keys and do bitwise check
-   **/
-  protected async checkSyncCommitteeDuties(epoch: bigint, stateRoot: string): Promise<SyncCommitteeValidator[]> {
-    return await this.prometheus.trackTask('check-sync-duties', async () => {
-      this.logger.log(`Start getting sync committee participation info`);
-      const SyncCommitteeBits = new BitVectorType({ length: 512 }); // sync participants count in committee
-      const indexedValidators = await this.getSyncCommitteeIndexedValidators(epoch, stateRoot);
-      this.logger.log(`Processing sync committee participation info`);
-      const epochBlocks: BlockInfoResponse[] = [];
-      const missedSlots: bigint[] = [];
-      const startSlot = epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
-      for (let slot = startSlot; slot < startSlot + BigInt(this.config.get('FETCH_INTERVAL_SLOTS')); slot = slot + 1n) {
-        const blockInfo = await this.clClient.getBlockInfo(slot);
-        blockInfo ? epochBlocks.push(blockInfo) : missedSlots.push(slot);
-      }
-      this.logger.log(`All missed slots in getting sync committee info process: ${missedSlots}`);
-      const epochBlocksBits = epochBlocks.map((block) =>
-        Array.from(SyncCommitteeBits.deserialize(fromHexString(block.message.body.sync_aggregate.sync_committee_bits))),
-      );
-      for (const indexedValidator of indexedValidators) {
-        let sync_count = 0;
-        for (const bits of epochBlocksBits) {
-          if (bits[indexedValidator.in_committee_index]) sync_count++;
-        }
-        indexedValidator.epoch_participation_percent = (sync_count / epochBlocksBits.length) * 100;
-      }
-      return indexedValidators;
-    });
-  }
-
-  protected async prepBalancesToWrite(
-    balances: StateValidatorResponse[],
-    keysIndexed: RegistrySourceKeysIndexed,
-  ): Promise<FetchFinalizedSlotDataResult> {
-    return await this.prometheus.trackTask('prep-balances', async () => {
-      const otherCounts: ValidatorsStatusStats = {
-        active_ongoing: 0,
-        pending: 0,
-        slashed: 0,
-      };
-      const filtered = balances.filter((b) => {
-        if (keysIndexed.has(b.validator.pubkey)) {
-          return true;
-        } else {
-          if (status.isActive(b)) otherCounts.active_ongoing++;
-          else if (status.isPending(b)) otherCounts.pending++;
-          else if (status.isSlashed(b)) otherCounts.slashed++;
-          return false;
-        }
-      });
-      return { balances: filtered, otherCounts };
-    });
-  }
-
-  savedCanonSlotsAttProperties = {};
-
-  protected async getCanonSlotRoot(slot: bigint) {
-    const cached = this.savedCanonSlotsAttProperties[String(slot)];
-    if (cached) return cached;
-    const root = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(slot)).root;
-    this.savedCanonSlotsAttProperties[String(slot)] = root;
-    return root;
-  }
-
-  protected async prepAttestationsToWrite(attDutyResult: CheckAttestersDutyResult) {
-    this.savedCanonSlotsAttProperties = {};
-    const slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
-    const blocksAttestation = Object.entries(attDutyResult.blocksAttestations).sort(
-      (b1, b2) => parseInt(b1[0]) - parseInt(b2[0]), // Sort array by block number
-    );
-    for (const duty of attDutyResult.attestersDutyInfo) {
-      duty.attested = false;
-      for (const [block, blockAttestations] of blocksAttestation.filter(
-        ([b]) => BigInt(b) > BigInt(duty.slot), // Attestation cannot be included in the previous or current block
-      )) {
-        const committeeAttestations: SlotAttestation[] = blockAttestations.filter(
-          (att: any) => att.slot == duty.slot && att.committee_index == duty.committee_index,
-        );
-        if (!committeeAttestations) continue;
-        for (const ca of committeeAttestations) {
-          duty.attested = ca.bits[parseInt(duty.validator_committee_index)];
-          duty.in_block = block;
-          if (!duty.attested) continue; // continue to find attestation with validator attestation
-          // and if validator attests block - calculate inclusion delay and check properties (head, target, source)
-          // calculate inclusion delay
-          const missedSlotsCount = attDutyResult.allMissedSlots.filter(
-            (missed) => BigInt(missed) > BigInt(duty.slot) && BigInt(missed) < BigInt(block),
-          ).length;
-          duty.inclusion_delay = Number(BigInt(block) - BigInt(duty.slot)) - missedSlotsCount;
-          const [canonHead, canonTarget, canonSource] = await Promise.all([
-            this.getCanonSlotRoot(BigInt(ca.slot)),
-            this.getCanonSlotRoot(BigInt(ca.target_epoch) * slotsInEpoch),
-            this.getCanonSlotRoot(BigInt(ca.source_epoch) * slotsInEpoch),
-          ]);
-          duty.valid_head = ca.head == canonHead;
-          duty.valid_target = ca.target_root == canonTarget;
-          duty.valid_source = ca.source_root == canonSource;
-          break;
-        }
-        if (duty.attested) break;
-      }
-    }
-    return attDutyResult;
-  }
-
-  protected prepSyncCommitteeToWrite(
-    userIDs: ValidatorIdentifications[],
-    syncResult: SyncCommitteeValidator[],
-  ): SyncCommitteeValidatorPrepResult {
-    const notUserPercents = [];
-    const userValidators = [];
-    for (const p of syncResult) {
-      const pubKey = userIDs.find((v) => v.validator_id === p.validator_index)?.validator_pubkey || '';
-      if (pubKey) {
-        const other = syncResult.filter((s) => s.validator_index != p.validator_index);
-        userValidators.push({
-          ...p,
-          other_avg: other.reduce((a, b) => a + b.epoch_participation_percent, 0) / other.length,
-        });
-      } else {
-        notUserPercents.push(p.epoch_participation_percent);
-      }
-    }
-
-    const notUserAvgPercent = notUserPercents.length ? notUserPercents.reduce((a, b) => a + b, 0) / notUserPercents.length : undefined;
-    return { syncResult: userValidators, notUserAvgPercent };
-  }
 }

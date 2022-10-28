@@ -48,7 +48,7 @@ export class ConsensusProviderService {
     beaconHeadFinalityCheckpoints: 'eth/v1/beacon/states/head/finality_checkpoints',
     blockInfo: (blockId: BlockId): string => `eth/v2/beacon/blocks/${blockId}`,
     beaconHeaders: (blockId: BlockId): string => `eth/v1/beacon/headers/${blockId}`,
-    balances: (stateId: StateId): string => `eth/v1/beacon/states/${stateId}/validators`,
+    validatorsState: (stateId: StateId): string => `eth/v1/beacon/states/${stateId}/validators`,
     syncCommittee: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/sync_committees?epoch=${epoch}`,
     proposerDutes: (epoch: Epoch): string => `eth/v1/validator/duties/proposer/${epoch}`,
     attesterDuties: (epoch: Epoch): string => `eth/v1/validator/duties/attester/${epoch}`,
@@ -228,8 +228,8 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getBalances(stateId: StateId): Promise<StateValidatorResponse[]> {
-    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.balances(stateId)));
+  public async getValidatorsState(stateId: StateId): Promise<StateValidatorResponse[]> {
+    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.validatorsState(stateId)));
   }
 
   public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse | void> {

@@ -7,8 +7,9 @@ import { ProposerDutyInfo, StateValidatorResponse, ValStatus } from 'common/eth-
 import { retrier } from 'common/functions/retrier';
 import { PrometheusService } from 'common/prometheus';
 import { RegistrySourceKeysIndexed } from 'common/validators-registry/registry-source.interface';
+import { FetchFinalizedSlotDataResult } from 'duty/state';
+import { SyncCommitteeValidatorPrepResult } from 'duty/sync';
 
-import { FetchFinalizedSlotDataResult, SyncCommitteeValidatorPrepResult } from '../../inspector';
 import {
   operatorBalance24hDifferenceQuery,
   operatorsSyncParticipationAvgPercentsQuery,
@@ -124,16 +125,16 @@ export class ClickhouseService implements OnModuleInit {
     return slot;
   }
 
-  public async writeBalances(
+  public async writeStates(
     slot: bigint,
     slotTime: bigint,
     slotRes: FetchFinalizedSlotDataResult,
     keysIndexed: RegistrySourceKeysIndexed,
   ): Promise<ValidatorsStatusStats> {
-    return await this.prometheus.trackTask('write-balances', async () => {
-      const balances = [...slotRes.balances];
-      while (balances.length > 0) {
-        const chunk = balances.splice(0, this.chunkSize);
+    return await this.prometheus.trackTask('write-states', async () => {
+      const states = [...slotRes.states];
+      while (states.length > 0) {
+        const chunk = states.splice(0, this.chunkSize);
         const ws = this.db
           .insert(
             'INSERT INTO stats.validator_balances ' +
