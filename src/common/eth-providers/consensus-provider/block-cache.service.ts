@@ -50,6 +50,6 @@ export class BlockCacheService {
         delete this.cache[blockId];
       }
     }
-    this.logger.debug(`Purged slots cache count: ${purged}`);
+    this.logger.debug(`Purged blocks cache count: ${purged}`);
   }
 }
