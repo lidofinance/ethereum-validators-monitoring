@@ -1,13 +1,15 @@
-import { ClickhouseService } from 'storage';
-import { DataProcessingService } from './data-processing.service';
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
+import { RegistryOperator } from '@lido-nestjs/registry';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
+
 import { ConfigService } from 'common/config';
 import { Owner, PrometheusService, PrometheusValStatus } from 'common/prometheus';
 import { RegistryService } from 'common/validators-registry';
-import { ValidatorsStatusStats } from 'storage/clickhouse';
 import { LidoSourceService } from 'common/validators-registry/lido-source';
-import { RegistryOperator } from '@lido-nestjs/registry';
+import { ClickhouseService } from 'storage';
+import { ValidatorsStatusStats } from 'storage/clickhouse';
+
+import { DataProcessingService } from './data-processing.service';
 
 const GWEI_WEI_RATIO = 1e9;
 
@@ -116,12 +118,16 @@ export class StatsProcessingService {
     const invalidSourceAttestationsLastEpoch = await this.storage.getValidatorCountWithInvalidSourceAttestationsLastEpoch(slot);
     const epochInterval = this.config.get('BAD_ATTESTATION_EPOCHS');
     const missAttestationsLastNEpoch = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(slot);
-    const highIncDelayAttestationsLastNEpoch = await this.storage.getValidatorCountWithHighIncDelayAttestationsLastNEpoch(slot);
+    const highIncDelayAttestationsLastNEpoch = await this.storage.getValidatorCountIncDelayGtOneAttestationsLastNEpoch(slot);
     const invalidHeadAttestationsLastNEpoch = await this.storage.getValidatorCountWithInvalidHeadAttestationsLastNEpoch(slot);
     const invalidTargetAttestationsLastNEpoch = await this.storage.getValidatorCountWithInvalidTargetAttestationsLastNEpoch(slot);
     const invalidSourceAttestationsLastNEpoch = await this.storage.getValidatorCountWithInvalidSourceAttestationsLastNEpoch(slot);
     const highAvgIncDelayAttestationsOfNEpoch = await this.storage.getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(slot);
-    const invalidAttestationPropertyLastNEpoch = await this.storage.getValidatorCountWithInvalidAttestationsPropertyLastNEpoch(slot);
+    // metrics for alerts
+    const incDelayGtTwoAttestationsLastNEpoch = await this.storage.getValidatorCountIncDelayGtTwoAttestationsLastNEpoch(slot);
+    const invalidAttestationPropertyGtOneLastNEpoch = await this.storage.getValidatorCountWithInvalidAttestationsPropertyGtOneLastNEpoch(
+      slot,
+    );
     const highRewardMissAttestationsLastNEpoch =
       possibleHighRewardValidators.length > 0
         ? await this.storage.getValidatorCountWithHighRewardMissedAttestationsLastNEpoch(slot, possibleHighRewardValidators)
@@ -179,10 +185,16 @@ export class StatsProcessingService {
         { nos_name: operator.name, epoch_interval: epochInterval },
         highAvgIncDelayAttestationsOfN ? highAvgIncDelayAttestationsOfN.amount : 0,
       );
-      const invalidAttestationPropertyLastN = invalidAttestationPropertyLastNEpoch.find((a) => a.nos_name == operator.name);
-      this.prometheus.validatorsCountInvalidAttestationPropertyOfNEpoch.set(
+      // metrics for alerts
+      const incDelayGtTwoAttestationsLastN = incDelayGtTwoAttestationsLastNEpoch.find((a) => a.nos_name == operator.name);
+      this.prometheus.validatorsCountHighIncDelayAttestationLastNEpoch.set(
         { nos_name: operator.name, epoch_interval: epochInterval },
-        invalidAttestationPropertyLastN ? invalidAttestationPropertyLastN.amount : 0,
+        incDelayGtTwoAttestationsLastN ? incDelayGtTwoAttestationsLastN.amount : 0,
+      );
+      const invalidAttestationPropertyGtOneLastN = invalidAttestationPropertyGtOneLastNEpoch.find((a) => a.nos_name == operator.name);
+      this.prometheus.validatorsCountInvalidAttestationPropertyLastNEpoch.set(
+        { nos_name: operator.name, epoch_interval: epochInterval },
+        invalidAttestationPropertyGtOneLastN ? invalidAttestationPropertyGtOneLastN.amount : 0,
       );
       const highRewardMissAttestationLastN = highRewardMissAttestationsLastNEpoch.find((p) => p.nos_name == operator.name);
       this.prometheus.highRewardValidatorsCountMissAttestationLastNEpoch.set(

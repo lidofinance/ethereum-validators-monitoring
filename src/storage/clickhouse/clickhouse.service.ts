@@ -342,11 +342,19 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
-  public async getValidatorCountWithHighIncDelayAttestationsLastNEpoch(slot: bigint) {
+  public async getValidatorCountIncDelayGtOneAttestationsLastNEpoch(slot: bigint) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       slot,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
       'inclusion_delay > 1',
+    );
+  }
+
+  public async getValidatorCountIncDelayGtTwoAttestationsLastNEpoch(slot: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
+      slot,
+      this.config.get('BAD_ATTESTATION_EPOCHS'),
+      'inclusion_delay > 2',
     );
   }
 
@@ -370,11 +378,11 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
-  public async getValidatorCountWithInvalidAttestationsPropertyLastNEpoch(slot: bigint) {
+  public async getValidatorCountWithInvalidAttestationsPropertyGtOneLastNEpoch(slot: bigint) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       slot,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
-      '(valid_head = 0 OR valid_target = 0 OR valid_source = 0)',
+      '(valid_head + valid_target + valid_source = 1)',
     );
   }
 
