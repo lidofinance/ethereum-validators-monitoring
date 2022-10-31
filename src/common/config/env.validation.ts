@@ -117,7 +117,7 @@ export class EnvironmentVariables {
   @IsNumber()
   @Min(100)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public DB_INSERT_CHUNK_SIZE = 1500;
+  public DB_INSERT_CHUNK_SIZE = 100000;
 
   @IsNotEmpty()
   @IsInt()
@@ -170,6 +170,11 @@ export class EnvironmentVariables {
   @Min(18950)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public START_SLOT = 1518000;
+
+  @IsNumber()
+  @Min(74240) // Altair
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public START_EPOCH = 74240;
 
   @IsNumber()
   @Min(32)

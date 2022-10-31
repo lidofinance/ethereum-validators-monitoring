@@ -40,7 +40,7 @@ export class CriticalAlertsService {
     ];
   }
 
-  public async sendCriticalAlerts(bySlot: bigint) {
+  public async sendCriticalAlerts(epoch: bigint) {
     if (this.prometheus.getSlotTimeDiffWithNow() > 3600000) {
       this.logger.warn(`Data actuality greater then 1 hour. Сritical alerts are suppresed`);
       return;
@@ -52,7 +52,7 @@ export class CriticalAlertsService {
     this.logger.log('Send critical alerts if exist');
     try {
       for (const alert of this.alerts) {
-        const toSend = await alert.toSend(bySlot);
+        const toSend = await alert.toSend(epoch);
         if (toSend) await this.fire(toSend.body).then(() => (sentAlerts[alert.alertname] = toSend));
       }
     } catch (e) {

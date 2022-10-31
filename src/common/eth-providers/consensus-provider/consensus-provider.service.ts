@@ -11,9 +11,10 @@ import { retrier } from 'common/functions/retrier';
 import { urljoin } from 'common/functions/urljoin';
 import { PrometheusService } from 'common/prometheus';
 
-import { BlockCache, BlockCacheService } from './block-cache.service';
+import { BlockCache, BlockCacheService } from './block-cache';
 import { MaxDeepError, ResponseError, errCommon, errRequest } from './errors';
 import {
+  AttestationCommitteeInfo,
   AttesterDutyInfo,
   BlockHeaderResponse,
   BlockInfoResponse,
@@ -49,6 +50,7 @@ export class ConsensusProviderService {
     blockInfo: (blockId: BlockId): string => `eth/v2/beacon/blocks/${blockId}`,
     beaconHeaders: (blockId: BlockId): string => `eth/v1/beacon/headers/${blockId}`,
     validatorsState: (stateId: StateId): string => `eth/v1/beacon/states/${stateId}/validators`,
+    attestationCommittees: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/committees?epoch=${epoch}`,
     syncCommittee: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/sync_committees?epoch=${epoch}`,
     proposerDutes: (epoch: Epoch): string => `eth/v1/validator/duties/proposer/${epoch}`,
     attesterDuties: (epoch: Epoch): string => `eth/v1/validator/duties/attester/${epoch}`,
@@ -94,7 +96,7 @@ export class ConsensusProviderService {
     );
   }
 
-  public async getBeaconBlockHeader(blockId: BlockId): Promise<BlockHeaderResponse | void> {
+  public async getBlockHeader(blockId: BlockId): Promise<BlockHeaderResponse | void> {
     const cached: BlockCache = this.cache.get(String(blockId));
     if (cached && (cached.missed || cached.header)) {
       this.logger.debug(`Get ${blockId} header from blocks cache`);
@@ -137,7 +139,7 @@ export class ConsensusProviderService {
    * @param slot
    */
   public async getBeaconBlockHeaderOrPreviousIfMissed(slot: Slot): Promise<BlockHeaderResponse> {
-    const header = await this.getBeaconBlockHeader(slot);
+    const header = await this.getBlockHeader(slot);
     if (header) return header;
     // if block is missed, try to get next not missed block header
     const nextNotMissedHeader = await this.getNextNotMissedBlockHeader(slot + 1n);
@@ -147,14 +149,14 @@ export class ConsensusProviderService {
     );
 
     // and get the closest block header by parent root from next
-    const previousBlockHeader = <BlockHeaderResponse>await this.getBeaconBlockHeader(nextNotMissedHeader.header.message.parent_root);
+    const previousBlockHeader = <BlockHeaderResponse>await this.getBlockHeader(nextNotMissedHeader.header.message.parent_root);
     this.logger.log(`Block [${slot}] is missed. Returning previous not missed block header [${previousBlockHeader.header.message.slot}]`);
 
     return previousBlockHeader;
   }
 
   public async getNextNotMissedBlockHeader(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
-    const header = await this.getBeaconBlockHeader(slot);
+    const header = await this.getBlockHeader(slot);
     if (!header) {
       if (maxDeep < 1) {
         throw new MaxDeepError(`Error when trying to get next not missed block header. From ${slot} to ${slot + BigInt(maxDeep)}`);
@@ -166,7 +168,7 @@ export class ConsensusProviderService {
   }
 
   public async getPreviousNotMissedBlockHeader(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
-    const header = await this.getBeaconBlockHeader(slot);
+    const header = await this.getBlockHeader(slot);
     if (!header) {
       if (maxDeep < 1) {
         throw new MaxDeepError(`Error when trying to get previous not missed block header. From ${slot} to ${slot - BigInt(maxDeep)}`);
@@ -254,6 +256,10 @@ export class ConsensusProviderService {
     this.cache.set(String(blockId), { missed: !blockInfo, info: blockInfo });
 
     return blockInfo;
+  }
+
+  public async getAttestationCommitteesInfo(stateId: StateId, epoch: Epoch): Promise<AttestationCommitteeInfo[]> {
+    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.attestationCommittees(stateId, epoch)));
   }
 
   public async getSyncCommitteeInfo(stateId: StateId, epoch: Epoch): Promise<SyncCommitteeInfo> {

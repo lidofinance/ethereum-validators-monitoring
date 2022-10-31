@@ -7,32 +7,32 @@ export interface ValidatorsStatusStats {
 }
 
 export interface NOsDelta {
-  nos_name: string;
+  val_nos_name: string;
   delta: number;
 }
 
 export interface NOsValidatorsNegDeltaCount {
-  nos_name: string;
+  val_nos_name: string;
   neg_count: number;
 }
 
 export interface NOsValidatorsSyncAvgPercent {
-  nos_name: string;
+  val_nos_name: string;
   avg_percent: number;
 }
 
 export interface NOsValidatorsSyncLessChainAvgCount {
-  nos_name: string;
+  val_nos_name: string;
   less_chain_avg_count: number;
 }
 
 export interface NOsValidatorsByConditionAttestationCount {
-  nos_name: string;
+  val_nos_name: string;
   amount: number;
 }
 
 export interface NOsValidatorsMissProposeCount {
-  nos_name: string;
+  val_nos_name: string;
   miss_propose_count: number;
 }
 
@@ -42,11 +42,11 @@ export interface ValidatorIdentifications {
 }
 
 export interface NOsValidatorsStatusStats extends ValidatorsStatusStats {
-  nos_name: string;
+  val_nos_name: string;
 }
 
 export interface NOsProposesStats {
-  nos_name: string;
+  val_nos_name: string;
   all: number;
   missed: number;
 }

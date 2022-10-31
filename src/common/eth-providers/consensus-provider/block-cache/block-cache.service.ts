@@ -3,8 +3,8 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 
-import { BlockHeaderResponse, BlockInfoResponse } from './intefaces';
-import { Epoch, RootHex, Slot } from './types';
+import { BlockHeaderResponse, BlockInfoResponse } from '../intefaces';
+import { Epoch, RootHex, Slot } from '../types';
 
 export interface BlockCache {
   missed: boolean;
@@ -16,20 +16,21 @@ type BlockCacheId = Slot | RootHex;
 
 @Injectable()
 export class BlockCacheService {
-  constructor(@Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService, protected readonly config: ConfigService) {}
-
-  private cache: { [slot: string]: BlockCache } = {};
+  protected cache: Map<string, BlockCache>;
+  constructor(@Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService, protected readonly config: ConfigService) {
+    this.cache = new Map<string, BlockCache>();
+  }
 
   public set(blockId: BlockCacheId, data: BlockCache): void {
     // save only by slot number or root
     if (['finalized', 'head'].includes(String(blockId))) return;
     this.logger.debug(`Set ${blockId} ${Object.keys(data)} to blocks cache`);
     const existing = this.get(String(blockId)) ?? {};
-    this.cache[String(blockId)] = { ...existing, ...data };
+    this.cache.set(String(blockId), { ...existing, ...data });
   }
 
   public get(blockId: BlockCacheId): BlockCache {
-    return this.cache[String(blockId)];
+    return this.cache.get(String(blockId));
   }
 
   /**
@@ -39,7 +40,7 @@ export class BlockCacheService {
   public purgeOld(epoch: Epoch): void {
     let purged = 0;
     const firstSlotPrevEpoch = (epoch - 1n) * BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
-    for (const blockId of Object.keys(this.cache)) {
+    for (const blockId of this.cache.keys()) {
       // Data can be cached by block's root. Managing the lifetime of such records is not trivial at this moment
       // In order for this to be possible it is necessary
       // todo:
@@ -47,7 +48,7 @@ export class BlockCacheService {
       //   - get data by one of part of multiply id: slot number or root
       if (blockId.startsWith('0x') || BigInt(blockId) < firstSlotPrevEpoch) {
         purged++;
-        delete this.cache[blockId];
+        this.cache.delete(blockId);
       }
     }
     this.logger.debug(`Purged blocks cache count: ${purged}`);

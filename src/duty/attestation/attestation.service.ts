@@ -3,10 +3,12 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { AttesterDutyInfo, BeaconBlockAttestation, BlockInfoResponse, ConsensusProviderService } from 'common/eth-providers';
+import { BeaconBlockAttestation, BlockInfoResponse, ConsensusProviderService } from 'common/eth-providers';
 import { bigintRange } from 'common/functions/range';
 import { PrometheusService } from 'common/prometheus';
-import { CheckAttestersDutyResult, SlotAttestation } from 'storage/clickhouse';
+import { SlotAttestation } from 'storage/clickhouse';
+
+import { SummaryService } from '../summary';
 
 @Injectable()
 export class AttestationService {
@@ -16,27 +18,15 @@ export class AttestationService {
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
     protected readonly clClient: ConsensusProviderService,
+    protected readonly summary: SummaryService,
   ) {}
 
-  public async getAttestersDutyInfo(valIndexes: string[], dependentRoot: string, epoch: bigint): Promise<AttesterDutyInfo[]> {
-    return await this.clClient.getChunkedAttesterDuties(epoch, dependentRoot, valIndexes);
-  }
-
-  protected async getCanonSlotRoot(slot: bigint) {
-    const cached = this.savedCanonSlotsAttProperties[String(slot)];
-    if (cached) return cached;
-    const root = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(slot)).root;
-    this.savedCanonSlotsAttProperties[String(slot)] = root;
-    return root;
-  }
-  /**
-   * Check Attesters duties: get duties info by our validators keys and do bitwise attestations check
-   **/
-  public async checkAttesterDuties(epoch: bigint, dutyDependentRoot: string, userIndexes: string[]): Promise<CheckAttestersDutyResult> {
+  public async check(epoch: bigint, stateSlot: bigint): Promise<void> {
     return await this.prometheus.trackTask('check-attester-duties', async () => {
-      this.logger.log(`Start getting attesters duties info`);
-      const attestersDutyInfo: AttesterDutyInfo[] = await this.getAttestersDutyInfo(userIndexes, dutyDependentRoot, epoch);
-      this.logger.log(`Start processing attesters duties info`);
+      this.logger.log(`Getting attesters duties info`);
+      // const attestersDutyInfo: AttesterDutyInfo[] = await this.getAttestersDutyInfo(userIndexes, dutyDependentRoot, epoch);
+      const attestationCommitteesInfo = await this.clClient.getAttestationCommitteesInfo(stateSlot, epoch);
+      this.logger.log(`Processing attesters duties info`);
       const blocksAttestations: { [block: string]: SlotAttestation[] } = {};
       let allMissedSlots: string[] = [];
       let lastBlockInfo: BlockInfoResponse | void;
@@ -74,48 +64,64 @@ export class AttestationService {
         );
       }
       this.logger.log(`All missed slots in getting attestations info process: ${allMissedSlots}`);
-      return { attestersDutyInfo, blocksAttestations, allMissedSlots };
+      this.savedCanonSlotsAttProperties = {};
+      const blocksAttestation = Object.entries(blocksAttestations).sort(
+        (b1, b2) => parseInt(b1[0]) - parseInt(b2[0]), // Sort array by block number
+      );
+      for (const committee of attestationCommitteesInfo) {
+        for (const [valCommIndex, validatorIndex] of committee.validators.entries()) {
+          let attested = false;
+          let inc_delay = undefined;
+          let valid_head = undefined;
+          let valid_target = undefined;
+          let valid_source = undefined;
+          for (const [block, blockAttestations] of blocksAttestation.filter(
+            ([b]) => BigInt(b) > BigInt(committee.slot), // Attestation cannot be included in the previous or current block
+          )) {
+            const committeeAttestations: SlotAttestation[] = blockAttestations.filter(
+              (att: any) => att.slot == committee.slot && att.committee_index == committee.index,
+            );
+            if (!committeeAttestations) continue;
+            for (const ca of committeeAttestations) {
+              attested = ca.bits[valCommIndex];
+              if (!attested) continue; // continue to find attestation with validator attestation
+              // and if validator attests block - calculate inclusion delay and check properties (head, target, source)
+              // calculate inclusion delay
+              const missedSlotsCount = allMissedSlots.filter(
+                (missed) => BigInt(missed) > BigInt(committee.slot) && BigInt(missed) < BigInt(block),
+              ).length;
+              inc_delay = Number(BigInt(block) - BigInt(committee.slot)) - missedSlotsCount;
+              const [canonHead, canonTarget, canonSource] = await Promise.all([
+                this.getCanonSlotRoot(BigInt(ca.slot)),
+                this.getCanonSlotRoot(BigInt(ca.target_epoch) * slotsInEpoch),
+                this.getCanonSlotRoot(BigInt(ca.source_epoch) * slotsInEpoch),
+              ]);
+              valid_head = ca.head == canonHead;
+              valid_target = ca.target_root == canonTarget;
+              valid_source = ca.source_root == canonSource;
+              break;
+            }
+            if (attested) break;
+          }
+          this.summary.set(BigInt(validatorIndex), {
+            epoch,
+            val_id: BigInt(validatorIndex),
+            att_inc_delay: attested ? inc_delay : 33,
+            att_valid_head: valid_head,
+            att_valid_target: valid_target,
+            att_valid_source: valid_source,
+            attestation_is_compete: true,
+          });
+        }
+      }
     });
   }
 
-  public async prepAttestationsToWrite(attDutyResult: CheckAttestersDutyResult) {
-    this.savedCanonSlotsAttProperties = {};
-    const slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
-    const blocksAttestation = Object.entries(attDutyResult.blocksAttestations).sort(
-      (b1, b2) => parseInt(b1[0]) - parseInt(b2[0]), // Sort array by block number
-    );
-    for (const duty of attDutyResult.attestersDutyInfo) {
-      duty.attested = false;
-      for (const [block, blockAttestations] of blocksAttestation.filter(
-        ([b]) => BigInt(b) > BigInt(duty.slot), // Attestation cannot be included in the previous or current block
-      )) {
-        const committeeAttestations: SlotAttestation[] = blockAttestations.filter(
-          (att: any) => att.slot == duty.slot && att.committee_index == duty.committee_index,
-        );
-        if (!committeeAttestations) continue;
-        for (const ca of committeeAttestations) {
-          duty.attested = ca.bits[parseInt(duty.validator_committee_index)];
-          duty.in_block = block;
-          if (!duty.attested) continue; // continue to find attestation with validator attestation
-          // and if validator attests block - calculate inclusion delay and check properties (head, target, source)
-          // calculate inclusion delay
-          const missedSlotsCount = attDutyResult.allMissedSlots.filter(
-            (missed) => BigInt(missed) > BigInt(duty.slot) && BigInt(missed) < BigInt(block),
-          ).length;
-          duty.inclusion_delay = Number(BigInt(block) - BigInt(duty.slot)) - missedSlotsCount;
-          const [canonHead, canonTarget, canonSource] = await Promise.all([
-            this.getCanonSlotRoot(BigInt(ca.slot)),
-            this.getCanonSlotRoot(BigInt(ca.target_epoch) * slotsInEpoch),
-            this.getCanonSlotRoot(BigInt(ca.source_epoch) * slotsInEpoch),
-          ]);
-          duty.valid_head = ca.head == canonHead;
-          duty.valid_target = ca.target_root == canonTarget;
-          duty.valid_source = ca.source_root == canonSource;
-          break;
-        }
-        if (duty.attested) break;
-      }
-    }
-    return attDutyResult;
+  protected async getCanonSlotRoot(slot: bigint) {
+    const cached = this.savedCanonSlotsAttProperties[String(slot)];
+    if (cached) return cached;
+    const root = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(slot)).root;
+    this.savedCanonSlotsAttProperties[String(slot)] = root;
+    return root;
   }
 }

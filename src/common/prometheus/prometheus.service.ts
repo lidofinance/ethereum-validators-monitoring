@@ -12,17 +12,18 @@ import {
   METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_CONTRACT_KEYS_TOTAL,
   METRIC_DATA_ACTUALITY,
+  METRIC_EPOCH_NUMBER,
   METRIC_FETCH_INTERVAL,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
   METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
   METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_OTHER_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_OUTGOING_CL_REQUESTS_COUNT,
   METRIC_OUTGOING_CL_REQUESTS_DURATION_SECONDS,
   METRIC_OUTGOING_EL_REQUESTS_COUNT,
   METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS,
-  METRIC_SLOT_NUMBER,
   METRIC_STETH_BUFFERED_ETHER_TOTAL,
   METRIC_SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG,
   METRIC_TASK_DURATION_SECONDS,
@@ -86,8 +87,8 @@ export function requestLabels(apiUrl: string, subUrl: string) {
 export class PrometheusService implements OnApplicationBootstrap {
   private prefix = METRICS_PREFIX;
 
-  public slotTime = 0n; // latest fetched slot time
-  public getSlotTimeDiffWithNow = () => Date.now() - Number(this.slotTime) * 1000;
+  public epochTime = 0n; // latest fetched slot time
+  public getSlotTimeDiffWithNow = () => Date.now() - Number(this.epochTime) * 1000;
 
   constructor(@Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService, private config: ConfigService) {}
 
@@ -299,15 +300,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_name'],
   });
 
-  public chainSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
-    name: METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
+  public otherSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_SYNC_PARTICIPATION_AVG_PERCENT,
     help: 'Other sync committee validators participation avg percent',
     labelNames: [],
   });
 
-  public slotNumber = this.getOrCreateMetric('Gauge', {
-    name: METRIC_SLOT_NUMBER,
-    help: 'Current slot number',
+  public chainSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
+    name: METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
+    help: 'Chain sync committee validators participation avg percent',
+    labelNames: [],
+  });
+
+  public epochNumber = this.getOrCreateMetric('Gauge', {
+    name: METRIC_EPOCH_NUMBER,
+    help: 'Current epoch number',
     labelNames: [],
   });
 

@@ -95,7 +95,7 @@ describe('Inspector', () => {
     return map;
   });
   jest.spyOn(SimpleFallbackJsonRpcBatchProvider.prototype, 'detectNetwork').mockImplementation(async () => getNetwork('mainnet'));
-  const writeBalancesSpy = jest.spyOn(ClickhouseService.prototype, 'writeBalances');
+  const writeBalancesSpy = jest.spyOn(ClickhouseService.prototype, 'writeStates');
   const writeAttestationsSpy = jest.spyOn(ClickhouseService.prototype, 'writeAttestations');
   const writeProposesSpy = jest.spyOn(ClickhouseService.prototype, 'writeProposes');
   const writeSyncsSpy = jest.spyOn(ClickhouseService.prototype, 'writeSyncs');
@@ -145,12 +145,12 @@ describe('Inspector', () => {
     stateRoot = process.env['TEST_STATE_ROOT'];
     slotNumber = process.env['TEST_SLOT_NUMBER'];
 
-    await dataProcessingService.processAndWriteFinalizedData(slotToWrite, stateRoot, slotNumber);
+    await dataProcessingService.process(slotToWrite, stateRoot, slotNumber);
   });
 
   describe('should be processes validators info', () => {
     it('saving to balances table should be performed only once', () => {
-      expect(clickhouseService.writeBalances).toBeCalledTimes(1);
+      expect(clickhouseService.writeStates).toBeCalledTimes(1);
     });
 
     it('saving to attestation table should be performed only once', () => {
@@ -190,7 +190,7 @@ describe('Inspector', () => {
     });
 
     it('latest slot in DB equal processing slot', () => {
-      expect(dataProcessingService.latestSlotInDb).toBe(slotToWrite);
+      expect(dataProcessingService.latestProcessedEpoch).toBe(slotToWrite);
     });
   });
 });
