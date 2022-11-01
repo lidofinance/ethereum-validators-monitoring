@@ -12,17 +12,18 @@ import {
   METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_CONTRACT_KEYS_TOTAL,
   METRIC_DATA_ACTUALITY,
+  METRIC_EPOCH_NUMBER,
   METRIC_FETCH_INTERVAL,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
   METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
   METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_OTHER_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_OUTGOING_CL_REQUESTS_COUNT,
   METRIC_OUTGOING_CL_REQUESTS_DURATION_SECONDS,
   METRIC_OUTGOING_EL_REQUESTS_COUNT,
   METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS,
-  METRIC_SLOT_NUMBER,
   METRIC_STETH_BUFFERED_ETHER_TOTAL,
   METRIC_SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG,
   METRIC_TASK_DURATION_SECONDS,
@@ -86,8 +87,8 @@ export function requestLabels(apiUrl: string, subUrl: string) {
 export class PrometheusService implements OnApplicationBootstrap {
   private prefix = METRICS_PREFIX;
 
-  public slotTime = 0n; // latest fetched slot time
-  public getSlotTimeDiffWithNow = () => Date.now() - Number(this.slotTime) * 1000;
+  public epochTime = 0n; // latest fetched slot time
+  public getSlotTimeDiffWithNow = () => Date.now() - Number(this.epochTime) * 1000;
 
   constructor(@Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService, private config: ConfigService) {}
 
@@ -299,15 +300,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_name'],
   });
 
-  public chainSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
-    name: METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
+  public otherSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_SYNC_PARTICIPATION_AVG_PERCENT,
     help: 'Other sync committee validators participation avg percent',
     labelNames: [],
   });
 
-  public slotNumber = this.getOrCreateMetric('Gauge', {
-    name: METRIC_SLOT_NUMBER,
-    help: 'Current slot number',
+  public chainSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
+    name: METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
+    help: 'Chain sync committee validators participation avg percent',
+    labelNames: [],
+  });
+
+  public epochNumber = this.getOrCreateMetric('Gauge', {
+    name: METRIC_EPOCH_NUMBER,
+    help: 'Current epoch number',
     labelNames: [],
   });
 
@@ -334,38 +341,22 @@ export class PrometheusService implements OnApplicationBootstrap {
     help: 'Buffered Ether (ETH)',
     labelNames: [],
   });
+}
 
-  public async trackTask(name: string, callback: () => any) {
-    const stop = this.taskDuration.startTimer({
-      name: name,
-    });
-    return await callback()
-      .then((r: any) => {
-        this.taskCount.inc({
-          name: name,
-          status: TaskStatus.COMPLETE,
-        });
-        return r;
-      })
-      .catch((e: any) => {
-        this.taskCount.inc({
-          name: name,
-          status: TaskStatus.ERROR,
-        });
-        throw e;
-      })
-      .finally(() => stop());
-  }
-
-  public async trackCLRequest(apiUrl: string, subUrl: string, callback: () => any) {
+export function TrackCLRequest(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  const originalValue = descriptor.value;
+  descriptor.value = function (...args) {
+    if (!this.prometheus) throw Error(`'${this.constructor.name}' class object must contain 'prometheus' property`);
+    const [apiUrl, subUrl] = args;
     const [targetName, reqName] = requestLabels(apiUrl, subUrl);
-    const stop = this.outgoingCLRequestsDuration.startTimer({
+    const stop = this.prometheus.outgoingCLRequestsDuration.startTimer({
       name: reqName,
       target: targetName,
     });
-    return await callback()
+    return originalValue
+      .apply(this, args)
       .then((r: any) => {
-        this.outgoingCLRequestsCount.inc({
+        this.prometheus.outgoingCLRequestsCount.inc({
           name: reqName,
           target: targetName,
           status: RequestStatus.COMPLETE,
@@ -374,7 +365,7 @@ export class PrometheusService implements OnApplicationBootstrap {
         return r;
       })
       .catch((e: any) => {
-        this.outgoingCLRequestsCount.inc({
+        this.prometheus.outgoingCLRequestsCount.inc({
           name: reqName,
           target: targetName,
           status: RequestStatus.ERROR,
@@ -383,5 +374,41 @@ export class PrometheusService implements OnApplicationBootstrap {
         throw e;
       })
       .finally(() => stop());
-  }
+  };
+}
+
+export function TrackTask(name: string) {
+  return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    const originalValue = descriptor.value;
+
+    descriptor.value = function (...args) {
+      // "this" here will refer to the class instance
+      if (!this.prometheus) throw Error(`'${this.constructor.name}' class object must contain 'prometheus' property`);
+      const stop = this.prometheus.taskDuration.startTimer({
+        name: name,
+      });
+      this.logger.debug(`Task '${name}' in progress`);
+      return originalValue
+        .apply(this, args)
+        .then((r) => {
+          this.prometheus.taskCount.inc({
+            name: name,
+            status: TaskStatus.COMPLETE,
+          });
+          return r;
+        })
+        .catch((e) => {
+          this.logger.error(`Task '${name}' ended with an error`, e.stack);
+          this.prometheus.taskCount.inc({
+            name: name,
+            status: TaskStatus.ERROR,
+          });
+          throw e;
+        })
+        .finally(() => {
+          const duration = stop();
+          this.logger.debug(`Task '${name}' is complete. Duration: ${duration}`);
+        });
+    };
+  };
 }

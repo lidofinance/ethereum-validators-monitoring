@@ -149,6 +149,12 @@ export interface SyncCommitteeInfo {
   validators: ValidatorIndex[];
 }
 
+export interface AttestationCommitteeInfo {
+  index: string;
+  slot: string;
+  validators: string[];
+}
+
 export interface SyncCommitteeValidator {
   in_committee_index: number;
   validator_index: ValidatorIndex;

@@ -22,7 +22,7 @@ jobs:
       - name: Get tag value
         id: tag
         run: |
-          TAG="$(grep -oP '\d+\.\d+\.\d+' <<< "$MESSAGE")"
+          TAG="$(grep -oP '^chore\(release\).*\K(\d+\.\d+\.\d+)' <<< "$MESSAGE")"
           echo "$TAG"
           echo "tag=$TAG" >> $GITHUB_OUTPUT
         env:

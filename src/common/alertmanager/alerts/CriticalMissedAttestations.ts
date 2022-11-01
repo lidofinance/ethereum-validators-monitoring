@@ -13,15 +13,15 @@ export class CriticalMissedAttestations extends Alert {
     super(CriticalMissedAttestations.name, config, storage);
   }
 
-  async alertRule(bySlot: bigint): Promise<AlertRuleResult> {
+  async alertRule(epoch: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
-    const operators = await this.storage.getUserNodeOperatorsStats(bySlot);
-    const missedAttValidatorsCount = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(bySlot);
+    const operators = await this.storage.getUserNodeOperatorsStats(epoch);
+    const missedAttValidatorsCount = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(epoch);
     for (const operator of operators.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
-      const missedAtt = missedAttValidatorsCount.find((a) => a.nos_name == operator.nos_name);
+      const missedAtt = missedAttValidatorsCount.find((a) => a.val_nos_name == operator.val_nos_name);
       if (!missedAtt) continue;
       if (missedAtt.amount > operator.active_ongoing * VALIDATORS_WITH_MISSED_ATTESTATION_COUNT_THRESHOLD) {
-        result[operator.nos_name] = { ongoing: operator.active_ongoing, missedAtt: missedAtt.amount };
+        result[operator.val_nos_name] = { ongoing: operator.active_ongoing, missedAtt: missedAtt.amount };
       }
     }
     return result;
