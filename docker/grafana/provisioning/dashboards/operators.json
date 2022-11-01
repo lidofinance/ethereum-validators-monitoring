@@ -1342,7 +1342,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "inc. delay > 1",
+      "description": "inc. delay > 2",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1441,8 +1441,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  validator_pubkey,\n  count(inclusion_delay) as count_fail\nFROM stats.validator_attestations\nWHERE\n  nos_name = '${nos_name_var}' AND\n  inclusion_delay > 1 AND\n  (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var}))\nGROUP BY validator_pubkey, nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  validator_pubkey,\n  count(inclusion_delay) as count_fail\nFROM stats.validator_attestations\nWHERE\n  nos_name = 'Allnodes' AND\n  inclusion_delay > 1 AND\n  (slot_to_attestation <= 4181471 AND slot_to_attestation > (4181471 - 32 * 3))\nGROUP BY validator_pubkey, nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+          "query": "SELECT\n  validator_pubkey,\n  count(inclusion_delay) as count_fail\nFROM stats.validator_attestations\nWHERE\n  nos_name = '${nos_name_var}' AND\n  inclusion_delay > 2 AND\n  (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var}))\nGROUP BY validator_pubkey, nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  validator_pubkey,\n  count(inclusion_delay) as count_fail\nFROM stats.validator_attestations\nWHERE\n  nos_name = 'Allnodes' AND\n  inclusion_delay > 2 AND\n  (slot_to_attestation <= 4181471 AND slot_to_attestation > (4181471 - 32 * 3))\nGROUP BY validator_pubkey, nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1544,14 +1544,14 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "\nSELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE (valid_head = 0 OR valid_target = 0 OR valid_source = 0) AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var})) AND\n    nos_name = '${nos_name_var}'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE (valid_head = 0 OR valid_target = 0 OR valid_source = 0) AND \n    (slot_to_attestation <= 4980095 AND slot_to_attestation > (4980095 - 32 * 3)) AND\n    nos_name = 'Allnodes'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+          "query": "\nSELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE (valid_head + valid_target + valid_source = 1) AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var})) AND\n    nos_name = '${nos_name_var}'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE (valid_head + valid_target + valid_source = 1) AND \n    (slot_to_attestation <= 4980095 AND slot_to_attestation > (4980095 - 32 * 3)) AND\n    nos_name = 'Allnodes'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
         }
       ],
-      "title": "Invalid attestation properties (${att_epochs_var} epochs in a row)",
+      "title": "Two invalid attestation properties (${att_epochs_var} epochs in a row)",
       "type": "table"
     },
     {
