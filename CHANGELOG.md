@@ -1,3 +1,12 @@
+## [3.3.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/3.3.0...3.3.1) (2022-11-01)
+
+
+### Bug Fixes
+
+* Develop ([#51](https://github.com/lidofinance/ethereum-validators-monitoring/issues/51)) ([b064005](https://github.com/lidofinance/ethereum-validators-monitoring/commit/b0640059bee5152f29c70db465542ce41e94ea65)), closes [#50](https://github.com/lidofinance/ethereum-validators-monitoring/issues/50)
+
+
+
 # [3.3.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/3.2.1...3.3.0) (2022-10-26)
 
 
