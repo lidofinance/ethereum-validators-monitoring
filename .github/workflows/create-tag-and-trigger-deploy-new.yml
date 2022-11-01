@@ -1,0 +1,46 @@
+name: Create tag and trigger deploy (NEW)
+on:
+  push:
+    branches:
+      - main_candidate
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    name: Create tag and release
+    runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, 'chore(release)')"
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - name: Get tag value
+        id: tag
+        run: |
+          TAG="$(grep -oP '^chore\(release\).*\K(\d+\.\d+\.\d+)' <<< "$MESSAGE")"
+          echo "$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+        env:
+          MESSAGE: ${{ github.event.head_commit.message }}
+      - name: Create and push tag
+        run: |
+          git tag ${{ steps.tag.outputs.tag }}
+          git push https://x-access-token:${{ github.token }}@github.com/$GITHUB_REPOSITORY --tags
+      - name: Create release
+        uses: lidofinance/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+
+  deploy-trigger:
+    needs: bump
+    name: Trigger build and PR creation in the infra-mainnet
+    if: "contains(github.event.head_commit.message, 'chore(release)')"
+    uses: ./.github/workflows/ci-prod-new.yml
+    secrets: inherit
+    with:
+      tag: ${{ needs.bump.outputs.tag }}

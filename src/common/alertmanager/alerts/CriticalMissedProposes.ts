@@ -11,15 +11,15 @@ export class CriticalMissedProposes extends Alert {
     super(CriticalMissedProposes.name, config, storage);
   }
 
-  async alertRule(bySlot: bigint): Promise<AlertRuleResult> {
+  async alertRule(epoch: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
-    const operators = await this.storage.getUserNodeOperatorsStats(bySlot);
-    const proposes = await this.storage.getUserNodeOperatorsProposesStats(bySlot); // ~12h range
+    const operators = await this.storage.getUserNodeOperatorsStats(epoch);
+    const proposes = await this.storage.getUserNodeOperatorsProposesStats(epoch); // ~12h range
     for (const operator of operators.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
-      const proposeStats = proposes.find((a) => a.nos_name == operator.nos_name);
+      const proposeStats = proposes.find((a) => a.val_nos_name == operator.val_nos_name);
       if (!proposeStats) continue;
       if (proposeStats.missed > proposeStats.all / 3) {
-        result[operator.nos_name] = { all: proposeStats.all, missed: proposeStats.missed };
+        result[operator.val_nos_name] = { all: proposeStats.all, missed: proposeStats.missed };
       }
     }
     return result;

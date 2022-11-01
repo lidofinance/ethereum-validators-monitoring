@@ -11,15 +11,15 @@ export class CriticalNegativeDelta extends Alert {
     super(CriticalNegativeDelta.name, config, storage);
   }
 
-  async alertRule(bySlot: bigint): Promise<AlertRuleResult> {
+  async alertRule(epoch: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
-    const operators = await this.storage.getUserNodeOperatorsStats(bySlot);
-    const negativeValidatorsCount = await this.storage.getValidatorsCountWithNegativeDelta(bySlot);
+    const operators = await this.storage.getUserNodeOperatorsStats(epoch);
+    const negativeValidatorsCount = await this.storage.getValidatorsCountWithNegativeDelta(epoch);
     for (const operator of operators.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
-      const negDelta = negativeValidatorsCount.find((a) => a.nos_name == operator.nos_name);
+      const negDelta = negativeValidatorsCount.find((a) => a.val_nos_name == operator.val_nos_name);
       if (!negDelta) continue;
       if (negDelta.neg_count > operator.active_ongoing / 3) {
-        result[operator.nos_name] = { ongoing: operator.active_ongoing, negDelta: negDelta.neg_count };
+        result[operator.val_nos_name] = { ongoing: operator.active_ongoing, negDelta: negDelta.neg_count };
       }
     }
     return result;

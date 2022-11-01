@@ -1,7 +1,7 @@
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
-import { PrometheusService } from 'common/prometheus';
+import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { REGISTRY_SOURCE, RegistrySource, RegistrySourceKeysIndexed } from './registry-source.interface';
 
@@ -10,13 +10,14 @@ export class RegistryService {
   constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     @Inject(REGISTRY_SOURCE) public readonly source: RegistrySource,
-    protected readonly prometheusService: PrometheusService,
+    protected readonly prometheus: PrometheusService,
   ) {}
 
   public async getActualKeysIndexed(timestamp: number): Promise<RegistrySourceKeysIndexed | undefined> {
     await this.updateValidators();
     if (timestamp > this.lastTimestamp) {
-      this.logger.warn(`Registry data is too old. Last update - ${new Date(this.lastTimestamp).toISOString()}`);
+      const lastUpdateTime = new Date(this.lastTimestamp * 1000).toISOString();
+      throw Error(`Validators registry data is too old. Last update - ${lastUpdateTime}`);
     }
     return await this.source.getIndexedKeys();
   }
@@ -30,24 +31,23 @@ export class RegistryService {
   /**
    * Collects updates from source validators registry contract and saves the changes to the database
    */
+  @TrackTask('update-validators')
   protected async updateValidators(): Promise<void> {
-    await this.prometheusService.trackTask('update-validators', async () => {
-      try {
-        await this.source.update();
-        await this.updateTimestamp();
-      } catch (error) {
-        // Here we can get a timeout error or something else
-        this.logger.warn('Failed to update validators');
-        const curr = await this.source.getKeys();
-        if (curr?.length == 0) {
-          // throw error and run main cycle again
-          throw error;
-        } else {
-          // print error and continue to use current keys from storage
-          this.logger.error(error.error?.reason ?? error);
-        }
+    try {
+      await this.source.update();
+      await this.updateTimestamp();
+    } catch (error) {
+      // Here we can get a timeout error or something else
+      this.logger.warn('Failed to update validators');
+      const curr = await this.source.getKeys();
+      if (curr?.length == 0) {
+        // throw error and run main cycle again
+        throw error;
+      } else {
+        // print error and continue to use current keys from storage
+        this.logger.error(error.error?.reason ?? error);
       }
-    });
+    }
   }
 
   /**

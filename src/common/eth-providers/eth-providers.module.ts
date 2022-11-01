@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { BlockCacheService, ConsensusProviderModule, ConsensusProviderService } from './consensus-provider';
+import { ConsensusProviderModule, ConsensusProviderService } from './consensus-provider';
+import { BlockCacheModule } from './consensus-provider/block-cache';
 import { ExecutionProviderModule, ExecutionProviderService } from './execution-provider';
 
 @Module({
-  imports: [ExecutionProviderModule, ConsensusProviderModule],
-  providers: [ExecutionProviderService, ConsensusProviderService, BlockCacheService],
-  exports: [ExecutionProviderService, ConsensusProviderService, BlockCacheService],
+  imports: [ExecutionProviderModule, ConsensusProviderModule, BlockCacheModule],
+  providers: [ExecutionProviderService, ConsensusProviderService],
+  exports: [ExecutionProviderService, ConsensusProviderService],
 })
 export class EthProvidersModule {}

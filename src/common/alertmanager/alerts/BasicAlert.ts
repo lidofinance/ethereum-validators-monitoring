@@ -36,8 +36,8 @@ export abstract class Alert {
 
   abstract alertBody(ruleResult: AlertRuleResult): AlertRequestBody;
 
-  async toSend(bySlot: bigint): Promise<PreparedToSendAlert | undefined> {
-    const ruleResult = await this.alertRule(bySlot);
+  async toSend(epoch: bigint): Promise<PreparedToSendAlert | undefined> {
+    const ruleResult = await this.alertRule(epoch);
     if (this.sendRule(ruleResult)) return { timestamp: this.sendTimestamp, body: this.alertBody(ruleResult), ruleResult };
   }
 }

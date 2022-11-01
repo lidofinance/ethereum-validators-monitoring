@@ -43,4 +43,4 @@ jobs:
         with:
           branch: pre-release-${{ steps.changelog.outputs.version }}
           title: "chore(release): ${{ steps.changelog.outputs.version }}"
-          body: "This PR is generated automatically.\nMerge it with **Rebase and merge** option or with the **Squash and merge** keeping default commit message (CRUCIAL) for the automatic tag creation.\nIf you don't need this PR than close it and **delete source branch**! "
+          body: "This PR is generated automatically.\nMerge it for the automatic tag creation.\nIf you don't need this PR than close it and **delete source branch**! "

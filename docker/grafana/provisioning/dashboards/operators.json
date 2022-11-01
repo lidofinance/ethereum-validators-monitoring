@@ -21,8 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 4,
-  "iteration": 1666686085737,
+  "iteration": 1667222156665,
   "links": [
     {
       "asDropdown": false,
@@ -132,6 +131,7 @@
             "fixedColor": "text",
             "mode": "fixed"
           },
+          "decimals": 0,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -142,17 +142,17 @@
               }
             ]
           },
-          "unit": "locale"
+          "unit": "none"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 2,
+        "h": 4,
         "w": 5,
         "x": 5,
         "y": 1
       },
-      "id": 1705,
+      "id": 1707,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
@@ -176,13 +176,13 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_slot_number)",
+          "expr": "sum(ethereum_validators_monitoring_epoch_number)",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Slot",
+      "title": "Epoch",
       "type": "stat"
     },
     {
@@ -244,68 +244,6 @@
       "type": "stat"
     },
     {
-      "description": "Last processed for a specified time period",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "text",
-            "mode": "fixed"
-          },
-          "decimals": 0,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "super-light-blue",
-                "value": null
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 2,
-        "w": 5,
-        "x": 5,
-        "y": 3
-      },
-      "id": 1707,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_slot_number) / 32",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "title": "Epoch",
-      "type": "stat"
-    },
-    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
@@ -361,7 +299,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -870,7 +808,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "validator_pubkey"
+              "options": "Validator"
             },
             "properties": [
               {
@@ -882,10 +820,6 @@
                     "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
-              },
-              {
-                "id": "displayName",
-                "value": "validator"
               },
               {
                 "id": "unit",
@@ -930,7 +864,7 @@
           }
         ]
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -942,8 +876,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  current.balance - previous.balance AS GWei,\n  current.validator_pubkey as validator_pubkey\nFROM \n  (\n    SELECT balance, validator_pubkey, status, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE \n      status != 'pending_queued' AND \n      nos_name = '${nos_name_var}' AND\n      slot = ${slot_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT balance, validator_pubkey, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE\n      status != 'pending_queued' AND \n      nos_name = '${nos_name_var}' AND\n      slot = (${slot_number_var} - ${fetch_interval_var} * 6)\n  ) AS previous\nON\n  previous.nos_id = current.nos_id AND \n  previous.validator_pubkey = current.validator_pubkey\nHAVING (current.balance - previous.balance) < 0\nORDER BY GWei ASC\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  current.balance - previous.balance AS GWei,\n  current.validator_pubkey as validator_pubkey\nFROM \n  (\n    SELECT balance, validator_pubkey, status, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE \n      status != 'pending_queued' AND \n      nos_name = 'Allnodes' AND\n      slot = 4728767\n  ) AS current\nLEFT JOIN\n  (\n    SELECT balance, validator_pubkey, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE\n      status != 'pending_queued' AND \n      nos_name = 'Allnodes' AND\n      slot = (4728767 - 32 * 6)\n  ) AS previous\nON\n  previous.nos_id = current.nos_id AND \n  previous.validator_pubkey = current.validator_pubkey\nHAVING (current.balance - previous.balance) < 0\nORDER BY GWei ASC\nLIMIT 100",
+          "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = '${nos_name_var}' AND\n      epoch = ${epoch_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = '${nos_name_var}' AND\n      epoch = ${epoch_number_var} - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance) < 0\nORDER BY GWei ASC\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = 'Figment' AND\n      epoch = 157285\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = 'Figment' AND\n      epoch = 157285 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance) < 0\nORDER BY GWei ASC\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -983,7 +917,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "validator_pubkey"
+              "options": "Validator"
             },
             "properties": [
               {
@@ -1005,7 +939,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "slot_to_propose"
+              "options": "Block"
             },
             "properties": [
               {
@@ -1041,7 +975,7 @@
           ],
           "show": false
         },
-        "showHeader": false,
+        "showHeader": true,
         "sortBy": [
           {
             "desc": false,
@@ -1049,7 +983,7 @@
           }
         ]
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -1061,8 +995,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  slot_to_propose,\n  validator_pubkey\nFROM stats.validator_proposes\nWHERE proposed = 0 AND (slot_to_propose <= ${slot_number_var} AND slot_to_propose >= (${slot_number_var} - ${fetch_interval_var})) AND nos_name = '${nos_name_var}'\nORDER BY slot_to_propose DESC, validator_pubkey",
-          "rawQuery": "SELECT\n  slot_to_propose,\n  validator_pubkey\nFROM stats.validator_proposes\nWHERE proposed = 0 AND (slot_to_propose <= 4728543 AND slot_to_propose >= (4728543 - 32)) AND nos_name = 'stakefish'\nORDER BY slot_to_propose DESC, validator_pubkey",
+          "query": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND block_proposed = 0 AND (epoch = ${epoch_number_var}) AND val_nos_name = '${nos_name_var}'\nORDER BY block_to_propose DESC, val_id",
+          "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND block_proposed = 0 AND (epoch = 157286) AND val_nos_name = 'Allnodes'\nORDER BY block_to_propose DESC, val_id",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1136,7 +1070,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "validator_pubkey"
+              "options": "Validator"
             },
             "properties": [
               {
@@ -1152,38 +1086,6 @@
               {
                 "id": "unit",
                 "value": "string"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "nos_name"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 120
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "epoch_participation_percent"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "color-text"
-              },
-              {
-                "id": "custom.width",
-                "value": 60
-              },
-              {
-                "id": "unit",
-                "value": "percent"
               }
             ]
           }
@@ -1204,7 +1106,7 @@
           ],
           "show": false
         },
-        "showHeader": false,
+        "showHeader": true,
         "sortBy": [
           {
             "desc": false,
@@ -1212,7 +1114,7 @@
           }
         ]
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -1225,8 +1127,8 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n  validator_pubkey\nFROM (\n  SELECT\n    validator_pubkey,\n    count() AS count_fail\n  FROM\n    stats.validator_sync\n  WHERE\n    epoch_participation_percent < (epoch_chain_participation_percent_avg - ${sync_participation_distance_var}) AND\n    (last_slot_of_epoch <= ${slot_number_var} AND last_slot_of_epoch > (${slot_number_var} - ${fetch_interval_var} * ${sync_epochs_var})) AND\n    nos_name = '${nos_name_var}'\n  GROUP BY validator_pubkey\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, validator_pubkey",
-          "rawQuery": "SELECT\n  validator_pubkey\nFROM (\n  SELECT\n    validator_pubkey,\n    count() AS count_fail\n  FROM\n    stats.validator_sync\n  WHERE\n    epoch_participation_percent < (epoch_chain_participation_percent_avg - 10) AND\n    (last_slot_of_epoch <= 4728607 AND last_slot_of_epoch > (4728607 - 32 * 3)) AND\n    nos_name = 'Stakin'\n  GROUP BY validator_pubkey\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, validator_pubkey",
+          "query": "SELECT\n  val_id as Validator\nFROM (\n  SELECT\n    val_id,\n    count() AS count_fail\n  FROM\n    stats.validators_summary\n  WHERE\n    is_sync = 1 AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${sync_epochs_var})) AND\n    val_nos_name = '${nos_name_var}'\n  GROUP BY val_id\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, val_id",
+          "rawQuery": "SELECT\n  val_id as Validator\nFROM (\n  SELECT\n    val_id,\n    count() AS count_fail\n  FROM\n    stats.validators_summary\n  WHERE\n    is_sync = 1 AND sync_percent < (97.393798828125 - 0) AND\n    (epoch <= 157286 AND epoch > (157286 - 3)) AND\n    val_nos_name = 'Figment'\n  GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id",
           "refId": "B",
           "round": "0s",
           "skip_comments": true
@@ -1267,7 +1169,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "validator_pubkey"
+              "options": "Validator"
             },
             "properties": [
               {
@@ -1279,10 +1181,6 @@
                     "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
-              },
-              {
-                "id": "displayName",
-                "value": "validator"
               },
               {
                 "id": "unit",
@@ -1307,7 +1205,7 @@
           ],
           "show": false
         },
-        "showHeader": false,
+        "showHeader": true,
         "sortBy": [
           {
             "desc": false,
@@ -1315,7 +1213,7 @@
           }
         ]
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -1327,8 +1225,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "\nSELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var})) AND\n    nos_name = '${nos_name_var}'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND \n    (slot_to_attestation <= 4728639 AND slot_to_attestation > (4728639 - 32 * 3)) AND\n    nos_name = 'Stakin'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+          "query": "\nSELECT\n  val_id as Validators\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND \n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var})) AND\n    val_nos_name = '${nos_name_var}'\n    GROUP BY val_id\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  val_id as Validators\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND \n    (epoch <= 157475 AND epoch > (157475 - 3)) AND\n    val_nos_name = 'Allnodes'\n    GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1342,7 +1240,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "inc. delay > 2",
+      "description": "inc. delay > 1",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1369,7 +1267,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "validator_pubkey"
+              "options": "Validator"
             },
             "properties": [
               {
@@ -1381,10 +1279,6 @@
                     "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
-              },
-              {
-                "id": "displayName",
-                "value": "validator"
               },
               {
                 "id": "unit",
@@ -1421,7 +1315,7 @@
           ],
           "show": false
         },
-        "showHeader": false,
+        "showHeader": true,
         "sortBy": [
           {
             "desc": false,
@@ -1429,7 +1323,7 @@
           }
         ]
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -1441,8 +1335,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  validator_pubkey,\n  count(inclusion_delay) as count_fail\nFROM stats.validator_attestations\nWHERE\n  nos_name = '${nos_name_var}' AND\n  inclusion_delay > 2 AND\n  (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var}))\nGROUP BY validator_pubkey, nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  validator_pubkey,\n  count(inclusion_delay) as count_fail\nFROM stats.validator_attestations\nWHERE\n  nos_name = 'Allnodes' AND\n  inclusion_delay > 2 AND\n  (slot_to_attestation <= 4181471 AND slot_to_attestation > (4181471 - 32 * 3))\nGROUP BY validator_pubkey, nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+          "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = '${nos_name_var}' AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = 'Allnodes' AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  (epoch <= 157476 AND epoch > (157476 - 3))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1484,7 +1378,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "validator_pubkey"
+              "options": "Validator"
             },
             "properties": [
               {
@@ -1498,12 +1392,20 @@
                 ]
               },
               {
-                "id": "displayName",
-                "value": "validator"
-              },
-              {
                 "id": "unit",
                 "value": "string"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "count_fail"
+            },
+            "properties": [
+              {
+                "id": "custom.hidden",
+                "value": true
               }
             ]
           }
@@ -1524,7 +1426,7 @@
           ],
           "show": false
         },
-        "showHeader": false,
+        "showHeader": true,
         "sortBy": [
           {
             "desc": false,
@@ -1532,7 +1434,7 @@
           }
         ]
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -1544,14 +1446,14 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "\nSELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE (valid_head + valid_target + valid_source = 1) AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${att_epochs_var})) AND\n    nos_name = '${nos_name_var}'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      count(validator_pubkey) as count_fail\n    FROM stats.validator_attestations\n    WHERE (valid_head + valid_target + valid_source = 1) AND \n    (slot_to_attestation <= 4980095 AND slot_to_attestation > (4980095 - 32 * 3)) AND\n    nos_name = 'Allnodes'\n    GROUP BY validator_pubkey\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+          "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = '${nos_name_var}' AND\n  (att_valid_head + att_valid_target + att_valid_source = 1) AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = 'Allnodes' AND\n  (att_valid_head + att_valid_target + att_valid_source = 1) AND\n  (epoch <=  AND epoch > ( - 3))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
         }
       ],
-      "title": "Two invalid attestation properties (${att_epochs_var} epochs in a row)",
+      "title": "Invalid attestation properties (${att_epochs_var} epochs in a row)",
       "type": "table"
     },
     {
@@ -1586,7 +1488,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "validator_pubkey"
+              "options": "Validator"
             },
             "properties": [
               {
@@ -1598,10 +1500,6 @@
                     "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
-              },
-              {
-                "id": "displayName",
-                "value": "validator"
               },
               {
                 "id": "unit",
@@ -1626,7 +1524,7 @@
           ],
           "show": false
         },
-        "showHeader": false,
+        "showHeader": true,
         "sortBy": [
           {
             "desc": false,
@@ -1634,7 +1532,7 @@
           }
         ]
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
@@ -1646,8 +1544,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    status,\n    validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and nos_name = '${nos_name_var}' and slot = ${slot_number_var}\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n    status,\n    validator_pubkey\nFROM stats.validator_balances\nWHERE (status == 'active_slashed' OR status == 'exited_slashed' OR validator_slashed == 1) and nos_name = 'Allnodes' and slot = 4728479\nLIMIT 100",
+          "query": "SELECT\n    val_status as Status,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) and val_nos_name = '${nos_name_var}' and epoch = ${epoch_number_var}\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n    val_status as Status,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) and val_nos_name = 'Allnodes' and epoch = 157288\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1710,7 +1608,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               },
@@ -1735,7 +1634,7 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 18
+            "y": 42
           },
           "id": 1729,
           "options": {
@@ -1812,7 +1711,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "transparent",
@@ -1828,7 +1728,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 23
+            "y": 47
           },
           "id": 2,
           "options": {
@@ -1902,7 +1802,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "transparent",
@@ -1918,7 +1819,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 23
+            "y": 47
           },
           "id": 6,
           "options": {
@@ -1969,7 +1870,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -1998,7 +1900,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Pubkey"
+                  "options": "Validator"
                 },
                 "properties": [
                   {
@@ -2016,18 +1918,6 @@
                     "value": "string"
                   }
                 ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Operator"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 120
-                  }
-                ]
               }
             ]
           },
@@ -2035,7 +1925,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 29
+            "y": 53
           },
           "id": 1733,
           "options": {
@@ -2054,7 +1944,7 @@
               }
             ]
           },
-          "pluginVersion": "8.4.6",
+          "pluginVersion": "8.3.6",
           "targets": [
             {
               "datasource": {
@@ -2066,8 +1956,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  current.balance - previous.balance AS GWei,\n  current.validator_pubkey as Pubkey\nFROM \n  (\n    SELECT balance, validator_pubkey, status, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE \n      status != 'pending_queued' AND \n      nos_name = '${nos_name_var}' AND\n      slot = ${slot_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT balance, validator_pubkey, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE\n      status != 'pending_queued' AND \n      nos_name = '${nos_name_var}' AND\n      slot = (${slot_number_var} - ${fetch_interval_var} * 6)\n  ) AS previous\nON\n  previous.nos_id = current.nos_id AND \n  previous.validator_pubkey = current.validator_pubkey\nORDER BY GWei ASC\nLIMIT ${limit}",
-              "rawQuery": "SELECT\n  current.balance - previous.balance AS GWei,\n  current.validator_pubkey as Pubkey\nFROM \n  (\n    SELECT balance, validator_pubkey, status, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE \n      status != 'pending_queued' AND \n      nos_name = 'P2P.ORG - P2P Validator' AND\n      slot = 4708383\n  ) AS current\nLEFT JOIN\n  (\n    SELECT balance, validator_pubkey, nos_id, nos_name \n    FROM stats.validator_balances \n    WHERE\n      status != 'pending_queued' AND \n      nos_name = 'P2P.ORG - P2P Validator' AND\n      slot = (4708383 - 32 * 6)\n  ) AS previous\nON\n  previous.nos_id = current.nos_id AND \n  previous.validator_pubkey = current.validator_pubkey\nORDER BY GWei ASC\nLIMIT 100",
+              "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
+              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 157261\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 157261 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -2120,7 +2010,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-red"
+                    "color": "dark-red",
+                    "value": null
                   }
                 ]
               },
@@ -2132,7 +2023,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 29
+            "y": 53
           },
           "id": 5,
           "options": {
@@ -2200,7 +2091,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -2209,7 +2101,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "validator_pubkey"
+                  "options": "Validator"
                 },
                 "properties": [
                   {
@@ -2231,19 +2123,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "nos_name"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 120
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "slot_to_propose"
+                  "options": "Block"
                 },
                 "properties": [
                   {
@@ -2268,7 +2148,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 19
+            "y": 43
           },
           "id": 1737,
           "options": {
@@ -2279,7 +2159,7 @@
               ],
               "show": false
             },
-            "showHeader": false,
+            "showHeader": true,
             "sortBy": [
               {
                 "desc": false,
@@ -2287,7 +2167,7 @@
               }
             ]
           },
-          "pluginVersion": "8.4.6",
+          "pluginVersion": "8.3.6",
           "targets": [
             {
               "datasource": {
@@ -2299,8 +2179,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  slot_to_propose,\n  validator_pubkey\nFROM stats.validator_proposes\nWHERE proposed = 0 AND (slot_to_propose <= ${slot_number_var} AND slot_to_propose >= (${slot_number_var} - ${fetch_interval_var} * ${epochs})) AND nos_name = '${nos_name_var}'\nORDER BY slot_to_propose DESC, validator_pubkey",
-              "rawQuery": "SELECT\n  slot_to_propose,\n  validator_pubkey\nFROM stats.validator_proposes\nWHERE proposed = 0 AND (slot_to_propose <= 4708511 AND slot_to_propose >= (4708511 - 32 * 6)) AND nos_name = 'P2P.ORG - P2P Validator'\nORDER BY slot_to_propose DESC, validator_pubkey",
+              "query": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_name = '${nos_name_var}' AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs}))\nORDER BY block_to_propose DESC, val_id",
+              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_name = 'ChainLayer' AND block_proposed = 0 AND (epoch <= 157270 AND epoch >= (157270 - 1))\nORDER BY block_to_propose DESC, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -2350,7 +2230,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -2361,7 +2242,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 19
+            "y": 43
           },
           "id": 1739,
           "options": {
@@ -2454,7 +2335,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -2535,7 +2417,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 20
+            "y": 44
           },
           "id": 1745,
           "options": {
@@ -2561,7 +2443,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
+              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent)",
               "hide": false,
               "interval": "",
               "legendFormat": "Rest chain",
@@ -2651,7 +2533,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -2660,7 +2543,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "validator_pubkey"
+                  "options": "Validator"
                 },
                 "properties": [
                   {
@@ -2682,19 +2565,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "nos_name"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 120
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "epoch_participation_percent"
+                  "options": "Percent"
                 },
                 "properties": [
                   {
@@ -2703,7 +2574,7 @@
                   },
                   {
                     "id": "custom.width",
-                    "value": 60
+                    "value": 100
                   },
                   {
                     "id": "unit",
@@ -2717,7 +2588,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 26
+            "y": 50
           },
           "id": 1747,
           "options": {
@@ -2728,7 +2599,7 @@
               ],
               "show": false
             },
-            "showHeader": false,
+            "showHeader": true,
             "sortBy": [
               {
                 "desc": false,
@@ -2736,7 +2607,7 @@
               }
             ]
           },
-          "pluginVersion": "8.4.6",
+          "pluginVersion": "8.3.6",
           "targets": [
             {
               "datasource": {
@@ -2748,8 +2619,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    epoch_participation_percent,\n    validator_pubkey\nFROM\n    stats.validator_sync\nWHERE last_slot_of_epoch = ${slot_number_var} AND epoch_participation_percent < (epoch_chain_participation_percent_avg - ${sync_participation_distance_var}) AND nos_name = '${nos_name_var}'\nORDER BY epoch_participation_percent",
-              "rawQuery": "SELECT\n    epoch_participation_percent,\n    validator_pubkey\nFROM\n    stats.validator_sync\nWHERE last_slot_of_epoch = 4708831 AND epoch_participation_percent < (epoch_chain_participation_percent_avg - 10) AND nos_name = 'Allnodes'\nORDER BY epoch_participation_percent",
+              "query": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent",
+              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_name = 'ChainLayer' AND epoch = 157270 AND sync_percent < (93.756103515625 - 0)\nORDER BY sync_percent",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -2798,7 +2669,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -2825,7 +2697,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 26
+            "y": 50
           },
           "id": 1749,
           "options": {
@@ -2940,7 +2812,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "count_fail"
+                  "options": "Fails"
                 },
                 "properties": [
                   {
@@ -2960,7 +2832,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "validator_pubkey"
+                  "options": "Validator"
                 },
                 "properties": [
                   {
@@ -2974,24 +2846,8 @@
                     ]
                   },
                   {
-                    "id": "displayName",
-                    "value": "validator"
-                  },
-                  {
                     "id": "unit",
                     "value": "string"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "nos_name"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 120
                   }
                 ]
               }
@@ -3001,7 +2857,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 21
+            "y": 45
           },
           "id": 1755,
           "options": {
@@ -3012,7 +2868,7 @@
               ],
               "show": false
             },
-            "showHeader": false,
+            "showHeader": true,
             "sortBy": [
               {
                 "desc": false,
@@ -3032,8 +2888,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as count_fail,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs})) AND\n    nos_name = '${nos_name_var}'\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
-              "rawQuery": "SELECT\n  count() as count_fail,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE attested = 0 AND \n    (slot_to_attestation <= 4980127 AND slot_to_attestation > (4980127 - 32 * 3)) AND\n    nos_name = 'ConsenSys Codefi'\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "query": "    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_name = 'Allnodes' AND\n    (epoch <= 157476 AND epoch > (157476 - 1))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3095,7 +2951,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 21
+            "y": 45
           },
           "id": 1757,
           "options": {
@@ -3135,7 +2991,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "inc. delay > 1",
+          "description": "inc. delay > 2",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -3196,7 +3052,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "count_fail"
+                  "options": "Fails"
                 },
                 "properties": [
                   {
@@ -3216,7 +3072,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "validator_pubkey"
+                  "options": "Validator"
                 },
                 "properties": [
                   {
@@ -3230,24 +3086,8 @@
                     ]
                   },
                   {
-                    "id": "displayName",
-                    "value": "validator"
-                  },
-                  {
                     "id": "unit",
                     "value": "string"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "nos_name"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 120
                   }
                 ]
               }
@@ -3257,7 +3097,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 29
+            "y": 53
           },
           "id": 1764,
           "options": {
@@ -3268,7 +3108,7 @@
               ],
               "show": false
             },
-            "showHeader": false,
+            "showHeader": true,
             "sortBy": [
               {
                 "desc": false,
@@ -3288,8 +3128,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as count_fail,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE inclusion_delay > 1 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs})) AND\n    nos_name = '${nos_name_var}'\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
-              "rawQuery": "SELECT\n  count() as count_fail,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE inclusion_delay > 1 AND \n    (slot_to_attestation <= 4979775 AND slot_to_attestation > (4979775 - 32 * 1)) AND\n    nos_name = 'Allnodes'\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = 'Allnodes' AND\n    (epoch <= 157476 AND epoch > (157476 - 1))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3351,7 +3191,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 29
+            "y": 53
           },
           "id": 1765,
           "options": {
@@ -3452,7 +3292,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "count_fail"
+                  "options": "Fails"
                 },
                 "properties": [
                   {
@@ -3472,7 +3312,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "validator_pubkey"
+                  "options": "Validator"
                 },
                 "properties": [
                   {
@@ -3484,10 +3324,6 @@
                         "url": "https://prater.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
-                  },
-                  {
-                    "id": "displayName",
-                    "value": "validator"
                   },
                   {
                     "id": "unit",
@@ -3513,7 +3349,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 37
+            "y": 61
           },
           "id": 1770,
           "options": {
@@ -3524,7 +3360,7 @@
               ],
               "show": false
             },
-            "showHeader": false,
+            "showHeader": true,
             "sortBy": [
               {
                 "desc": false,
@@ -3544,8 +3380,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as count_fail,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE valid_head = 0 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs})) AND\n    nos_name = '${nos_name_var}'\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
-              "rawQuery": "SELECT\n  count() as count_fail,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE valid_head = 0 AND \n    (slot_to_attestation <= 4979775 AND slot_to_attestation > (4979775 - 32 * 1)) AND\n    nos_name = 'Allnodes'\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = 'ChainLayer' AND\n    (epoch <= 157275 AND epoch > (157275 - 9))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3607,7 +3443,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 37
+            "y": 61
           },
           "id": 1766,
           "options": {
@@ -3708,7 +3544,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "count_fail"
+                  "options": "Fails"
                 },
                 "properties": [
                   {
@@ -3728,7 +3564,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "validator_pubkey"
+                  "options": "Validator"
                 },
                 "properties": [
                   {
@@ -3742,24 +3578,8 @@
                     ]
                   },
                   {
-                    "id": "displayName",
-                    "value": "validator"
-                  },
-                  {
                     "id": "unit",
                     "value": "string"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "nos_name"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 120
                   }
                 ]
               }
@@ -3769,7 +3589,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 45
+            "y": 69
           },
           "id": 1771,
           "options": {
@@ -3780,7 +3600,7 @@
               ],
               "show": false
             },
-            "showHeader": false,
+            "showHeader": true,
             "sortBy": [
               {
                 "desc": false,
@@ -3800,8 +3620,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as count_fail,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE valid_target = 0 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs})) AND\n    nos_name = '${nos_name_var}'\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
-              "rawQuery": "SELECT\n  count() as count_fail,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE valid_target = 0 AND \n    (slot_to_attestation <= 4979775 AND slot_to_attestation > (4979775 - 32 * 1)) AND\n    nos_name = 'Allnodes'\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = 'ChainLayer' AND\n    (epoch <= 157275 AND epoch > (157275 - 9))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3863,7 +3683,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 45
+            "y": 69
           },
           "id": 1767,
           "options": {
@@ -3964,7 +3784,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "count_fail"
+                  "options": "Fails"
                 },
                 "properties": [
                   {
@@ -3984,7 +3804,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "validator_pubkey"
+                  "options": "Validator"
                 },
                 "properties": [
                   {
@@ -3998,24 +3818,8 @@
                     ]
                   },
                   {
-                    "id": "displayName",
-                    "value": "validator"
-                  },
-                  {
                     "id": "unit",
                     "value": "string"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "nos_name"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 120
                   }
                 ]
               }
@@ -4025,7 +3829,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 53
+            "y": 77
           },
           "id": 1772,
           "options": {
@@ -4036,7 +3840,7 @@
               ],
               "show": false
             },
-            "showHeader": false,
+            "showHeader": true,
             "sortBy": [
               {
                 "desc": false,
@@ -4056,8 +3860,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as count_fail,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE valid_source = 0 AND \n    (slot_to_attestation <= ${slot_number_var} AND slot_to_attestation > (${slot_number_var} - ${fetch_interval_var} * ${epochs})) AND\n    nos_name = '${nos_name_var}'\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT ${limit}",
-              "rawQuery": "SELECT\n  count() as count_fail,\n  validator_pubkey\nFROM (\n    SELECT\n      validator_pubkey,\n      nos_name\n    FROM stats.validator_attestations\n    WHERE valid_source = 0 AND \n    (slot_to_attestation <= 4979775 AND slot_to_attestation > (4979775 - 32 * 1)) AND\n    nos_name = 'Allnodes'\n    ORDER BY slot_to_attestation DESC, validator_pubkey\n)\nGROUP BY validator_pubkey, nos_name\nORDER BY count_fail DESC, validator_pubkey\nLIMIT 100",
+              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = 'ChainLayer' AND\n    (epoch <= 157276 AND epoch > (157276 - 9))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4119,7 +3923,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 53
+            "y": 77
           },
           "id": 1768,
           "options": {
@@ -4160,7 +3964,7 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 35,
+  "schemaVersion": 34,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -4192,19 +3996,19 @@
       {
         "current": {
           "selected": false,
-          "text": "4181471",
-          "value": "4181471"
+          "text": "157476",
+          "value": "157476"
         },
-        "definition": "query_result(ethereum_validators_monitoring_slot_number)",
-        "description": "Last slot number",
+        "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
+        "description": "Last epoch number",
         "hide": 2,
         "includeAll": false,
-        "label": "Slot number",
+        "label": "Epoch number",
         "multi": false,
-        "name": "slot_number_var",
+        "name": "epoch_number_var",
         "options": [],
         "query": {
-          "query": "query_result(ethereum_validators_monitoring_slot_number)",
+          "query": "query_result(ethereum_validators_monitoring_epoch_number)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -4240,8 +4044,8 @@
       {
         "current": {
           "selected": false,
-          "text": "10",
-          "value": "10"
+          "text": "0",
+          "value": "0"
         },
         "definition": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
         "description": "Sync participation distance down from Blockchain average",
@@ -4348,6 +4152,30 @@
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "97.80745964311063",
+          "value": "97.80745964311063"
+        },
+        "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
+        "description": "Chain sync participation average value",
+        "hide": 2,
+        "includeAll": false,
+        "label": "Chain sync participation avg",
+        "multi": false,
+        "name": "chain_sync_avg_participation",
+        "options": [],
+        "query": {
+          "query": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "/.* ([^\\ ]*) .*/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
       }
     ]
   },
@@ -4361,5 +4189,6 @@
   "timezone": "",
   "title": "NodeOperators",
   "uid": "3wimU2H7h",
-  "version": 14
+  "version": 8,
+  "weekStart": ""
 }

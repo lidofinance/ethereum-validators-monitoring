@@ -9,11 +9,12 @@ import { bigintRange } from 'common/functions/range';
 import { rejectDelay } from 'common/functions/rejectDelay';
 import { retrier } from 'common/functions/retrier';
 import { urljoin } from 'common/functions/urljoin';
-import { PrometheusService } from 'common/prometheus';
+import { PrometheusService, TrackCLRequest } from 'common/prometheus';
 
-import { BlockCache, BlockCacheService } from './block-cache.service';
+import { BlockCache, BlockCacheService } from './block-cache';
 import { MaxDeepError, ResponseError, errCommon, errRequest } from './errors';
 import {
+  AttestationCommitteeInfo,
   AttesterDutyInfo,
   BlockHeaderResponse,
   BlockInfoResponse,
@@ -48,7 +49,8 @@ export class ConsensusProviderService {
     beaconHeadFinalityCheckpoints: 'eth/v1/beacon/states/head/finality_checkpoints',
     blockInfo: (blockId: BlockId): string => `eth/v2/beacon/blocks/${blockId}`,
     beaconHeaders: (blockId: BlockId): string => `eth/v1/beacon/headers/${blockId}`,
-    balances: (stateId: StateId): string => `eth/v1/beacon/states/${stateId}/validators`,
+    validatorsState: (stateId: StateId): string => `eth/v1/beacon/states/${stateId}/validators`,
+    attestationCommittees: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/committees?epoch=${epoch}`,
     syncCommittee: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/sync_committees?epoch=${epoch}`,
     proposerDutes: (epoch: Epoch): string => `eth/v1/validator/duties/proposer/${epoch}`,
     attesterDuties: (epoch: Epoch): string => `eth/v1/validator/duties/attester/${epoch}`,
@@ -94,7 +96,7 @@ export class ConsensusProviderService {
     );
   }
 
-  public async getBeaconBlockHeader(blockId: BlockId): Promise<BlockHeaderResponse | void> {
+  public async getBlockHeader(blockId: BlockId): Promise<BlockHeaderResponse | void> {
     const cached: BlockCache = this.cache.get(String(blockId));
     if (cached && (cached.missed || cached.header)) {
       this.logger.debug(`Get ${blockId} header from blocks cache`);
@@ -137,7 +139,7 @@ export class ConsensusProviderService {
    * @param slot
    */
   public async getBeaconBlockHeaderOrPreviousIfMissed(slot: Slot): Promise<BlockHeaderResponse> {
-    const header = await this.getBeaconBlockHeader(slot);
+    const header = await this.getBlockHeader(slot);
     if (header) return header;
     // if block is missed, try to get next not missed block header
     const nextNotMissedHeader = await this.getNextNotMissedBlockHeader(slot + 1n);
@@ -147,14 +149,14 @@ export class ConsensusProviderService {
     );
 
     // and get the closest block header by parent root from next
-    const previousBlockHeader = <BlockHeaderResponse>await this.getBeaconBlockHeader(nextNotMissedHeader.header.message.parent_root);
+    const previousBlockHeader = <BlockHeaderResponse>await this.getBlockHeader(nextNotMissedHeader.header.message.parent_root);
     this.logger.log(`Block [${slot}] is missed. Returning previous not missed block header [${previousBlockHeader.header.message.slot}]`);
 
     return previousBlockHeader;
   }
 
   public async getNextNotMissedBlockHeader(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
-    const header = await this.getBeaconBlockHeader(slot);
+    const header = await this.getBlockHeader(slot);
     if (!header) {
       if (maxDeep < 1) {
         throw new MaxDeepError(`Error when trying to get next not missed block header. From ${slot} to ${slot + BigInt(maxDeep)}`);
@@ -166,7 +168,7 @@ export class ConsensusProviderService {
   }
 
   public async getPreviousNotMissedBlockHeader(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
-    const header = await this.getBeaconBlockHeader(slot);
+    const header = await this.getBlockHeader(slot);
     if (!header) {
       if (maxDeep < 1) {
         throw new MaxDeepError(`Error when trying to get previous not missed block header. From ${slot} to ${slot - BigInt(maxDeep)}`);
@@ -193,7 +195,7 @@ export class ConsensusProviderService {
   public async getBlockInfoWithSlotAttestations(
     slot: Slot,
     maxDeep = this.defaultMaxSlotDeepCount,
-  ): Promise<[BlockInfoResponse | void, Array<string>]> {
+  ): Promise<[BlockInfoResponse | undefined, Array<string>]> {
     const nearestBlockIncludedAttestations = slot + 1n; // good attestation should be included to the next block
     let blockInfo;
     let missedSlots: bigint[] = [];
@@ -228,8 +230,8 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getBalances(stateId: StateId): Promise<StateValidatorResponse[]> {
-    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.balances(stateId)));
+  public async getValidatorsState(stateId: StateId): Promise<StateValidatorResponse[]> {
+    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.validatorsState(stateId)));
   }
 
   public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse | void> {
@@ -254,6 +256,10 @@ export class ConsensusProviderService {
     this.cache.set(String(blockId), { missed: !blockInfo, info: blockInfo });
 
     return blockInfo;
+  }
+
+  public async getAttestationCommitteesInfo(stateId: StateId, epoch: Epoch): Promise<AttestationCommitteeInfo[]> {
+    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.attestationCommittees(stateId, epoch)));
   }
 
   public async getSyncCommitteeInfo(stateId: StateId, epoch: Epoch): Promise<SyncCommitteeInfo> {
@@ -387,79 +393,55 @@ export class ConsensusProviderService {
     else return res;
   }
 
-  protected apiGet = async <T>(apiURL: string, subUrl: string): Promise<T> => {
-    return await this.prometheus.trackCLRequest(apiURL, subUrl, async () => {
-      const res = await got
+  @TrackCLRequest
+  protected async apiGet<T>(apiURL: string, subUrl: string): Promise<T> {
+    const res = await got
+      .get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
+      .catch((e) => {
+        if (e.response) {
+          throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
+        }
+        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
+      });
+    if (res.statusCode !== 200) {
+      throw new ResponseError(errRequest(res.body, subUrl, apiURL), res.statusCode);
+    }
+    try {
+      return JSON.parse(res.body);
+    } catch (e) {
+      throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
+    }
+  }
+
+  @TrackCLRequest
+  protected async apiLargeGet<T>(apiURL: string, subUrl: string): Promise<T> {
+    return await parseChunked(
+      got.stream
         .get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
-        .catch((e) => {
-          if (e.response) {
-            throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
-          }
-          throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-        });
-      if (res.statusCode !== 200) {
-        throw new ResponseError(errRequest(res.body, subUrl, apiURL), res.statusCode);
+        .on('response', (r: Response) => {
+          if (r.statusCode != 200) throw new HTTPError(r);
+        }),
+    ).catch((e) => {
+      if (e instanceof HTTPError) {
+        throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
       }
-      try {
-        return JSON.parse(res.body);
-      } catch (e) {
-        throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
-      }
+      throw new ResponseError(errCommon(e.message, subUrl, apiURL));
     });
-  };
+  }
 
-  protected apiPost = async <T>(apiURL: string, subUrl: string, params?: Record<string, any>): Promise<T> => {
-    return await this.prometheus.trackCLRequest(apiURL, subUrl, async () => {
-      const res = await got
+  @TrackCLRequest
+  protected async apiLargePost<T>(apiURL: string, subUrl: string, params?: Record<string, any>): Promise<T> {
+    return await parseChunked(
+      got.stream
         .post(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') }, ...params })
-        .catch((e) => {
-          if (e.response) {
-            throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
-          }
-          throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-        });
-      if (res.statusCode !== 200) {
-        throw new ResponseError(errRequest(res.body, subUrl, apiURL), res.statusCode);
+        .on('response', (r: Response) => {
+          if (r.statusCode != 200) throw new HTTPError(r);
+        }),
+    ).catch((e) => {
+      if (e instanceof HTTPError) {
+        throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
       }
-      try {
-        return JSON.parse(res.body);
-      } catch (e) {
-        throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
-      }
+      throw new ResponseError(errCommon(e.message, subUrl, apiURL));
     });
-  };
-
-  protected apiLargeGet = async (apiURL: string, subUrl: string): Promise<any> => {
-    return await this.prometheus.trackCLRequest(apiURL, subUrl, async () => {
-      return await parseChunked(
-        got.stream
-          .get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
-          .on('response', (r: Response) => {
-            if (r.statusCode != 200) throw new HTTPError(r);
-          }),
-      ).catch((e) => {
-        if (e instanceof HTTPError) {
-          throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
-        }
-        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-      });
-    });
-  };
-
-  protected apiLargePost = async (apiURL: string, subUrl: string, params?: Record<string, any>): Promise<any> => {
-    return await this.prometheus.trackCLRequest(apiURL, subUrl, async () => {
-      return await parseChunked(
-        got.stream
-          .post(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') }, ...params })
-          .on('response', (r: Response) => {
-            if (r.statusCode != 200) throw new HTTPError(r);
-          }),
-      ).catch((e) => {
-        if (e instanceof HTTPError) {
-          throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
-        }
-        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-      });
-    });
-  };
+  }
 }

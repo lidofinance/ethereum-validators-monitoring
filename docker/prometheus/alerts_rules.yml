@@ -28,7 +28,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: NumValidatorsWithNegativeDelta
-        expr: ethereum_validators_monitoring_validator_count_with_negative_balances_delta > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_validator_count_with_negative_balances_delta > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -42,7 +42,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: NumValidatorsWithMissAttestationLastNEpoch
-        expr: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -56,7 +56,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: NumValidatorsWithHighIncDelayAttestationLastNEpoch
-        expr: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -68,7 +68,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: NumValidatorsWithInvalidPropertyAttestationLastNEpoch
-        expr: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -80,7 +80,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: NumValidatorsWithMissPropose
-        expr: ethereum_validators_monitoring_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -94,7 +94,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: NumValidatorsWithSyncParticipationLessAvgLastNEpoch
-        expr: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -108,7 +108,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: HighRewardNumValidatorsWithSyncParticipationLessAvgLastNEpoch
-        expr: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -122,7 +122,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: HighRewardNumValidatorsWithMissAttestationLastNEpoch
-        expr: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
         annotations:
@@ -136,7 +136,7 @@ groups:
           url: "https://localhost:8082/d/HRgPmpNnz/validators"
 
       - alert: HighRewardNumValidatorsWithMissPropose
-        expr: ethereum_validators_monitoring_high_reward_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_slot_number[1m]) > 0
+        expr: ethereum_validators_monitoring_high_reward_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
         annotations:
