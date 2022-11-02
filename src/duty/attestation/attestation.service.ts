@@ -63,7 +63,7 @@ export class AttestationService {
           },
         );
       }
-      this.logger.log(`All missed slots in getting attestations info process: ${allMissedSlots}`);
+      this.logger.debug(`All missed slots in getting attestations info process: ${allMissedSlots}`);
       this.savedCanonSlotsAttProperties = {};
       const blocksAttestation = Object.entries(blocksAttestations).sort(
         (b1, b2) => parseInt(b1[0]) - parseInt(b2[0]), // Sort array by block number
@@ -110,7 +110,6 @@ export class AttestationService {
             att_valid_head: valid_head,
             att_valid_target: valid_target,
             att_valid_source: valid_source,
-            attestation_is_compete: true,
           });
         }
       }

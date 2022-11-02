@@ -32,7 +32,7 @@ export class SyncService {
         const blockInfo = await this.clClient.getBlockInfo(slot);
         blockInfo ? epochBlocks.push(blockInfo) : missedSlots.push(slot);
       }
-      this.logger.log(`All missed slots in getting sync committee info process: ${missedSlots}`);
+      this.logger.debug(`All missed slots in getting sync committee info process: ${missedSlots}`);
       const epochBlocksBits = epochBlocks.map((block) =>
         Array.from(SyncCommitteeBits.deserialize(fromHexString(block.message.body.sync_aggregate.sync_committee_bits))),
       );
@@ -48,7 +48,6 @@ export class SyncService {
           val_id: index,
           is_sync: true,
           sync_percent: percent,
-          sync_is_compete: true,
         });
       }
     });

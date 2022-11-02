@@ -4,31 +4,32 @@ import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common'
 import { CriticalAlertsService } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
 import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
-import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
 import { sleep } from 'common/functions/sleep';
-import { SummaryService } from 'duty/summary';
+import { PrometheusService } from 'common/prometheus';
+import { DutyMetrics, DutyService } from 'duty';
 import { ClickhouseService } from 'storage';
-
-import { DutyMetrics } from '../duty';
-import { DataProcessingService } from './processing/data-processing.service';
 
 @Injectable()
 export class InspectorService implements OnModuleInit {
+  public latestProcessedEpoch = 0n;
+
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly clClient: ConsensusProviderService,
     protected readonly storage: ClickhouseService,
-    protected readonly dataProcessor: DataProcessingService,
+    protected readonly prometheus: PrometheusService,
     protected readonly criticalAlertService: CriticalAlertsService,
-    protected readonly blockCacheService: BlockCacheService,
-    protected readonly summary: SummaryService,
 
+    protected readonly dutyService: DutyService,
     protected readonly dutyMetrics: DutyMetrics,
   ) {}
 
   public async onModuleInit(): Promise<void> {
     this.logger.log(`Starting slot [${this.config.get('START_SLOT')}]`);
+    this.latestProcessedEpoch = await this.storage.getMaxEpoch();
+    this.prometheus.epochTime = await this.clClient.getSlotTime(this.latestProcessedEpoch * 32n);
+    this.prometheus.epochNumber.set(Number(this.latestProcessedEpoch));
   }
 
   public async startLoop(): Promise<never> {
@@ -38,15 +39,15 @@ export class InspectorService implements OnModuleInit {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
-        this.summary.clear(); // todo: move to another place
         const { epoch, stateSlot } = await this.waitForNextFinalizedSlot();
-        this.blockCacheService.purgeOld(epoch);
         if (epoch > 0) {
-          await this.dataProcessor.process(epoch, stateSlot);
+          await this.dutyService.checkAndWrite(epoch, stateSlot);
           await this.dutyMetrics.calculate(epoch);
           await this.criticalAlertService.sendCriticalAlerts(epoch);
+          this.latestProcessedEpoch = epoch;
         }
       } catch (e) {
+        this.logger.error(`Error while processing and writing epoch`);
         this.logger.error(e as any);
         // We should make a gap before running new circle. This will avoid requests and logs spam
         await sleep(this.config.get('CHAIN_SLOT_TIME_SECONDS') * 1000);
@@ -64,25 +65,22 @@ export class InspectorService implements OnModuleInit {
     const latestFinalizedBeaconBlock = <BlockHeaderResponse>await this.clClient.getBlockHeader('finalized');
     const latestFinalizedEpoch = BigInt(latestFinalizedBeaconBlock.header.message.slot) / 32n;
     if (BigInt(latestFinalizedBeaconBlock.header.message.slot) < nextSlot) {
-      // if new finalized slot hasn't happened, from which we should get information about needed
-      // for example: latestSlotInDb = 32, nextSlot = 64, latestFinalizedBeaconBlock = 33
+      // new finalized slot hasn't happened, from which we should get information about needed
       // just wait `CHAIN_SLOT_TIME_SECONDS` until finality happens
       const sleepTime = this.config.get('CHAIN_SLOT_TIME_SECONDS');
       this.logger.log(
-        `Latest finalized epoch [${latestFinalizedEpoch}] found. Latest DB epoch [${this.dataProcessor.latestProcessedEpoch}]. Waiting [${sleepTime}] seconds for next finalized slot [${nextSlot}]`,
+        `Latest finalized epoch [${latestFinalizedEpoch}] found. Latest DB epoch [${this.latestProcessedEpoch}]. Waiting [${sleepTime}] seconds for next finalized slot [${nextSlot}]`,
       );
 
       return new Promise((resolve) => {
         setTimeout(() => resolve({ epoch: 0n, stateSlot: 0n }), sleepTime * 1000);
       });
     }
-    // if new finalized slot has happened, from which we can get information about needed
-    // for example: latestSlotInDb = 32, nextSlot = 64, latestFinalizedBeaconBlock = 65
+    // new finalized slot has happened, from which we can get information about needed
     this.logger.log(
-      `Latest finalized epoch [${latestFinalizedEpoch}] found. Next slot [${nextSlot}]. Latest DB epoch [${this.dataProcessor.latestProcessedEpoch}]`,
+      `Latest finalized epoch [${latestFinalizedEpoch}] found. Next slot [${nextSlot}]. Latest DB epoch [${this.latestProcessedEpoch}]`,
     );
 
-    // try to get block 64 header
     const nextProcessedEpoch = nextSlot / 32n;
     const nextProcessedHeader = await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(nextSlot);
     if (nextSlot == BigInt(nextProcessedHeader.header.message.slot)) {
@@ -97,8 +95,6 @@ export class InspectorService implements OnModuleInit {
       );
     }
 
-    // if it's not missed - just return it
-    // if it's missed that we return the closest finalized block stateRoot and slotNumber in epoch (for example - block 63)
     return {
       epoch: nextProcessedEpoch,
       stateSlot: nextProcessedHeader.header.message.slot,
@@ -108,8 +104,8 @@ export class InspectorService implements OnModuleInit {
   protected calculateNextFinalizedSlot(): bigint {
     const step = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
     let startEpoch = BigInt(this.config.get('START_EPOCH'));
-    if (this.dataProcessor.latestProcessedEpoch >= startEpoch) {
-      startEpoch = this.dataProcessor.latestProcessedEpoch + 1n;
+    if (this.latestProcessedEpoch >= startEpoch) {
+      startEpoch = this.latestProcessedEpoch + 1n;
     }
     const slotToProcess = startEpoch * step + (step - 1n); // latest slot in epoch
     this.logger.log(`Slot to process [${slotToProcess}] (end of epoch [${startEpoch}])`);

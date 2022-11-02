@@ -34,7 +34,6 @@ export class ProposeService {
           is_proposer: true,
           block_to_propose: slot,
           block_proposed: !!blockHeader,
-          propose_is_compete: true,
         });
       }
     });

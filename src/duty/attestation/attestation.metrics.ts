@@ -24,6 +24,7 @@ export class AttestationMetrics {
   ) {}
 
   public async calculate(epoch: bigint, possibleHighRewardValidators: string[]) {
+    this.logger.log('Calculating attestation metrics');
     const operators = await this.registryService.getOperators();
     const missedAttestationsLastEpoch = await this.storage.getValidatorCountWithMissedAttestationsLastEpoch(epoch);
     const highIncDelayAttestationsLastEpoch = await this.storage.getValidatorCountWithHighIncDelayAttestationsLastEpoch(epoch);

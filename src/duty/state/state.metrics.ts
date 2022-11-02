@@ -21,6 +21,7 @@ export class StateMetrics {
   ) {}
 
   public async calculate(epoch: bigint) {
+    this.logger.log('Calculating state metrics');
     const operators = await this.registryService.getOperators();
 
     const nosStats = await this.storage.getUserNodeOperatorsStats(epoch);

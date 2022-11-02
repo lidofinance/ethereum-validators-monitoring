@@ -4,7 +4,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService } from 'common/config';
 import { ConsensusProviderService } from 'common/eth-providers';
 import { PrometheusService } from 'common/prometheus';
-import { RegistrySourceKeysIndexed } from 'common/validators-registry';
+import { RegistryService } from 'common/validators-registry';
 import { ClickhouseService } from 'storage/clickhouse';
 
 import { SummaryService } from '../summary';
@@ -18,9 +18,12 @@ export class StateService {
     protected readonly clClient: ConsensusProviderService,
     protected readonly summary: SummaryService,
     protected readonly storage: ClickhouseService,
+    protected readonly registry: RegistryService,
   ) {}
 
-  public async check(epoch: bigint, stateSlot: bigint, keysIndexed: RegistrySourceKeysIndexed): Promise<void> {
+  public async check(epoch: bigint, stateSlot: bigint): Promise<void> {
+    const slotTime = await this.clClient.getSlotTime(epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS')));
+    const keysIndexed = await this.registry.getActualKeysIndexed(Number(slotTime));
     this.logger.log('Getting all validators state');
     const states = await this.clClient.getValidatorsState(stateSlot);
     this.logger.log('Processing all validators state');
@@ -36,7 +39,6 @@ export class StateService {
           val_slashed: state.validator.slashed,
           val_status: state.status,
           val_balance: BigInt(state.balance),
-          state_is_compete: true,
         });
       }
       return true;

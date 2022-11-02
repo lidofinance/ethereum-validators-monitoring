@@ -17,6 +17,7 @@ export class ProposeMetrics {
   ) {}
 
   public async calculate(epoch: bigint, possibleHighRewardValidators: string[]) {
+    this.logger.log('Calculating propose metrics');
     const operators = await this.registryService.getOperators();
     const missProposes = await this.storage.getValidatorsCountWithMissedProposes(epoch);
     const highRewardMissProposes =

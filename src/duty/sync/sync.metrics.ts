@@ -17,6 +17,7 @@ export class SyncMetrics {
   ) {}
 
   public async calculate(epoch: bigint, possibleHighRewardValidators: string[]) {
+    this.logger.log('Calculating sync committee metrics');
     const operators = await this.registryService.getOperators();
     const userSyncParticipationAvgPercent = await this.storage.getUserSyncParticipationAvgPercent(epoch);
     this.prometheus.userSyncParticipationAvgPercent.set(userSyncParticipationAvgPercent.avg_percent ?? 0);

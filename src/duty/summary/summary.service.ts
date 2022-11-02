@@ -23,11 +23,6 @@ export interface ValidatorDutySummary {
   att_valid_head?: boolean;
   att_valid_target?: boolean;
   att_valid_source?: boolean;
-  ///
-  state_is_compete?: boolean;
-  attestation_is_compete?: boolean;
-  propose_is_compete?: boolean;
-  sync_is_compete?: boolean;
 }
 
 @Injectable()
