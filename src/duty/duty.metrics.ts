@@ -46,7 +46,7 @@ export class DutyMetrics {
     return await this.prometheus.trackTask('high-reward-validators', async () => {
       const actualSlotHeader = <BlockHeaderResponse>await this.clClient.getBlockHeader('head');
       const headEpoch = BigInt(actualSlotHeader.header.message.slot) / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
-      this.logger.log('Start getting possible high reward validator indexes');
+      this.logger.log('Getting possible high reward validator indexes');
       const propDependentRoot = await this.clClient.getDutyDependentRoot(headEpoch);
       const [sync, prop] = await Promise.all([
         this.sync.getSyncCommitteeIndexedValidators(headEpoch, 'head'),

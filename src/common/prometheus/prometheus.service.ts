@@ -346,6 +346,7 @@ export class PrometheusService implements OnApplicationBootstrap {
     const stop = this.taskDuration.startTimer({
       name: name,
     });
+    this.logger.debug(`Task '${name}' in progress`);
     return await callback()
       .then((r: any) => {
         this.taskCount.inc({
@@ -361,7 +362,7 @@ export class PrometheusService implements OnApplicationBootstrap {
         });
         throw e;
       })
-      .finally(() => stop());
+      .finally(() => this.logger.debug(`Task '${name}' is complete. Duration: ${stop()}`));
   }
 
   public async trackCLRequest(apiUrl: string, subUrl: string, callback: () => any) {
