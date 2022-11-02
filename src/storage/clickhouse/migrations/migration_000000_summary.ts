@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS stats.validators_summary (
     "block_proposed" Nullable(UInt8),
     "is_sync" UInt8,
     "sync_percent" Nullable(Float32),
+    "att_happened" Nullable(UInt8),
     "att_inc_delay" Nullable(UInt8),
     "att_valid_head" Nullable(UInt8),
     "att_valid_target" Nullable(UInt8),
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS stats.validators_summary (
     INDEX nos_name_index (val_nos_name) TYPE set(0) GRANULARITY 8192,
     INDEX status_index (val_status) TYPE set(9) GRANULARITY 8192,
     INDEX delay_index (att_inc_delay) TYPE minmax GRANULARITY 8192,
+    INDEX att_index (att_happened) TYPE set(2) GRANULARITY 8192,
     INDEX proposer_index (is_proposer) TYPE set(2) GRANULARITY 8192,
     INDEX sync_index (is_sync) TYPE set(2) GRANULARITY 8192
 )

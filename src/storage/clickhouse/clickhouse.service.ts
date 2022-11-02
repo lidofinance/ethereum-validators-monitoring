@@ -145,7 +145,7 @@ export class ClickhouseService implements OnModuleInit {
               '(epoch, val_id, val_nos_id, val_nos_name, ' +
               'val_slashed, val_status, val_balance, is_proposer, block_to_propose, block_proposed, ' +
               'is_sync, sync_percent, ' +
-              'att_inc_delay, att_valid_head, att_valid_target, att_valid_source) VALUES',
+              'att_happened, att_inc_delay, att_valid_head, att_valid_target, att_valid_source) VALUES',
           )
           .stream();
         while (rows < this.chunkSize) {
@@ -162,7 +162,7 @@ export class ClickhouseService implements OnModuleInit {
               `${v.val_slashed ? 1 : 0}, '${v.val_status}', ${v.val_balance}, ` +
               `${v.is_proposer ? 1 : 0}, ${v.block_to_propose ?? 'NULL'}, ${v.is_proposer ? (v.block_proposed ? 1 : 0) : 'NULL'}, ` +
               `${v.is_sync ? 1 : 0}, ${v.sync_percent ?? 'NULL'}, ` +
-              `${v.att_inc_delay ?? 'NULL'}, ` +
+              `${v.att_happened != undefined ? (v.att_happened ? 1 : 0) : 'NULL'}, ${v.att_inc_delay ?? 'NULL'}, ` +
               `${v.att_valid_head ?? 'NULL'}, ${v.att_valid_target ?? 'NULL'}, ${v.att_valid_source ?? 'NULL'}
             )`,
           );
@@ -253,30 +253,30 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async getValidatorCountWithMissedAttestationsLastEpoch(epoch: bigint) {
-    return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_inc_delay = 33');
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_happened = 0');
   }
 
   public async getValidatorCountWithHighIncDelayAttestationsLastEpoch(epoch: bigint) {
-    return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_inc_delay != 33 AND att_inc_delay > 1');
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_happened = 1 AND att_inc_delay > 1');
   }
 
   public async getValidatorCountWithInvalidHeadAttestationsLastEpoch(epoch: bigint) {
-    return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_valid_head = 0');
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_happened = 1 AND att_valid_head = 0');
   }
 
   public async getValidatorCountWithInvalidTargetAttestationsLastEpoch(epoch: bigint) {
-    return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_valid_target = 0');
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_happened = 1 AND att_valid_target = 0');
   }
 
   public async getValidatorCountWithInvalidSourceAttestationsLastEpoch(epoch: bigint) {
-    return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_valid_source = 0');
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_happened = 1 AND att_valid_source = 0');
   }
 
   public async getValidatorCountWithMissedAttestationsLastNEpoch(epoch: bigint) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
-      'att_inc_delay = 33',
+      'att_happened = 0',
     );
   }
 
@@ -284,7 +284,7 @@ export class ClickhouseService implements OnModuleInit {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
-      'att_inc_delay = 33',
+      'att_happened = 0',
       possibleHighRewardValidators,
     );
   }
@@ -293,7 +293,7 @@ export class ClickhouseService implements OnModuleInit {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
-      'att_inc_delay != 33 AND att_inc_delay > 1',
+      'att_happened = 1 AND att_inc_delay > 1',
     );
   }
 

@@ -12,105 +12,55 @@ import { SummaryService } from '../summary';
 
 @Injectable()
 export class AttestationService {
-  savedCanonSlotsAttProperties = {};
+  private readonly slotsInEpoch;
+  private savedCanonSlotsAttProperties = {};
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
     protected readonly clClient: ConsensusProviderService,
     protected readonly summary: SummaryService,
-  ) {}
+  ) {
+    this.slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
+  }
 
   public async check(epoch: bigint, stateSlot: bigint): Promise<void> {
-    return await this.prometheus.trackTask('check-attester-duties', async () => {
-      this.logger.log(`Getting attesters duties info`);
-      // const attestersDutyInfo: AttesterDutyInfo[] = await this.getAttestersDutyInfo(userIndexes, dutyDependentRoot, epoch);
-      const attestationCommitteesInfo = await this.clClient.getAttestationCommitteesInfo(stateSlot, epoch);
-      this.logger.log(`Processing attesters duties info`);
-      const blocksAttestations: { [block: string]: SlotAttestation[] } = {};
-      let allMissedSlots: string[] = [];
-      let lastBlockInfo: BlockInfoResponse | void;
-      let lastMissedSlots: string[];
-      // Check all slots from epoch start to last epoch slot + 32 (max inclusion delay)
-      const slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
-      const firstSlotInEpoch = epoch * slotsInEpoch;
-      const slotsToCheck: bigint[] = bigintRange(firstSlotInEpoch, firstSlotInEpoch + slotsInEpoch * 2n);
-      for (const slotToCheck of slotsToCheck) {
-        if (lastBlockInfo && lastBlockInfo.message.slot > slotToCheck.toString()) {
-          continue; // If we have lastBlockInfo > slotToCheck it means we have already processed this
-        }
-        [lastBlockInfo, lastMissedSlots] = await this.clClient.getBlockInfoWithSlotAttestations(slotToCheck);
-        allMissedSlots = allMissedSlots.concat(lastMissedSlots);
-        if (!lastBlockInfo) {
-          continue; // Failed to get info about the nearest existing block
-        }
-        blocksAttestations[lastBlockInfo.message.slot.toString()] = lastBlockInfo.message.body.attestations.map(
-          (att: BeaconBlockAttestation) => {
-            const bytesArray = fromHexString(att.aggregation_bits);
-            const CommitteeBits = new BitVectorType({
-              length: bytesArray.length * 8,
-            });
-            return {
-              bits: Array.from(CommitteeBits.deserialize(bytesArray)),
-              head: att.data.beacon_block_root,
-              target_root: att.data.target.root,
-              target_epoch: att.data.target.epoch,
-              source_root: att.data.source.root,
-              source_epoch: att.data.source.epoch,
-              slot: att.data.slot,
-              committee_index: att.data.index,
-            };
-          },
-        );
-      }
-      this.logger.debug(`All missed slots in getting attestations info process: ${allMissedSlots}`);
+    return await this.prometheus.trackTask('check-attestation-duties', async () => {
+      const { blocksAttestations, allMissedSlots } = await this.getProcessedAttestations(epoch);
       this.savedCanonSlotsAttProperties = {};
-      const blocksAttestation = Object.entries(blocksAttestations).sort(
-        (b1, b2) => parseInt(b1[0]) - parseInt(b2[0]), // Sort array by block number
-      );
-      for (const committee of attestationCommitteesInfo) {
-        for (const [valCommIndex, validatorIndex] of committee.validators.entries()) {
-          let attested = false;
-          let inc_delay = undefined;
-          let valid_head = undefined;
-          let valid_target = undefined;
-          let valid_source = undefined;
-          for (const [block, blockAttestations] of blocksAttestation.filter(
-            ([b]) => BigInt(b) > BigInt(committee.slot), // Attestation cannot be included in the previous or current block
-          )) {
-            const committeeAttestations: SlotAttestation[] = blockAttestations.filter(
-              (att: any) => att.slot == committee.slot && att.committee_index == committee.index,
-            );
-            if (!committeeAttestations) continue;
-            for (const ca of committeeAttestations) {
-              attested = ca.bits[valCommIndex];
-              if (!attested) continue; // continue to find attestation with validator attestation
-              // and if validator attests block - calculate inclusion delay and check properties (head, target, source)
-              // calculate inclusion delay
+      this.logger.log(`Getting attestation duties info`);
+      const committees = await this.clClient.getAttestationCommitteesInfo(stateSlot, epoch);
+      this.logger.log(`Processing attestation duty info`);
+      for (const committee of committees) {
+        for (const [block, blockAttestations] of Object.entries(blocksAttestations).filter(
+          ([b]) => BigInt(b) > BigInt(committee.slot), // Attestation cannot be included in the previous or current block
+        )) {
+          const attestations: SlotAttestation[] = blockAttestations.filter(
+            (att: any) => att.slot == committee.slot && att.committee_index == committee.index,
+          );
+          if (!attestations) continue; // try to find committee attestations in another next block
+          for (const attestation of attestations) {
+            const [canonHead, canonTarget, canonSource] = await Promise.all([
+              this.getCanonSlotRoot(BigInt(attestation.slot)),
+              this.getCanonSlotRoot(BigInt(attestation.target_epoch) * this.slotsInEpoch),
+              this.getCanonSlotRoot(BigInt(attestation.source_epoch) * this.slotsInEpoch),
+            ]);
+            const att_valid_head = attestation.head == canonHead;
+            const att_valid_target = attestation.target_root == canonTarget;
+            const att_valid_source = attestation.source_root == canonSource;
+            for (const [valCommIndex, validatorIndex] of committee.validators.entries()) {
+              if (this.summary.get(BigInt(validatorIndex))?.att_happened) continue;
+              const att_happened = attestation.bits[valCommIndex];
               const missedSlotsCount = allMissedSlots.filter(
                 (missed) => BigInt(missed) > BigInt(committee.slot) && BigInt(missed) < BigInt(block),
               ).length;
-              inc_delay = Number(BigInt(block) - BigInt(committee.slot)) - missedSlotsCount;
-              const [canonHead, canonTarget, canonSource] = await Promise.all([
-                this.getCanonSlotRoot(BigInt(ca.slot)),
-                this.getCanonSlotRoot(BigInt(ca.target_epoch) * slotsInEpoch),
-                this.getCanonSlotRoot(BigInt(ca.source_epoch) * slotsInEpoch),
-              ]);
-              valid_head = ca.head == canonHead;
-              valid_target = ca.target_root == canonTarget;
-              valid_source = ca.source_root == canonSource;
-              break;
+              const att_inc_delay = Number(BigInt(block) - BigInt(committee.slot)) - missedSlotsCount;
+              let summary = { epoch, val_id: BigInt(validatorIndex), att_happened };
+              const properties = { att_inc_delay, att_valid_head, att_valid_source, att_valid_target };
+              if (att_happened) summary = { ...summary, ...properties };
+              this.summary.set(BigInt(validatorIndex), summary);
             }
-            if (attested) break;
           }
-          this.summary.set(BigInt(validatorIndex), {
-            epoch,
-            val_id: BigInt(validatorIndex),
-            att_inc_delay: attested ? inc_delay : 33,
-            att_valid_head: valid_head,
-            att_valid_target: valid_target,
-            att_valid_source: valid_source,
-          });
         }
       }
     });
@@ -122,5 +72,46 @@ export class AttestationService {
     const root = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(slot)).root;
     this.savedCanonSlotsAttProperties[String(slot)] = root;
     return root;
+  }
+
+  protected async getProcessedAttestations(epoch: bigint) {
+    this.logger.log(`Processing attestations from blocks info`);
+    const blocksAttestations: { [block: string]: SlotAttestation[] } = {};
+    let allMissedSlots: string[] = [];
+    let lastBlockInfo: BlockInfoResponse | void;
+    let lastMissedSlots: string[];
+    // Check all slots from epoch start to last epoch slot + 32 (max inclusion delay)
+    const firstSlotInEpoch = epoch * this.slotsInEpoch;
+    const slotsToCheck: bigint[] = bigintRange(firstSlotInEpoch, firstSlotInEpoch + this.slotsInEpoch * 2n);
+    for (const slotToCheck of slotsToCheck) {
+      if (lastBlockInfo && lastBlockInfo.message.slot > slotToCheck.toString()) {
+        continue; // If we have lastBlockInfo > slotToCheck it means we have already processed this
+      }
+      [lastBlockInfo, lastMissedSlots] = await this.clClient.getBlockInfoWithSlotAttestations(slotToCheck);
+      allMissedSlots = allMissedSlots.concat(lastMissedSlots);
+      if (!lastBlockInfo) {
+        continue; // Failed to get info about the nearest existing block
+      }
+      blocksAttestations[lastBlockInfo.message.slot.toString()] = lastBlockInfo.message.body.attestations.map(
+        (att: BeaconBlockAttestation) => {
+          const bytesArray = fromHexString(att.aggregation_bits);
+          const CommitteeBits = new BitVectorType({
+            length: bytesArray.length * 8,
+          });
+          return {
+            bits: Array.from(CommitteeBits.deserialize(bytesArray)),
+            head: att.data.beacon_block_root,
+            target_root: att.data.target.root,
+            target_epoch: att.data.target.epoch,
+            source_root: att.data.source.root,
+            source_epoch: att.data.source.epoch,
+            slot: att.data.slot,
+            committee_index: att.data.index,
+          };
+        },
+      );
+    }
+    this.logger.debug(`All missed slots in getting attestations info process: ${allMissedSlots}`);
+    return { blocksAttestations, allMissedSlots };
   }
 }

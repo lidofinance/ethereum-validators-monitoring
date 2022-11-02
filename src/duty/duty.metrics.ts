@@ -9,7 +9,7 @@ import { AttestationMetrics } from './attestation';
 import { ProposeMetrics } from './propose';
 import { StateMetrics } from './state';
 import { SummaryMetrics } from './summary';
-import { SyncMetrics, SyncService } from './sync';
+import { SyncMetrics } from './sync';
 
 @Injectable()
 export class DutyMetrics {
@@ -18,8 +18,6 @@ export class DutyMetrics {
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
     protected readonly clClient: ConsensusProviderService,
-
-    protected readonly sync: SyncService,
 
     protected readonly stateMetrics: StateMetrics,
     protected readonly attestationMetrics: AttestationMetrics,
@@ -49,10 +47,10 @@ export class DutyMetrics {
       this.logger.log('Getting possible high reward validator indexes');
       const propDependentRoot = await this.clClient.getDutyDependentRoot(headEpoch);
       const [sync, prop] = await Promise.all([
-        this.sync.getSyncCommitteeIndexedValidators(headEpoch, 'head'),
+        this.clClient.getSyncCommitteeInfo('head', headEpoch),
         this.clClient.getCanonicalProposerDuties(headEpoch, propDependentRoot),
       ]);
-      return [...new Set([...sync, ...prop].map((v) => v.validator_index))];
+      return [...new Set([...prop.map((v) => v.validator_index), ...sync.validators])];
     });
   }
 }

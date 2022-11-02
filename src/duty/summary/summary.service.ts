@@ -19,6 +19,7 @@ export interface ValidatorDutySummary {
   is_sync?: boolean;
   sync_percent?: number;
   ///
+  att_happened?: boolean;
   att_inc_delay?: number;
   att_valid_head?: boolean;
   att_valid_target?: boolean;
