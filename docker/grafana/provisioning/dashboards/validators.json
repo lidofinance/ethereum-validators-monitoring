@@ -21,7 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1667210939811,
+  "iteration": 1667314138069,
   "links": [
     {
       "asDropdown": false,
@@ -2071,8 +2071,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "  SELECT\n    val_nos_name as Operator,\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      val_nos_name,\n      IF((att_inc_delay = 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as p,\n      IF((att_inc_delay > 1) AND (att_inc_delay != 33) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as i,\n      IF(att_valid_head = 0, count(), 0) as bh,\n      IF(att_valid_target = 0, count(), 0) as bt,\n      IF(att_valid_source = 0, count(), 0) as bs,\n      IF(att_inc_delay = 33, count(), 0) as m\n    FROM stats.validators_summary\n    WHERE val_nos_id IS NOT NULL AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_nos_name, att_inc_delay, att_valid_head, att_valid_target, att_valid_source\n  )\n  GROUP by val_nos_name",
-          "rawQuery": "SELECT\n    val_nos_name as Operator,\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      val_nos_name,\n      IF((att_inc_delay = 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as p,\n      IF((att_inc_delay > 1) AND (att_inc_delay != 33) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as i,\n      IF(att_valid_head = 0, count(), 0) as bh,\n      IF(att_valid_target = 0, count(), 0) as bt,\n      IF(att_valid_source = 0, count(), 0) as bs,\n      IF(att_inc_delay = 33, count(), 0) as m\n    FROM stats.validators_summary\n    WHERE val_nos_id IS NOT NULL AND (epoch <= 157281 AND epoch > (157281 - 1))\n    GROUP BY val_nos_name, att_inc_delay, att_valid_head, att_valid_target, att_valid_source\n  )\n  GROUP by val_nos_name",
+          "query": "  SELECT\n    val_nos_name as Operator,\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      val_nos_name,\n      IF((att_happened = 1) AND (att_inc_delay = 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as p,\n      IF((att_happened = 1) AND (att_inc_delay > 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as i,\n      IF(att_valid_head = 0, count(), 0) as bh,\n      IF(att_valid_target = 0, count(), 0) as bt,\n      IF(att_valid_source = 0, count(), 0) as bs,\n      IF(att_happened = 0, count(), 0) as m\n    FROM stats.validators_summary\n    WHERE val_nos_id IS NOT NULL AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_nos_name, att_happened, att_inc_delay, att_valid_head, att_valid_target, att_valid_source\n  )\n  GROUP by val_nos_name",
+          "rawQuery": "SELECT\n    val_nos_name as Operator,\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      val_nos_name,\n      IF((att_happened = 1) AND (att_inc_delay = 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as p,\n      IF((att_happened = 1) AND (att_inc_delay > 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as i,\n      IF(att_valid_head = 0, count(), 0) as bh,\n      IF(att_valid_target = 0, count(), 0) as bt,\n      IF(att_valid_source = 0, count(), 0) as bs,\n      IF(att_happened = 0, count(), 0) as m\n    FROM stats.validators_summary\n    WHERE val_nos_id IS NOT NULL AND (epoch <= 157472 AND epoch > (157472 - 1))\n    GROUP BY val_nos_name, att_happened, att_inc_delay, att_valid_head, att_valid_target, att_valid_source\n  )\n  GROUP by val_nos_name",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -2237,8 +2237,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "  SELECT\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      IF((att_inc_delay = 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as p,\n      IF((att_inc_delay > 1) AND (att_inc_delay != 33) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as i,\n      IF(att_valid_head = 0, count(), 0) as bh,\n      IF(att_valid_target = 0, count(), 0) as bt,\n      IF(att_valid_source = 0, count(), 0) as bs,\n      IF(att_inc_delay = 33, count(), 0) as m\n    FROM stats.validators_summary\n    WHERE val_nos_id IS NOT NULL AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY att_inc_delay, att_valid_head, att_valid_target, att_valid_source\n  )",
-          "rawQuery": "SELECT\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      IF((att_inc_delay = 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as p,\n      IF((att_inc_delay > 1) AND (att_inc_delay != 33) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as i,\n      IF(att_valid_head = 0, count(), 0) as bh,\n      IF(att_valid_target = 0, count(), 0) as bt,\n      IF(att_valid_source = 0, count(), 0) as bs,\n      IF(att_inc_delay = 33, count(), 0) as m\n    FROM stats.validators_summary\n    WHERE val_nos_id IS NOT NULL AND (epoch <= 157281 AND epoch > (157281 - 1))\n    GROUP BY att_inc_delay, att_valid_head, att_valid_target, att_valid_source\n  )",
+          "query": "  SELECT\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      IF((att_happened = 1) AND (att_inc_delay = 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as p,\n      IF((att_happened = 1) AND (att_inc_delay > 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as i,\n      IF(att_valid_head = 0, count(), 0) as bh,\n      IF(att_valid_target = 0, count(), 0) as bt,\n      IF(att_valid_source = 0, count(), 0) as bs,\n      IF(att_happened = 0, count(), 0) as m\n    FROM stats.validators_summary\n    WHERE val_nos_id IS NOT NULL AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY att_inc_delay, att_happened, att_valid_head, att_valid_target, att_valid_source\n  )",
+          "rawQuery": "SELECT\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      IF((att_happened = 1) AND (att_inc_delay = 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as p,\n      IF((att_happened = 1) AND (att_inc_delay > 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as i,\n      IF(att_valid_head = 0, count(), 0) as bh,\n      IF(att_valid_target = 0, count(), 0) as bt,\n      IF(att_valid_source = 0, count(), 0) as bs,\n      IF(att_happened = 0, count(), 0) as m\n    FROM stats.validators_summary\n    WHERE val_nos_id IS NOT NULL AND (epoch <= 157473 AND epoch > (157473 - 1))\n    GROUP BY att_inc_delay, att_happened, att_valid_head, att_valid_target, att_valid_source\n  )",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -2301,8 +2301,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               },
@@ -2376,8 +2375,7 @@
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "yellow",
@@ -2488,8 +2486,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -2564,8 +2561,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2712,8 +2708,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -2807,8 +2802,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2957,8 +2951,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -3062,8 +3055,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "red",
@@ -3232,8 +3224,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3380,8 +3371,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -3595,8 +3585,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_inc_delay = 33 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_inc_delay = 33 AND val_nos_id IS NOT NULL AND\n    (epoch <= 157270 AND epoch > (157270 - 1))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 157474 AND epoch > (157474 - 1))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3846,8 +3836,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_inc_delay > 1 AND att_inc_delay != 33 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_inc_delay > 1 AND att_inc_delay != 33 AND val_nos_id IS NOT NULL AND\n    (epoch <= 157270 AND epoch > (157270 - 1))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= 157474 AND epoch > (157474 - 1))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4098,7 +4088,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 157282 AND epoch > (157282 - 1))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 157474 AND epoch > (157474 - 1))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4730,8 +4720,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5032,8 +5021,8 @@
       {
         "current": {
           "selected": false,
-          "text": "157270",
-          "value": "157270"
+          "text": "157475",
+          "value": "157475"
         },
         "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
         "description": "Last epoch number",
@@ -5128,8 +5117,8 @@
       {
         "current": {
           "selected": false,
-          "text": "93.756103515625",
-          "value": "93.756103515625"
+          "text": "96.722412109375",
+          "value": "96.722412109375"
         },
         "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
         "description": "Chain sync participation average value",
@@ -5159,6 +5148,6 @@
   "timezone": "",
   "title": "Validators",
   "uid": "HRgPmpNnz",
-  "version": 1,
+  "version": 9,
   "weekStart": ""
 }

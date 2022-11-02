@@ -21,7 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1667222156633,
+  "iteration": 1667222156665,
   "links": [
     {
       "asDropdown": false,
@@ -1225,8 +1225,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "\nSELECT\n  val_id as Validators\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM stats.validators_summary\n    WHERE att_inc_delay = 33 AND \n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var})) AND\n    val_nos_name = '${nos_name_var}'\n    GROUP BY val_id\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  val_id as Validators\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM stats.validators_summary\n    WHERE att_inc_delay = 33 AND \n    (epoch <= 157286 AND epoch > (157286 - 3)) AND\n    val_nos_name = 'Allnodes'\n    GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "query": "\nSELECT\n  val_id as Validators\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND \n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var})) AND\n    val_nos_name = '${nos_name_var}'\n    GROUP BY val_id\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  val_id as Validators\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND \n    (epoch <= 157475 AND epoch > (157475 - 3)) AND\n    val_nos_name = 'Allnodes'\n    GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1335,8 +1335,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = '${nos_name_var}' AND\n  att_inc_delay > 1 AND att_inc_delay != 33 AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = 'Allnodes' AND\n  att_inc_delay > 1 AND att_inc_delay != 33 AND\n  (epoch <= 157287 AND epoch > (157287 - 3))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = '${nos_name_var}' AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = 'Allnodes' AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  (epoch <= 157476 AND epoch > (157476 - 3))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1447,7 +1447,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = '${nos_name_var}' AND\n  (att_valid_head + att_valid_target + att_valid_source = 1) AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = 'Allnodes' AND\n  (att_valid_head + att_valid_target + att_valid_source = 1) AND\n  (epoch <= 157287 AND epoch > (157287 - 3))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = 'Allnodes' AND\n  (att_valid_head + att_valid_target + att_valid_source = 1) AND\n  (epoch <=  AND epoch > ( - 3))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -2888,8 +2888,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_inc_delay = 33 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_inc_delay = 33 AND val_nos_name = 'ChainLayer' AND\n    (epoch <= 157274 AND epoch > (157274 - 1))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_name = 'Allnodes' AND\n    (epoch <= 157476 AND epoch > (157476 - 1))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3128,8 +3128,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_inc_delay > 1 AND att_inc_delay != 33 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_inc_delay > 1 AND att_inc_delay != 33 AND val_nos_name = 'ChainLayer' AND\n    (epoch <= 157274 AND epoch > (157274 - 9))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = 'Allnodes' AND\n    (epoch <= 157476 AND epoch > (157476 - 1))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3996,8 +3996,8 @@
       {
         "current": {
           "selected": false,
-          "text": "157276",
-          "value": "157276"
+          "text": "157476",
+          "value": "157476"
         },
         "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
         "description": "Last epoch number",
@@ -4156,8 +4156,8 @@
       {
         "current": {
           "selected": false,
-          "text": "98.01025390625",
-          "value": "98.01025390625"
+          "text": "97.80745964311063",
+          "value": "97.80745964311063"
         },
         "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
         "description": "Chain sync participation average value",
