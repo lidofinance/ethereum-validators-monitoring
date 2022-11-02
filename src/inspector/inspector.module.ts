@@ -9,11 +9,10 @@ import { ClickhouseModule } from 'storage/clickhouse';
 
 import { InspectorService } from './inspector.service';
 import { DataProcessingService } from './processing/data-processing.service';
-import { StatsProcessingService } from './processing/stats-processing.service';
 
 @Module({
   imports: [EthProvidersModule, CriticalAlertsModule, ClickhouseModule, RegistryModule, DutyModule, BlockCacheModule],
-  providers: [InspectorService, DataProcessingService, StatsProcessingService],
+  providers: [InspectorService, DataProcessingService],
   exports: [InspectorService],
 })
 export class InspectorModule {}

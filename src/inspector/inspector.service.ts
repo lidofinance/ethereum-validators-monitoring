@@ -6,11 +6,11 @@ import { ConfigService } from 'common/config';
 import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
 import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
 import { sleep } from 'common/functions/sleep';
+import { SummaryService } from 'duty/summary';
 import { ClickhouseService } from 'storage';
 
-import { SummaryService } from '../duty/summary';
+import { DutyMetrics } from '../duty';
 import { DataProcessingService } from './processing/data-processing.service';
-import { StatsProcessingService } from './processing/stats-processing.service';
 
 @Injectable()
 export class InspectorService implements OnModuleInit {
@@ -20,10 +20,11 @@ export class InspectorService implements OnModuleInit {
     protected readonly clClient: ConsensusProviderService,
     protected readonly storage: ClickhouseService,
     protected readonly dataProcessor: DataProcessingService,
-    protected readonly statsProcessor: StatsProcessingService,
     protected readonly criticalAlertService: CriticalAlertsService,
     protected readonly blockCacheService: BlockCacheService,
     protected readonly summary: SummaryService,
+
+    protected readonly dutyMetrics: DutyMetrics,
   ) {}
 
   public async onModuleInit(): Promise<void> {
@@ -37,19 +38,12 @@ export class InspectorService implements OnModuleInit {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
-        // Calculate finalized data stats (validator balances, attestations, proposes and etc.)
-
         this.summary.clear(); // todo: move to another place
-        const nextFinalizedSlot = this.calculateNextFinalizedSlot();
-        const { epoch, stateSlot } = await this.waitForNextFinalizedSlot(nextFinalizedSlot);
+        const { epoch, stateSlot } = await this.waitForNextFinalizedSlot();
         this.blockCacheService.purgeOld(epoch);
-        const headEpoch = await this.calculateHeadEpoch();
         if (epoch > 0) {
           await this.dataProcessor.process(epoch, stateSlot);
-          const possibleHighRewardValidators = await this.dataProcessor.getPossibleHighRewardValidators(headEpoch);
-          await this.statsProcessor.calculateUserStats(epoch, possibleHighRewardValidators);
-          await this.statsProcessor.calculateOtherStats(epoch);
-          await this.statsProcessor.finalizeAppIterate(epoch);
+          await this.dutyMetrics.calculate(epoch);
           await this.criticalAlertService.sendCriticalAlerts(epoch);
         }
       } catch (e) {
@@ -65,12 +59,8 @@ export class InspectorService implements OnModuleInit {
     }
   }
 
-  public async close(): Promise<void> {
-    this.logger.log(`Closing application`);
-    await this.storage.close();
-  }
-
-  protected async waitForNextFinalizedSlot(nextSlot: bigint): Promise<{ epoch: bigint; stateSlot: bigint }> {
+  protected async waitForNextFinalizedSlot(): Promise<{ epoch: bigint; stateSlot: bigint }> {
+    const nextSlot = this.calculateNextFinalizedSlot();
     const latestFinalizedBeaconBlock = <BlockHeaderResponse>await this.clClient.getBlockHeader('finalized');
     const latestFinalizedEpoch = BigInt(latestFinalizedBeaconBlock.header.message.slot) / 32n;
     if (BigInt(latestFinalizedBeaconBlock.header.message.slot) < nextSlot) {
@@ -124,10 +114,5 @@ export class InspectorService implements OnModuleInit {
     const slotToProcess = startEpoch * step + (step - 1n); // latest slot in epoch
     this.logger.log(`Slot to process [${slotToProcess}] (end of epoch [${startEpoch}])`);
     return slotToProcess;
-  }
-
-  protected async calculateHeadEpoch(): Promise<bigint> {
-    const actualSlotHeader = <BlockHeaderResponse>await this.clClient.getBlockHeader('head');
-    return BigInt(actualSlotHeader.header.message.slot) / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
   }
 }

@@ -33,12 +33,8 @@ export class DataProcessingService implements OnModuleInit {
 
   public async onModuleInit(): Promise<void> {
     this.latestProcessedEpoch = await this.storage.getMaxEpoch();
-    this.prometheus.epochTime = await this.getSlotTime(this.latestProcessedEpoch * 32n);
+    this.prometheus.epochTime = await this.clClient.getSlotTime(this.latestProcessedEpoch * 32n);
     this.prometheus.epochNumber.set(Number(this.latestProcessedEpoch));
-  }
-
-  public async getSlotTime(slot: bigint): Promise<bigint> {
-    return await this.clClient.getSlotTime(slot);
   }
 
   public async prefetch(args): Promise<any> {
@@ -60,7 +56,7 @@ export class DataProcessingService implements OnModuleInit {
   ): Promise<{ userIDs: ValidatorIdentifications[]; otherValidatorsCounts: ValidatorsStatusStats; otherAvgSyncPercent: number }> {
     return await this.prometheus.trackTask('process-write-finalized-data', async () => {
       try {
-        const slotTime = await this.getSlotTime(epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS')));
+        const slotTime = await this.clClient.getSlotTime(epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS')));
         const keysIndexed = await this.registryService.getActualKeysIndexed(Number(slotTime));
         await Promise.all([this.prefetch({ epoch }), this.duty.check({ epoch, stateSlot, keysIndexed })]);
         await this.duty.write();
@@ -69,18 +65,6 @@ export class DataProcessingService implements OnModuleInit {
         this.logger.error(`Error while processing and writing [${epoch}] epoch`);
         throw e;
       }
-    });
-  }
-
-  public async getPossibleHighRewardValidators(headEpoch: bigint): Promise<string[]> {
-    return await this.prometheus.trackTask('high-reward-validators', async () => {
-      this.logger.log('Start getting possible high reward validator indexes');
-      const propDependentRoot = await this.clClient.getDutyDependentRoot(headEpoch);
-      const [sync, prop] = await Promise.all([
-        this.sync.getSyncCommitteeIndexedValidators(headEpoch, 'head'),
-        this.clClient.getCanonicalProposerDuties(headEpoch, propDependentRoot),
-      ]);
-      return [...new Set([...sync, ...prop].map((v) => v.validator_index))];
     });
   }
 }
