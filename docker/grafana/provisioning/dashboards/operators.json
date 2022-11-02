@@ -2991,7 +2991,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "inc. delay > 1",
+          "description": "inc. delay > 2",
           "fieldConfig": {
             "defaults": {
               "color": {
