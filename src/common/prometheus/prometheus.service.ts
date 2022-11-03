@@ -342,29 +342,6 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: [],
   });
 
-  public async trackTask(name: string, callback: () => any) {
-    const stop = this.taskDuration.startTimer({
-      name: name,
-    });
-    this.logger.debug(`Task '${name}' in progress`);
-    return await callback()
-      .then((r: any) => {
-        this.taskCount.inc({
-          name: name,
-          status: TaskStatus.COMPLETE,
-        });
-        return r;
-      })
-      .catch((e: any) => {
-        this.taskCount.inc({
-          name: name,
-          status: TaskStatus.ERROR,
-        });
-        throw e;
-      })
-      .finally(() => this.logger.debug(`Task '${name}' is complete. Duration: ${stop()}`));
-  }
-
   public async trackCLRequest(apiUrl: string, subUrl: string, callback: () => any) {
     const [targetName, reqName] = requestLabels(apiUrl, subUrl);
     const stop = this.outgoingCLRequestsDuration.startTimer({
@@ -392,4 +369,37 @@ export class PrometheusService implements OnApplicationBootstrap {
       })
       .finally(() => stop());
   }
+}
+
+export function TrackTask(name: string) {
+  return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    const originalValue = descriptor.value;
+
+    descriptor.value = function (...args) {
+      // "this" here will refer to the class instance
+      if (!this.prometheus) throw Error(`'${this.constructor.name}' class object must contain 'prometheus' property`);
+      const stop = this.prometheus.taskDuration.startTimer({
+        name: name,
+      });
+      this.logger.debug(`Task '${name}' in progress`);
+      return originalValue
+        .apply(this, args)
+        .then((r) => {
+          this.prometheus.taskCount.inc({
+            name: name,
+            status: TaskStatus.COMPLETE,
+          });
+          return r;
+        })
+        .catch((e) => {
+          this.logger.error(`Task '${name}' ended with an error`, e.stack);
+          this.prometheus.taskCount.inc({
+            name: name,
+            status: TaskStatus.ERROR,
+          });
+          throw e;
+        })
+        .finally(() => this.logger.debug(`Task '${name}' is complete. Duration: ${stop()}`));
+    };
+  };
 }

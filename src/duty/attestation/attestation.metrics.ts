@@ -2,7 +2,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { PrometheusService } from 'common/prometheus';
+import { PrometheusService, TrackTask } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage/clickhouse';
 
@@ -28,30 +28,29 @@ export class AttestationMetrics {
     this.epochInterval = this.config.get('BAD_ATTESTATION_EPOCHS');
   }
 
+  @TrackTask('calc-attestation-metrics')
   public async calculate(epoch: bigint, possibleHighRewardValidators: string[]) {
-    return await this.prometheus.trackTask('calc-attestation-metrics', async () => {
-      this.logger.log('Calculating attestation metrics');
-      this.epoch = epoch;
-      this.operators = await this.registryService.getOperators();
-      await Promise.all([
-        this.missedAttestationsLastEpoch(),
-        this.highIncDelayAttestationsLastEpoch(),
-        this.invalidHeadAttestationsLastEpoch(),
-        this.invalidTargetAttestationsLastEpoch(),
-        this.invalidSourceAttestationsLastEpoch(),
+    this.logger.log('Calculating attestation metrics');
+    this.epoch = epoch;
+    this.operators = await this.registryService.getOperators();
+    await Promise.all([
+      this.missedAttestationsLastEpoch(),
+      this.highIncDelayAttestationsLastEpoch(),
+      this.invalidHeadAttestationsLastEpoch(),
+      this.invalidTargetAttestationsLastEpoch(),
+      this.invalidSourceAttestationsLastEpoch(),
 
-        this.missAttestationsLastNEpoch(),
-        this.highIncDelayAttestationsLastNEpoch(),
-        this.invalidHeadAttestationsLastNEpoch(),
-        this.invalidTargetAttestationsLastNEpoch(),
-        this.invalidSourceAttestationsLastNEpoch(),
-        this.highAvgIncDelayAttestationsOfNEpoch(),
-        // metrics for alerts
-        this.incDelayGtTwoAttestationsLastNEpoch(),
-        this.invalidAttestationPropertyGtOneLastNEpoch(),
-        this.highRewardMissAttestationsLastNEpoch(possibleHighRewardValidators),
-      ]);
-    });
+      this.missAttestationsLastNEpoch(),
+      this.highIncDelayAttestationsLastNEpoch(),
+      this.invalidHeadAttestationsLastNEpoch(),
+      this.invalidTargetAttestationsLastNEpoch(),
+      this.invalidSourceAttestationsLastNEpoch(),
+      this.highAvgIncDelayAttestationsOfNEpoch(),
+      // metrics for alerts
+      this.incDelayGtTwoAttestationsLastNEpoch(),
+      this.invalidAttestationPropertyGtOneLastNEpoch(),
+      this.highRewardMissAttestationsLastNEpoch(possibleHighRewardValidators),
+    ]);
   }
 
   private async missedAttestationsLastEpoch() {

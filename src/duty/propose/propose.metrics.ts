@@ -2,7 +2,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { PrometheusService } from 'common/prometheus';
+import { PrometheusService, TrackTask } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
@@ -18,13 +18,12 @@ export class ProposeMetrics {
     protected readonly storage: ClickhouseService,
   ) {}
 
+  @TrackTask('calc-propose-metrics')
   public async calculate(epoch: bigint, possibleHighRewardValidators: string[]) {
-    return await this.prometheus.trackTask('calc-propose-metrics', async () => {
-      this.logger.log('Calculating propose metrics');
-      this.epoch = epoch;
-      this.operators = await this.registryService.getOperators();
-      await Promise.all([this.missProposes(), this.highRewardMissProposes(possibleHighRewardValidators)]);
-    });
+    this.logger.log('Calculating propose metrics');
+    this.epoch = epoch;
+    this.operators = await this.registryService.getOperators();
+    await Promise.all([this.missProposes(), this.highRewardMissProposes(possibleHighRewardValidators)]);
   }
 
   private async missProposes() {

@@ -5,7 +5,7 @@ import { ClickHouse } from 'clickhouse';
 import { ConfigService } from 'common/config';
 import { StateValidatorResponse, ValStatus } from 'common/eth-providers';
 import { retrier } from 'common/functions/retrier';
-import { PrometheusService } from 'common/prometheus';
+import { PrometheusService, TrackTask } from 'common/prometheus';
 import { ValidatorDutySummary } from 'duty/summary';
 
 import {
@@ -111,18 +111,17 @@ export class ClickhouseService implements OnModuleInit {
     return slot;
   }
 
+  @TrackTask('write-indexes')
   public async writeIndexes(states: StateValidatorResponse[]): Promise<void> {
-    await this.prometheus.trackTask('write-indexes', async () => {
-      const statesCopy = [...states];
-      while (statesCopy.length > 0) {
-        const chunk = statesCopy.splice(0, this.chunkSize);
-        const ws = this.db.insert('INSERT INTO stats.validators_index ' + '(val_id, val_pubkey) VALUES').stream();
-        for (const v of chunk) {
-          await ws.writeRow(`(${v.index}, '${v.validator.pubkey}')`);
-        }
-        await this.retry(async () => await ws.exec());
+    const statesCopy = [...states];
+    while (statesCopy.length > 0) {
+      const chunk = statesCopy.splice(0, this.chunkSize);
+      const ws = this.db.insert('INSERT INTO stats.validators_index ' + '(val_id, val_pubkey) VALUES').stream();
+      for (const v of chunk) {
+        await ws.writeRow(`(${v.index}, '${v.validator.pubkey}')`);
       }
-    });
+      await this.retry(async () => await ws.exec());
+    }
   }
 
   /**
@@ -134,43 +133,42 @@ export class ClickhouseService implements OnModuleInit {
     return indexes.map((i) => i.val_id);
   }
 
+  @TrackTask('write-summary')
   public async writeSummary(summary: Iterator<ValidatorDutySummary>): Promise<void> {
-    await this.prometheus.trackTask('write-summary', async () => {
-      let done = false;
-      while (!done) {
-        let rows = 0;
-        const ws = this.db
-          .insert(
-            'INSERT INTO stats.validators_summary ' +
-              '(epoch, val_id, val_nos_id, val_nos_name, ' +
-              'val_slashed, val_status, val_balance, is_proposer, block_to_propose, block_proposed, ' +
-              'is_sync, sync_percent, ' +
-              'att_happened, att_inc_delay, att_valid_head, att_valid_target, att_valid_source) VALUES',
-          )
-          .stream();
-        while (rows < this.chunkSize) {
-          const iter = summary.next();
-          if (iter.done) {
-            done = true;
-            break;
-          }
-          const v = <ValidatorDutySummary>iter.value;
-          await ws.writeRow(
-            `(${v.epoch}, ${v.val_id}, ` +
-              `${v.val_nos_id ?? 'NULL'}, ` +
-              `'${v.val_nos_name ?? 'NULL'}', ` +
-              `${v.val_slashed ? 1 : 0}, '${v.val_status}', ${v.val_balance}, ` +
-              `${v.is_proposer ? 1 : 0}, ${v.block_to_propose ?? 'NULL'}, ${v.is_proposer ? (v.block_proposed ? 1 : 0) : 'NULL'}, ` +
-              `${v.is_sync ? 1 : 0}, ${v.sync_percent ?? 'NULL'}, ` +
-              `${v.att_happened != undefined ? (v.att_happened ? 1 : 0) : 'NULL'}, ${v.att_inc_delay ?? 'NULL'}, ` +
-              `${v.att_valid_head ?? 'NULL'}, ${v.att_valid_target ?? 'NULL'}, ${v.att_valid_source ?? 'NULL'}
-            )`,
-          );
-          rows++;
+    let done = false;
+    while (!done) {
+      let rows = 0;
+      const ws = this.db
+        .insert(
+          'INSERT INTO stats.validators_summary ' +
+            '(epoch, val_id, val_nos_id, val_nos_name, ' +
+            'val_slashed, val_status, val_balance, is_proposer, block_to_propose, block_proposed, ' +
+            'is_sync, sync_percent, ' +
+            'att_happened, att_inc_delay, att_valid_head, att_valid_target, att_valid_source) VALUES',
+        )
+        .stream();
+      while (rows < this.chunkSize) {
+        const iter = summary.next();
+        if (iter.done) {
+          done = true;
+          break;
         }
-        await this.retry(async () => await ws.exec());
+        const v = <ValidatorDutySummary>iter.value;
+        await ws.writeRow(
+          `(${v.epoch}, ${v.val_id}, ` +
+            `${v.val_nos_id ?? 'NULL'}, ` +
+            `'${v.val_nos_name ?? 'NULL'}', ` +
+            `${v.val_slashed ? 1 : 0}, '${v.val_status}', ${v.val_balance}, ` +
+            `${v.is_proposer ? 1 : 0}, ${v.block_to_propose ?? 'NULL'}, ${v.is_proposer ? (v.block_proposed ? 1 : 0) : 'NULL'}, ` +
+            `${v.is_sync ? 1 : 0}, ${v.sync_percent ?? 'NULL'}, ` +
+            `${v.att_happened != undefined ? (v.att_happened ? 1 : 0) : 'NULL'}, ${v.att_inc_delay ?? 'NULL'}, ` +
+            `${v.att_valid_head ?? 'NULL'}, ${v.att_valid_target ?? 'NULL'}, ${v.att_valid_source ?? 'NULL'}
+            )`,
+        );
+        rows++;
       }
-    });
+      await this.retry(async () => await ws.exec());
+    }
   }
 
   public async migrate(): Promise<void> {

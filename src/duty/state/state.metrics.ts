@@ -3,7 +3,7 @@ import { RegistryOperator } from '@lido-nestjs/registry';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { Owner, PrometheusService, PrometheusValStatus } from 'common/prometheus';
+import { Owner, PrometheusService, PrometheusValStatus, TrackTask } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { LidoSourceService } from 'common/validators-registry/lido-source';
 import { ClickhouseService } from 'storage/clickhouse';
@@ -22,23 +22,22 @@ export class StateMetrics {
     protected readonly storage: ClickhouseService,
   ) {}
 
+  @TrackTask('calc-state-metrics')
   public async calculate(epoch: bigint) {
-    return await this.prometheus.trackTask('calc-state-metrics', async () => {
-      this.logger.log('Calculating state metrics');
-      this.epoch = epoch;
-      this.operators = await this.registryService.getOperators();
-      await Promise.all([
-        this.nosStats(),
-        this.userValidatorsStats(),
-        this.otherValidatorsStats(),
-        this.deltas(),
-        this.minDeltas(),
-        this.negativeValidatorsCount(),
-        this.totalBalance24hDifference(),
-        this.operatorBalance24hDifference(),
-        this.contract(),
-      ]);
-    });
+    this.logger.log('Calculating state metrics');
+    this.epoch = epoch;
+    this.operators = await this.registryService.getOperators();
+    await Promise.all([
+      this.nosStats(),
+      this.userValidatorsStats(),
+      this.otherValidatorsStats(),
+      this.deltas(),
+      this.minDeltas(),
+      this.negativeValidatorsCount(),
+      this.totalBalance24hDifference(),
+      this.operatorBalance24hDifference(),
+      this.contract(),
+    ]);
   }
 
   private async nosStats() {
@@ -70,7 +69,7 @@ export class StateMetrics {
 
   private async userValidatorsStats() {
     const result = await this.storage.getUserValidatorsSummaryStats(this.epoch);
-    this.logger.log(`User ongoing validators [${result.active_ongoing}]`);
+    this.logger.debug(`User ongoing validators [${result.active_ongoing}]`);
     this.prometheus.validators.set(
       {
         owner: Owner.USER,
@@ -96,7 +95,7 @@ export class StateMetrics {
 
   private async otherValidatorsStats() {
     const result = await this.storage.getOtherValidatorsSummaryStats(this.epoch);
-    this.logger.log(`Other ongoing validators [${result.active_ongoing}]`);
+    this.logger.debug(`Other ongoing validators [${result.active_ongoing}]`);
     this.prometheus.validators.set(
       {
         owner: Owner.OTHER,

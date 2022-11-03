@@ -5,7 +5,7 @@ import { ConfigService } from 'common/config';
 import { ConsensusProviderService } from 'common/eth-providers';
 import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
 import { bigintRange } from 'common/functions/range';
-import { PrometheusService } from 'common/prometheus';
+import { PrometheusService, TrackTask } from 'common/prometheus';
 import { ClickhouseService } from 'storage';
 
 import { AttestationService } from './attestation';
@@ -36,32 +36,30 @@ export class DutyService {
     await this.write();
   }
 
+  @TrackTask('check-all-duties')
   protected async checkAll(epoch: bigint, stateSlot: bigint): Promise<any> {
     this.summary.clear();
-    await this.prometheus.trackTask('duties-check', async () => {
-      this.logger.log('Checking duties of validators');
-      await Promise.all([
-        this.state.check(epoch, stateSlot),
-        this.attestation.check(epoch, stateSlot),
-        this.sync.check(epoch, stateSlot),
-        this.propose.check(epoch),
-      ]);
-    });
+    this.logger.log('Checking duties of validators');
+    await Promise.all([
+      this.state.check(epoch, stateSlot),
+      this.attestation.check(epoch, stateSlot),
+      this.sync.check(epoch, stateSlot),
+      this.propose.check(epoch),
+    ]);
   }
 
+  @TrackTask('prefetch-slots')
   protected async prefetch(epoch: bigint): Promise<any> {
     this.blockCacheService.purgeOld(epoch);
-    await this.prometheus.trackTask('prefetch-slots', async () => {
-      this.logger.log('Prefetching blocks header, info and write to cache');
-      const slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
-      const firstSlotInEpoch = epoch * slotsInEpoch;
-      const slots: bigint[] = bigintRange(firstSlotInEpoch, firstSlotInEpoch + slotsInEpoch * 2n);
-      const toFetch = slots.map((s) => [this.clClient.getBlockHeader(s), this.clClient.getBlockInfo(s)]).flat();
-      while (toFetch.length > 0) {
-        const chunk = toFetch.splice(0, 64);
-        await Promise.all(chunk);
-      }
-    });
+    this.logger.log('Prefetching blocks header, info and write to cache');
+    const slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
+    const firstSlotInEpoch = epoch * slotsInEpoch;
+    const slots: bigint[] = bigintRange(firstSlotInEpoch, firstSlotInEpoch + slotsInEpoch * 2n);
+    const toFetch = slots.map((s) => [this.clClient.getBlockHeader(s), this.clClient.getBlockInfo(s)]).flat();
+    while (toFetch.length > 0) {
+      const chunk = toFetch.splice(0, 64);
+      await Promise.all(chunk);
+    }
   }
 
   protected async write(): Promise<any> {

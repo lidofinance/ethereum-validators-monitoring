@@ -3,7 +3,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { ConsensusProviderService } from 'common/eth-providers';
-import { PrometheusService } from 'common/prometheus';
+import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { SummaryService } from '../summary';
 
@@ -17,25 +17,24 @@ export class ProposeService {
     protected readonly summary: SummaryService,
   ) {}
 
+  @TrackTask('check-proposer-duties')
   public async check(epoch: bigint): Promise<void> {
-    return await this.prometheus.trackTask('check-proposer-duties', async () => {
-      const propDutyDependentRoot = await this.clClient.getDutyDependentRoot(epoch);
-      this.logger.log(`Proposer Duty root: ${propDutyDependentRoot}`);
-      this.logger.log(`Start getting proposers duties info`);
-      const proposersDutyInfo = await this.clClient.getCanonicalProposerDuties(epoch, propDutyDependentRoot);
-      this.logger.log(`Processing proposers duties info`);
-      for (const prop of proposersDutyInfo) {
-        const index = BigInt(prop.validator_index);
-        const slot = BigInt(prop.slot);
-        const blockHeader = await this.clClient.getBlockHeader(prop.slot);
-        this.summary.set(index, {
-          epoch,
-          val_id: index,
-          is_proposer: true,
-          block_to_propose: slot,
-          block_proposed: !!blockHeader,
-        });
-      }
-    });
+    const propDutyDependentRoot = await this.clClient.getDutyDependentRoot(epoch);
+    this.logger.log(`Proposer Duty root: ${propDutyDependentRoot}`);
+    this.logger.log(`Start getting proposers duties info`);
+    const proposersDutyInfo = await this.clClient.getCanonicalProposerDuties(epoch, propDutyDependentRoot);
+    this.logger.log(`Processing proposers duties info`);
+    for (const prop of proposersDutyInfo) {
+      const index = BigInt(prop.validator_index);
+      const slot = BigInt(prop.slot);
+      const blockHeader = await this.clClient.getBlockHeader(prop.slot);
+      this.summary.set(index, {
+        epoch,
+        val_id: index,
+        is_proposer: true,
+        block_to_propose: slot,
+        block_proposed: !!blockHeader,
+      });
+    }
   }
 }

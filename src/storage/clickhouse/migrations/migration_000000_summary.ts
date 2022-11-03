@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS stats.validators_summary (
 )
 ENGINE = ReplacingMergeTree()
 ORDER BY (epoch, val_id)
+PARTITION BY intDiv(epoch, 225)
 `;
 // todo: TTL epoch_time + INTERVAL 1 YEAR DELETE
 export default sql;

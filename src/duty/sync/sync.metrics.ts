@@ -2,7 +2,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { PrometheusService } from 'common/prometheus';
+import { PrometheusService, TrackTask } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
@@ -21,19 +21,18 @@ export class SyncMetrics {
     this.epochInterval = this.config.get('SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG');
   }
 
+  @TrackTask('calc-sync-metrics')
   public async calculate(epoch: bigint, possibleHighRewardValidators: string[]) {
-    return await this.prometheus.trackTask('calc-sync-metrics', async () => {
-      this.logger.log('Calculating sync committee metrics');
-      this.epoch = epoch;
-      this.operators = await this.registryService.getOperators();
+    this.logger.log('Calculating sync committee metrics');
+    this.epoch = epoch;
+    this.operators = await this.registryService.getOperators();
 
-      await Promise.all([
-        this.userAvgSyncPercent(),
-        this.otherAvgSyncPercent(),
-        this.operatorAvgSyncPercents(),
-        this.syncParticipation(possibleHighRewardValidators),
-      ]);
-    });
+    await Promise.all([
+      this.userAvgSyncPercent(),
+      this.otherAvgSyncPercent(),
+      this.operatorAvgSyncPercents(),
+      this.syncParticipation(possibleHighRewardValidators),
+    ]);
   }
 
   private async userAvgSyncPercent() {
