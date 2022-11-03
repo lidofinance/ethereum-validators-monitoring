@@ -9,7 +9,7 @@ import { bigintRange } from 'common/functions/range';
 import { rejectDelay } from 'common/functions/rejectDelay';
 import { retrier } from 'common/functions/retrier';
 import { urljoin } from 'common/functions/urljoin';
-import { PrometheusService } from 'common/prometheus';
+import { PrometheusService, TrackCLRequest } from 'common/prometheus';
 
 import { BlockCache, BlockCacheService } from './block-cache';
 import { MaxDeepError, ResponseError, errCommon, errRequest } from './errors';
@@ -393,79 +393,75 @@ export class ConsensusProviderService {
     else return res;
   }
 
-  protected apiGet = async <T>(apiURL: string, subUrl: string): Promise<T> => {
-    return await this.prometheus.trackCLRequest(apiURL, subUrl, async () => {
-      const res = await got
+  @TrackCLRequest
+  protected async apiGet<T>(apiURL: string, subUrl: string): Promise<T> {
+    const res = await got
+      .get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
+      .catch((e) => {
+        if (e.response) {
+          throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
+        }
+        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
+      });
+    if (res.statusCode !== 200) {
+      throw new ResponseError(errRequest(res.body, subUrl, apiURL), res.statusCode);
+    }
+    try {
+      return JSON.parse(res.body);
+    } catch (e) {
+      throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
+    }
+  }
+
+  @TrackCLRequest
+  protected async apiPost<T>(apiURL: string, subUrl: string, params?: Record<string, any>): Promise<T> {
+    const res = await got
+      .post(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') }, ...params })
+      .catch((e) => {
+        if (e.response) {
+          throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
+        }
+        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
+      });
+    if (res.statusCode !== 200) {
+      throw new ResponseError(errRequest(res.body, subUrl, apiURL), res.statusCode);
+    }
+    try {
+      return JSON.parse(res.body);
+    } catch (e) {
+      throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
+    }
+  }
+
+  @TrackCLRequest
+  protected async apiLargeGet<T>(apiURL: string, subUrl: string): Promise<T> {
+    return await parseChunked(
+      got.stream
         .get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
-        .catch((e) => {
-          if (e.response) {
-            throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
-          }
-          throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-        });
-      if (res.statusCode !== 200) {
-        throw new ResponseError(errRequest(res.body, subUrl, apiURL), res.statusCode);
+        .on('response', (r: Response) => {
+          if (r.statusCode != 200) throw new HTTPError(r);
+        }),
+    ).catch((e) => {
+      if (e instanceof HTTPError) {
+        throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
       }
-      try {
-        return JSON.parse(res.body);
-      } catch (e) {
-        throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
-      }
+      throw new ResponseError(errCommon(e.message, subUrl, apiURL));
     });
-  };
+  }
 
-  protected apiPost = async <T>(apiURL: string, subUrl: string, params?: Record<string, any>): Promise<T> => {
-    return await this.prometheus.trackCLRequest(apiURL, subUrl, async () => {
-      const res = await got
+  @TrackCLRequest
+  protected async apiLargePost<T>(apiURL: string, subUrl: string, params?: Record<string, any>): Promise<T> {
+    return await parseChunked(
+      got.stream
         .post(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') }, ...params })
-        .catch((e) => {
-          if (e.response) {
-            throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
-          }
-          throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-        });
-      if (res.statusCode !== 200) {
-        throw new ResponseError(errRequest(res.body, subUrl, apiURL), res.statusCode);
+        .on('response', (r: Response) => {
+          if (r.statusCode != 200) throw new HTTPError(r);
+        }),
+    ).catch((e) => {
+      if (e instanceof HTTPError) {
+        throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
       }
-      try {
-        return JSON.parse(res.body);
-      } catch (e) {
-        throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
-      }
+      throw new ResponseError(errCommon(e.message, subUrl, apiURL));
     });
-  };
-
-  protected apiLargeGet = async (apiURL: string, subUrl: string): Promise<any> => {
-    return await this.prometheus.trackCLRequest(apiURL, subUrl, async () => {
-      return await parseChunked(
-        got.stream
-          .get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
-          .on('response', (r: Response) => {
-            if (r.statusCode != 200) throw new HTTPError(r);
-          }),
-      ).catch((e) => {
-        if (e instanceof HTTPError) {
-          throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
-        }
-        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-      });
-    });
-  };
-
-  protected apiLargePost = async (apiURL: string, subUrl: string, params?: Record<string, any>): Promise<any> => {
-    return await this.prometheus.trackCLRequest(apiURL, subUrl, async () => {
-      return await parseChunked(
-        got.stream
-          .post(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') }, ...params })
-          .on('response', (r: Response) => {
-            if (r.statusCode != 200) throw new HTTPError(r);
-          }),
-      ).catch((e) => {
-        if (e instanceof HTTPError) {
-          throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
-        }
-        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-      });
-    });
-  };
+  }
 }

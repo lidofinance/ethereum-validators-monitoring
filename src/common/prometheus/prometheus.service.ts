@@ -341,16 +341,22 @@ export class PrometheusService implements OnApplicationBootstrap {
     help: 'Buffered Ether (ETH)',
     labelNames: [],
   });
+}
 
-  public async trackCLRequest(apiUrl: string, subUrl: string, callback: () => any) {
+export function TrackCLRequest(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  const originalValue = descriptor.value;
+  descriptor.value = function (...args) {
+    if (!this.prometheus) throw Error(`'${this.constructor.name}' class object must contain 'prometheus' property`);
+    const [apiUrl, subUrl] = args;
     const [targetName, reqName] = requestLabels(apiUrl, subUrl);
-    const stop = this.outgoingCLRequestsDuration.startTimer({
+    const stop = this.prometheus.outgoingCLRequestsDuration.startTimer({
       name: reqName,
       target: targetName,
     });
-    return await callback()
+    return originalValue
+      .apply(this, args)
       .then((r: any) => {
-        this.outgoingCLRequestsCount.inc({
+        this.prometheus.outgoingCLRequestsCount.inc({
           name: reqName,
           target: targetName,
           status: RequestStatus.COMPLETE,
@@ -359,7 +365,7 @@ export class PrometheusService implements OnApplicationBootstrap {
         return r;
       })
       .catch((e: any) => {
-        this.outgoingCLRequestsCount.inc({
+        this.prometheus.outgoingCLRequestsCount.inc({
           name: reqName,
           target: targetName,
           status: RequestStatus.ERROR,
@@ -368,7 +374,7 @@ export class PrometheusService implements OnApplicationBootstrap {
         throw e;
       })
       .finally(() => stop());
-  }
+  };
 }
 
 export function TrackTask(name: string) {
