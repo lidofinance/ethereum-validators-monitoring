@@ -3,7 +3,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { PrometheusService } from 'common/prometheus';
-import { RegistryService } from 'common/validators-registry';
+import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage/clickhouse';
 
 enum BadAttReason {
@@ -15,112 +15,195 @@ enum BadAttReason {
 
 @Injectable()
 export class AttestationMetrics {
+  protected readonly epochInterval;
+  protected epoch: bigint;
+  protected operators: RegistrySourceOperator[];
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
     protected readonly registryService: RegistryService,
     protected readonly storage: ClickhouseService,
-  ) {}
+  ) {
+    this.epochInterval = this.config.get('BAD_ATTESTATION_EPOCHS');
+  }
 
   public async calculate(epoch: bigint, possibleHighRewardValidators: string[]) {
     return await this.prometheus.trackTask('calc-attestation-metrics', async () => {
       this.logger.log('Calculating attestation metrics');
-      const operators = await this.registryService.getOperators();
-      const missedAttestationsLastEpoch = await this.storage.getValidatorCountWithMissedAttestationsLastEpoch(epoch);
-      const highIncDelayAttestationsLastEpoch = await this.storage.getValidatorCountWithHighIncDelayAttestationsLastEpoch(epoch);
-      const invalidHeadAttestationsLastEpoch = await this.storage.getValidatorCountWithInvalidHeadAttestationsLastEpoch(epoch);
-      const invalidTargetAttestationsLastEpoch = await this.storage.getValidatorCountWithInvalidTargetAttestationsLastEpoch(epoch);
-      const invalidSourceAttestationsLastEpoch = await this.storage.getValidatorCountWithInvalidSourceAttestationsLastEpoch(epoch);
-      const epochInterval = this.config.get('BAD_ATTESTATION_EPOCHS');
-      const missAttestationsLastNEpoch = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(epoch);
-      const highIncDelayAttestationsLastNEpoch = await this.storage.getValidatorCountIncDelayGtOneAttestationsLastNEpoch(epoch);
-      const invalidHeadAttestationsLastNEpoch = await this.storage.getValidatorCountWithInvalidHeadAttestationsLastNEpoch(epoch);
-      const invalidTargetAttestationsLastNEpoch = await this.storage.getValidatorCountWithInvalidTargetAttestationsLastNEpoch(epoch);
-      const invalidSourceAttestationsLastNEpoch = await this.storage.getValidatorCountWithInvalidSourceAttestationsLastNEpoch(epoch);
-      const highAvgIncDelayAttestationsOfNEpoch = await this.storage.getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(epoch);
-      // metrics for alerts
-      const incDelayGtTwoAttestationsLastNEpoch = await this.storage.getValidatorCountIncDelayGtTwoAttestationsLastNEpoch(epoch);
-      const invalidAttestationPropertyGtOneLastNEpoch = await this.storage.getValidatorCountWithInvalidAttestationsPropertyGtOneLastNEpoch(
-        epoch,
-      );
-      const highRewardMissAttestationsLastNEpoch =
-        possibleHighRewardValidators.length > 0
-          ? await this.storage.getValidatorCountWithHighRewardMissedAttestationsLastNEpoch(epoch, possibleHighRewardValidators)
-          : [];
-      operators.forEach((operator) => {
-        const missAttestationLast = missedAttestationsLastEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountMissAttestation.set(
-          { nos_name: operator.name },
-          missAttestationLast ? missAttestationLast.amount : 0,
-        );
-        const highIncDelayAttestationLast = highIncDelayAttestationsLastEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountInvalidAttestation.set(
-          { nos_name: operator.name, reason: BadAttReason.HighIncDelay },
-          highIncDelayAttestationLast ? highIncDelayAttestationLast.amount : 0,
-        );
-        const invalidHeadAttestationLast = invalidHeadAttestationsLastEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountInvalidAttestation.set(
-          { nos_name: operator.name, reason: BadAttReason.InvalidHead },
-          invalidHeadAttestationLast ? invalidHeadAttestationLast.amount : 0,
-        );
-        const invalidTargetAttestationLast = invalidTargetAttestationsLastEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountInvalidAttestation.set(
-          { nos_name: operator.name, reason: BadAttReason.InvalidTarget },
-          invalidTargetAttestationLast ? invalidTargetAttestationLast.amount : 0,
-        );
-        const invalidSourceAttestationLast = invalidSourceAttestationsLastEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountInvalidAttestation.set(
-          { nos_name: operator.name, reason: BadAttReason.InvalidSource },
-          invalidSourceAttestationLast ? invalidSourceAttestationLast.amount : 0,
-        );
-        const missAttestationLastN = missAttestationsLastNEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountMissAttestationLastNEpoch.set(
-          { nos_name: operator.name, epoch_interval: epochInterval },
-          missAttestationLastN ? missAttestationLastN.amount : 0,
-        );
-        const highIncDelayAttestationLastN = highIncDelayAttestationsLastNEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountInvalidAttestationLastNEpoch.set(
-          { nos_name: operator.name, reason: BadAttReason.HighIncDelay, epoch_interval: epochInterval },
-          highIncDelayAttestationLastN ? highIncDelayAttestationLastN.amount : 0,
-        );
-        const invalidHeadAttestationLastN = invalidHeadAttestationsLastNEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountInvalidAttestationLastNEpoch.set(
-          { nos_name: operator.name, reason: BadAttReason.InvalidHead, epoch_interval: epochInterval },
-          invalidHeadAttestationLastN ? invalidHeadAttestationLastN.amount : 0,
-        );
-        const invalidTargetAttestationLastN = invalidTargetAttestationsLastNEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountInvalidAttestationLastNEpoch.set(
-          { nos_name: operator.name, reason: BadAttReason.InvalidTarget, epoch_interval: epochInterval },
-          invalidTargetAttestationLastN ? invalidTargetAttestationLastN.amount : 0,
-        );
-        const invalidSourceAttestationLastN = invalidSourceAttestationsLastNEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountInvalidAttestationLastNEpoch.set(
-          { nos_name: operator.name, reason: BadAttReason.InvalidSource, epoch_interval: epochInterval },
-          invalidSourceAttestationLastN ? invalidSourceAttestationLastN.amount : 0,
-        );
-        const highAvgIncDelayAttestationsOfN = highAvgIncDelayAttestationsOfNEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountHighAvgIncDelayAttestationOfNEpoch.set(
-          { nos_name: operator.name, epoch_interval: epochInterval },
-          highAvgIncDelayAttestationsOfN ? highAvgIncDelayAttestationsOfN.amount : 0,
-        );
+      this.epoch = epoch;
+      this.operators = await this.registryService.getOperators();
+      await Promise.all([
+        this.missedAttestationsLastEpoch(),
+        this.highIncDelayAttestationsLastEpoch(),
+        this.invalidHeadAttestationsLastEpoch(),
+        this.invalidTargetAttestationsLastEpoch(),
+        this.invalidSourceAttestationsLastEpoch(),
+
+        this.missAttestationsLastNEpoch(),
+        this.highIncDelayAttestationsLastNEpoch(),
+        this.invalidHeadAttestationsLastNEpoch(),
+        this.invalidTargetAttestationsLastNEpoch(),
+        this.invalidSourceAttestationsLastNEpoch(),
+        this.highAvgIncDelayAttestationsOfNEpoch(),
         // metrics for alerts
-        const incDelayGtTwoAttestationsLastN = incDelayGtTwoAttestationsLastNEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountHighIncDelayAttestationLastNEpoch.set(
-          { nos_name: operator.name, epoch_interval: epochInterval },
-          incDelayGtTwoAttestationsLastN ? incDelayGtTwoAttestationsLastN.amount : 0,
-        );
-        const invalidAttestationPropertyGtOneLastN = invalidAttestationPropertyGtOneLastNEpoch.find((a) => a.val_nos_name == operator.name);
-        this.prometheus.validatorsCountInvalidAttestationPropertyLastNEpoch.set(
-          { nos_name: operator.name, epoch_interval: epochInterval },
-          invalidAttestationPropertyGtOneLastN ? invalidAttestationPropertyGtOneLastN.amount : 0,
-        );
-        const highRewardMissAttestationLastN = highRewardMissAttestationsLastNEpoch.find((p) => p.val_nos_name == operator.name);
-        this.prometheus.highRewardValidatorsCountMissAttestationLastNEpoch.set(
-          { nos_name: operator.name, epoch_interval: epochInterval },
-          highRewardMissAttestationLastN ? highRewardMissAttestationLastN.amount : 0,
-        );
-      });
+        this.incDelayGtTwoAttestationsLastNEpoch(),
+        this.invalidAttestationPropertyGtOneLastNEpoch(),
+        this.highRewardMissAttestationsLastNEpoch(possibleHighRewardValidators),
+      ]);
+    });
+  }
+
+  private async missedAttestationsLastEpoch() {
+    const result = await this.storage.getValidatorCountWithMissedAttestationsLastEpoch(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountMissAttestation.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
+    });
+  }
+
+  private async highIncDelayAttestationsLastEpoch() {
+    const result = await this.storage.getValidatorCountWithHighIncDelayAttestationsLastEpoch(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountInvalidAttestation.set(
+        { nos_name: operator.name, reason: BadAttReason.HighIncDelay },
+        operatorResult ? operatorResult.amount : 0,
+      );
+    });
+  }
+
+  private async invalidHeadAttestationsLastEpoch() {
+    const result = await this.storage.getValidatorCountWithInvalidHeadAttestationsLastEpoch(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountInvalidAttestation.set(
+        { nos_name: operator.name, reason: BadAttReason.InvalidHead },
+        operatorResult ? operatorResult.amount : 0,
+      );
+    });
+  }
+
+  private async invalidTargetAttestationsLastEpoch() {
+    const result = await this.storage.getValidatorCountWithInvalidTargetAttestationsLastEpoch(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountInvalidAttestation.set(
+        { nos_name: operator.name, reason: BadAttReason.InvalidTarget },
+        operatorResult ? operatorResult.amount : 0,
+      );
+    });
+  }
+
+  private async invalidSourceAttestationsLastEpoch() {
+    const result = await this.storage.getValidatorCountWithInvalidSourceAttestationsLastEpoch(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountInvalidAttestation.set(
+        { nos_name: operator.name, reason: BadAttReason.InvalidSource },
+        operatorResult ? operatorResult.amount : 0,
+      );
+    });
+  }
+
+  private async missAttestationsLastNEpoch() {
+    const result = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountMissAttestationLastNEpoch.set(
+        { nos_name: operator.name, epoch_interval: this.epochInterval },
+        operatorResult ? operatorResult.amount : 0,
+      );
+    });
+  }
+
+  private async highIncDelayAttestationsLastNEpoch() {
+    const result = await this.storage.getValidatorCountIncDelayGtOneAttestationsLastNEpoch(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountInvalidAttestationLastNEpoch.set(
+        { nos_name: operator.name, reason: BadAttReason.HighIncDelay, epoch_interval: this.epochInterval },
+        operatorResult ? operatorResult.amount : 0,
+      );
+    });
+  }
+
+  private async invalidHeadAttestationsLastNEpoch() {
+    const result = await this.storage.getValidatorCountWithInvalidHeadAttestationsLastNEpoch(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountInvalidAttestationLastNEpoch.set(
+        { nos_name: operator.name, reason: BadAttReason.InvalidHead, epoch_interval: this.epochInterval },
+        operatorResult ? operatorResult.amount : 0,
+      );
+    });
+  }
+
+  private async invalidTargetAttestationsLastNEpoch() {
+    const result = await this.storage.getValidatorCountWithInvalidTargetAttestationsLastNEpoch(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountInvalidAttestationLastNEpoch.set(
+        { nos_name: operator.name, reason: BadAttReason.InvalidTarget, epoch_interval: this.epochInterval },
+        operatorResult ? operatorResult.amount : 0,
+      );
+    });
+  }
+
+  private async invalidSourceAttestationsLastNEpoch() {
+    const result = await this.storage.getValidatorCountWithInvalidSourceAttestationsLastNEpoch(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountInvalidAttestationLastNEpoch.set(
+        { nos_name: operator.name, reason: BadAttReason.InvalidSource, epoch_interval: this.epochInterval },
+        operatorResult ? operatorResult.amount : 0,
+      );
+    });
+  }
+
+  private async highAvgIncDelayAttestationsOfNEpoch() {
+    const result = await this.storage.getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountHighAvgIncDelayAttestationOfNEpoch.set(
+        { nos_name: operator.name, epoch_interval: this.epochInterval },
+        operatorResult ? operatorResult.amount : 0,
+      );
+    });
+  }
+
+  private async incDelayGtTwoAttestationsLastNEpoch() {
+    const result = await this.storage.getValidatorCountIncDelayGtTwoAttestationsLastNEpoch(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountHighIncDelayAttestationLastNEpoch.set(
+        { nos_name: operator.name, epoch_interval: this.epochInterval },
+        operatorResult ? operatorResult.amount : 0,
+      );
+    });
+  }
+
+  private async invalidAttestationPropertyGtOneLastNEpoch() {
+    const result = await this.storage.getValidatorCountWithInvalidAttestationsPropertyGtOneLastNEpoch(this.epoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountInvalidAttestationPropertyLastNEpoch.set(
+        { nos_name: operator.name, epoch_interval: this.epochInterval },
+        operatorResult ? operatorResult.amount : 0,
+      );
+    });
+  }
+
+  private async highRewardMissAttestationsLastNEpoch(possibleHighRewardValidators: string[]) {
+    let result = [];
+    if (possibleHighRewardValidators.length > 0)
+      result = await this.storage.getValidatorCountWithHighRewardMissedAttestationsLastNEpoch(this.epoch, possibleHighRewardValidators);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.highRewardValidatorsCountMissAttestationLastNEpoch.set(
+        { nos_name: operator.name, epoch_interval: this.epochInterval },
+        operatorResult ? operatorResult.amount : 0,
+      );
     });
   }
 }
