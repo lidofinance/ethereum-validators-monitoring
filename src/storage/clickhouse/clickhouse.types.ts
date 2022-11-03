@@ -1,5 +1,3 @@
-import { CheckedAttesterDutyInfo } from 'common/eth-providers';
-
 export interface ValidatorsStatusStats {
   active_ongoing: number;
   pending: number;
@@ -49,23 +47,6 @@ export interface NOsProposesStats {
   val_nos_name: string;
   all: number;
   missed: number;
-}
-
-export interface SlotAttestation {
-  bits: boolean[];
-  head: string;
-  target_root: string;
-  target_epoch: string;
-  source_root: string;
-  source_epoch: string;
-  slot: string;
-  committee_index: string;
-}
-
-export interface CheckAttestersDutyResult {
-  attestersDutyInfo: CheckedAttesterDutyInfo[];
-  blocksAttestations: { [blockNum: string]: SlotAttestation[] };
-  allMissedSlots: string[];
 }
 
 export interface SyncCommitteeParticipationAvgPercents {

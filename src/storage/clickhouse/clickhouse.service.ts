@@ -27,7 +27,6 @@ import {
   validatorsCountWithMissProposeQuery,
   validatorsCountWithNegativeDeltaQuery,
   validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery,
-  validatorsIndex,
 } from './clickhouse.constants';
 import {
   NOsDelta,
@@ -96,10 +95,6 @@ export class ClickhouseService implements OnModuleInit {
     await this.retry(async () => await this.migrate());
   }
 
-  public async close(): Promise<void> {
-    this.logger.log(`Closing DB connection`);
-  }
-
   public async getMaxEpoch(): Promise<bigint> {
     const data: any = await this.retry(
       async () => await this.db.query('SELECT max(epoch) as max FROM stats.validators_summary').toPromise(),
@@ -122,15 +117,6 @@ export class ClickhouseService implements OnModuleInit {
       }
       await this.retry(async () => await ws.exec());
     }
-  }
-
-  /**
-   * Send query to Clickhouse and receives information about User validators (validator_id, pubkey)
-   **/
-  public async getValidatorIndexes(): Promise<string[]> {
-    const indexes = <{ val_id: string }[]>await this.retry(async () => await this.db.query(validatorsIndex()).toPromise());
-    if (!indexes || !indexes.length) return [];
-    return indexes.map((i) => i.val_id);
   }
 
   @TrackTask('write-summary')

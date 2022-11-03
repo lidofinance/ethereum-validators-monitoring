@@ -31,16 +31,7 @@ export class CriticalAlertsService {
     this.baseUrl = this.config.get('CRITICAL_ALERTS_ALERTMANAGER_URL') ?? '';
   }
 
-  private get alerts() {
-    return [
-      new CriticalNegativeDelta(this.config, this.storage),
-      new CriticalMissedProposes(this.config, this.storage),
-      new CriticalMissedAttestations(this.config, this.storage),
-      new CriticalSlashing(this.config, this.storage),
-    ];
-  }
-
-  public async sendCriticalAlerts(epoch: bigint) {
+  public async send(epoch: bigint) {
     if (this.prometheus.getSlotTimeDiffWithNow() > 3600000) {
       this.logger.warn(`Data actuality greater then 1 hour. Critical alerts are suppressed`);
       return;
@@ -61,7 +52,16 @@ export class CriticalAlertsService {
     }
   }
 
-  async fire(alert: AlertRequestBody) {
+  private get alerts() {
+    return [
+      new CriticalNegativeDelta(this.config, this.storage),
+      new CriticalMissedProposes(this.config, this.storage),
+      new CriticalMissedAttestations(this.config, this.storage),
+      new CriticalSlashing(this.config, this.storage),
+    ];
+  }
+
+  private async fire(alert: AlertRequestBody) {
     got
       .post(`${this.baseUrl}/api/v1/alerts`, { json: [alert] })
       .then((r) => r.statusCode)

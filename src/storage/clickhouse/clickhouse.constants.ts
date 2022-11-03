@@ -380,9 +380,3 @@ export const userValidatorIDsQuery = (slot: string): string => `
   FROM stats.validator_balances
   WHERE nos_id IS NOT NULL and slot = ${slot}
 `;
-
-export const validatorsIndex = (): string => `
-  SELECT val_id
-  FROM stats.validators_index
-  FINAL
-`;

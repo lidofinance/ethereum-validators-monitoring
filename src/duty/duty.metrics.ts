@@ -28,7 +28,6 @@ export class DutyMetrics {
 
   @TrackTask('calc-all-duties-metrics')
   public async calculate(epoch: bigint): Promise<any> {
-    // todo: possibility to turn off metrics calculate
     this.logger.log('Calculating duties metrics of user validators');
     await Promise.all([this.withPossibleHighReward(epoch), this.stateMetrics.calculate(epoch), this.summaryMetrics.calculate(epoch)]);
   }

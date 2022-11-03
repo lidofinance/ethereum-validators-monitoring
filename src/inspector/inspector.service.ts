@@ -19,7 +19,7 @@ export class InspectorService implements OnModuleInit {
     protected readonly clClient: ConsensusProviderService,
     protected readonly storage: ClickhouseService,
     protected readonly prometheus: PrometheusService,
-    protected readonly criticalAlertService: CriticalAlertsService,
+    protected readonly criticalAlerts: CriticalAlertsService,
 
     protected readonly dutyService: DutyService,
     protected readonly dutyMetrics: DutyMetrics,
@@ -43,7 +43,7 @@ export class InspectorService implements OnModuleInit {
         if (epoch > 0) {
           await this.dutyService.checkAndWrite(epoch, stateSlot);
           await this.dutyMetrics.calculate(epoch);
-          await this.criticalAlertService.sendCriticalAlerts(epoch);
+          await this.criticalAlerts.send(epoch);
           this.latestProcessedEpoch = epoch;
         }
       } catch (e) {

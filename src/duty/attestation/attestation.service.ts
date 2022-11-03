@@ -6,9 +6,19 @@ import { ConfigService } from 'common/config';
 import { BeaconBlockAttestation, BlockInfoResponse, ConsensusProviderService } from 'common/eth-providers';
 import { bigintRange } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-import { SlotAttestation } from 'storage/clickhouse';
 
 import { SummaryService } from '../summary';
+
+interface SlotAttestation {
+  bits: boolean[];
+  head: string;
+  target_root: string;
+  target_epoch: string;
+  source_root: string;
+  source_epoch: string;
+  slot: string;
+  committee_index: string;
+}
 
 @Injectable()
 export class AttestationService {
