@@ -42,8 +42,8 @@ export class SummaryService {
     this.storage.set(index, { ...(this.get(index) ?? {}), ...summary });
   }
 
-  public values(): Iterator<ValidatorDutySummary> {
-    return this.storage.values();
+  public values(): ValidatorDutySummary[] {
+    return [...this.storage.values()];
   }
 
   public clear() {

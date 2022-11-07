@@ -18,7 +18,6 @@ import {
   userNodeOperatorsProposesStatsLastNEpochQuery,
   userNodeOperatorsStatsQuery,
   userSyncParticipationAvgPercentQuery,
-  userValidatorIDsQuery,
   userValidatorsSummaryStatsQuery,
   validatorBalancesDeltaQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
@@ -38,7 +37,6 @@ import {
   NOsValidatorsSyncAvgPercent,
   NOsValidatorsSyncLessChainAvgCount,
   SyncCommitteeParticipationAvgPercents,
-  ValidatorIdentifications,
   ValidatorsStatusStats,
 } from './clickhouse.types';
 import migration_000000_summary from './migrations/migration_000000_summary';
@@ -120,10 +118,10 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   @TrackTask('write-summary')
-  public async writeSummary(summary: Iterator<ValidatorDutySummary>): Promise<void> {
-    let done = false;
-    while (!done) {
-      let rows = 0;
+  public async writeSummary(summary: ValidatorDutySummary[]): Promise<void> {
+    const summaryCopy = [...summary];
+    while (summaryCopy.length > 0) {
+      const chunk = summaryCopy.splice(0, this.chunkSize);
       const ws = this.db
         .insert(
           'INSERT INTO stats.validators_summary ' +
@@ -133,13 +131,7 @@ export class ClickhouseService implements OnModuleInit {
             'att_happened, att_inc_delay, att_valid_head, att_valid_target, att_valid_source) VALUES',
         )
         .stream();
-      while (rows < this.chunkSize) {
-        const iter = summary.next();
-        if (iter.done) {
-          done = true;
-          break;
-        }
-        const v = <ValidatorDutySummary>iter.value;
+      for (const v of chunk) {
         await ws.writeRow(
           `(${v.epoch}, ${v.val_id}, ` +
             `${v.val_nos_id ?? 'NULL'}, ` +
@@ -151,7 +143,6 @@ export class ClickhouseService implements OnModuleInit {
             `${v.att_valid_head ?? 'NULL'}, ${v.att_valid_target ?? 'NULL'}, ${v.att_valid_source ?? 'NULL'}
             )`,
         );
-        rows++;
       }
       await this.retry(async () => await ws.exec());
     }
@@ -414,14 +405,6 @@ export class ClickhouseService implements OnModuleInit {
   public async getOtherValidatorsSummaryStats(epoch: bigint): Promise<ValidatorsStatusStats> {
     const ret = await this.retry(async () => await this.db.query(otherValidatorsSummaryStatsQuery(epoch)).toPromise());
     return <ValidatorsStatusStats>ret[0];
-  }
-
-  /**
-   * Send query to Clickhouse and receives information about User validators (validator_id, pubkey)
-   **/
-  public async getUserValidatorIDs(slot: bigint): Promise<ValidatorIdentifications[]> {
-    const ret = await this.retry(async () => await this.db.query(userValidatorIDsQuery(slot.toString())).toPromise());
-    return <ValidatorIdentifications[]>ret;
   }
 
   /**

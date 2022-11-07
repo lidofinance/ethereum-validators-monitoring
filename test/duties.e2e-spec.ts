@@ -14,7 +14,9 @@ import { PrometheusModule } from 'common/prometheus/prometheus.module';
 import { RegistryService } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
-import { DataProcessingService, InspectorModule } from '../src/inspector';
+import { ValStatus } from '../src/common/eth-providers';
+import { DutyModule, DutyService } from '../src/duty';
+import { ValidatorDutySummary } from '../src/duty/summary';
 
 const MikroORMMockProvider = {
   provide: MikroORM,
@@ -52,36 +54,74 @@ const MikroORMStub = {
 };
 
 const testSyncMember = {
-  index: '285113',
+  index: 285113n,
   pubkey: '0x82750f01239832e15f0706f38cbbe35bed4cdfa4537391c14af00d8c2ae8dd695f1db09a1fbe81956ade016b245a2343',
   registry_index: 0,
   operator_index: 0,
   operator_name: 'test1',
+  performance_summary: {
+    epoch: BigInt(process.env['TEST_EPOCH_NUMBER']),
+    ///
+    val_id: 285113n,
+    val_nos_id: 0,
+    val_nos_name: 'test1',
+    val_slashed: false,
+    val_status: ValStatus.ActiveOngoing,
+    val_balance: 33085196809n,
+    ///
+    is_sync: true,
+    sync_percent: 78.125,
+    ///
+    att_happened: true,
+    att_inc_delay: 1,
+    att_valid_head: true,
+    att_valid_target: true,
+    att_valid_source: true,
+  },
 };
 
 const testProposerMember = {
-  index: '71737',
+  index: 71737n,
   pubkey: '0xad635abd7655116d2b4a59502094f2a6dc82fc436b59f0353798c550ae56d6bbd66a56cc67c29b1c7c82433f3e3742ee',
   registry_index: 0,
   operator_index: 1,
   operator_name: 'test2',
+  performance_summary: {
+    epoch: BigInt(process.env['TEST_EPOCH_NUMBER']),
+    ///
+    val_id: 71737n,
+    val_nos_id: 1,
+    val_nos_name: 'test2',
+    val_slashed: false,
+    val_status: ValStatus.ActiveOngoing,
+    val_balance: 35258194732n,
+    ///
+    is_proposer: true,
+    block_to_propose: 4895296n,
+    block_proposed: true,
+    ///
+    att_happened: true,
+    att_inc_delay: 1,
+    att_valid_head: true,
+    att_valid_target: true,
+    att_valid_source: true,
+  },
 };
 
 const testValidators = [testSyncMember, testProposerMember];
 const testValidatorIndexes = testValidators.map((v) => v.index);
 
-describe('Inspector', () => {
+describe('Duties', () => {
   jest.setTimeout(240 * 1000);
 
-  let dataProcessingService: DataProcessingService;
+  let dutyService: DutyService;
   let validatorsRegistryService: RegistryService;
   let clickhouseService: ClickhouseService;
 
-  let slotToWrite, stateRoot, slotNumber;
+  let epochNumber, stateSlot;
+  let indexesToSave: string[];
+  let summaryToSave: ValidatorDutySummary[];
 
-  const getUserValidatorIDsMock = jest
-    .fn()
-    .mockImplementation(async () => testValidators.map((v) => ({ validator_id: v.index, validator_pubkey: v.pubkey })));
   const getActualKeysIndexedMock = jest.fn().mockImplementation(async () => {
     const map = new Map();
     testValidators.forEach((v) =>
@@ -95,10 +135,8 @@ describe('Inspector', () => {
     return map;
   });
   jest.spyOn(SimpleFallbackJsonRpcBatchProvider.prototype, 'detectNetwork').mockImplementation(async () => getNetwork('mainnet'));
-  const writeBalancesSpy = jest.spyOn(ClickhouseService.prototype, 'writeStates');
-  const writeAttestationsSpy = jest.spyOn(ClickhouseService.prototype, 'writeAttestations');
-  const writeProposesSpy = jest.spyOn(ClickhouseService.prototype, 'writeProposes');
-  const writeSyncsSpy = jest.spyOn(ClickhouseService.prototype, 'writeSyncs');
+  const writeIndexesSpy = jest.spyOn(ClickhouseService.prototype, 'writeIndexes');
+  const writeSummarySpy = jest.spyOn(ClickhouseService.prototype, 'writeSummary');
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -119,16 +157,15 @@ describe('Inspector', () => {
         PrometheusModule,
         MikroORMStub,
         RegistryKeyRepositoryStub,
-        InspectorModule,
+        DutyModule,
       ],
     }).compile();
 
-    dataProcessingService = moduleRef.get<DataProcessingService>(DataProcessingService);
+    dutyService = moduleRef.get<DutyService>(DutyService);
     validatorsRegistryService = moduleRef.get<RegistryService>(RegistryService);
     clickhouseService = moduleRef.get<ClickhouseService>(ClickhouseService);
 
     validatorsRegistryService.getActualKeysIndexed = getActualKeysIndexedMock;
-    clickhouseService.getUserValidatorIDs = getUserValidatorIDsMock;
     // stub writing to db
     Object.defineProperty(clickhouseService, 'db', {
       value: {
@@ -141,56 +178,37 @@ describe('Inspector', () => {
       },
     });
 
-    slotToWrite = BigInt(process.env['TEST_SLOT_TO_WRITE']);
-    stateRoot = process.env['TEST_STATE_ROOT'];
-    slotNumber = process.env['TEST_SLOT_NUMBER'];
+    stateSlot = BigInt(process.env['TEST_STATE_SLOT']);
+    epochNumber = BigInt(process.env['TEST_EPOCH_NUMBER']);
 
-    await dataProcessingService.process(slotToWrite, stateRoot, slotNumber);
+    await dutyService.checkAndWrite(epochNumber, stateSlot);
+    indexesToSave = writeIndexesSpy.mock.calls[0][0].map((i) => i.index);
+    summaryToSave = [...writeSummarySpy.mock.calls[0][0]];
   });
 
   describe('should be processes validators info', () => {
-    it('saving to balances table should be performed only once', () => {
-      expect(clickhouseService.writeStates).toBeCalledTimes(1);
+    it('saving to indexes table should be performed only once', () => {
+      expect(clickhouseService.writeIndexes).toBeCalledTimes(1);
     });
 
-    it('saving to attestation table should be performed only once', () => {
-      expect(clickhouseService.writeAttestations).toBeCalledTimes(1);
+    it('saving to summary table should be performed only once', () => {
+      expect(clickhouseService.writeSummary).toBeCalledTimes(1);
     });
 
-    it('saving to proposes table should be performed only once', () => {
-      expect(clickhouseService.writeProposes).toBeCalledTimes(1);
+    it('indexes content to save should contains all tested validators', () => {
+      testValidatorIndexes.forEach((i) => expect(indexesToSave).toContain(String(i)));
     });
 
-    it('saving to sync table should be performed only once', () => {
-      expect(clickhouseService.writeSyncs).toBeCalledTimes(1);
+    it('summary content to save should contains right tested sync validator performance info', () => {
+      const toSaveTestedSync = summaryToSave.find((v) => v.val_id == testSyncMember.index);
+      expect(toSaveTestedSync).toBeDefined();
+      expect(toSaveTestedSync).toEqual(testSyncMember.performance_summary);
     });
 
-    it('balances content to save should contains all tested validators', () => {
-      const toSave = writeBalancesSpy.mock.calls[0][2].balances.map((b) => b.index);
-      expect(toSave).toHaveLength(2);
-      expect(toSave.sort()).toEqual(testValidatorIndexes.sort());
-    });
-
-    it('attestations content to save should contains only tested validators', () => {
-      const toSave = writeAttestationsSpy.mock.calls[0][0].attestersDutyInfo.map((a) => a.validator_index);
-      expect(toSave).toHaveLength(2);
-      expect(toSave.sort()).toEqual(testValidatorIndexes.sort());
-    });
-
-    it('proposes content to save should contains only tested validators with propose duty', () => {
-      const toSave = writeProposesSpy.mock.calls[0][0].map((p) => p.validator_index);
-      expect(toSave).toHaveLength(1);
-      expect(toSave[0]).toEqual(testProposerMember.index);
-    });
-
-    it('syncs content to save should contains only tested validators with sync committee duty', () => {
-      const toSave = writeSyncsSpy.mock.calls[0][0].syncResult.map((p) => p.validator_index);
-      expect(toSave).toHaveLength(1);
-      expect(toSave[0]).toEqual(testSyncMember.index);
-    });
-
-    it('latest slot in DB equal processing slot', () => {
-      expect(dataProcessingService.latestProcessedEpoch).toBe(slotToWrite);
+    it('summary content to save should contains right tested proposer validator performance info', () => {
+      const toSaveTestedProposer = summaryToSave.find((v) => v.val_id == testProposerMember.index);
+      expect(toSaveTestedProposer).toBeDefined();
+      expect(toSaveTestedProposer).toEqual(testProposerMember.performance_summary);
     });
   });
 });
