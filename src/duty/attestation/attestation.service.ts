@@ -42,9 +42,10 @@ export class AttestationService {
     const committees = await this.clClient.getAttestationCommitteesInfo(stateSlot, epoch);
     this.logger.log(`Processing attestation duty info`);
     for (const committee of committees) {
-      for (const [block, blockAttestations] of Object.entries(blocksAttestations).filter(
+      const incBlocks = Object.entries(blocksAttestations).filter(
         ([b]) => BigInt(b) > BigInt(committee.slot), // Attestation cannot be included in the previous or current block
-      )) {
+      );
+      for (const [block, blockAttestations] of incBlocks) {
         const attestations: SlotAttestation[] = blockAttestations.filter(
           (att: any) => att.slot == committee.slot && att.committee_index == committee.index,
         );
@@ -87,7 +88,7 @@ export class AttestationService {
     this.logger.log(`Processing attestations from blocks info`);
     const blocksAttestations: { [block: string]: SlotAttestation[] } = {};
     let allMissedSlots: string[] = [];
-    let lastBlockInfo: BlockInfoResponse | void;
+    let lastBlockInfo: BlockInfoResponse | undefined;
     let lastMissedSlots: string[];
     // Check all slots from epoch start to last epoch slot + 32 (max inclusion delay)
     const firstSlotInEpoch = epoch * this.slotsInEpoch;

@@ -8,7 +8,7 @@ import { ClickhouseService } from 'storage';
 
 @Injectable()
 export class ProposeMetrics {
-  protected epoch: bigint;
+  protected processedEpoch: bigint;
   protected operators: RegistrySourceOperator[];
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
@@ -21,13 +21,13 @@ export class ProposeMetrics {
   @TrackTask('calc-propose-metrics')
   public async calculate(epoch: bigint, possibleHighRewardValidators: string[]) {
     this.logger.log('Calculating propose metrics');
-    this.epoch = epoch;
+    this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();
     await Promise.all([this.missProposes(), this.highRewardMissProposes(possibleHighRewardValidators)]);
   }
 
   private async missProposes() {
-    const result = await this.storage.getValidatorsCountWithMissedProposes(this.epoch);
+    const result = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((p) => p.val_nos_name == operator.name);
       this.prometheus.validatorsCountMissPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.miss_propose_count : 0);
@@ -37,7 +37,7 @@ export class ProposeMetrics {
   private async highRewardMissProposes(possibleHighRewardValidators: string[]) {
     let result = [];
     if (possibleHighRewardValidators.length > 0)
-      result = await this.storage.getValidatorsCountWithMissedProposes(this.epoch, possibleHighRewardValidators);
+      result = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch, possibleHighRewardValidators);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((p) => p.val_nos_name == operator.name);
       this.prometheus.highRewardValidatorsCountMissPropose.set(

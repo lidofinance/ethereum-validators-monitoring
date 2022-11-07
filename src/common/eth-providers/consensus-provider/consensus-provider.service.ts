@@ -195,7 +195,7 @@ export class ConsensusProviderService {
   public async getBlockInfoWithSlotAttestations(
     slot: Slot,
     maxDeep = this.defaultMaxSlotDeepCount,
-  ): Promise<[BlockInfoResponse | void, Array<string>]> {
+  ): Promise<[BlockInfoResponse | undefined, Array<string>]> {
     const nearestBlockIncludedAttestations = slot + 1n; // good attestation should be included to the next block
     let blockInfo;
     let missedSlots: bigint[] = [];

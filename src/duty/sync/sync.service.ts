@@ -9,6 +9,8 @@ import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { SummaryService } from '../summary';
 
+const SYNC_COMMITTEE_SIZE = 512;
+
 @Injectable()
 export class SyncService {
   public constructor(
@@ -22,7 +24,7 @@ export class SyncService {
   @TrackTask('check-sync-duties')
   public async check(epoch: bigint, stateSlot: bigint): Promise<void> {
     this.logger.log(`Getting sync committee participation info`);
-    const SyncCommitteeBits = new BitVectorType({ length: 512 }); // sync participants count in committee
+    const SyncCommitteeBits = new BitVectorType({ length: SYNC_COMMITTEE_SIZE }); // sync participants count in committee
     const indexedValidators = await this.getSyncCommitteeIndexedValidators(epoch, stateSlot);
     this.logger.log(`Processing sync committee participation info`);
     const epochBlocks: BlockInfoResponse[] = [];

@@ -16,7 +16,7 @@ enum BadAttReason {
 @Injectable()
 export class AttestationMetrics {
   protected readonly epochInterval;
-  protected epoch: bigint;
+  protected processedEpoch: bigint;
   protected operators: RegistrySourceOperator[];
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
@@ -31,7 +31,7 @@ export class AttestationMetrics {
   @TrackTask('calc-attestation-metrics')
   public async calculate(epoch: bigint, possibleHighRewardValidators: string[]) {
     this.logger.log('Calculating attestation metrics');
-    this.epoch = epoch;
+    this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();
     await Promise.all([
       this.missedAttestationsLastEpoch(),
@@ -54,7 +54,7 @@ export class AttestationMetrics {
   }
 
   private async missedAttestationsLastEpoch() {
-    const result = await this.storage.getValidatorCountWithMissedAttestationsLastEpoch(this.epoch);
+    const result = await this.storage.getValidatorCountWithMissedAttestationsLastEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountMissAttestation.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
@@ -62,7 +62,7 @@ export class AttestationMetrics {
   }
 
   private async highIncDelayAttestationsLastEpoch() {
-    const result = await this.storage.getValidatorCountWithHighIncDelayAttestationsLastEpoch(this.epoch);
+    const result = await this.storage.getValidatorCountWithHighIncDelayAttestationsLastEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountInvalidAttestation.set(
@@ -73,7 +73,7 @@ export class AttestationMetrics {
   }
 
   private async invalidHeadAttestationsLastEpoch() {
-    const result = await this.storage.getValidatorCountWithInvalidHeadAttestationsLastEpoch(this.epoch);
+    const result = await this.storage.getValidatorCountWithInvalidHeadAttestationsLastEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountInvalidAttestation.set(
@@ -84,7 +84,7 @@ export class AttestationMetrics {
   }
 
   private async invalidTargetAttestationsLastEpoch() {
-    const result = await this.storage.getValidatorCountWithInvalidTargetAttestationsLastEpoch(this.epoch);
+    const result = await this.storage.getValidatorCountWithInvalidTargetAttestationsLastEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountInvalidAttestation.set(
@@ -95,7 +95,7 @@ export class AttestationMetrics {
   }
 
   private async invalidSourceAttestationsLastEpoch() {
-    const result = await this.storage.getValidatorCountWithInvalidSourceAttestationsLastEpoch(this.epoch);
+    const result = await this.storage.getValidatorCountWithInvalidSourceAttestationsLastEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountInvalidAttestation.set(
@@ -106,7 +106,7 @@ export class AttestationMetrics {
   }
 
   private async missAttestationsLastNEpoch() {
-    const result = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(this.epoch);
+    const result = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountMissAttestationLastNEpoch.set(
@@ -117,7 +117,7 @@ export class AttestationMetrics {
   }
 
   private async highIncDelayAttestationsLastNEpoch() {
-    const result = await this.storage.getValidatorCountIncDelayGtOneAttestationsLastNEpoch(this.epoch);
+    const result = await this.storage.getValidatorCountIncDelayGtOneAttestationsLastNEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountInvalidAttestationLastNEpoch.set(
@@ -128,7 +128,7 @@ export class AttestationMetrics {
   }
 
   private async invalidHeadAttestationsLastNEpoch() {
-    const result = await this.storage.getValidatorCountWithInvalidHeadAttestationsLastNEpoch(this.epoch);
+    const result = await this.storage.getValidatorCountWithInvalidHeadAttestationsLastNEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountInvalidAttestationLastNEpoch.set(
@@ -139,7 +139,7 @@ export class AttestationMetrics {
   }
 
   private async invalidTargetAttestationsLastNEpoch() {
-    const result = await this.storage.getValidatorCountWithInvalidTargetAttestationsLastNEpoch(this.epoch);
+    const result = await this.storage.getValidatorCountWithInvalidTargetAttestationsLastNEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountInvalidAttestationLastNEpoch.set(
@@ -150,7 +150,7 @@ export class AttestationMetrics {
   }
 
   private async invalidSourceAttestationsLastNEpoch() {
-    const result = await this.storage.getValidatorCountWithInvalidSourceAttestationsLastNEpoch(this.epoch);
+    const result = await this.storage.getValidatorCountWithInvalidSourceAttestationsLastNEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountInvalidAttestationLastNEpoch.set(
@@ -161,7 +161,7 @@ export class AttestationMetrics {
   }
 
   private async highAvgIncDelayAttestationsOfNEpoch() {
-    const result = await this.storage.getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(this.epoch);
+    const result = await this.storage.getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountHighAvgIncDelayAttestationOfNEpoch.set(
@@ -172,7 +172,7 @@ export class AttestationMetrics {
   }
 
   private async incDelayGtTwoAttestationsLastNEpoch() {
-    const result = await this.storage.getValidatorCountIncDelayGtTwoAttestationsLastNEpoch(this.epoch);
+    const result = await this.storage.getValidatorCountIncDelayGtTwoAttestationsLastNEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountHighIncDelayAttestationLastNEpoch.set(
@@ -183,7 +183,7 @@ export class AttestationMetrics {
   }
 
   private async invalidAttestationPropertyGtOneLastNEpoch() {
-    const result = await this.storage.getValidatorCountWithInvalidAttestationsPropertyGtOneLastNEpoch(this.epoch);
+    const result = await this.storage.getValidatorCountWithInvalidAttestationsPropertyGtOneLastNEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountInvalidAttestationPropertyLastNEpoch.set(
@@ -196,7 +196,10 @@ export class AttestationMetrics {
   private async highRewardMissAttestationsLastNEpoch(possibleHighRewardValidators: string[]) {
     let result = [];
     if (possibleHighRewardValidators.length > 0)
-      result = await this.storage.getValidatorCountWithHighRewardMissedAttestationsLastNEpoch(this.epoch, possibleHighRewardValidators);
+      result = await this.storage.getValidatorCountWithHighRewardMissedAttestationsLastNEpoch(
+        this.processedEpoch,
+        possibleHighRewardValidators,
+      );
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.highRewardValidatorsCountMissAttestationLastNEpoch.set(

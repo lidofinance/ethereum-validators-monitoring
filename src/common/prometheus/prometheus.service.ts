@@ -405,7 +405,10 @@ export function TrackTask(name: string) {
           });
           throw e;
         })
-        .finally(() => this.logger.debug(`Task '${name}' is complete. Duration: ${stop()}`));
+        .finally(() => {
+          const duration = stop();
+          this.logger.debug(`Task '${name}' is complete. Duration: ${duration}`);
+        });
     };
   };
 }

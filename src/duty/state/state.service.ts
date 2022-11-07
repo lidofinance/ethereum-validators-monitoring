@@ -28,7 +28,7 @@ export class StateService {
     this.logger.log('Getting all validators state');
     const states = await this.clClient.getValidatorsState(stateSlot);
     this.logger.log('Processing all validators state');
-    const setSummary = (): boolean => {
+    const setSummary = (): void => {
       for (const state of states) {
         const index = BigInt(state.index);
         const operator = keysIndexed.get(state.validator.pubkey);
@@ -42,7 +42,6 @@ export class StateService {
           val_balance: BigInt(state.balance),
         });
       }
-      return true;
     };
     await Promise.all([this.storage.writeIndexes(states), setSummary()]);
   }
