@@ -48,7 +48,7 @@ export class AttestationService {
         const attestations: SlotAttestation[] = blockAttestations.filter(
           (att: any) => att.slot == committee.slot && att.committee_index == committee.index,
         );
-        if (!attestations) continue; // try to find committee attestations in another next block
+        if (!attestations.length) continue; // try to find committee attestations in another next block
         for (const attestation of attestations) {
           const [canonHead, canonTarget, canonSource] = await Promise.all([
             this.getCanonSlotRoot(BigInt(attestation.slot)),
