@@ -32,6 +32,10 @@ export class DutyService {
   ) {}
 
   public async checkAndWrite(epoch: bigint, stateSlot: bigint): Promise<any> {
+    // Prefetch will be done before main checks because duty by state requests are heavy
+    // and while we wait for their responses we fetch blocks and headers.
+    // If for some reason prefetch task will be slower than duty by state requests,
+    // blocks and headers will be fetched inside tasks of checks
     await Promise.all([this.prefetch(epoch), this.checkAll(epoch, stateSlot)]);
     await this.write();
   }
