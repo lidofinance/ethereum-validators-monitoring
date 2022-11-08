@@ -29,11 +29,13 @@ export class DutyMetrics {
   @TrackTask('calc-all-duties-metrics')
   public async calculate(epoch: bigint): Promise<any> {
     this.logger.log('Calculating duties metrics of user validators');
-    await Promise.all([this.withPossibleHighReward(epoch), this.stateMetrics.calculate(epoch), this.summaryMetrics.calculate(epoch)]);
+    const possibleHighRewardValidators = await this.getPossibleHighRewardValidators();
+    await Promise.all([this.withPossibleHighReward(epoch, possibleHighRewardValidators), this.stateMetrics.calculate(epoch)]);
+    // we must calculate summary metrics after all duties to avoid errors in processing
+    await this.summaryMetrics.calculate(epoch);
   }
 
-  private async withPossibleHighReward(epoch: bigint): Promise<void> {
-    const possibleHighRewardValidators = await this.getPossibleHighRewardValidators();
+  private async withPossibleHighReward(epoch: bigint, possibleHighRewardValidators: string[]): Promise<void> {
     await Promise.all([
       this.attestationMetrics.calculate(epoch, possibleHighRewardValidators),
       this.proposeMetrics.calculate(epoch, possibleHighRewardValidators),
