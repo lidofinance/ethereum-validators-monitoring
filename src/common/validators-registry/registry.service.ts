@@ -16,7 +16,8 @@ export class RegistryService {
   public async getActualKeysIndexed(timestamp: number): Promise<RegistrySourceKeysIndexed | undefined> {
     await this.updateValidators();
     if (timestamp > this.lastTimestamp) {
-      this.logger.warn(`Registry data is too old. Last update - ${new Date(this.lastTimestamp).toISOString()}`);
+      const lastUpdateTime = new Date(this.lastTimestamp * 1000).toISOString();
+      throw Error(`Validators registry data is too old. Last update - ${lastUpdateTime}`);
     }
     return await this.source.getIndexedKeys();
   }
