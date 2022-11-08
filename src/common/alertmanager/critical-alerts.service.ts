@@ -40,12 +40,15 @@ export class CriticalAlertsService {
       this.logger.warn(`Env var 'CRITICAL_ALERTS_ALERTMANAGER_URL' is not set. Unable to send critical alerts`);
       return;
     }
-    this.logger.log('Send critical alerts if exist');
     try {
+      let count = 0;
       for (const alert of this.alerts) {
         const toSend = await alert.toSend(epoch);
-        if (toSend) await this.fire(toSend.body).then(() => (sentAlerts[alert.alertname] = toSend));
+        if (!toSend) continue;
+        count++;
+        await this.fire(toSend.body).then(() => (sentAlerts[alert.alertname] = toSend));
       }
+      this.logger.log(`Sent critical alerts: ${count}`);
     } catch (e) {
       this.logger.error(`Error when trying to processing critical alerts`);
       this.logger.error(e as Error);
