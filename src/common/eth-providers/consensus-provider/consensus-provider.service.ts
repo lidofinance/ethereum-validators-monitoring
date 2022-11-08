@@ -414,26 +414,6 @@ export class ConsensusProviderService {
   }
 
   @TrackCLRequest
-  protected async apiPost<T>(apiURL: string, subUrl: string, params?: Record<string, any>): Promise<T> {
-    const res = await got
-      .post(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') }, ...params })
-      .catch((e) => {
-        if (e.response) {
-          throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
-        }
-        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-      });
-    if (res.statusCode !== 200) {
-      throw new ResponseError(errRequest(res.body, subUrl, apiURL), res.statusCode);
-    }
-    try {
-      return JSON.parse(res.body);
-    } catch (e) {
-      throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
-    }
-  }
-
-  @TrackCLRequest
   protected async apiLargeGet<T>(apiURL: string, subUrl: string): Promise<T> {
     return await parseChunked(
       got.stream
