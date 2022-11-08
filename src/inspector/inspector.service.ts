@@ -43,11 +43,8 @@ export class InspectorService implements OnModuleInit {
         if (epoch > 0) {
           await this.dutyService.checkAndWrite(epoch, stateSlot);
           await this.dutyMetrics.calculate(epoch);
-          await this.criticalAlerts.send(epoch).finally(
-            () =>
-              // Completion of main cycle shouldn't depend on results of critical alerts sending
-              (this.latestProcessedEpoch = epoch),
-          );
+          await this.criticalAlerts.send(epoch);
+          this.latestProcessedEpoch = epoch;
         }
       } catch (e) {
         this.logger.error(`Error while processing and writing epoch`);
