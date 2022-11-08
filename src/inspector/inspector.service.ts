@@ -39,8 +39,9 @@ export class InspectorService implements OnModuleInit {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
-        const { epoch, stateSlot } = await this.waitForNextFinalizedSlot();
-        if (epoch > 0) {
+        const nextFinalized = await this.waitForNextFinalizedSlot();
+        if (nextFinalized) {
+          const { epoch, stateSlot } = nextFinalized;
           await this.dutyService.checkAndWrite(epoch, stateSlot);
           await this.dutyMetrics.calculate(epoch);
           await this.criticalAlerts.send(epoch);
@@ -60,7 +61,7 @@ export class InspectorService implements OnModuleInit {
     }
   }
 
-  protected async waitForNextFinalizedSlot(): Promise<{ epoch: bigint; stateSlot: bigint }> {
+  protected async waitForNextFinalizedSlot(): Promise<{ epoch: bigint; stateSlot: bigint } | undefined> {
     const nextSlot = this.calculateNextFinalizedSlot();
     const latestFinalizedBeaconBlock = <BlockHeaderResponse>await this.clClient.getBlockHeader('finalized');
     const latestFinalizedEpoch = BigInt(latestFinalizedBeaconBlock.header.message.slot) / 32n;
@@ -73,7 +74,7 @@ export class InspectorService implements OnModuleInit {
       );
 
       return new Promise((resolve) => {
-        setTimeout(() => resolve({ epoch: 0n, stateSlot: 0n }), sleepTime * 1000);
+        setTimeout(() => resolve(undefined), sleepTime * 1000);
       });
     }
     // new finalized slot has happened, from which we can get information about needed
