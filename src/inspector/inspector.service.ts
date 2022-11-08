@@ -43,7 +43,7 @@ export class InspectorService implements OnModuleInit {
         if (nextFinalized) {
           const { epoch, stateSlot } = nextFinalized;
           await this.dutyService.checkAndWrite(epoch, stateSlot);
-          await this.dutyMetrics.calculate(epoch);
+          await this.dutyMetrics.calculate(epoch, stateSlot);
           await this.criticalAlerts.send(epoch);
           this.latestProcessedEpoch = epoch;
         }
