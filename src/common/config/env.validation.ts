@@ -174,7 +174,7 @@ export class EnvironmentVariables {
   @IsNumber()
   @Min(74240) // Altair
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public START_EPOCH = 74240;
+  public START_EPOCH = 155000;
 
   @IsNumber()
   @Min(32)
