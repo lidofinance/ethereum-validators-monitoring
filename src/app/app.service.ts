@@ -14,7 +14,7 @@ export class AppService implements OnModuleInit, OnApplicationBootstrap {
   constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly configService: ConfigService,
-    protected readonly promService: PrometheusService,
+    protected readonly prometheus: PrometheusService,
     protected readonly inspectorService: InspectorService,
     protected readonly executionProviderService: ExecutionProviderService,
   ) {}
@@ -28,8 +28,11 @@ export class AppService implements OnModuleInit, OnApplicationBootstrap {
     const branch = buildInfo.branch;
     const name = APP_NAME;
 
-    this.promService.buildInfo.labels({ env, name, version, commit, branch }).inc();
+    this.prometheus.buildInfo.labels({ env, name, version, commit, branch }).inc();
     this.logger.log('Init app', { env, network, name, version, startSlot });
+    this.logger.log(`DRY RUN ${this.configService.get('DRY_RUN') ? 'enabled' : 'disabled'}`);
+    this.logger.log(`Slot time: ${this.configService.get('CHAIN_SLOT_TIME_SECONDS')} seconds`);
+    this.logger.log(`Epoch size: ${this.configService.get('FETCH_INTERVAL_SLOTS')} slots`);
   }
 
   public async onApplicationBootstrap(): Promise<void> {

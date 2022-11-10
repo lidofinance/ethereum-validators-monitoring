@@ -30,9 +30,8 @@ jobs:
         env:
           CL_API_URLS: ${{ secrets.CL_API_URL }}
           CL_API_GET_RESPONSE_TIMEOUT: 60000
-          TEST_SLOT_TO_WRITE: 4895327
-          TEST_SLOT_NUMBER: 4895327
-          TEST_STATE_ROOT: '0x6fc24e8dee3c5c42d9e840bf03eed298df16ab097878c498a7ad84adac63246a'
+          TEST_EPOCH_NUMBER: 152978
+          TEST_STATE_SLOT: 4895327
           # stub
           ETH_NETWORK: 1
           EL_RPC_URLS: localhost
