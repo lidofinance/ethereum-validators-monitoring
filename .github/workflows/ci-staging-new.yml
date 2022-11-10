@@ -26,4 +26,4 @@ jobs:
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           TARGET_REPO: "lidofinance/infra-mainnet"
           TARGET_WORKFLOW: "deploy_staging_mainnet_ethereum_validators_monitoring.yaml"
-          TARGET: "main"
+          TARGET: "main_candidate"
