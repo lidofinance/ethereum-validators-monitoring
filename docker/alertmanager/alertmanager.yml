@@ -2,14 +2,24 @@ global:
   resolve_timeout: 15m
 route:
   group_by: ['alertname']
-  group_wait: 1s
-  group_interval: 10s
+  group_wait: 10s
+  group_interval: 15s
   repeat_interval: 1h
   receiver: discord_webhook_default
   routes:
     - receiver: discord_webhook_send_resolved
       matchers:
-        - alertname =~ "DataActuality|NumValidatorsWithNegativeDelta"
+        - alertname =~ "DataActuality"
+      continue: true
+
+    - receiver: telegram_resolved
+      matchers:
+        - alertname =~ "DataActuality"
+
+    - receiver: telegram
+      continue: true
+
+    - receiver: discord_webhook_default
 
 receivers:
   - name: 'discord_webhook_default'
@@ -21,3 +31,25 @@ receivers:
     webhook_configs:
       - url: 'http://alertmanager-discord:9094/'
         send_resolved: true
+
+  - name: 'telegram'
+    telegram_configs:
+      - send_resolved: false
+        disable_notifications: false
+        parse_mode: "HTML"
+        api_url: 'https://api.telegram.org'
+        message: '{{ template "telegram.custom.message" . }}'
+        bot_token: 'YOUR_TOKEN'
+        chat_id: 0
+
+  - name: 'telegram_resolved'
+    telegram_configs:
+      - send_resolved: true
+        disable_notifications: false
+        parse_mode: "HTML"
+        api_url: 'https://api.telegram.org'
+        message: '{{ template "telegram.custom.message" . }}'
+        bot_token: 'YOUR_TOKEN'
+        chat_id: 0
+
+templates: ['/etc/alertmanager/templates/telegram.tmpl']
