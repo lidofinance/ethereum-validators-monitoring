@@ -70,7 +70,7 @@ export class StateMetrics {
 
   private async userValidatorsStats() {
     const result = await this.storage.getUserValidatorsSummaryStats(this.processedEpoch);
-    this.logger.debug(`User stats: ${result}`);
+    this.logger.debug(`User stats: ${JSON.stringify(result)}`);
     this.prometheus.validators.set(
       {
         owner: Owner.USER,
@@ -96,7 +96,7 @@ export class StateMetrics {
 
   private async otherValidatorsStats() {
     const result = await this.storage.getOtherValidatorsSummaryStats(this.processedEpoch);
-    this.logger.debug(`Other stats: ${result}`);
+    this.logger.debug(`Other stats: ${JSON.stringify(result)}`);
     this.prometheus.validators.set(
       {
         owner: Owner.OTHER,

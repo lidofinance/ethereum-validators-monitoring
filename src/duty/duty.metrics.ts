@@ -27,9 +27,8 @@ export class DutyMetrics {
   ) {}
 
   @TrackTask('calc-all-duties-metrics')
-  public async calculate(epoch: bigint, stateSlot: bigint): Promise<any> {
+  public async calculate(epoch: bigint, possibleHighRewardValidators: string[]): Promise<any> {
     this.logger.log('Calculating duties metrics of user validators');
-    const possibleHighRewardValidators = await this.getPossibleHighRewardValidators(stateSlot);
     await Promise.all([this.withPossibleHighReward(epoch, possibleHighRewardValidators), this.stateMetrics.calculate(epoch)]);
     // we must calculate summary metrics after all duties to avoid errors in processing
     await this.summaryMetrics.calculate(epoch);
@@ -44,13 +43,13 @@ export class DutyMetrics {
   }
 
   @TrackTask('high-reward-validators')
-  private async getPossibleHighRewardValidators(stateSlot: bigint): Promise<string[]> {
+  public async getPossibleHighRewardValidators(): Promise<string[]> {
     const actualSlotHeader = <BlockHeaderResponse>await this.clClient.getBlockHeader('head');
     const headEpoch = BigInt(actualSlotHeader.header.message.slot) / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
     this.logger.log('Getting possible high reward validator indexes');
     const propDependentRoot = await this.clClient.getDutyDependentRoot(headEpoch);
     const [sync, prop] = await Promise.all([
-      this.clClient.getSyncCommitteeInfo(stateSlot, headEpoch),
+      this.clClient.getSyncCommitteeInfo('finalized', headEpoch),
       this.clClient.getCanonicalProposerDuties(headEpoch, propDependentRoot),
     ]);
     return [...new Set([...prop.map((v) => v.validator_index), ...sync.validators])];
