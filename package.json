@@ -31,7 +31,7 @@
     "@ethersproject/contracts": "^5.4.0",
     "@ethersproject/providers": "^5.4.2",
     "@ethersproject/units": "^5.4.0",
-    "@lido-nestjs/execution": "^1.7.2",
+    "@lido-nestjs/execution": "^1.8.1",
     "@lido-nestjs/logger": "^1.2.0",
     "@lido-nestjs/registry": "^1.4.1",
     "@mikro-orm/core": "^5.3.1",
