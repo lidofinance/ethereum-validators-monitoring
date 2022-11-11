@@ -1,0 +1,40 @@
+{{ define "telegram.custom.message" -}}
+    {{- "\n" -}}
+    {{- if eq .Status "firing" -}}
+      🔴{{ (index .Alerts 0).Annotations.emoji }}<b>{{ (index .Alerts 0).Annotations.summary }}</b>
+    {{- else -}}
+      🟢{{ (index .Alerts 0).Annotations.emoji }}
+      {{- if (index .Alerts 0).Annotations.resolved_summary -}}
+        <b>{{ (index .Alerts 0).Annotations.resolved_summary }}</b>
+      {{- else -}}
+        <b>{{ (index .Alerts 0).Annotations.summary }}</b>
+      {{- end -}}
+    {{- end -}}
+    {{- "\n" -}}
+    {{- "\n" -}}
+    {{- if eq .Status "firing" -}}
+      <i>{{ (index .Alerts 0).Annotations.description }}</i>
+    {{- else -}}
+      {{- if (index .Alerts 0).Annotations.resolved_description -}}
+        <i>{{ (index .Alerts 0).Annotations.resolved_description }}</i>
+      {{- else -}}
+        <i>{{ (index .Alerts 0).Annotations.description }}</i>
+      {{- end -}}
+    {{- end -}}
+    {{- "\n" -}}
+    {{- "\n" -}}
+    {{- range .Alerts -}}
+        {{- if .Annotations.field_name -}}
+        <b>{{ .Annotations.field_name }}: </b>
+        {{- if .Annotations.field_value -}}
+        <a href='{{ .Annotations.field_value | reReplaceAll "\\[.*\\]|[(,)]" "" }}'>
+            {{- .Annotations.field_value | reReplaceAll "\\(.*\\)|\\[|\\]" "" -}}
+        </a>
+        {{- end -}}
+        {{- "\n" -}}
+        {{- else -}}
+        <a href='{{ .Annotations.url }}'>Dashboard</a>
+        {{- "\n" -}}
+        {{ end }}
+    {{- end -}}
+{{- end }}
