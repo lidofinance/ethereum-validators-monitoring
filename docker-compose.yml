@@ -90,7 +90,7 @@ services:
       - "0.0.0.0:9093:9093/tcp"
 
   alertmanager-discord:
-    image: vgorkavenko/alertmanager-discord-balval:1.1.0
+    image: vgorkavenko/alertmanager-discord-balval:1.4.0
     container_name: alertmanager-discord
     restart: unless-stopped
     expose:
