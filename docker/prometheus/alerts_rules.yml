@@ -14,7 +14,7 @@ groups:
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
-          footer_image: "https://cryptologos.cc/logos/steth-steth-logo.png"
+          footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
 
       - alert: DataActuality
         expr: absent(ethereum_validators_monitoring_data_actuality) OR (ethereum_validators_monitoring_data_actuality / 1000 > 3600)
@@ -29,7 +29,7 @@ groups:
           resolved_description: "It's OK"
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
-          footer_image: "https://cryptologos.cc/logos/steth-steth-logo.png"
+          footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
 
       - alert: NumValidatorsWithNegativeDelta
         expr: ethereum_validators_monitoring_validator_count_with_negative_balances_delta > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
@@ -44,8 +44,14 @@ groups:
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-          footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
-          footer_image: "https://cryptologos.cc/logos/steth-steth-logo.png"
+          footer_text: 'Fires (last 1h):
+          {{- "\n" -}}
+          {{- range query "sum_over_time(sgn(ethereum_validators_monitoring_validator_count_with_negative_balances_delta_alert)[1h:] offset -25s) AND ethereum_validators_monitoring_validator_count_with_negative_balances_delta" -}}
+            {{- .Labels.nos_name }} - {{ .Value }}
+            {{- "\n" -}}
+          {{- end -}}
+          Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
+          footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
 
       - alert: NumValidatorsWithMissAttestationLastNEpoch
         expr: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
@@ -60,8 +66,14 @@ groups:
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-          footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
-          footer_image: "https://cryptologos.cc/logos/steth-steth-logo.png"
+          footer_text: 'Fires (last 1h):
+          {{- "\n" -}}
+          {{- range query "sum_over_time(sgn(ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch_alert)[1h:] offset -25s) AND ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch" -}}
+            {{- .Labels.nos_name }} - {{ .Value }}
+            {{- "\n" -}}
+          {{- end -}}
+          Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
+          footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
 
       - alert: NumValidatorsWithHighIncDelayAttestationLastNEpoch
         expr: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
@@ -74,8 +86,14 @@ groups:
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-          footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
-          footer_image: "https://cryptologos.cc/logos/steth-steth-logo.png"
+          footer_text: 'Fires (last 1h):
+          {{- "\n" -}}
+          {{- range query "sum_over_time(sgn(ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch_alert)[1h:] offset -25s) AND ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch" -}}
+            {{- .Labels.nos_name }} - {{ .Value }}
+            {{- "\n" -}}
+          {{- end -}}
+          Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
+          footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
 
       - alert: NumValidatorsWithInvalidPropertyAttestationLastNEpoch
         expr: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
@@ -88,8 +106,14 @@ groups:
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-          footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
-          footer_image: "https://cryptologos.cc/logos/steth-steth-logo.png"
+          footer_text: 'Fires (last 1h):
+          {{- "\n" -}}
+          {{- range query "sum_over_time(sgn(ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch_alert)[1h:] offset -25s) AND ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch" -}}
+            {{- .Labels.nos_name }} - {{ .Value }}
+            {{- "\n" -}}
+          {{- end -}}
+          Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
+          footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
 
       - alert: NumValidatorsWithMissPropose
         expr: ethereum_validators_monitoring_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
@@ -104,8 +128,14 @@ groups:
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-          footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
-          footer_image: "https://cryptologos.cc/logos/steth-steth-logo.png"
+          footer_text: 'Fires (last 1h):
+          {{- "\n" -}}
+          {{- range query "sum_over_time(sgn(ethereum_validators_monitoring_validator_count_miss_propose_alert)[1h:] offset -25s) AND ethereum_validators_monitoring_validator_count_miss_propose" -}}
+            {{- .Labels.nos_name }} - {{ .Value }}
+            {{- "\n" -}}
+          {{- end -}}
+          Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
+          footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
 
       - alert: NumValidatorsWithSyncParticipationLessAvgLastNEpoch
         expr: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
@@ -120,8 +150,14 @@ groups:
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-          footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
-          footer_image: "https://cryptologos.cc/logos/steth-steth-logo.png"
+          footer_text: 'Fires (last 1h):
+          {{- "\n" -}}
+          {{- range query "sum_over_time(sgn(ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch_alert)[1h:] offset -25s) AND ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch" -}}
+            {{- .Labels.nos_name }} - {{ .Value }}
+            {{- "\n" -}}
+          {{- end -}}
+          Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
+          footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
 
       - alert: HighRewardNumValidatorsWithSyncParticipationLessAvgLastNEpoch
         expr: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
@@ -136,8 +172,14 @@ groups:
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-          footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
-          footer_image: "https://cryptologos.cc/logos/steth-steth-logo.png"
+          footer_text: 'Fires (last 1h):
+          {{- "\n" -}}
+          {{- range query "sum_over_time(sgn(ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch_alert)[1h:] offset -25s) AND ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch" -}}
+            {{- .Labels.nos_name }} - {{ .Value }}
+            {{- "\n" -}}
+          {{- end -}}
+          Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
+          footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
 
       - alert: HighRewardNumValidatorsWithMissAttestationLastNEpoch
         expr: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
@@ -152,8 +194,14 @@ groups:
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-          footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
-          footer_image: "https://cryptologos.cc/logos/steth-steth-logo.png"
+          footer_text: 'Fires (last 1h):
+          {{- "\n" -}}
+          {{- range query "sum_over_time(sgn(ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch_alert)[1h:] offset -25s) AND ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch" -}}
+            {{- .Labels.nos_name }} - {{ .Value }}
+            {{- "\n" -}}
+          {{- end -}}
+          Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
+          footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
 
       - alert: HighRewardNumValidatorsWithMissPropose
         expr: ethereum_validators_monitoring_high_reward_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
@@ -168,5 +216,11 @@ groups:
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-          footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
-          footer_image: "https://cryptologos.cc/logos/steth-steth-logo.png"
+          footer_text: 'Fires (last 1h):
+          {{- "\n" -}}
+          {{- range query "sum_over_time(sgn(ethereum_validators_monitoring_high_reward_validator_count_miss_propose_alert)[1h:] offset -25s) AND ethereum_validators_monitoring_high_reward_validator_count_miss_propose" -}}
+            {{- .Labels.nos_name }} - {{ .Value }}
+            {{- "\n" -}}
+          {{- end -}}
+          Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
+          footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
