@@ -3,28 +3,28 @@ groups:
     # short events to count fires in alert footer
     rules:
       - record: ethereum_validators_monitoring_validator_count_with_negative_balances_delta_alert
-        expr: ethereum_validators_monitoring_validator_count_with_negative_balances_delta > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0
+        expr: ethereum_validators_monitoring_validator_count_with_negative_balances_delta > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0
 
       - record: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch_alert
-        expr: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0
+        expr: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0
 
       - record: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch_alert
-        expr: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0
+        expr: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0
 
       - record: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch_alert
-        expr: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0
+        expr: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0
 
       - record: ethereum_validators_monitoring_validator_count_miss_propose_alert
-        expr: ethereum_validators_monitoring_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0
+        expr: ethereum_validators_monitoring_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0
 
       - record: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch_alert
-        expr: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0
+        expr: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0
 
       - record: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch_alert
-        expr: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0
+        expr: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0
 
       - record: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch_alert
-        expr: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0
+        expr: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0
 
       - record: ethereum_validators_monitoring_high_reward_validator_count_miss_propose_alert
-        expr: ethereum_validators_monitoring_high_reward_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0
+        expr: ethereum_validators_monitoring_high_reward_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0
