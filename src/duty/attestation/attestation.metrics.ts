@@ -34,6 +34,7 @@ export class AttestationMetrics {
     this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();
     await Promise.all([
+      this.perfectAttestationsLastEpoch(),
       this.missedAttestationsLastEpoch(),
       this.highIncDelayAttestationsLastEpoch(),
       this.invalidHeadAttestationsLastEpoch(),
@@ -53,12 +54,24 @@ export class AttestationMetrics {
     ]);
   }
 
+  private async perfectAttestationsLastEpoch() {
+    const result = await this.storage.getValidatorCountWithPerfectAttestationsLastEpoch(this.processedEpoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((a) => a.val_nos_name == operator.name);
+      this.prometheus.validatorsCountPerfectAttestation.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
+    });
+    const other = result.find((a) => a.val_nos_name == 'NULL');
+    this.prometheus.otherValidatorsCountPerfectAttestation.set(other ? other.amount : 0);
+  }
+
   private async missedAttestationsLastEpoch() {
     const result = await this.storage.getValidatorCountWithMissedAttestationsLastEpoch(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountMissAttestation.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
     });
+    const other = result.find((a) => a.val_nos_name == 'NULL');
+    this.prometheus.otherValidatorsCountMissAttestation.set(other ? other.amount : 0);
   }
 
   private async highIncDelayAttestationsLastEpoch() {
@@ -70,6 +83,8 @@ export class AttestationMetrics {
         operatorResult ? operatorResult.amount : 0,
       );
     });
+    const other = result.find((a) => a.val_nos_name == 'NULL');
+    this.prometheus.otherValidatorsCountInvalidAttestation.set({ reason: BadAttReason.HighIncDelay }, other ? other.amount : 0);
   }
 
   private async invalidHeadAttestationsLastEpoch() {
@@ -81,6 +96,8 @@ export class AttestationMetrics {
         operatorResult ? operatorResult.amount : 0,
       );
     });
+    const other = result.find((a) => a.val_nos_name == 'NULL');
+    this.prometheus.otherValidatorsCountInvalidAttestation.set({ reason: BadAttReason.InvalidHead }, other ? other.amount : 0);
   }
 
   private async invalidTargetAttestationsLastEpoch() {
@@ -92,6 +109,8 @@ export class AttestationMetrics {
         operatorResult ? operatorResult.amount : 0,
       );
     });
+    const other = result.find((a) => a.val_nos_name == 'NULL');
+    this.prometheus.otherValidatorsCountInvalidAttestation.set({ reason: BadAttReason.InvalidTarget }, other ? other.amount : 0);
   }
 
   private async invalidSourceAttestationsLastEpoch() {
@@ -103,6 +122,8 @@ export class AttestationMetrics {
         operatorResult ? operatorResult.amount : 0,
       );
     });
+    const other = result.find((a) => a.val_nos_name == 'NULL');
+    this.prometheus.otherValidatorsCountInvalidAttestation.set({ reason: BadAttReason.InvalidSource }, other ? other.amount : 0);
   }
 
   private async missAttestationsLastNEpoch() {

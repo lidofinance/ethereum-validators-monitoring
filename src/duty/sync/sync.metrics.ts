@@ -55,8 +55,9 @@ export class SyncMetrics {
   private async syncParticipation(possibleHighRewardValidators: string[]) {
     const chainAvgSyncPercent = await this.chainAvgSyncPercent();
     await Promise.all([
-      this.syncParticipationLastEpoch(chainAvgSyncPercent),
-      this.syncParticipationLastNEpoch(chainAvgSyncPercent),
+      this.goodSyncParticipationLastEpoch(chainAvgSyncPercent),
+      this.badSyncParticipationLastEpoch(chainAvgSyncPercent),
+      this.badSyncParticipationLastNEpoch(chainAvgSyncPercent),
       this.highRewardSyncParticipationLastNEpoch(chainAvgSyncPercent, possibleHighRewardValidators),
     ]);
   }
@@ -67,23 +68,31 @@ export class SyncMetrics {
     return result.avg_percent;
   }
 
-  private async syncParticipationLastEpoch(chainAvgSyncPercent: number) {
-    const result = await this.storage.getValidatorsCountWithSyncParticipationLessChainAvgLastNEpoch(
-      this.processedEpoch,
-      1,
-      chainAvgSyncPercent,
-    );
+  private async goodSyncParticipationLastEpoch(chainAvgSyncPercent: number) {
+    const result = await this.storage.getValidatorsCountWithGoodSyncParticipationLastNEpoch(this.processedEpoch, 1, chainAvgSyncPercent);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((p) => p.val_nos_name == operator.name);
+      this.prometheus.validatorsCountWithGoodSyncParticipation.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
+    });
+    const other = result.find((p) => p.val_nos_name == 'NULL');
+    this.prometheus.otherValidatorsCountWithGoodSyncParticipation.set(other ? other.amount : 0);
+  }
+
+  private async badSyncParticipationLastEpoch(chainAvgSyncPercent: number) {
+    const result = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(this.processedEpoch, 1, chainAvgSyncPercent);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((p) => p.val_nos_name == operator.name);
       this.prometheus.validatorsCountWithSyncParticipationLessAvg.set(
         { nos_name: operator.name },
-        operatorResult ? operatorResult.less_chain_avg_count : 0,
+        operatorResult ? operatorResult.amount : 0,
       );
     });
+    const other = result.find((p) => p.val_nos_name == 'NULL');
+    this.prometheus.otherValidatorsCountWithSyncParticipationLessAvg.set(other ? other.amount : 0);
   }
 
-  private async syncParticipationLastNEpoch(chainAvgSyncPercent: number) {
-    const result = await this.storage.getValidatorsCountWithSyncParticipationLessChainAvgLastNEpoch(
+  private async badSyncParticipationLastNEpoch(chainAvgSyncPercent: number) {
+    const result = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(
       this.processedEpoch,
       this.epochInterval,
       chainAvgSyncPercent,
@@ -92,7 +101,7 @@ export class SyncMetrics {
       const operatorResult = result.find((p) => p.val_nos_name == operator.name);
       this.prometheus.validatorsCountWithSyncParticipationLessAvgLastNEpoch.set(
         { nos_name: operator.name, epoch_interval: this.epochInterval },
-        operatorResult ? operatorResult.less_chain_avg_count : 0,
+        operatorResult ? operatorResult.amount : 0,
       );
     });
   }
@@ -100,7 +109,7 @@ export class SyncMetrics {
   private async highRewardSyncParticipationLastNEpoch(chainAvgSyncPercent: number, possibleHighRewardValidators: string[]) {
     let result = [];
     if (possibleHighRewardValidators.length > 0)
-      result = await this.storage.getValidatorsCountWithSyncParticipationLessChainAvgLastNEpoch(
+      result = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(
         this.processedEpoch,
         this.epochInterval,
         chainAvgSyncPercent,
@@ -110,7 +119,7 @@ export class SyncMetrics {
       const operatorResult = result.find((p) => p.val_nos_name == operator.name);
       this.prometheus.highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch.set(
         { nos_name: operator.name, epoch_interval: this.epochInterval },
-        operatorResult ? operatorResult.less_chain_avg_count : 0,
+        operatorResult ? operatorResult.amount : 0,
       );
     });
   }
