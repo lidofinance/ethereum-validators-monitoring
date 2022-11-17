@@ -3,7 +3,7 @@ import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common'
 import { ClickHouse } from 'clickhouse';
 
 import { ConfigService } from 'common/config';
-import { StateValidatorResponse, ValStatus } from 'common/eth-providers';
+import { StateValidatorResponse } from 'common/eth-providers';
 import { retrier } from 'common/functions/retrier';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { ValidatorDutySummary } from 'duty/summary';
@@ -23,36 +23,24 @@ import {
   validatorCountByConditionAttestationLastNEpochQuery,
   validatorCountHighAvgIncDelayAttestationOfNEpochQuery,
   validatorQuantile0001BalanceDeltasQuery,
-  validatorsCountWithMissProposeQuery,
+  validatorsCountByConditionMissProposeQuery,
   validatorsCountWithNegativeDeltaQuery,
-  validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery,
+  validatorsCountWithSyncParticipationByConditionLastNEpochQuery,
 } from './clickhouse.constants';
 import {
   NOsDelta,
   NOsProposesStats,
   NOsValidatorsByConditionAttestationCount,
-  NOsValidatorsMissProposeCount,
+  NOsValidatorsByConditionProposeCount,
   NOsValidatorsNegDeltaCount,
   NOsValidatorsStatusStats,
   NOsValidatorsSyncAvgPercent,
-  NOsValidatorsSyncLessChainAvgCount,
+  NOsValidatorsSyncByConditionCount,
   SyncCommitteeParticipationAvgPercents,
   ValidatorsStatusStats,
 } from './clickhouse.types';
 import migration_000000_summary from './migrations/migration_000000_summary';
 import migration_000001_indexes from './migrations/migration_000001_indexes';
-
-export const status = {
-  isActive(val: StateValidatorResponse): boolean {
-    return val.status == ValStatus.ActiveOngoing;
-  },
-  isPending(val: StateValidatorResponse): boolean {
-    return [ValStatus.PendingQueued, ValStatus.PendingInitialized].includes(val.status);
-  },
-  isSlashed(val: StateValidatorResponse): boolean {
-    return [ValStatus.ActiveSlashed, ValStatus.ExitedSlashed].includes(val.status) || val.validator.slashed;
-  },
-};
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -201,30 +189,58 @@ export class ClickhouseService implements OnModuleInit {
     return <NOsValidatorsSyncAvgPercent[]>ret;
   }
 
-  /**
-   * Send query to Clickhouse and receives information about
-   * how many User Node Operator validators have Sync Committee participation less when chain average last N epoch
-   */
-  public async getValidatorsCountWithSyncParticipationLessChainAvgLastNEpoch(
+  public async getValidatorsCountWithGoodSyncParticipationLastNEpoch(
     slot: bigint,
     epochInterval: number,
     chainAvg: number,
     validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsSyncLessChainAvgCount[]> {
+  ): Promise<NOsValidatorsSyncByConditionCount[]> {
     const ret = await this.retry(async () =>
       this.db
         .query(
-          validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery(
+          validatorsCountWithSyncParticipationByConditionLastNEpochQuery(
             slot,
             epochInterval,
-            chainAvg,
-            this.config.get('SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG'),
             validatorIndexes,
+            `sync_percent >= (${chainAvg} - ${this.config.get('SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG')})`,
           ),
         )
         .toPromise(),
     );
-    return <NOsValidatorsSyncLessChainAvgCount[]>ret;
+    return <NOsValidatorsSyncByConditionCount[]>ret;
+  }
+
+  /**
+   * Send query to Clickhouse and receives information about
+   * how many User Node Operator validators have Sync Committee participation less when chain average last N epoch
+   */
+  public async getValidatorsCountWithBadSyncParticipationLastNEpoch(
+    slot: bigint,
+    epochInterval: number,
+    chainAvg: number,
+    validatorIndexes: string[] = [],
+  ): Promise<NOsValidatorsSyncByConditionCount[]> {
+    const ret = await this.retry(async () =>
+      this.db
+        .query(
+          validatorsCountWithSyncParticipationByConditionLastNEpochQuery(
+            slot,
+            epochInterval,
+            validatorIndexes,
+            `sync_percent < (${chainAvg} - ${this.config.get('SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG')})`,
+          ),
+        )
+        .toPromise(),
+    );
+    return <NOsValidatorsSyncByConditionCount[]>ret;
+  }
+
+  public async getValidatorCountWithPerfectAttestationsLastEpoch(epoch: bigint) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
+      epoch,
+      1,
+      'att_happened = 1 AND att_inc_delay = 1 AND att_valid_head = 1 AND att_valid_target = 1 AND att_valid_source = 1',
+    );
   }
 
   public async getValidatorCountWithMissedAttestationsLastEpoch(epoch: bigint) {
@@ -341,6 +357,16 @@ export class ClickhouseService implements OnModuleInit {
     return <NOsValidatorsByConditionAttestationCount[]>ret;
   }
 
+  public async getValidatorsCountWithGoodProposes(
+    epoch: bigint,
+    validatorIndexes: string[] = [],
+  ): Promise<NOsValidatorsByConditionProposeCount[]> {
+    const ret = await this.retry(async () =>
+      this.db.query(validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 1')).toPromise(),
+    );
+    return <NOsValidatorsByConditionProposeCount[]>ret;
+  }
+
   /**
    * Send query to Clickhouse and receives information about
    * how many User Node Operator validators miss proposes at our last processed epoch
@@ -348,9 +374,11 @@ export class ClickhouseService implements OnModuleInit {
   public async getValidatorsCountWithMissedProposes(
     epoch: bigint,
     validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsMissProposeCount[]> {
-    const ret = await this.retry(async () => this.db.query(validatorsCountWithMissProposeQuery(epoch, validatorIndexes)).toPromise());
-    return <NOsValidatorsMissProposeCount[]>ret;
+  ): Promise<NOsValidatorsByConditionProposeCount[]> {
+    const ret = await this.retry(async () =>
+      this.db.query(validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 0')).toPromise(),
+    );
+    return <NOsValidatorsByConditionProposeCount[]>ret;
   }
 
   public async getTotalBalance24hDifference(epoch: bigint): Promise<number | undefined> {

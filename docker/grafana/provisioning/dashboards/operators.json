@@ -21,7 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1667222156665,
+  "iteration": 1668689945645,
   "links": [
     {
       "asDropdown": false,
@@ -773,7 +773,7 @@
       },
       "id": 1753,
       "panels": [],
-      "title": "💔 Alerting only",
+      "title": "💔 Alerting only (on incident time range)",
       "type": "row"
     },
     {
@@ -1588,12 +1588,12 @@
                   "fill": "solid"
                 },
                 "lineWidth": 3,
-                "pointSize": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -1656,7 +1656,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_operator_balance_24h_difference{nos_name=\"${nos_name_var}\"}) / 10 ^ 9",
+              "expr": "(sum(ethereum_validators_monitoring_operator_balance_24h_difference{nos_name=\"${nos_name_var}\"}) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "delta",
@@ -1692,12 +1692,12 @@
                 },
                 "lineInterpolation": "smooth",
                 "lineWidth": 3,
-                "pointSize": 5,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -1749,7 +1749,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_balances_delta{nos_name=\"${nos_name_var}\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_balances_delta{nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -1783,12 +1783,12 @@
                 },
                 "lineInterpolation": "linear",
                 "lineWidth": 3,
-                "pointSize": 5,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -1840,7 +1840,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_name=\"${nos_name_var}\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -1990,12 +1990,12 @@
                 },
                 "lineInterpolation": "smooth",
                 "lineWidth": 3,
-                "pointSize": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -2045,7 +2045,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name=\"${nos_name_var}\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -2179,14 +2179,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_name = '${nos_name_var}' AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs}))\nORDER BY block_to_propose DESC, val_id",
-              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_name = 'ChainLayer' AND block_proposed = 0 AND (epoch <= 157270 AND epoch >= (157270 - 1))\nORDER BY block_to_propose DESC, val_id",
+              "query": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_name = '${nos_name_var}' AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id",
+              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_name = 'RockLogic GmbH' AND block_proposed = 0 AND (epoch <= 160698 AND epoch > (160698 - 40))\nORDER BY block_to_propose DESC, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Missed proposals (${epochs} epochs range)",
+          "title": "Missed proposals (${epochs_range} epochs range)",
           "type": "table"
         },
         {
@@ -2211,12 +2211,12 @@
                 },
                 "lineInterpolation": "smooth",
                 "lineWidth": 3,
-                "pointSize": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -2268,7 +2268,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_miss_propose{nos_name='${nos_name_var}'})",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_miss_propose{nos_name='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -2314,13 +2314,13 @@
                 "lineStyle": {
                   "fill": "solid"
                 },
-                "lineWidth": 1,
-                "pointSize": 3,
+                "lineWidth": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -2443,7 +2443,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent)",
+              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "Rest chain",
@@ -2455,7 +2455,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name!='${nos_name_var}'})",
+              "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name!='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "User (other)",
@@ -2467,7 +2467,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name='${nos_name_var}'})",
+              "expr": "sum(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "${nos_name_var}",
@@ -2650,12 +2650,12 @@
                 },
                 "lineInterpolation": "smooth",
                 "lineWidth": 3,
-                "pointSize": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -2723,7 +2723,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_name='${nos_name_var}'})",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_name='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -2888,14 +2888,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_name = 'Allnodes' AND\n    (epoch <= 157476 AND epoch > (157476 - 1))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_name = 'RockLogic GmbH' AND\n    (epoch <= 160699 AND epoch > (160699 - 39))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of MISSED attestations (${epochs} epochs range)",
+          "title": "Number of MISSED attestations (${epochs_range} epochs range)",
           "type": "table"
         },
         {
@@ -2920,12 +2920,12 @@
                 },
                 "lineInterpolation": "smooth",
                 "lineWidth": 3,
-                "pointSize": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -2977,7 +2977,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_miss_attestation{nos_name='${nos_name_var}'})",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_miss_attestation{nos_name='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -3128,14 +3128,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = 'Allnodes' AND\n    (epoch <= 157476 AND epoch > (157476 - 1))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = 'RockLogic GmbH' AND\n    (epoch <= 160699 AND epoch > (160699 - 39))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with high INC. DELAY (${epochs} epochs range)",
+          "title": "Number of attestations with high INC. DELAY (${epochs_range} epochs range)",
           "type": "table"
         },
         {
@@ -3160,12 +3160,12 @@
                 },
                 "lineInterpolation": "smooth",
                 "lineWidth": 3,
-                "pointSize": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -3217,7 +3217,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"high_inclusion_delay\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -3380,14 +3380,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = 'ChainLayer' AND\n    (epoch <= 157275 AND epoch > (157275 - 9))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = 'RockLogic GmbH' AND\n    (epoch <= 160700 AND epoch > (160700 - 38))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with invalid HEAD (${epochs} epochs range)",
+          "title": "Number of attestations with invalid HEAD (${epochs_range} epochs range)",
           "type": "table"
         },
         {
@@ -3412,12 +3412,12 @@
                 },
                 "lineInterpolation": "smooth",
                 "lineWidth": 3,
-                "pointSize": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -3469,7 +3469,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"invalid_head\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -3620,14 +3620,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = 'ChainLayer' AND\n    (epoch <= 157275 AND epoch > (157275 - 9))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = 'RockLogic GmbH' AND\n    (epoch <= 160701 AND epoch > (160701 - 9))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with invalid TARGET (${epochs} epochs range)",
+          "title": "Number of attestations with invalid TARGET (${epochs_range} epochs range)",
           "type": "table"
         },
         {
@@ -3652,12 +3652,12 @@
                 },
                 "lineInterpolation": "smooth",
                 "lineWidth": 3,
-                "pointSize": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -3709,7 +3709,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"invalid_target\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -3860,14 +3860,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = 'ChainLayer' AND\n    (epoch <= 157276 AND epoch > (157276 - 9))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = 'RockLogic GmbH' AND\n    (epoch <= 160701 AND epoch > (160701 - 9))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with invalid SOURCE (${epochs} epochs range)",
+          "title": "Number of attestations with invalid SOURCE (${epochs_range} epochs range)",
           "type": "table"
         },
         {
@@ -3892,12 +3892,12 @@
                 },
                 "lineInterpolation": "smooth",
                 "lineWidth": 3,
-                "pointSize": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -3949,7 +3949,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"invalid_source\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -3972,8 +3972,8 @@
       {
         "current": {
           "selected": true,
-          "text": "Allnodes",
-          "value": "Allnodes"
+          "text": "RockLogic GmbH",
+          "value": "RockLogic GmbH"
         },
         "definition": "query_result(ethereum_validators_monitoring_user_validators)",
         "description": "",
@@ -3996,8 +3996,8 @@
       {
         "current": {
           "selected": false,
-          "text": "157476",
-          "value": "157476"
+          "text": "160701",
+          "value": "160701"
         },
         "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
         "description": "Last epoch number",
@@ -4009,30 +4009,6 @@
         "options": [],
         "query": {
           "query": "query_result(ethereum_validators_monitoring_epoch_number)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "regex": "/.* ([^\\ ]*) .*/",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "32",
-          "value": "32"
-        },
-        "definition": "query_result(ethereum_validators_monitoring_fetch_interval)",
-        "description": "App fetch interval",
-        "hide": 2,
-        "includeAll": false,
-        "label": "Fetch interval",
-        "multi": false,
-        "name": "fetch_interval_var",
-        "options": [],
-        "query": {
-          "query": "query_result(ethereum_validators_monitoring_fetch_interval)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -4061,30 +4037,6 @@
         },
         "refresh": 2,
         "regex": "/.* ([^\\ ]*) .*/",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "1",
-          "value": "1"
-        },
-        "datasource": {
-          "type": "vertamedia-clickhouse-datasource",
-          "uid": "PDEE91DDB90597936"
-        },
-        "definition": "WITH epoch_range AS (\n    SELECT\n      ((${__to:date:seconds} - ${__from:date:seconds}) / 384)::int as val\n)\nSELECT IF (val = 0, 1, val) from epoch_range",
-        "hide": 2,
-        "includeAll": false,
-        "label": "Epoch range",
-        "multi": false,
-        "name": "epochs",
-        "options": [],
-        "query": "WITH epoch_range AS (\n    SELECT\n      ((${__to:date:seconds} - ${__from:date:seconds}) / 384)::int as val\n)\nSELECT IF (val = 0, 1, val) from epoch_range",
-        "refresh": 2,
-        "regex": "",
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
@@ -4156,8 +4108,8 @@
       {
         "current": {
           "selected": false,
-          "text": "97.80745964311063",
-          "value": "97.80745964311063"
+          "text": "91.71496813837439",
+          "value": "91.71496813837439"
         },
         "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
         "description": "Chain sync participation average value",
@@ -4176,11 +4128,35 @@
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "9",
+          "value": "9"
+        },
+        "definition": "query_result(sum_over_time((changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+        "description": "Epochs range by prometheus metric",
+        "hide": 2,
+        "includeAll": false,
+        "label": "Epochs range",
+        "multi": false,
+        "name": "epochs_range",
+        "options": [],
+        "query": {
+          "query": "query_result(sum_over_time((changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "/.* ([^\\ ]*) .*/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {
@@ -4189,6 +4165,6 @@
   "timezone": "",
   "title": "NodeOperators",
   "uid": "3wimU2H7h",
-  "version": 8,
+  "version": 9,
   "weekStart": ""
 }
