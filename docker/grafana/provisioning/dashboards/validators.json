@@ -21,7 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1667314138069,
+  "iteration": 1668700263406,
   "links": [
     {
       "asDropdown": false,
@@ -1172,10 +1172,6 @@
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1184,372 +1180,21 @@
           },
           "custom": {
             "align": "auto",
-            "displayMode": "color-text",
+            "displayMode": "auto",
             "filterable": false
           },
-          "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "text",
+                "color": "semi-dark-green",
                 "value": null
               }
             ]
           }
         },
         "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Missed"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 70
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Proposed"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 80
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "All"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 70
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 0,
-        "y": 17
-      },
-      "id": 77,
-      "options": {
-        "footer": {
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": true
-        },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Missed"
-          }
-        ]
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "  SELECT\n    val_nos_name as Operator,\n    SUM(a) as All,\n    SUM(p) as Proposed,\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      val_nos_name,\n      count(block_proposed) as a,\n      IF(block_proposed = 0, count(block_proposed), 0) as m,\n      IF(block_proposed = 1, count(block_proposed), 0) as p\n    FROM stats.validators_summary\n    WHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_nos_name, block_proposed\n  )\n  GROUP by val_nos_name",
-          "rawQuery": "SELECT\n    val_nos_name as Operator,\n    SUM(a) as All,\n    SUM(p) as Proposed,\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      val_nos_name,\n      count(block_proposed) as a,\n      IF(block_proposed = 0, count(block_proposed), 0) as m,\n      IF(block_proposed = 1, count(block_proposed), 0) as p\n    FROM stats.validators_summary\n    WHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND (epoch <= 157218 AND epoch > (157218 - 1))\n    GROUP BY val_nos_name, block_proposed\n  )\n  GROUP by val_nos_name",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Propose duty (${epochs} epochs range)",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "links": [],
-          "mappings": []
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Proposed"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Missed"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 12,
-        "y": 17
-      },
-      "id": 88,
-      "options": {
-        "displayLabels": [],
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "values": [
-            "value",
-            "percent"
-          ]
-        },
-        "pieType": "donut",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "8.4.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "  SELECT\n    SUM(p) as Proposed,\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      IF(block_proposed = 0, count(block_proposed), 0) as m,\n      IF(block_proposed = 1, count(block_proposed), 0) as p\n    FROM stats.validators_summary\n    WHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY block_proposed\n  )",
-          "rawQuery": "SELECT\n    SUM(p) as Proposed,\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      IF(block_proposed = 0, count(block_proposed), 0) as m,\n      IF(block_proposed = 1, count(block_proposed), 0) as p\n    FROM stats.validators_summary\n    WHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND (epoch <= 157260 AND epoch > (157260 - 1))\n    GROUP BY block_proposed\n  )",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "User proposals (${epochs} epochs range)",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "links": [],
-          "mappings": []
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "User"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "purple",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Other"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "super-light-purple",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 18,
-        "y": 17
-      },
-      "id": 87,
-      "options": {
-        "displayLabels": [],
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "values": [
-            "value",
-            "percent"
-          ]
-        },
-        "pieType": "donut",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "8.4.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "  SELECT\n    sum(a) as User,\n    (32 * ${epochs} - User) as Other\n  FROM\n  (\n    SELECT\n      count(block_proposed) as a\n    FROM stats.validators_summary\n    WHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY block_proposed\n  )",
-          "rawQuery": "SELECT\n    sum(a) as User,\n    (32 * 1 - User) as Other\n  FROM\n  (\n    SELECT\n      count(block_proposed) as a\n    FROM stats.validators_summary\n    WHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND (epoch <= 157261 AND epoch > (157261 - 1))\n    GROUP BY block_proposed\n  )",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Proposals share (${epochs} epochs range)",
-      "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "color-text",
-            "filterable": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "nos_name"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          },
           {
             "matcher": {
               "id": "byName",
@@ -1557,6 +1202,10 @@
             },
             "properties": [
               {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
                 "id": "color",
                 "value": {
                   "fixedColor": "red",
@@ -1565,7 +1214,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 50
+                "value": 90
               }
             ]
           },
@@ -1576,6 +1225,10 @@
             },
             "properties": [
               {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
                 "id": "color",
                 "value": {
                   "fixedColor": "green",
@@ -1584,23 +1237,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 50
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Avg participation"
-            },
-            "properties": [
-              {
-                "id": "unit",
-                "value": "percent"
-              },
-              {
-                "id": "custom.width",
-                "value": 125
+                "value": 90
               }
             ]
           },
@@ -1612,31 +1249,28 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 50
+                "value": 125
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 14,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 17
       },
-      "id": 80,
+      "id": 110,
       "options": {
         "footer": {
-          "fields": [
-            "All",
-            "Good",
-            "Bad"
-          ],
+          "fields": [],
           "reducer": [
             "sum"
           ],
           "show": true
         },
+        "frameIndex": 0,
         "showHeader": true,
         "sortBy": [
           {
@@ -1649,29 +1283,104 @@
       "targets": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
           },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "  SELECT\n    val_nos_name as Operator,\n    SUM(a) as All,\n    SUM(g) as Good,\n    SUM(b) as Bad,\n    AVG(ap) as \"Avg participation\"\n  FROM\n  (\n    SELECT\n      val_nos_name,\n      IF(sync_percent >= 0, count(sync_percent), 0) as a,\n      IF(sync_percent >= (${chain_sync_avg_participation} - ${sync_participation_distance_var}), count(sync_percent), 0) as g,\n      IF(sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}), count(sync_percent), 0) as b,\n      IF(sync_percent >= 0, avg(sync_percent), 0) as ap\n      FROM\n        stats.validators_summary\n      WHERE is_sync = 1 AND val_nos_id IS NOT NULL AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_nos_name, sync_percent\n  )\n  GROUP by val_nos_name",
-          "rawQuery": "SELECT\n    val_nos_name as Operator,\n    SUM(a) as All,\n    SUM(g) as Good,\n    SUM(b) as Bad,\n    AVG(ap) as \"Avg participation\"\n  FROM\n  (\n    SELECT\n      val_nos_name,\n      IF(sync_percent >= 0, count(sync_percent), 0) as a,\n      IF(sync_percent >= (97.607421875 - 0), count(sync_percent), 0) as g,\n      IF(sync_percent < (97.607421875 - 0), count(sync_percent), 0) as b,\n      IF(sync_percent >= 0, avg(sync_percent), 0) as ap\n      FROM\n        stats.validators_summary\n      WHERE is_sync = 1 AND val_nos_id IS NOT NULL AND (epoch <= 157255 AND epoch > (157255 - 1))\n    GROUP BY val_nos_name, sync_percent\n  )\n  GROUP by val_nos_name",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "bad"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "good"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "all"
         }
       ],
-      "title": "Sync committee duty (${epochs} epochs range)",
+      "title": "Propose summary (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "Value #all": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #bad": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #good": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "nos_name": {
+                "aggregations": [],
+                "operation": "groupby"
+              }
+            }
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Value #all (sum)": 1,
+              "Value #bad (sum)": 3,
+              "Value #good (sum)": 2,
+              "nos_name": 0
+            },
+            "renameByName": {
+              "Value #all (sum)": "All",
+              "Value #bad (sum)": "Bad",
+              "Value #good (sum)": "Good",
+              "nos_name": "Operator"
+            }
+          }
+        }
+      ],
       "type": "table"
     },
     {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1685,25 +1394,9 @@
               "viz": false
             }
           },
-          "links": [],
           "mappings": []
         },
         "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Good"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
           {
             "matcher": {
               "id": "byName",
@@ -1718,6 +1411,21 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Good"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
@@ -1725,11 +1433,10 @@
         "h": 7,
         "w": 6,
         "x": 12,
-        "y": 24
+        "y": 17
       },
-      "id": 90,
+      "id": 108,
       "options": {
-        "displayLabels": [],
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
@@ -1747,37 +1454,63 @@
           "values": false
         },
         "tooltip": {
-          "mode": "single",
-          "sort": "none"
+          "mode": "single"
         }
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
           },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "  SELECT\n    SUM(g) as Good,\n    SUM(b) as Bad\n  FROM\n  (\n    SELECT\n      IF(sync_percent >= (${chain_sync_avg_participation} - ${sync_participation_distance_var}), count(sync_percent), 0) as g,\n      IF(sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}), count(sync_percent), 0) as b\n      FROM\n        stats.validators_summary\n      WHERE is_sync = 1 AND val_nos_id IS NOT NULL AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY sync_percent\n  )",
-          "rawQuery": "SELECT\n    SUM(g) as Good,\n    SUM(b) as Bad\n  FROM\n  (\n    SELECT\n      IF(sync_percent >= (97.6318359375 - 0), count(sync_percent), 0) as g,\n      IF(sync_percent < (97.6318359375 - 0), count(sync_percent), 0) as b\n      FROM\n        stats.validators_summary\n      WHERE is_sync = 1 AND val_nos_id IS NOT NULL AND (epoch <= 157283 AND epoch > (157283 - 28))\n    GROUP BY sync_percent\n  )",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "bad"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "good"
         }
       ],
-      "title": "User sync participation (${epochs} epochs range)",
+      "title": "User Propose (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #bad": "Bad",
+              "Value #good": "Good"
+            }
+          }
+        }
+      ],
       "type": "piechart"
     },
     {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1791,7 +1524,6 @@
               "viz": false
             }
           },
-          "links": [],
           "mappings": []
         },
         "overrides": [
@@ -1828,14 +1560,13 @@
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 14,
         "w": 6,
         "x": 18,
-        "y": 24
+        "y": 17
       },
-      "id": 89,
+      "id": 109,
       "options": {
-        "displayLabels": [],
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
@@ -1853,37 +1584,195 @@
           "values": false
         },
         "tooltip": {
-          "mode": "single",
-          "sort": "none"
+          "mode": "single"
         }
       },
-      "pluginVersion": "8.4.6",
+      "pluginVersion": "8.3.6",
       "targets": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
           },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "  SELECT\n    SUM(u) as User,\n    (512 * ${epochs} - User) as Other\n  FROM\n  (\n    SELECT\n      count(sync_percent) as u\n      FROM\n        stats.validators_summary\n      WHERE is_sync = 1 AND val_nos_id IS NOT NULL AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n  )",
-          "rawQuery": "SELECT\n    SUM(u) as User,\n    (512 * 1 - User) as Other\n  FROM\n  (\n    SELECT\n      count(sync_percent) as u\n      FROM\n        stats.validators_summary\n      WHERE is_sync = 1 AND val_nos_id IS NOT NULL AND (epoch <= 157261 AND epoch > (157261 - 1))\n  )",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "user"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "other"
         }
       ],
-      "title": "Sync Committee share",
+      "title": "Propose sharing (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #bad": "Bad",
+              "Value #good": "Good",
+              "Value #other": "Other",
+              "Value #user": "User"
+            }
+          }
+        }
+      ],
       "type": "piechart"
     },
     {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Good"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
       },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 24
+      },
+      "id": 113,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "bad"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "good"
+        }
+      ],
+      "title": "Other Propose (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #bad": "Bad",
+              "Value #good": "Good"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1892,16 +1781,15 @@
           },
           "custom": {
             "align": "auto",
-            "displayMode": "color-text",
+            "displayMode": "auto",
             "filterable": false
           },
-          "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "text",
+                "color": "semi-dark-green",
                 "value": null
               }
             ]
@@ -1911,15 +1799,695 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Operator"
+              "options": "Bad"
             },
             "properties": [
               {
-                "id": "unit",
-                "value": "string"
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
               }
             ]
           },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Good"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Avg participation"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 125
+              },
+              {
+                "id": "unit",
+                "value": "percent"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 0,
+        "y": 31
+      },
+      "id": 107,
+      "options": {
+        "footer": {
+          "fields": [
+            "Value #good (sum)",
+            "Value #bad (sum)"
+          ],
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "frameIndex": 0,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Bad"
+          }
+        ]
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "bad"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "good"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "avg_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "avg participation rate"
+        }
+      ],
+      "title": "Sync summary (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "Value": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #A": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #B": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #Total high inc.delay": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #Total missed": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #avg participation rate": {
+                "aggregations": [
+                  "mean"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #bad": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #good": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #high inc.delay": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #invalid head": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #invalid source": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #invalid target": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #missed": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #ongoing": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #perfect": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "nos_name": {
+                "aggregations": [],
+                "operation": "groupby"
+              }
+            }
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Max bad": true,
+              "Value #ongoing (sum)": true
+            },
+            "indexByName": {
+              "Value #avg participation rate (mean)": 3,
+              "Value #bad (sum)": 2,
+              "Value #good (sum)": 1,
+              "nos_name": 0
+            },
+            "renameByName": {
+              "Perfect": "",
+              "Value #avg participation rate (mean)": "Avg participation",
+              "Value #avg participation rate (sum)": "",
+              "Value #bad (sum)": "Bad",
+              "Value #good (sum)": "Good",
+              "Value #high inc.delay (sum)": "High inc.delay",
+              "Value #invalid head (sum)": "Bad head",
+              "Value #invalid source (sum)": "Bad source",
+              "Value #invalid target (sum)": "Bad target",
+              "Value #missed (sum)": "Missed",
+              "Value #ongoing (sum)": "",
+              "Value #perfect (sum)": "Perfect",
+              "nos_name": "Operator"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Good"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 31
+      },
+      "id": 111,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "bad"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "good"
+        }
+      ],
+      "title": "User Sync (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #bad": "Bad",
+              "Value #good": "Good"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "User"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Other"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 6,
+        "x": 18,
+        "y": 31
+      },
+      "id": 112,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "user"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "(sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "other"
+        }
+      ],
+      "title": "Sync sharing (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #bad": "Bad",
+              "Value #good": "Good",
+              "Value #other": "Other",
+              "Value #user": "User"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Good"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 38
+      },
+      "id": 114,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "bad"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "good"
+        }
+      ],
+      "title": "Other Sync (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #bad": "Bad",
+              "Value #good": "Good"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
           {
             "matcher": {
               "id": "byName",
@@ -1927,9 +2495,82 @@
             },
             "properties": [
               {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
                 "id": "color",
                 "value": {
                   "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad head"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad target"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad source"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
                   "mode": "fixed"
                 }
               },
@@ -1946,6 +2587,10 @@
             },
             "properties": [
               {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
                 "id": "color",
                 "value": {
                   "fixedColor": "green",
@@ -1954,16 +2599,20 @@
               },
               {
                 "id": "custom.width",
-                "value": 75
+                "value": 90
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "High inc. delay"
+              "options": "High inc.delay"
             },
             "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
               {
                 "id": "color",
                 "value": {
@@ -1976,73 +2625,16 @@
                 "value": 115
               }
             ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Bad head"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "orange",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 90
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Bad target"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "orange",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 90
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Bad source"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "orange",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 90
-              }
-            ]
           }
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 12,
         "w": 12,
         "x": 0,
-        "y": 31
+        "y": 45
       },
-      "id": 81,
+      "id": 104,
       "options": {
         "footer": {
           "fields": "",
@@ -2051,6 +2643,7 @@
           ],
           "show": true
         },
+        "frameIndex": 0,
         "showHeader": true,
         "sortBy": [
           {
@@ -2063,29 +2656,210 @@
       "targets": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
           },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "  SELECT\n    val_nos_name as Operator,\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      val_nos_name,\n      IF((att_happened = 1) AND (att_inc_delay = 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as p,\n      IF((att_happened = 1) AND (att_inc_delay > 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as i,\n      IF(att_valid_head = 0, count(), 0) as bh,\n      IF(att_valid_target = 0, count(), 0) as bt,\n      IF(att_valid_source = 0, count(), 0) as bs,\n      IF(att_happened = 0, count(), 0) as m\n    FROM stats.validators_summary\n    WHERE val_nos_id IS NOT NULL AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY val_nos_name, att_happened, att_inc_delay, att_valid_head, att_valid_target, att_valid_source\n  )\n  GROUP by val_nos_name",
-          "rawQuery": "SELECT\n    val_nos_name as Operator,\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      val_nos_name,\n      IF((att_happened = 1) AND (att_inc_delay = 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as p,\n      IF((att_happened = 1) AND (att_inc_delay > 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as i,\n      IF(att_valid_head = 0, count(), 0) as bh,\n      IF(att_valid_target = 0, count(), 0) as bt,\n      IF(att_valid_source = 0, count(), 0) as bs,\n      IF(att_happened = 0, count(), 0) as m\n    FROM stats.validators_summary\n    WHERE val_nos_id IS NOT NULL AND (epoch <= 157472 AND epoch > (157472 - 1))\n    GROUP BY val_nos_name, att_happened, att_inc_delay, att_valid_head, att_valid_target, att_valid_source\n  )\n  GROUP by val_nos_name",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "high inc.delay"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid head"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid target"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid source"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "missed"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_perfect_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "perfect"
         }
       ],
-      "title": "Attestation duty (${epochs} epochs range)",
+      "title": "Attestation duty summary (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "Value": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #A": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #B": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #Total high inc.delay": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #Total missed": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #high inc.delay": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #invalid head": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #invalid source": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #invalid target": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #missed": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #ongoing": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #perfect": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "nos_name": {
+                "aggregations": [],
+                "operation": "groupby"
+              }
+            }
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Max bad": true,
+              "Value #ongoing (sum)": true
+            },
+            "indexByName": {
+              "Value #high inc.delay (sum)": 2,
+              "Value #invalid head (sum)": 3,
+              "Value #invalid source (sum)": 5,
+              "Value #invalid target (sum)": 4,
+              "Value #missed (sum)": 6,
+              "Value #perfect (sum)": 1,
+              "nos_name": 0
+            },
+            "renameByName": {
+              "Perfect": "",
+              "Value #high inc.delay (sum)": "High inc.delay",
+              "Value #invalid head (sum)": "Bad head",
+              "Value #invalid source (sum)": "Bad source",
+              "Value #invalid target (sum)": "Bad target",
+              "Value #missed (sum)": "Missed",
+              "Value #ongoing (sum)": "",
+              "Value #perfect (sum)": "Perfect",
+              "nos_name": "Operator"
+            }
+          }
+        }
+      ],
       "type": "table"
     },
     {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -2099,25 +2873,9 @@
               "viz": false
             }
           },
-          "links": [],
           "mappings": []
         },
         "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Attested"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
           {
             "matcher": {
               "id": "byName",
@@ -2136,21 +2894,6 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "High inc. delay"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "yellow",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
               "options": "Bad head"
             },
             "properties": [
@@ -2192,18 +2935,47 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Perfect"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "High inc.delay"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 6,
         "w": 12,
         "x": 12,
-        "y": 31
+        "y": 45
       },
-      "id": 91,
+      "id": 115,
       "options": {
-        "displayLabels": [],
         "legend": {
           "displayMode": "table",
           "placement": "right",
@@ -2229,22 +3001,410 @@
       "targets": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
           },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "  SELECT\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      IF((att_happened = 1) AND (att_inc_delay = 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as p,\n      IF((att_happened = 1) AND (att_inc_delay > 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as i,\n      IF(att_valid_head = 0, count(), 0) as bh,\n      IF(att_valid_target = 0, count(), 0) as bt,\n      IF(att_valid_source = 0, count(), 0) as bs,\n      IF(att_happened = 0, count(), 0) as m\n    FROM stats.validators_summary\n    WHERE val_nos_id IS NOT NULL AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    GROUP BY att_inc_delay, att_happened, att_valid_head, att_valid_target, att_valid_source\n  )",
-          "rawQuery": "SELECT\n    SUM(p) as Perfect,\n    SUM(i) as \"High inc. delay\",\n    SUM(bh) as \"Bad head\",\n    SUM(bt) as \"Bad target\",\n    SUM(bs) as \"Bad source\",\n    SUM(m) as Missed\n  FROM\n  (\n    SELECT\n      IF((att_happened = 1) AND (att_inc_delay = 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as p,\n      IF((att_happened = 1) AND (att_inc_delay > 1) AND (att_valid_head = 1) AND (att_valid_target = 1) AND (att_valid_source = 1), count(), 0) as i,\n      IF(att_valid_head = 0, count(), 0) as bh,\n      IF(att_valid_target = 0, count(), 0) as bt,\n      IF(att_valid_source = 0, count(), 0) as bs,\n      IF(att_happened = 0, count(), 0) as m\n    FROM stats.validators_summary\n    WHERE val_nos_id IS NOT NULL AND (epoch <= 157473 AND epoch > (157473 - 1))\n    GROUP BY att_inc_delay, att_happened, att_valid_head, att_valid_target, att_valid_source\n  )",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "high inc.delay"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid head"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid target"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid source"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "missed"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_perfect_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "perfect"
         }
       ],
-      "title": "User attestations (${epochs} epochs range)",
+      "title": "Other Attestation (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Max bad": true,
+              "Time": true,
+              "Value": false,
+              "Value #ongoing": true,
+              "Value #ongoing (sum)": true
+            },
+            "indexByName": {
+              "Max bad": 1,
+              "Perfect": 0,
+              "Time": 2,
+              "Value #high inc.delay": 4,
+              "Value #invalid head": 5,
+              "Value #invalid source": 7,
+              "Value #invalid target": 6,
+              "Value #missed": 8,
+              "Value #ongoing": 3
+            },
+            "renameByName": {
+              "Perfect": "Perfect",
+              "Value": "Perfect",
+              "Value #high inc.delay": "High inc.delay",
+              "Value #high inc.delay (sum)": "High inc.delay",
+              "Value #invalid head": "Bad head",
+              "Value #invalid head (sum)": "Bad head",
+              "Value #invalid source": "Bad source",
+              "Value #invalid source (sum)": "Bad source",
+              "Value #invalid target": "Bad target",
+              "Value #invalid target (sum)": "Bad target",
+              "Value #missed": "Missed",
+              "Value #missed (sum)": "Missed",
+              "Value #ongoing (sum)": "",
+              "nos_name": "Operator"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Missed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad head"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad target"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad source"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Perfect"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "High inc.delay"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 51
+      },
+      "id": 106,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "high inc.delay"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid head"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid target"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid source"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "missed"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_user_validators{status=~\"ongoing\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "ongoing"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_perfect_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "perfect"
+        }
+      ],
+      "title": "User Attestation (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Max bad": true,
+              "Time": true,
+              "Value": false,
+              "Value #ongoing": true,
+              "Value #ongoing (sum)": true
+            },
+            "indexByName": {
+              "Max bad": 1,
+              "Perfect": 0,
+              "Time": 2,
+              "Value #high inc.delay": 4,
+              "Value #invalid head": 5,
+              "Value #invalid source": 7,
+              "Value #invalid target": 6,
+              "Value #missed": 8,
+              "Value #ongoing": 3
+            },
+            "renameByName": {
+              "Perfect": "Perfect",
+              "Value": "Perfect",
+              "Value #high inc.delay": "High inc.delay",
+              "Value #high inc.delay (sum)": "High inc.delay",
+              "Value #invalid head": "Bad head",
+              "Value #invalid head (sum)": "Bad head",
+              "Value #invalid source": "Bad source",
+              "Value #invalid source (sum)": "Bad source",
+              "Value #invalid target": "Bad target",
+              "Value #invalid target (sum)": "Bad target",
+              "Value #missed": "Missed",
+              "Value #missed (sum)": "Missed",
+              "Value #ongoing (sum)": "",
+              "nos_name": "Operator"
+            }
+          }
+        }
+      ],
       "type": "piechart"
     },
     {
@@ -2253,7 +3413,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 57
       },
       "id": 23,
       "panels": [
@@ -2280,13 +3440,13 @@
                 "lineStyle": {
                   "fill": "solid"
                 },
-                "lineWidth": 1,
-                "pointSize": 3,
+                "lineWidth": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -2348,7 +3508,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_total_balance_24h_difference) / 10 ^ 9",
+              "expr": "(sum(ethereum_validators_monitoring_total_balance_24h_difference) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "delta",
@@ -2466,13 +3626,13 @@
                 "lineStyle": {
                   "fill": "solid"
                 },
-                "lineWidth": 1,
-                "pointSize": 3,
+                "lineWidth": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -2523,7 +3683,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_negative_balances_delta)",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_negative_balances_delta) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -2688,13 +3848,13 @@
                   "viz": false
                 },
                 "lineInterpolation": "smooth",
-                "lineWidth": 1,
-                "pointSize": 3,
+                "lineWidth": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -2758,7 +3918,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta)",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -2777,7 +3937,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 58
       },
       "id": 66,
       "panels": [
@@ -2870,7 +4030,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 59
+            "y": 40
           },
           "id": 63,
           "options": {
@@ -2901,14 +4061,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs}))\nORDER BY block_to_propose DESC, val_id",
-              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= 157259 AND epoch >= (157259 - 2))\nORDER BY block_to_propose DESC, val_id",
+              "query": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id",
+              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= 160678 AND epoch >= (160678 - 9))\nORDER BY block_to_propose DESC, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Missed proposals (${epochs} epochs range)",
+          "title": "Missed proposals (${epochs_range} epochs range)",
           "type": "table"
         },
         {
@@ -2931,13 +4091,13 @@
                   "viz": false
                 },
                 "lineInterpolation": "smooth",
-                "lineWidth": 1,
-                "pointSize": 3,
+                "lineWidth": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -2962,7 +4122,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 59
+            "y": 40
           },
           "id": 67,
           "options": {
@@ -2988,7 +4148,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose)",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -3007,7 +4167,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 59
       },
       "id": 69,
       "panels": [
@@ -3034,13 +4194,13 @@
                 "lineStyle": {
                   "fill": "solid"
                 },
-                "lineWidth": 1,
-                "pointSize": 3,
+                "lineWidth": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -3055,7 +4215,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3122,7 +4283,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 68
+            "y": 53
           },
           "id": 92,
           "options": {
@@ -3148,7 +4309,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_user_sync_participation_avg_percent)",
+              "expr": "sum(ethereum_validators_monitoring_user_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "user",
               "refId": "A"
@@ -3159,7 +4320,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent)",
+              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "other",
@@ -3224,7 +4385,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3290,7 +4452,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 74
+            "y": 59
           },
           "id": 72,
           "options": {
@@ -3351,13 +4513,13 @@
                   "viz": false
                 },
                 "lineInterpolation": "smooth",
-                "lineWidth": 1,
-                "pointSize": 3,
+                "lineWidth": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -3371,7 +4533,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -3382,7 +4545,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 74
+            "y": 59
           },
           "id": 73,
           "options": {
@@ -3408,7 +4571,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg)",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -3427,7 +4590,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 60
       },
       "id": 62,
       "panels": [
@@ -3487,8 +4650,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3585,14 +4747,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 157474 AND epoch > (157474 - 1))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 160783 AND epoch > (160783 - 164))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of MISSED attestations (${epochs} epochs range)",
+          "title": "Number of MISSED attestations (${epochs_range} epochs range)",
           "type": "table"
         },
         {
@@ -3615,13 +4777,13 @@
                   "viz": false
                 },
                 "lineInterpolation": "smooth",
-                "lineWidth": 1,
-                "pointSize": 3,
+                "lineWidth": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -3635,8 +4797,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -3673,13 +4834,14 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation)",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
             }
           ],
           "title": "Number of validators with MISSED attestation",
+          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -3738,8 +4900,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3836,14 +4997,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= 157474 AND epoch > (157474 - 1))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= 160681 AND epoch > (160681 - 9))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with high INC. DELAY (${epochs} epochs range)",
+          "title": "Number of attestations with high INC. DELAY (${epochs_range} epochs range)",
           "type": "table"
         },
         {
@@ -3866,13 +5027,13 @@
                   "viz": false
                 },
                 "lineInterpolation": "smooth",
-                "lineWidth": 1,
-                "pointSize": 3,
+                "lineWidth": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -3886,8 +5047,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -3924,7 +5084,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"})",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -3989,8 +5149,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4087,14 +5246,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 157474 AND epoch > (157474 - 1))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 160683 AND epoch > (160683 - 10))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with invalid HEAD (${epochs} epochs range)",
+          "title": "Number of attestations with invalid HEAD (${epochs_range} epochs range)",
           "type": "table"
         },
         {
@@ -4117,13 +5276,13 @@
                   "viz": false
                 },
                 "lineInterpolation": "smooth",
-                "lineWidth": 1,
-                "pointSize": 3,
+                "lineWidth": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -4137,8 +5296,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -4175,7 +5333,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"})",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -4240,8 +5398,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4338,14 +5495,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 157282 AND epoch > (157282 - 1))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 160685 AND epoch > (160685 - 10))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with invalid TARGET (${epochs} epochs range)",
+          "title": "Number of attestations with invalid TARGET (${epochs_range} epochs range)",
           "type": "table"
         },
         {
@@ -4368,13 +5525,13 @@
                   "viz": false
                 },
                 "lineInterpolation": "smooth",
-                "lineWidth": 1,
-                "pointSize": 3,
+                "lineWidth": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -4388,8 +5545,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -4426,7 +5582,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"})",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -4491,8 +5647,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4589,14 +5744,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 157282 AND epoch > (157282 - 1))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 160685 AND epoch > (160685 - 10))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with invalid SOURCE (${epochs} epochs range)",
+          "title": "Number of attestations with invalid SOURCE (${epochs_range} epochs range)",
           "type": "table"
         },
         {
@@ -4619,13 +5774,13 @@
                   "viz": false
                 },
                 "lineInterpolation": "smooth",
-                "lineWidth": 1,
-                "pointSize": 3,
+                "lineWidth": 3,
+                "pointSize": 6,
                 "scaleDistribution": {
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": false,
+                "spanNulls": true,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -4639,8 +5794,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -4677,7 +5831,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"})",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "A"
@@ -4696,7 +5850,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 61
       },
       "id": 50,
       "panels": [
@@ -4814,7 +5968,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 62
       },
       "id": 32,
       "panels": [],
@@ -4877,7 +6031,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 44
+        "y": 63
       },
       "id": 34,
       "options": {
@@ -4922,7 +6076,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
           "custom": {
             "axisLabel": "",
@@ -4937,13 +6091,13 @@
               "viz": false
             },
             "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
+            "lineWidth": 3,
+            "pointSize": 6,
             "scaleDistribution": {
               "type": "linear"
             },
             "showPoints": "auto",
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -4962,7 +6116,7 @@
               },
               {
                 "color": "red",
-                "value": 80
+                "value": 1
               }
             ]
           }
@@ -4973,7 +6127,7 @@
         "h": 4,
         "w": 4,
         "x": 4,
-        "y": 44
+        "y": 63
       },
       "id": 36,
       "options": {
@@ -4994,7 +6148,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"})",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
           "interval": "",
           "legendFormat": "Number of slashed validators",
           "refId": "A"
@@ -5021,8 +6175,8 @@
       {
         "current": {
           "selected": false,
-          "text": "157475",
-          "value": "157475"
+          "text": "160816",
+          "value": "160816"
         },
         "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
         "description": "Last epoch number",
@@ -5034,30 +6188,6 @@
         "options": [],
         "query": {
           "query": "query_result(ethereum_validators_monitoring_epoch_number)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "regex": "/.* ([^\\ ]*) .*/",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "32",
-          "value": "32"
-        },
-        "definition": "query_result(ethereum_validators_monitoring_fetch_interval)",
-        "description": "App fetch interval",
-        "hide": 2,
-        "includeAll": false,
-        "label": "Fetch interval",
-        "multi": false,
-        "name": "fetch_interval_var",
-        "options": [],
-        "query": {
-          "query": "query_result(ethereum_validators_monitoring_fetch_interval)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -5093,32 +6223,8 @@
       {
         "current": {
           "selected": false,
-          "text": "1",
-          "value": "1"
-        },
-        "datasource": {
-          "type": "vertamedia-clickhouse-datasource",
-          "uid": "PDEE91DDB90597936"
-        },
-        "definition": "\tWITH epoch_range AS ( SELECT ((${__to:date:seconds} - ${__from:date:seconds}) / 384)::int as val ) SELECT IF (val = 0, 1, val) from epoch_range",
-        "hide": 2,
-        "includeAll": false,
-        "label": "Epoch range",
-        "multi": false,
-        "name": "epochs",
-        "options": [],
-        "query": "\tWITH epoch_range AS ( SELECT ((${__to:date:seconds} - ${__from:date:seconds}) / 384)::int as val ) SELECT IF (val = 0, 1, val) from epoch_range",
-        "refresh": 2,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "96.722412109375",
-          "value": "96.722412109375"
+          "text": "94.952392578125",
+          "value": "94.952392578125"
         },
         "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
         "description": "Chain sync participation average value",
@@ -5137,14 +6243,47 @@
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "9",
+          "value": "9"
+        },
+        "definition": "query_result(sum_over_time((changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+        "description": "Epochs range by prometheus metric",
+        "hide": 2,
+        "includeAll": false,
+        "label": "Epochs range",
+        "multi": false,
+        "name": "epochs_range",
+        "options": [],
+        "query": {
+          "query": "query_result(sum_over_time((changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "/.* ([^\\ ]*) .*/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-15m",
     "to": "now"
   },
-  "timepicker": {},
+  "timepicker": {
+    "refresh_intervals": [
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
   "timezone": "",
   "title": "Validators",
   "uid": "HRgPmpNnz",

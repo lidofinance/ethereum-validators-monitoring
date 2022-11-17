@@ -20,6 +20,13 @@ import {
   METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
   METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_OTHER_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_OTHER_VALIDATOR_COUNT_GOOD_PROPOSE,
+  METRIC_OTHER_VALIDATOR_COUNT_INVALID_ATTESTATION,
+  METRIC_OTHER_VALIDATOR_COUNT_MISS_ATTESTATION,
+  METRIC_OTHER_VALIDATOR_COUNT_MISS_PROPOSE,
+  METRIC_OTHER_VALIDATOR_COUNT_PERFECT_ATTESTATION,
+  METRIC_OTHER_VALIDATOR_COUNT_WITH_GOOD_SYNC_PARTICIPATION,
+  METRIC_OTHER_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG,
   METRIC_OUTGOING_CL_REQUESTS_COUNT,
   METRIC_OUTGOING_CL_REQUESTS_DURATION_SECONDS,
   METRIC_OUTGOING_EL_REQUESTS_COUNT,
@@ -33,6 +40,7 @@ import {
   METRIC_USER_VALIDATORS,
   METRIC_VALIDATORS,
   METRIC_VALIDATOR_BALANCES_DELTA,
+  METRIC_VALIDATOR_COUNT_GOOD_PROPOSE,
   METRIC_VALIDATOR_COUNT_HIGH_AVG_INC_DELAY_ATTESTATION_OF_N_EPOCH,
   METRIC_VALIDATOR_COUNT_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
@@ -41,6 +49,8 @@ import {
   METRIC_VALIDATOR_COUNT_MISS_ATTESTATION,
   METRIC_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_MISS_PROPOSE,
+  METRIC_VALIDATOR_COUNT_PERFECT_ATTESTATION,
+  METRIC_VALIDATOR_COUNT_WITH_GOOD_SYNC_PARTICIPATION,
   METRIC_VALIDATOR_COUNT_WITH_NEGATIVE_BALANCES_DELTA,
   METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG,
   METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
@@ -210,16 +220,58 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_name'],
   });
 
+  public otherValidatorsCountWithGoodSyncParticipation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_COUNT_WITH_GOOD_SYNC_PARTICIPATION,
+    help: 'number of other validators with good sync committee participation',
+    labelNames: [],
+  });
+
+  public validatorsCountWithGoodSyncParticipation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_WITH_GOOD_SYNC_PARTICIPATION,
+    help: 'number of validators with good sync committee participation',
+    labelNames: ['nos_name'],
+  });
+
+  public otherValidatorsCountWithSyncParticipationLessAvg = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG,
+    help: 'number of other validators with sync committee participation less avg',
+    labelNames: [],
+  });
+
   public validatorsCountWithSyncParticipationLessAvg = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG,
     help: 'number of validators with sync committee participation less avg',
     labelNames: ['nos_name'],
   });
 
+  public otherValidatorsCountPerfectAttestation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_COUNT_PERFECT_ATTESTATION,
+    help: 'number of other validators with perfect attestation',
+    labelNames: [],
+  });
+
+  public validatorsCountPerfectAttestation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_PERFECT_ATTESTATION,
+    help: 'number of validators with perfect attestation',
+    labelNames: ['nos_name'],
+  });
+
+  public otherValidatorsCountMissAttestation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_COUNT_MISS_ATTESTATION,
+    help: 'number of other validators miss attestation',
+    labelNames: [],
+  });
+
   public validatorsCountMissAttestation = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_MISS_ATTESTATION,
     help: 'number of validators miss attestation',
     labelNames: ['nos_name'],
+  });
+
+  public otherValidatorsCountInvalidAttestation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_COUNT_INVALID_ATTESTATION,
+    help: 'number of other validators with invalid properties or high inc. delay in attestation',
+    labelNames: ['reason'],
   });
 
   public validatorsCountInvalidAttestation = this.getOrCreateMetric('Gauge', {
@@ -274,6 +326,24 @@ export class PrometheusService implements OnApplicationBootstrap {
     name: METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
     help: 'number of validators with sync participation less than avg last N epoch (with possible high reward in the future)',
     labelNames: ['nos_name', 'epoch_interval'],
+  });
+
+  public otherValidatorsCountGoodPropose = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_COUNT_GOOD_PROPOSE,
+    help: 'number of other validators good propose',
+    labelNames: [],
+  });
+
+  public validatorsCountGoodPropose = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_GOOD_PROPOSE,
+    help: 'number of validators good propose',
+    labelNames: ['nos_name'],
+  });
+
+  public otherValidatorsCountMissPropose = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_COUNT_MISS_PROPOSE,
+    help: 'number of other validators miss propose',
+    labelNames: [],
   });
 
   public validatorsCountMissPropose = this.getOrCreateMetric('Gauge', {
