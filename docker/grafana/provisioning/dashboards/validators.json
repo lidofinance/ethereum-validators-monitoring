@@ -21,7 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1668690972935,
+  "iteration": 1668700263406,
   "links": [
     {
       "asDropdown": false,
@@ -1256,7 +1256,7 @@
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 14,
         "w": 12,
         "x": 0,
         "y": 17
@@ -1488,7 +1488,7 @@
           "refId": "good"
         }
       ],
-      "title": "Propose summary (${epochs_range} epochs range)",
+      "title": "User Propose (${epochs_range} epochs range)",
       "transformations": [
         {
           "id": "seriesToColumns",
@@ -1560,7 +1560,7 @@
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 14,
         "w": 6,
         "x": 18,
         "y": 17
@@ -1618,7 +1618,7 @@
           "refId": "other"
         }
       ],
-      "title": "Propose summary (${epochs_range} epochs range)",
+      "title": "Propose sharing (${epochs_range} epochs range)",
       "transformations": [
         {
           "id": "seriesToColumns",
@@ -1636,6 +1636,136 @@
               "Value #good": "Good",
               "Value #other": "Other",
               "Value #user": "User"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Good"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 24
+      },
+      "id": 113,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "bad"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "good"
+        }
+      ],
+      "title": "Other Propose (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #bad": "Bad",
+              "Value #good": "Good"
             }
           }
         }
@@ -1731,10 +1861,10 @@
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 14,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 31
       },
       "id": 107,
       "options": {
@@ -1995,7 +2125,7 @@
         "h": 7,
         "w": 6,
         "x": 12,
-        "y": 24
+        "y": 31
       },
       "id": 111,
       "options": {
@@ -2050,7 +2180,7 @@
           "refId": "good"
         }
       ],
-      "title": "Sync summary (${epochs_range} epochs range)",
+      "title": "User Sync (${epochs_range} epochs range)",
       "transformations": [
         {
           "id": "seriesToColumns",
@@ -2122,10 +2252,10 @@
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 14,
         "w": 6,
         "x": 18,
-        "y": 24
+        "y": 31
       },
       "id": 112,
       "options": {
@@ -2180,7 +2310,7 @@
           "refId": "other"
         }
       ],
-      "title": "Sync summary (${epochs_range} epochs range)",
+      "title": "Sync sharing (${epochs_range} epochs range)",
       "transformations": [
         {
           "id": "seriesToColumns",
@@ -2198,6 +2328,136 @@
               "Value #good": "Good",
               "Value #other": "Other",
               "Value #user": "User"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Good"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 38
+      },
+      "id": 114,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "bad"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "good"
+        }
+      ],
+      "title": "Other Sync (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #bad": "Bad",
+              "Value #good": "Good"
             }
           }
         }
@@ -2369,10 +2629,10 @@
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 12,
         "w": 12,
         "x": 0,
-        "y": 31
+        "y": 45
       },
       "id": 104,
       "options": {
@@ -2709,10 +2969,277 @@
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 6,
         "w": 12,
         "x": 12,
-        "y": 31
+        "y": 45
+      },
+      "id": 115,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.4.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "high inc.delay"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid head"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid target"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid source"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "missed"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_perfect_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "perfect"
+        }
+      ],
+      "title": "Other Attestation (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Max bad": true,
+              "Time": true,
+              "Value": false,
+              "Value #ongoing": true,
+              "Value #ongoing (sum)": true
+            },
+            "indexByName": {
+              "Max bad": 1,
+              "Perfect": 0,
+              "Time": 2,
+              "Value #high inc.delay": 4,
+              "Value #invalid head": 5,
+              "Value #invalid source": 7,
+              "Value #invalid target": 6,
+              "Value #missed": 8,
+              "Value #ongoing": 3
+            },
+            "renameByName": {
+              "Perfect": "Perfect",
+              "Value": "Perfect",
+              "Value #high inc.delay": "High inc.delay",
+              "Value #high inc.delay (sum)": "High inc.delay",
+              "Value #invalid head": "Bad head",
+              "Value #invalid head (sum)": "Bad head",
+              "Value #invalid source": "Bad source",
+              "Value #invalid source (sum)": "Bad source",
+              "Value #invalid target": "Bad target",
+              "Value #invalid target (sum)": "Bad target",
+              "Value #missed": "Missed",
+              "Value #missed (sum)": "Missed",
+              "Value #ongoing (sum)": "",
+              "nos_name": "Operator"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Missed"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad head"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad target"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad source"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Perfect"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "High inc.delay"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 51
       },
       "id": 106,
       "options": {
@@ -2836,7 +3363,7 @@
           "refId": "perfect"
         }
       ],
-      "title": "Attestation duty summary (${epochs_range} epochs range)",
+      "title": "User Attestation (${epochs_range} epochs range)",
       "transformations": [
         {
           "id": "organize",
@@ -2886,7 +3413,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 38
+        "y": 57
       },
       "id": 23,
       "panels": [
@@ -3410,7 +3937,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 58
       },
       "id": 66,
       "panels": [
@@ -3640,7 +4167,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 59
       },
       "id": 69,
       "panels": [
@@ -3688,7 +4215,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3755,7 +4283,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 41
+            "y": 53
           },
           "id": 92,
           "options": {
@@ -3857,7 +4385,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3923,7 +4452,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 47
+            "y": 59
           },
           "id": 72,
           "options": {
@@ -4004,7 +4533,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -4015,7 +4545,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 47
+            "y": 59
           },
           "id": 73,
           "options": {
@@ -4060,7 +4590,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 60
       },
       "id": 62,
       "panels": [
@@ -4120,8 +4650,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4219,7 +4748,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 160680 AND epoch > (160680 - 9))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 160783 AND epoch > (160783 - 164))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4268,8 +4797,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -4372,8 +4900,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4520,8 +5047,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -4623,8 +5149,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4771,8 +5296,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -4874,8 +5398,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -5022,8 +5545,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -5125,8 +5647,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -5273,8 +5794,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -5330,7 +5850,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 61
       },
       "id": 50,
       "panels": [
@@ -5448,7 +5968,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 62
       },
       "id": 32,
       "panels": [],
@@ -5511,7 +6031,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 44
+        "y": 63
       },
       "id": 34,
       "options": {
@@ -5607,7 +6127,7 @@
         "h": 4,
         "w": 4,
         "x": 4,
-        "y": 44
+        "y": 63
       },
       "id": 36,
       "options": {
@@ -5655,8 +6175,8 @@
       {
         "current": {
           "selected": false,
-          "text": "160706",
-          "value": "160706"
+          "text": "160816",
+          "value": "160816"
         },
         "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
         "description": "Last epoch number",
@@ -5703,8 +6223,8 @@
       {
         "current": {
           "selected": false,
-          "text": "93.902587890625",
-          "value": "93.902587890625"
+          "text": "94.952392578125",
+          "value": "94.952392578125"
         },
         "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
         "description": "Chain sync participation average value",
@@ -5727,8 +6247,8 @@
       {
         "current": {
           "selected": false,
-          "text": "10",
-          "value": "10"
+          "text": "9",
+          "value": "9"
         },
         "definition": "query_result(sum_over_time((changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
         "description": "Epochs range by prometheus metric",
