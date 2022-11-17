@@ -85,12 +85,11 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: bigint): string => 
   ORDER BY neg_count DESC
 `;
 
-export const validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery = (
+export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
   epoch: bigint,
   epochInterval: number,
-  chainAvg: number,
-  distance: number,
   validatorIndexes: string[] = [],
+  condition: string,
 ): string => {
   let strFilterValIndexes = '';
   if (validatorIndexes.length > 0) {
@@ -99,7 +98,7 @@ export const validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery = (
   return `
     SELECT
       val_nos_name,
-      count() as less_chain_avg_count
+      count() as amount
     FROM (
       SELECT
         val_nos_name,
@@ -112,7 +111,7 @@ export const validatorsCountWithSyncParticipationLessChainAvgLastNEpochQuery = (
           stats.validators_summary
         WHERE
           is_sync = 1 AND
-          sync_percent < (${chainAvg} - ${distance}) AND
+          ${condition} AND
           (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
           ${strFilterValIndexes}
       )
@@ -185,7 +184,7 @@ export const validatorCountHighAvgIncDelayAttestationOfNEpochQuery = (epoch: big
   `;
 };
 
-export const validatorsCountWithMissProposeQuery = (epoch: bigint, validatorIndexes: string[] = []): string => {
+export const validatorsCountByConditionMissProposeQuery = (epoch: bigint, validatorIndexes: string[] = [], condition: string): string => {
   let strFilterValIndexes = '';
   if (validatorIndexes.length > 0) {
     strFilterValIndexes = `AND val_id in [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
@@ -193,7 +192,7 @@ export const validatorsCountWithMissProposeQuery = (epoch: bigint, validatorInde
   return `
     SELECT
       val_nos_name,
-      count() as miss_propose_count
+      count() as amount
     FROM (
       SELECT
         val_id,
@@ -201,13 +200,13 @@ export const validatorsCountWithMissProposeQuery = (epoch: bigint, validatorInde
       FROM stats.validators_summary
       WHERE
         is_proposer = 1 AND
-        block_proposed = 0 AND
-        (epoch <= ${epoch} AND epoch >= (${epoch} - 1))
+        ${condition} AND
+        (epoch <= ${epoch} AND epoch > (${epoch} - 1))
         ${strFilterValIndexes}
       ORDER BY epoch DESC, val_id
     )
     GROUP BY val_nos_name
-    ORDER BY miss_propose_count DESC
+    ORDER BY amount DESC
   `;
 };
 

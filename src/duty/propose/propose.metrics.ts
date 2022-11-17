@@ -23,15 +23,27 @@ export class ProposeMetrics {
     this.logger.log('Calculating propose metrics');
     this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();
-    await Promise.all([this.missProposes(), this.highRewardMissProposes(possibleHighRewardValidators)]);
+    await Promise.all([this.goodProposes(), this.missProposes(), this.highRewardMissProposes(possibleHighRewardValidators)]);
+  }
+
+  private async goodProposes() {
+    const result = await this.storage.getValidatorsCountWithGoodProposes(this.processedEpoch);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((p) => p.val_nos_name == operator.name);
+      this.prometheus.validatorsCountGoodPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
+    });
+    const other = result.find((p) => p.val_nos_name == 'NULL');
+    this.prometheus.otherValidatorsCountGoodPropose.set(other ? other.amount : 0);
   }
 
   private async missProposes() {
     const result = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((p) => p.val_nos_name == operator.name);
-      this.prometheus.validatorsCountMissPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.miss_propose_count : 0);
+      this.prometheus.validatorsCountMissPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
     });
+    const other = result.find((p) => p.val_nos_name == 'NULL');
+    this.prometheus.otherValidatorsCountMissPropose.set(other ? other.amount : 0);
   }
 
   private async highRewardMissProposes(possibleHighRewardValidators: string[]) {
@@ -40,10 +52,7 @@ export class ProposeMetrics {
       result = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch, possibleHighRewardValidators);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((p) => p.val_nos_name == operator.name);
-      this.prometheus.highRewardValidatorsCountMissPropose.set(
-        { nos_name: operator.name },
-        operatorResult ? operatorResult.miss_propose_count : 0,
-      );
+      this.prometheus.highRewardValidatorsCountMissPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
     });
   }
 }

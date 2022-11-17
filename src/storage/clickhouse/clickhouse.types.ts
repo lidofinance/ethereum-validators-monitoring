@@ -19,9 +19,9 @@ export interface NOsValidatorsSyncAvgPercent {
   avg_percent: number;
 }
 
-export interface NOsValidatorsSyncLessChainAvgCount {
+export interface NOsValidatorsSyncByConditionCount {
   val_nos_name: string;
-  less_chain_avg_count: number;
+  amount: number;
 }
 
 export interface NOsValidatorsByConditionAttestationCount {
@@ -29,14 +29,9 @@ export interface NOsValidatorsByConditionAttestationCount {
   amount: number;
 }
 
-export interface NOsValidatorsMissProposeCount {
+export interface NOsValidatorsByConditionProposeCount {
   val_nos_name: string;
-  miss_propose_count: number;
-}
-
-export interface ValidatorIdentifications {
-  validator_id: string;
-  validator_pubkey: string;
+  amount: number;
 }
 
 export interface NOsValidatorsStatusStats extends ValidatorsStatusStats {
