@@ -119,7 +119,7 @@ export class SyncMetrics {
       const operatorResult = result.find((p) => p.val_nos_name == operator.name);
       this.prometheus.highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch.set(
         { nos_name: operator.name, epoch_interval: this.epochInterval },
-        operatorResult ? operatorResult.less_chain_avg_count : 0,
+        operatorResult ? operatorResult.amount : 0,
       );
     });
   }
