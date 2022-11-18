@@ -21,7 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1668700263406,
+  "iteration": 1668760243595,
   "links": [
     {
       "asDropdown": false,
@@ -1176,215 +1176,6 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "displayMode": "auto",
-            "filterable": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "semi-dark-green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Bad"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "color-text"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 90
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Good"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "color-text"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "custom.width",
-                "value": 90
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "All"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 125
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 14,
-        "w": 12,
-        "x": 0,
-        "y": 17
-      },
-      "id": 110,
-      "options": {
-        "footer": {
-          "fields": [],
-          "reducer": [
-            "sum"
-          ],
-          "show": true
-        },
-        "frameIndex": 0,
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Bad"
-          }
-        ]
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "bad"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "good"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "all"
-        }
-      ],
-      "title": "Propose summary (${epochs_range} epochs range)",
-      "transformations": [
-        {
-          "id": "groupBy",
-          "options": {
-            "fields": {
-              "Value #all": {
-                "aggregations": [
-                  "sum"
-                ],
-                "operation": "aggregate"
-              },
-              "Value #bad": {
-                "aggregations": [
-                  "sum"
-                ],
-                "operation": "aggregate"
-              },
-              "Value #good": {
-                "aggregations": [
-                  "sum"
-                ],
-                "operation": "aggregate"
-              },
-              "nos_name": {
-                "aggregations": [],
-                "operation": "groupby"
-              }
-            }
-          }
-        },
-        {
-          "id": "merge",
-          "options": {}
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {},
-            "indexByName": {
-              "Value #all (sum)": 1,
-              "Value #bad (sum)": 3,
-              "Value #good (sum)": 2,
-              "nos_name": 0
-            },
-            "renameByName": {
-              "Value #all (sum)": "All",
-              "Value #bad (sum)": "Bad",
-              "Value #good (sum)": "Good",
-              "nos_name": "Operator"
-            }
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
             "mode": "palette-classic"
           },
           "custom": {
@@ -1432,7 +1223,7 @@
       "gridPos": {
         "h": 7,
         "w": 6,
-        "x": 12,
+        "x": 0,
         "y": 17
       },
       "id": 108,
@@ -1530,138 +1321,6 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "User"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "purple",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Other"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "super-light-purple",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 14,
-        "w": 6,
-        "x": 18,
-        "y": 17
-      },
-      "id": 109,
-      "options": {
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "values": [
-            "value",
-            "percent"
-          ]
-        },
-        "pieType": "donut",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "user"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "other"
-        }
-      ],
-      "title": "Propose sharing (${epochs_range} epochs range)",
-      "transformations": [
-        {
-          "id": "seriesToColumns",
-          "options": {}
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true
-            },
-            "indexByName": {},
-            "renameByName": {
-              "Value #bad": "Bad",
-              "Value #good": "Good",
-              "Value #other": "Other",
-              "Value #user": "User"
-            }
-          }
-        }
-      ],
-      "type": "piechart"
-    },
-    {
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": []
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
               "options": "Bad"
             },
             "properties": [
@@ -1694,8 +1353,8 @@
       "gridPos": {
         "h": 7,
         "w": 6,
-        "x": 12,
-        "y": 24
+        "x": 6,
+        "y": 17
       },
       "id": 113,
       "options": {
@@ -1845,6 +1504,607 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "All"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 125
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 12,
+        "x": 12,
+        "y": 17
+      },
+      "id": 110,
+      "options": {
+        "footer": {
+          "fields": [],
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "frameIndex": 0,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Bad"
+          }
+        ]
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "bad"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "good"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "all"
+        }
+      ],
+      "title": "Propose summary (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "Value #all": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #bad": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #good": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "nos_name": {
+                "aggregations": [],
+                "operation": "groupby"
+              }
+            }
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "indexByName": {
+              "Value #all (sum)": 1,
+              "Value #bad (sum)": 3,
+              "Value #good (sum)": 2,
+              "nos_name": 0
+            },
+            "renameByName": {
+              "Value #all (sum)": "All",
+              "Value #bad (sum)": "Bad",
+              "Value #good (sum)": "Good",
+              "nos_name": "Operator"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "User"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Other"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 109,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "user"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "other"
+        }
+      ],
+      "title": "Propose sharing (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #bad": "Bad",
+              "Value #good": "Good",
+              "Value #other": "Other",
+              "Value #user": "User"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Good"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 31
+      },
+      "id": 111,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "bad"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "good"
+        }
+      ],
+      "title": "User Sync (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #bad": "Bad",
+              "Value #good": "Good"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Good"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 6,
+        "y": 31
+      },
+      "id": 114,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.3.6",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "bad"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "good"
+        }
+      ],
+      "title": "Other Sync (${epochs_range} epochs range)",
+      "transformations": [
+        {
+          "id": "seriesToColumns",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {},
+            "renameByName": {
+              "Value #bad": "Bad",
+              "Value #good": "Good"
+            }
+          }
+        }
+      ],
+      "type": "piechart"
+    },
+    {
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "filterable": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Good"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Avg participation"
             },
             "properties": [
@@ -1863,7 +2123,7 @@
       "gridPos": {
         "h": 14,
         "w": 12,
-        "x": 0,
+        "x": 12,
         "y": 31
       },
       "id": 107,
@@ -2092,136 +2352,6 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Bad"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Good"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 12,
-        "y": 31
-      },
-      "id": 111,
-      "options": {
-        "legend": {
-          "displayMode": "table",
-          "placement": "bottom",
-          "values": [
-            "value",
-            "percent"
-          ]
-        },
-        "pieType": "donut",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single"
-        }
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "bad"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "good"
-        }
-      ],
-      "title": "User Sync (${epochs_range} epochs range)",
-      "transformations": [
-        {
-          "id": "seriesToColumns",
-          "options": {}
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true
-            },
-            "indexByName": {},
-            "renameByName": {
-              "Value #bad": "Bad",
-              "Value #good": "Good"
-            }
-          }
-        }
-      ],
-      "type": "piechart"
-    },
-    {
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": []
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
               "options": "User"
             },
             "properties": [
@@ -2252,10 +2382,10 @@
         ]
       },
       "gridPos": {
-        "h": 14,
-        "w": 6,
-        "x": 18,
-        "y": 31
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 38
       },
       "id": 112,
       "options": {
@@ -2354,7 +2484,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Bad"
+              "options": "Missed"
             },
             "properties": [
               {
@@ -2369,7 +2499,52 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "Good"
+              "options": "Bad head"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad target"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Bad source"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Perfect"
             },
             "properties": [
               {
@@ -2380,20 +2555,35 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "High inc.delay"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 7,
-        "w": 6,
-        "x": 12,
-        "y": 38
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 45
       },
-      "id": 114,
+      "id": 106,
       "options": {
         "legend": {
           "displayMode": "table",
-          "placement": "bottom",
+          "placement": "right",
           "values": [
             "value",
             "percent"
@@ -2408,10 +2598,11 @@
           "values": false
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.4.6",
       "targets": [
         {
           "datasource": {
@@ -2419,13 +2610,13 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
           "format": "table",
           "hide": false,
           "instant": true,
           "interval": "",
           "legendFormat": "{{nos_name}}",
-          "refId": "bad"
+          "refId": "high inc.delay"
         },
         {
           "datasource": {
@@ -2433,31 +2624,121 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
           "format": "table",
           "hide": false,
           "instant": true,
           "interval": "",
           "legendFormat": "{{nos_name}}",
-          "refId": "good"
+          "refId": "invalid head"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid target"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "invalid source"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "missed"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_user_validators{status=~\"ongoing\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "ongoing"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_perfect_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{nos_name}}",
+          "refId": "perfect"
         }
       ],
-      "title": "Other Sync (${epochs_range} epochs range)",
+      "title": "User Attestation (${epochs_range} epochs range)",
       "transformations": [
-        {
-          "id": "seriesToColumns",
-          "options": {}
-        },
         {
           "id": "organize",
           "options": {
             "excludeByName": {
-              "Time": true
+              "Max bad": true,
+              "Time": true,
+              "Value": false,
+              "Value #ongoing": true,
+              "Value #ongoing (sum)": true
             },
-            "indexByName": {},
+            "indexByName": {
+              "Max bad": 1,
+              "Perfect": 0,
+              "Time": 2,
+              "Value #high inc.delay": 4,
+              "Value #invalid head": 5,
+              "Value #invalid source": 7,
+              "Value #invalid target": 6,
+              "Value #missed": 8,
+              "Value #ongoing": 3
+            },
             "renameByName": {
-              "Value #bad": "Bad",
-              "Value #good": "Good"
+              "Perfect": "Perfect",
+              "Value": "Perfect",
+              "Value #high inc.delay": "High inc.delay",
+              "Value #high inc.delay (sum)": "High inc.delay",
+              "Value #invalid head": "Bad head",
+              "Value #invalid head (sum)": "Bad head",
+              "Value #invalid source": "Bad source",
+              "Value #invalid source (sum)": "Bad source",
+              "Value #invalid target": "Bad target",
+              "Value #invalid target (sum)": "Bad target",
+              "Value #missed": "Missed",
+              "Value #missed (sum)": "Missed",
+              "Value #ongoing (sum)": "",
+              "nos_name": "Operator"
             }
           }
         }
@@ -2631,7 +2912,7 @@
       "gridPos": {
         "h": 12,
         "w": 12,
-        "x": 0,
+        "x": 12,
         "y": 45
       },
       "id": 104,
@@ -2971,8 +3252,8 @@
       "gridPos": {
         "h": 6,
         "w": 12,
-        "x": 12,
-        "y": 45
+        "x": 0,
+        "y": 51
       },
       "id": 115,
       "options": {
@@ -3083,287 +3364,6 @@
         }
       ],
       "title": "Other Attestation (${epochs_range} epochs range)",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Max bad": true,
-              "Time": true,
-              "Value": false,
-              "Value #ongoing": true,
-              "Value #ongoing (sum)": true
-            },
-            "indexByName": {
-              "Max bad": 1,
-              "Perfect": 0,
-              "Time": 2,
-              "Value #high inc.delay": 4,
-              "Value #invalid head": 5,
-              "Value #invalid source": 7,
-              "Value #invalid target": 6,
-              "Value #missed": 8,
-              "Value #ongoing": 3
-            },
-            "renameByName": {
-              "Perfect": "Perfect",
-              "Value": "Perfect",
-              "Value #high inc.delay": "High inc.delay",
-              "Value #high inc.delay (sum)": "High inc.delay",
-              "Value #invalid head": "Bad head",
-              "Value #invalid head (sum)": "Bad head",
-              "Value #invalid source": "Bad source",
-              "Value #invalid source (sum)": "Bad source",
-              "Value #invalid target": "Bad target",
-              "Value #invalid target (sum)": "Bad target",
-              "Value #missed": "Missed",
-              "Value #missed (sum)": "Missed",
-              "Value #ongoing (sum)": "",
-              "nos_name": "Operator"
-            }
-          }
-        }
-      ],
-      "type": "piechart"
-    },
-    {
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
-          },
-          "mappings": []
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Missed"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Bad head"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "orange",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Bad target"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "orange",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Bad source"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "orange",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Perfect"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "green",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "High inc.delay"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "yellow",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 12,
-        "y": 51
-      },
-      "id": 106,
-      "options": {
-        "legend": {
-          "displayMode": "table",
-          "placement": "right",
-          "values": [
-            "value",
-            "percent"
-          ]
-        },
-        "pieType": "donut",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "8.4.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "high inc.delay"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "invalid head"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "invalid target"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "invalid source"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "missed"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_user_validators{status=~\"ongoing\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "ongoing"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_perfect_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{nos_name}}",
-          "refId": "perfect"
-        }
-      ],
-      "title": "User Attestation (${epochs_range} epochs range)",
       "transformations": [
         {
           "id": "organize",
@@ -4215,8 +4215,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "red",
@@ -4385,8 +4384,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4533,8 +4531,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -6175,8 +6172,8 @@
       {
         "current": {
           "selected": false,
-          "text": "160816",
-          "value": "160816"
+          "text": "161289",
+          "value": "161289"
         },
         "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
         "description": "Last epoch number",
@@ -6199,8 +6196,8 @@
       {
         "current": {
           "selected": false,
-          "text": "0",
-          "value": "0"
+          "text": "10",
+          "value": "10"
         },
         "definition": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
         "description": "Sync participation distance down from Blockchain average",
@@ -6223,8 +6220,8 @@
       {
         "current": {
           "selected": false,
-          "text": "94.952392578125",
-          "value": "94.952392578125"
+          "text": "94.720458984375",
+          "value": "94.720458984375"
         },
         "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
         "description": "Chain sync participation average value",
@@ -6271,7 +6268,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -6287,6 +6284,6 @@
   "timezone": "",
   "title": "Validators",
   "uid": "HRgPmpNnz",
-  "version": 9,
+  "version": 10,
   "weekStart": ""
 }
