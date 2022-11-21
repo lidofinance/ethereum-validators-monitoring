@@ -3,7 +3,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -21,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1668689945645,
+  "iteration": 1668942230709,
   "links": [
     {
       "asDropdown": false,
@@ -40,6 +43,10 @@
   "panels": [
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -52,6 +59,10 @@
       "type": "row"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -106,7 +117,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -124,6 +135,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "Last processed for a specified time period",
       "fieldConfig": {
         "defaults": {
@@ -168,7 +183,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -186,65 +201,11 @@
       "type": "stat"
     },
     {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 14,
-        "x": 10,
-        "y": 1
-      },
-      "id": 1725,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "name"
-      },
-      "pluginVersion": "8.3.6",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name=\"${nos_name_var}\"})",
-          "interval": "",
-          "legendFormat": "🏖️  ${nos_name_var}",
-          "refId": "A"
-        }
-      ],
-      "title": "Node operator",
-      "type": "stat"
-    },
-    {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -257,6 +218,10 @@
       "type": "row"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -299,7 +264,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -317,6 +282,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -359,7 +328,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -377,6 +346,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -426,7 +399,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -444,6 +417,72 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 9,
+        "x": 15,
+        "y": 6
+      },
+      "id": 1725,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "name"
+      },
+      "pluginVersion": "8.5.13",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name=\"${nos_name_var}\"})",
+          "interval": "",
+          "legendFormat": "🏖️  ${nos_name_var}",
+          "refId": "A"
+        }
+      ],
+      "title": "Node operator",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -551,6 +590,10 @@
       "type": "piechart"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -658,6 +701,10 @@
       "type": "piechart"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -765,6 +812,10 @@
     },
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -773,7 +824,7 @@
       },
       "id": 1753,
       "panels": [],
-      "title": "💔 Alerting only (on incident time range)",
+      "title": "💔 Alerting only (at incident time range)",
       "type": "row"
     },
     {
@@ -788,9 +839,10 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
+            "align": "center",
             "displayMode": "auto",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "links": [],
           "mappings": [],
@@ -836,6 +888,21 @@
               {
                 "id": "custom.width",
                 "value": 100
+              },
+              {
+                "id": "unit",
+                "value": "locale"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
               }
             ]
           }
@@ -850,6 +917,7 @@
       "id": 1759,
       "options": {
         "footer": {
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
@@ -864,7 +932,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -877,7 +945,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = '${nos_name_var}' AND\n      epoch = ${epoch_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = '${nos_name_var}' AND\n      epoch = ${epoch_number_var} - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance) < 0\nORDER BY GWei ASC\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = 'Figment' AND\n      epoch = 157285\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = 'Figment' AND\n      epoch = 157285 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance) < 0\nORDER BY GWei ASC\nLIMIT 100",
+          "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = 'EU Nordic & East' AND\n      epoch = 161310\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = 'EU Nordic & East' AND\n      epoch = 161310 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance) < 0\nORDER BY GWei ASC\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -898,8 +966,9 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
-            "displayMode": "auto"
+            "align": "center",
+            "displayMode": "auto",
+            "inspect": false
           },
           "links": [],
           "mappings": [],
@@ -969,6 +1038,7 @@
       "id": 1761,
       "options": {
         "footer": {
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
@@ -983,7 +1053,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -996,7 +1066,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND block_proposed = 0 AND (epoch = ${epoch_number_var}) AND val_nos_name = '${nos_name_var}'\nORDER BY block_to_propose DESC, val_id",
-          "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND block_proposed = 0 AND (epoch = 157286) AND val_nos_name = 'Allnodes'\nORDER BY block_to_propose DESC, val_id",
+          "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND block_proposed = 0 AND (epoch = 161310) AND val_nos_name = 'EU Nordic & East'\nORDER BY block_to_propose DESC, val_id",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1017,8 +1087,9 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
-            "displayMode": "auto"
+            "align": "center",
+            "displayMode": "auto",
+            "inspect": false
           },
           "links": [],
           "mappings": [
@@ -1100,6 +1171,7 @@
       "id": 1762,
       "options": {
         "footer": {
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
@@ -1114,7 +1186,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -1128,7 +1200,7 @@
           "hide": false,
           "intervalFactor": 1,
           "query": "SELECT\n  val_id as Validator\nFROM (\n  SELECT\n    val_id,\n    count() AS count_fail\n  FROM\n    stats.validators_summary\n  WHERE\n    is_sync = 1 AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${sync_epochs_var})) AND\n    val_nos_name = '${nos_name_var}'\n  GROUP BY val_id\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, val_id",
-          "rawQuery": "SELECT\n  val_id as Validator\nFROM (\n  SELECT\n    val_id,\n    count() AS count_fail\n  FROM\n    stats.validators_summary\n  WHERE\n    is_sync = 1 AND sync_percent < (97.393798828125 - 0) AND\n    (epoch <= 157286 AND epoch > (157286 - 3)) AND\n    val_nos_name = 'Figment'\n  GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id",
+          "rawQuery": "SELECT\n  val_id as Validator\nFROM (\n  SELECT\n    val_id,\n    count() AS count_fail\n  FROM\n    stats.validators_summary\n  WHERE\n    is_sync = 1 AND sync_percent < (97.296142578125 - 10) AND\n    (epoch <= 161310 AND epoch > (161310 - 3)) AND\n    val_nos_name = 'EU Nordic & East'\n  GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id",
           "refId": "B",
           "round": "0s",
           "skip_comments": true
@@ -1149,9 +1221,10 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
+            "align": "center",
             "displayMode": "auto",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "links": [],
           "mappings": [],
@@ -1199,6 +1272,7 @@
       "id": 1760,
       "options": {
         "footer": {
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
@@ -1213,7 +1287,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -1225,8 +1299,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "\nSELECT\n  val_id as Validators\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND \n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var})) AND\n    val_nos_name = '${nos_name_var}'\n    GROUP BY val_id\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  val_id as Validators\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND \n    (epoch <= 157475 AND epoch > (157475 - 3)) AND\n    val_nos_name = 'Allnodes'\n    GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "query": "\nSELECT\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND \n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var})) AND\n    val_nos_name = '${nos_name_var}'\n    GROUP BY val_id\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND \n    (epoch <= 161309 AND epoch > (161309 - 3)) AND\n    val_nos_name = 'EU Nordic & East'\n    GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1247,9 +1321,10 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
+            "align": "center",
             "displayMode": "auto",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "links": [],
           "mappings": [],
@@ -1309,6 +1384,7 @@
       "id": 1773,
       "options": {
         "footer": {
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
@@ -1323,7 +1399,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -1336,7 +1412,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = '${nos_name_var}' AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = 'Allnodes' AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  (epoch <= 157476 AND epoch > (157476 - 3))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = 'EU Nordic & East' AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  (epoch <= 161310 AND epoch > (161310 - 3))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1358,9 +1434,10 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
+            "align": "center",
             "displayMode": "auto",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "links": [],
           "mappings": [],
@@ -1420,6 +1497,7 @@
       "id": 1774,
       "options": {
         "footer": {
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
@@ -1434,7 +1512,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -1447,7 +1525,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = '${nos_name_var}' AND\n  (att_valid_head + att_valid_target + att_valid_source = 1) AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = 'Allnodes' AND\n  (att_valid_head + att_valid_target + att_valid_source = 1) AND\n  (epoch <=  AND epoch > ( - 3))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM stats.validators_summary\nWHERE\n  val_nos_name = 'EU Nordic & East' AND\n  (att_valid_head + att_valid_target + att_valid_source = 1) AND\n  (epoch <= 161310 AND epoch > (161310 - 3))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1468,9 +1546,10 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
+            "align": "center",
             "displayMode": "auto",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "links": [],
           "mappings": [],
@@ -1518,6 +1597,7 @@
       "id": 1758,
       "options": {
         "footer": {
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
@@ -1532,7 +1612,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -1545,7 +1625,7 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
           "query": "SELECT\n    val_status as Status,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) and val_nos_name = '${nos_name_var}' and epoch = ${epoch_number_var}\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n    val_status as Status,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) and val_nos_name = 'Allnodes' and epoch = 157288\nLIMIT 100",
+          "rawQuery": "SELECT\n    val_status as Status,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) and val_nos_name = 'EU Nordic & East' and epoch = 161310\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1556,6 +1636,10 @@
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1565,6 +1649,10 @@
       "id": 1727,
       "panels": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "",
           "fieldConfig": {
             "defaults": {
@@ -1608,8 +1696,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               },
@@ -1668,6 +1755,10 @@
           "type": "timeseries"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "Delta: current slot - 192 slot",
           "fieldConfig": {
             "defaults": {
@@ -1711,8 +1802,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "transparent",
@@ -1759,6 +1849,10 @@
           "type": "timeseries"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "Delta: current slot - 192 slot",
           "fieldConfig": {
             "defaults": {
@@ -1802,8 +1896,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "transparent",
@@ -1861,8 +1954,9 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
-                "displayMode": "auto"
+                "align": "center",
+                "displayMode": "auto",
+                "inspect": false
               },
               "links": [],
               "mappings": [],
@@ -1870,8 +1964,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -1885,7 +1978,7 @@
                 "properties": [
                   {
                     "id": "custom.width",
-                    "value": 80
+                    "value": 150
                   },
                   {
                     "id": "unit",
@@ -1930,6 +2023,7 @@
           "id": 1733,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -1944,7 +2038,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -1957,7 +2051,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
-              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 157261\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 157261 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
+              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 161308\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 161308 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -1967,6 +2061,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "",
           "fieldConfig": {
             "defaults": {
@@ -2010,8 +2108,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-red",
-                    "value": null
+                    "color": "dark-red"
                   }
                 ]
               },
@@ -2062,6 +2159,10 @@
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2082,8 +2183,9 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
-                "displayMode": "auto"
+                "align": "center",
+                "displayMode": "auto",
+                "inspect": false
               },
               "links": [],
               "mappings": [],
@@ -2091,8 +2193,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2128,7 +2229,7 @@
                 "properties": [
                   {
                     "id": "custom.width",
-                    "value": 80
+                    "value": 150
                   },
                   {
                     "id": "links",
@@ -2153,6 +2254,7 @@
           "id": 1737,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -2167,7 +2269,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -2180,7 +2282,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_name = '${nos_name_var}' AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id",
-              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_name = 'RockLogic GmbH' AND block_proposed = 0 AND (epoch <= 160698 AND epoch > (160698 - 40))\nORDER BY block_to_propose DESC, val_id",
+              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_name = 'EU Nordic & East' AND block_proposed = 0 AND (epoch <= 161308 AND epoch > (161308 - 48))\nORDER BY block_to_propose DESC, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -2190,6 +2292,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "",
           "fieldConfig": {
             "defaults": {
@@ -2230,8 +2336,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -2283,6 +2388,10 @@
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2292,6 +2401,10 @@
       "id": 1711,
       "panels": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "",
           "fieldConfig": {
             "defaults": {
@@ -2442,11 +2555,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
               "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
-              "legendFormat": "Rest chain",
+              "legendFormat": "Rest of chain",
+              "range": true,
               "refId": "A"
             },
             {
@@ -2454,11 +2569,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
               "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name!='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
-              "legendFormat": "User (other)",
+              "legendFormat": "Rest of user's",
+              "range": true,
               "refId": "B"
             },
             {
@@ -2490,8 +2607,9 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
-                "displayMode": "auto"
+                "align": "center",
+                "displayMode": "auto",
+                "inspect": false
               },
               "links": [],
               "mappings": [
@@ -2574,7 +2692,7 @@
                   },
                   {
                     "id": "custom.width",
-                    "value": 100
+                    "value": 150
                   },
                   {
                     "id": "unit",
@@ -2593,6 +2711,7 @@
           "id": 1747,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -2607,7 +2726,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -2620,7 +2739,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent",
-              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_name = 'ChainLayer' AND epoch = 157270 AND sync_percent < (93.756103515625 - 0)\nORDER BY sync_percent",
+              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_name = 'EU Nordic & East' AND epoch = 161308 AND sync_percent < (97.222900390625 - 10)\nORDER BY sync_percent",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -2630,6 +2749,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "",
           "fieldConfig": {
             "defaults": {
@@ -2738,6 +2861,10 @@
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2758,9 +2885,10 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
+                "align": "center",
                 "displayMode": "auto",
-                "filterable": false
+                "filterable": false,
+                "inspect": false
               },
               "links": [],
               "mappings": [
@@ -2802,8 +2930,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2862,6 +2989,7 @@
           "id": 1755,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -2876,7 +3004,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -2889,7 +3017,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_name = 'RockLogic GmbH' AND\n    (epoch <= 160699 AND epoch > (160699 - 39))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -2899,6 +3027,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -2939,8 +3071,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2998,9 +3129,10 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
+                "align": "center",
                 "displayMode": "auto",
-                "filterable": false
+                "filterable": false,
+                "inspect": false
               },
               "links": [],
               "mappings": [
@@ -3042,8 +3174,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3102,6 +3233,7 @@
           "id": 1764,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -3116,7 +3248,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -3129,7 +3261,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = 'RockLogic GmbH' AND\n    (epoch <= 160699 AND epoch > (160699 - 39))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3139,6 +3271,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -3179,8 +3315,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3238,9 +3373,10 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
+                "align": "center",
                 "displayMode": "auto",
-                "filterable": false
+                "filterable": false,
+                "inspect": false
               },
               "links": [],
               "mappings": [
@@ -3282,8 +3418,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3354,6 +3489,7 @@
           "id": 1770,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -3368,7 +3504,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -3381,7 +3517,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = 'RockLogic GmbH' AND\n    (epoch <= 160700 AND epoch > (160700 - 38))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3391,6 +3527,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -3431,8 +3571,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3490,9 +3629,10 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
+                "align": "center",
                 "displayMode": "auto",
-                "filterable": false
+                "filterable": false,
+                "inspect": false
               },
               "links": [],
               "mappings": [
@@ -3534,8 +3674,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3594,6 +3733,7 @@
           "id": 1771,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -3608,7 +3748,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -3621,7 +3761,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = 'RockLogic GmbH' AND\n    (epoch <= 160701 AND epoch > (160701 - 9))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3631,6 +3771,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -3671,8 +3815,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3730,9 +3873,10 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
+                "align": "center",
                 "displayMode": "auto",
-                "filterable": false
+                "filterable": false,
+                "inspect": false
               },
               "links": [],
               "mappings": [
@@ -3774,8 +3918,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3834,6 +3977,7 @@
           "id": 1772,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -3848,7 +3992,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -3861,7 +4005,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = 'RockLogic GmbH' AND\n    (epoch <= 160701 AND epoch > (160701 - 9))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3871,6 +4015,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -3911,8 +4059,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3964,16 +4111,20 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 34,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": true,
-          "text": "RockLogic GmbH",
-          "value": "RockLogic GmbH"
+          "selected": false,
+          "text": "EU Nordic & East",
+          "value": "EU Nordic & East"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
         },
         "definition": "query_result(ethereum_validators_monitoring_user_validators)",
         "description": "",
@@ -3996,8 +4147,12 @@
       {
         "current": {
           "selected": false,
-          "text": "160701",
-          "value": "160701"
+          "text": "None",
+          "value": ""
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
         },
         "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
         "description": "Last epoch number",
@@ -4020,8 +4175,12 @@
       {
         "current": {
           "selected": false,
-          "text": "0",
-          "value": "0"
+          "text": "None",
+          "value": ""
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
         },
         "definition": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
         "description": "Sync participation distance down from Blockchain average",
@@ -4067,6 +4226,10 @@
           "text": "3",
           "value": "3"
         },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "definition": "label_values(ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch, epoch_interval)",
         "hide": 2,
         "includeAll": false,
@@ -4089,6 +4252,10 @@
           "text": "3",
           "value": "3"
         },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "definition": "label_values(ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch, epoch_interval)",
         "hide": 2,
         "includeAll": false,
@@ -4108,8 +4275,12 @@
       {
         "current": {
           "selected": false,
-          "text": "91.71496813837439",
-          "value": "91.71496813837439"
+          "text": "None",
+          "value": ""
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
         },
         "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
         "description": "Chain sync participation average value",
@@ -4132,10 +4303,14 @@
       {
         "current": {
           "selected": false,
-          "text": "9",
-          "value": "9"
+          "text": "None",
+          "value": ""
         },
-        "definition": "query_result(sum_over_time((changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "query_result(sum_over_time((changes(sum(ethereum_validators_monitoring_epoch_number)[25s:]) > 0)[$__range:]))",
         "description": "Epochs range by prometheus metric",
         "hide": 2,
         "includeAll": false,
@@ -4144,7 +4319,7 @@
         "name": "epochs_range",
         "options": [],
         "query": {
-          "query": "query_result(sum_over_time((changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+          "query": "query_result(sum_over_time((changes(sum(ethereum_validators_monitoring_epoch_number)[25s:]) > 0)[$__range:]))",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -4156,7 +4331,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -4165,6 +4340,6 @@
   "timezone": "",
   "title": "NodeOperators",
   "uid": "3wimU2H7h",
-  "version": 9,
+  "version": 10,
   "weekStart": ""
 }
