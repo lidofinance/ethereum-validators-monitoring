@@ -180,7 +180,7 @@ export class PrometheusService implements OnApplicationBootstrap {
   public taskDuration = this.getOrCreateMetric('Histogram', {
     name: METRIC_TASK_DURATION_SECONDS,
     help: 'Duration of task execution',
-    buckets: [30, 60, 120, 180, 240, 300, 400, 600],
+    buckets: [5, 15, 30, 60, 120, 180, 240, 300, 400, 600],
     labelNames: ['name'],
   });
 

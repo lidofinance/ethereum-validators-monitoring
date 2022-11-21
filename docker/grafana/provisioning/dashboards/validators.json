@@ -3,7 +3,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -21,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1668760243595,
+  "iteration": 1668860249916,
   "links": [
     {
       "asDropdown": false,
@@ -40,6 +43,10 @@
   "panels": [
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -52,6 +59,10 @@
       "type": "row"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -106,7 +117,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -124,6 +135,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "Last processed for a specified time period",
       "fieldConfig": {
         "defaults": {
@@ -168,7 +183,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -186,6 +201,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -228,7 +247,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -246,6 +265,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -288,7 +311,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -306,6 +329,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -314,124 +341,17 @@
       },
       "id": 94,
       "options": {
-        "inlineEditing": false,
-        "root": {
-          "anchor": {
-            "left": true,
-            "top": true
-          },
-          "background": {
-            "color": {
-              "fixed": "#ffffff00"
-            },
-            "image": {
-              "field": "",
-              "fixed": "",
-              "mode": "field"
-            },
-            "size": "original"
-          },
-          "elements": [
-            {
-              "anchor": {
-                "left": true,
-                "top": true
-              },
-              "background": {
-                "color": {
-                  "fixed": "#a352cc40"
-                },
-                "image": {
-                  "mode": "fixed"
-                },
-                "size": "original"
-              },
-              "config": {
-                "align": "left",
-                "valign": "middle"
-              },
-              "name": "Element 3",
-              "placement": {
-                "height": 516,
-                "left": 0,
-                "top": 0,
-                "width": 1406
-              },
-              "type": "text-box"
-            },
-            {
-              "anchor": {
-                "left": true,
-                "top": true
-              },
-              "background": {
-                "size": "original"
-              },
-              "border": {
-                "width": 0
-              },
-              "config": {
-                "fill": {
-                  "fixed": "#FFF899"
-                },
-                "path": {
-                  "fixed": "https://support.ledger.com/hc/article_attachments/4405133294609/lido.svg",
-                  "mode": "fixed"
-                }
-              },
-              "name": "Element 2",
-              "placement": {
-                "height": 114,
-                "left": 79,
-                "top": 20,
-                "width": 114
-              },
-              "type": "icon"
-            },
-            {
-              "anchor": {
-                "left": true,
-                "top": true
-              },
-              "background": {
-                "color": {
-                  "fixed": "transparent"
-                },
-                "size": "original"
-              },
-              "config": {
-                "align": "center",
-                "size": 20,
-                "text": {
-                  "fixed": "Made by Lido",
-                  "mode": "fixed"
-                },
-                "valign": "middle"
-              },
-              "name": "Element 1",
-              "placement": {
-                "height": 122,
-                "left": 12,
-                "top": 14,
-                "width": 88
-              },
-              "type": "text-box"
-            }
-          ],
-          "name": "Element 1663323860892",
-          "placement": {
-            "height": 100,
-            "left": 0,
-            "top": 0,
-            "width": 100
-          },
-          "type": "group"
-        }
+        "content": "<img src=\"https://pbs.twimg.com/card_img/1589225011927085056/nEOlSCW4?format=png&name=360x360\" alt=\"alt text\" title=\"image Title\" height=\"120\"/> \n<b> Made by Lido</b>",
+        "mode": "html"
       },
-      "pluginVersion": "8.4.6",
-      "type": "canvas"
+      "pluginVersion": "8.5.13",
+      "type": "text"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -474,7 +394,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -493,6 +413,10 @@
     },
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -505,6 +429,10 @@
       "type": "row"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -547,7 +475,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -565,6 +493,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -607,7 +539,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -625,6 +557,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -674,7 +610,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -692,6 +628,10 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -700,9 +640,10 @@
             "mode": "fixed"
           },
           "custom": {
-            "align": "auto",
+            "align": "center",
             "displayMode": "auto",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "decimals": 0,
           "links": [],
@@ -778,6 +719,7 @@
       "id": 75,
       "options": {
         "footer": {
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
@@ -788,7 +730,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -839,6 +781,10 @@
       "type": "table"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -946,6 +892,10 @@
       "type": "piechart"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1002,6 +952,7 @@
       },
       "id": 15,
       "options": {
+        "displayLabels": [],
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
@@ -1020,7 +971,7 @@
         },
         "tooltip": {
           "mode": "single",
-          "sort": "none"
+          "sort": "asc"
         }
       },
       "pluginVersion": "8.1.5",
@@ -1053,6 +1004,10 @@
       "type": "piechart"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1109,6 +1064,7 @@
       },
       "id": 16,
       "options": {
+        "displayLabels": [],
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
@@ -1160,6 +1116,10 @@
     },
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1172,6 +1132,10 @@
       "type": "row"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1245,7 +1209,8 @@
           "values": false
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "pluginVersion": "8.3.6",
@@ -1302,6 +1267,10 @@
       "type": "piechart"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1375,7 +1344,8 @@
           "values": false
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "pluginVersion": "8.3.6",
@@ -1432,6 +1402,10 @@
       "type": "piechart"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1439,9 +1413,10 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
+            "align": "center",
             "displayMode": "auto",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "mappings": [],
           "thresholds": {
@@ -1524,6 +1499,7 @@
       "id": 110,
       "options": {
         "footer": {
+          "enablePagination": true,
           "fields": [],
           "reducer": [
             "sum"
@@ -1539,7 +1515,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -1641,6 +1617,10 @@
       "type": "table"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1714,7 +1694,8 @@
           "values": false
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "pluginVersion": "8.3.6",
@@ -1773,6 +1754,10 @@
       "type": "piechart"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1846,7 +1831,8 @@
           "values": false
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "pluginVersion": "8.3.6",
@@ -1903,6 +1889,10 @@
       "type": "piechart"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1976,7 +1966,8 @@
           "values": false
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "pluginVersion": "8.3.6",
@@ -2033,6 +2024,10 @@
       "type": "piechart"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -2040,9 +2035,10 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
+            "align": "center",
             "displayMode": "auto",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "mappings": [],
           "thresholds": {
@@ -2129,6 +2125,7 @@
       "id": 107,
       "options": {
         "footer": {
+          "enablePagination": true,
           "fields": [
             "Value #good (sum)",
             "Value #bad (sum)"
@@ -2147,7 +2144,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -2333,6 +2330,10 @@
       "type": "table"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -2406,7 +2407,8 @@
           "values": false
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "pluginVersion": "8.3.6",
@@ -2465,6 +2467,10 @@
       "type": "piechart"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -2746,6 +2752,10 @@
       "type": "piechart"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -2753,9 +2763,10 @@
             "mode": "thresholds"
           },
           "custom": {
-            "align": "auto",
+            "align": "center",
             "displayMode": "auto",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "mappings": [],
           "thresholds": {
@@ -2918,6 +2929,7 @@
       "id": 104,
       "options": {
         "footer": {
+          "enablePagination": true,
           "fields": "",
           "reducer": [
             "sum"
@@ -2933,7 +2945,7 @@
           }
         ]
       },
-      "pluginVersion": "8.3.6",
+      "pluginVersion": "8.5.13",
       "targets": [
         {
           "datasource": {
@@ -3141,6 +3153,10 @@
       "type": "table"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -3409,6 +3425,10 @@
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3418,6 +3438,10 @@
       "id": 23,
       "panels": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "",
           "fieldConfig": {
             "defaults": {
@@ -3461,7 +3485,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               },
@@ -3486,7 +3511,7 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 39
+            "y": 58
           },
           "id": 24,
           "options": {
@@ -3520,6 +3545,10 @@
           "type": "timeseries"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "Delta: current slot - 192 slot",
           "fieldConfig": {
             "defaults": {
@@ -3535,7 +3564,8 @@
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "yellow",
@@ -3568,11 +3598,13 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 44
+            "y": 63
           },
           "id": 21,
           "options": {
             "displayMode": "basic",
+            "minVizHeight": 10,
+            "minVizWidth": 0,
             "orientation": "horizontal",
             "reduceOptions": {
               "calcs": [
@@ -3584,7 +3616,7 @@
             "showUnfilled": true,
             "text": {}
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -3604,6 +3636,10 @@
           "type": "bargauge"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "Delta: current slot - 192 slot",
           "fieldConfig": {
             "defaults": {
@@ -3646,7 +3682,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -3657,7 +3694,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 44
+            "y": 63
           },
           "id": 10,
           "options": {
@@ -3712,8 +3749,9 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
-                "displayMode": "auto"
+                "align": "center",
+                "displayMode": "auto",
+                "inspect": false
               },
               "links": [],
               "mappings": [],
@@ -3721,7 +3759,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3778,6 +3817,10 @@
                   {
                     "id": "custom.width",
                     "value": 200
+                  },
+                  {
+                    "id": "custom.filterable",
+                    "value": true
                   }
                 ]
               }
@@ -3787,11 +3830,12 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 51
+            "y": 70
           },
           "id": 28,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -3806,7 +3850,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -3819,7 +3863,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
-              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 157259\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 157259 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
+              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 161306\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 161306 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3829,6 +3873,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "Delta: current slot - 192 slot",
           "fieldConfig": {
             "defaults": {
@@ -3868,7 +3916,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -3892,7 +3941,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 51
+            "y": 70
           },
           "id": 11,
           "options": {
@@ -3933,6 +3982,10 @@
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3953,8 +4006,10 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
-                "displayMode": "auto"
+                "align": "center",
+                "displayMode": "auto",
+                "filterable": false,
+                "inspect": false
               },
               "links": [],
               "mappings": [],
@@ -3962,7 +4017,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3999,6 +4055,10 @@
                   {
                     "id": "custom.width",
                     "value": 200
+                  },
+                  {
+                    "id": "custom.filterable",
+                    "value": true
                   }
                 ]
               },
@@ -4030,11 +4090,12 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 40
+            "y": 59
           },
           "id": 63,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -4049,7 +4110,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -4062,7 +4123,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id",
-              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= 160678 AND epoch >= (160678 - 9))\nORDER BY block_to_propose DESC, val_id",
+              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= 161306 AND epoch >= (161306 - 20))\nORDER BY block_to_propose DESC, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4072,6 +4133,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -4111,7 +4176,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -4122,7 +4188,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 40
+            "y": 59
           },
           "id": 67,
           "options": {
@@ -4163,6 +4229,10 @@
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -4172,6 +4242,10 @@
       "id": 69,
       "panels": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "",
           "fieldConfig": {
             "defaults": {
@@ -4215,7 +4289,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4282,7 +4357,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 53
+            "y": 60
           },
           "id": 92,
           "options": {
@@ -4341,8 +4416,9 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
-                "displayMode": "auto"
+                "align": "center",
+                "displayMode": "auto",
+                "inspect": false
               },
               "links": [],
               "mappings": [
@@ -4384,7 +4460,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -4421,6 +4498,10 @@
                   {
                     "id": "custom.width",
                     "value": 200
+                  },
+                  {
+                    "id": "custom.filterable",
+                    "value": true
                   }
                 ]
               },
@@ -4450,11 +4531,12 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 59
+            "y": 66
           },
           "id": 72,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -4469,7 +4551,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -4482,7 +4564,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent",
-              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = 157269 AND sync_percent < (98.13232421875 - 0)\nORDER BY sync_percent",
+              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = 161306 AND sync_percent < (97.59954616427422 - 10)\nORDER BY sync_percent",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4492,6 +4574,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "",
           "fieldConfig": {
             "defaults": {
@@ -4531,7 +4617,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -4542,7 +4629,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 59
+            "y": 66
           },
           "id": 73,
           "options": {
@@ -4583,6 +4670,10 @@
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -4603,9 +4694,10 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
+                "align": "center",
                 "displayMode": "auto",
-                "filterable": false
+                "filterable": false,
+                "inspect": false
               },
               "links": [],
               "mappings": [
@@ -4647,7 +4739,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -4704,6 +4797,10 @@
                   {
                     "id": "custom.width",
                     "value": 200
+                  },
+                  {
+                    "id": "custom.filterable",
+                    "value": true
                   }
                 ]
               }
@@ -4713,11 +4810,12 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 42
+            "y": 61
           },
           "id": 57,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -4732,7 +4830,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -4745,7 +4843,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 160783 AND epoch > (160783 - 164))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4755,6 +4853,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -4794,7 +4896,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -4805,7 +4908,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 42
+            "y": 61
           },
           "id": 58,
           "options": {
@@ -4853,9 +4956,10 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
+                "align": "center",
                 "displayMode": "auto",
-                "filterable": false
+                "filterable": false,
+                "inspect": false
               },
               "links": [],
               "mappings": [
@@ -4897,7 +5001,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -4954,6 +5059,10 @@
                   {
                     "id": "custom.width",
                     "value": 200
+                  },
+                  {
+                    "id": "custom.filterable",
+                    "value": true
                   }
                 ]
               }
@@ -4963,11 +5072,12 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 50
+            "y": 69
           },
           "id": 99,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -4982,7 +5092,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -4995,7 +5105,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= 160681 AND epoch > (160681 - 9))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5005,6 +5115,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -5044,7 +5158,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -5055,7 +5170,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 50
+            "y": 69
           },
           "id": 95,
           "options": {
@@ -5102,9 +5217,10 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
+                "align": "center",
                 "displayMode": "auto",
-                "filterable": false
+                "filterable": false,
+                "inspect": false
               },
               "links": [],
               "mappings": [
@@ -5146,7 +5262,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -5203,6 +5320,10 @@
                   {
                     "id": "custom.width",
                     "value": 200
+                  },
+                  {
+                    "id": "custom.filterable",
+                    "value": true
                   }
                 ]
               }
@@ -5212,11 +5333,12 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 58
+            "y": 77
           },
           "id": 100,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -5231,7 +5353,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -5244,7 +5366,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 160683 AND epoch > (160683 - 10))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5254,6 +5376,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -5293,7 +5419,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -5304,7 +5431,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 58
+            "y": 77
           },
           "id": 96,
           "options": {
@@ -5351,9 +5478,10 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
+                "align": "center",
                 "displayMode": "auto",
-                "filterable": false
+                "filterable": false,
+                "inspect": false
               },
               "links": [],
               "mappings": [
@@ -5395,7 +5523,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -5452,6 +5581,10 @@
                   {
                     "id": "custom.width",
                     "value": 200
+                  },
+                  {
+                    "id": "custom.filterable",
+                    "value": true
                   }
                 ]
               }
@@ -5461,11 +5594,12 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 66
+            "y": 85
           },
           "id": 101,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -5480,7 +5614,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -5493,7 +5627,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 160685 AND epoch > (160685 - 10))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5503,6 +5637,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -5542,7 +5680,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -5553,7 +5692,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 66
+            "y": 85
           },
           "id": 97,
           "options": {
@@ -5600,9 +5739,10 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
+                "align": "center",
                 "displayMode": "auto",
-                "filterable": false
+                "filterable": false,
+                "inspect": false
               },
               "links": [],
               "mappings": [
@@ -5644,7 +5784,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -5701,6 +5842,10 @@
                   {
                     "id": "custom.width",
                     "value": 200
+                  },
+                  {
+                    "id": "custom.filterable",
+                    "value": true
                   }
                 ]
               }
@@ -5710,11 +5855,12 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 74
+            "y": 93
           },
           "id": 102,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -5729,7 +5875,7 @@
               }
             ]
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -5742,7 +5888,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 160685 AND epoch > (160685 - 10))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5752,6 +5898,10 @@
           "type": "table"
         },
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -5791,7 +5941,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -5802,7 +5953,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 74
+            "y": 93
           },
           "id": 98,
           "options": {
@@ -5843,6 +5994,10 @@
     },
     {
       "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -5862,8 +6017,9 @@
                 "mode": "thresholds"
               },
               "custom": {
-                "align": "auto",
-                "displayMode": "auto"
+                "align": "center",
+                "displayMode": "auto",
+                "inspect": false
               },
               "mappings": [],
               "noValue": "-",
@@ -5871,7 +6027,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5911,6 +6068,10 @@
                   {
                     "id": "custom.width",
                     "value": 200
+                  },
+                  {
+                    "id": "custom.filterable",
+                    "value": true
                   }
                 ]
               }
@@ -5920,11 +6081,12 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 43
+            "y": 62
           },
           "id": 51,
           "options": {
             "footer": {
+              "enablePagination": true,
               "fields": "",
               "reducer": [
                 "sum"
@@ -5933,7 +6095,7 @@
             },
             "showHeader": true
           },
-          "pluginVersion": "8.3.6",
+          "pluginVersion": "8.5.13",
           "targets": [
             {
               "datasource": {
@@ -5946,7 +6108,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = ${epoch_number_var}",
-              "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = 157282",
+              "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = 161306",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5961,6 +6123,10 @@
     },
     {
       "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -5973,6 +6139,10 @@
       "type": "row"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -6070,6 +6240,10 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -6164,7 +6338,7 @@
     }
   ],
   "refresh": "5m",
-  "schemaVersion": 34,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -6172,8 +6346,12 @@
       {
         "current": {
           "selected": false,
-          "text": "161289",
-          "value": "161289"
+          "text": "161306",
+          "value": "161306"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
         },
         "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
         "description": "Last epoch number",
@@ -6199,6 +6377,10 @@
           "text": "10",
           "value": "10"
         },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
         "definition": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
         "description": "Sync participation distance down from Blockchain average",
         "hide": 2,
@@ -6220,8 +6402,12 @@
       {
         "current": {
           "selected": false,
-          "text": "94.720458984375",
-          "value": "94.720458984375"
+          "text": "97.59954616427422",
+          "value": "97.59954616427422"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
         },
         "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
         "description": "Chain sync participation average value",
@@ -6244,10 +6430,14 @@
       {
         "current": {
           "selected": false,
-          "text": "9",
-          "value": "9"
+          "text": "20",
+          "value": "20"
         },
-        "definition": "query_result(sum_over_time((changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "query_result(sum_over_time((changes(sum(ethereum_validators_monitoring_epoch_number)[25s:]) > 0)[$__range:]))",
         "description": "Epochs range by prometheus metric",
         "hide": 2,
         "includeAll": false,
@@ -6256,7 +6446,7 @@
         "name": "epochs_range",
         "options": [],
         "query": {
-          "query": "query_result(sum_over_time((changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+          "query": "query_result(sum_over_time((changes(sum(ethereum_validators_monitoring_epoch_number)[25s:]) > 0)[$__range:]))",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -6284,6 +6474,6 @@
   "timezone": "",
   "title": "Validators",
   "uid": "HRgPmpNnz",
-  "version": 10,
+  "version": 11,
   "weekStart": ""
 }
