@@ -1,3 +1,16 @@
+# [4.0.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/3.3.1...4.0.0) (2022-11-21)
+
+Huge release, that brings refactoring and new table in DB, so data from old tables can't be used anymore.
+
+### Features
+
+* add fires count to alerts footer ([#60](https://github.com/lidofinance/ethereum-validators-monitoring/issues/60)) ([dc608bc](https://github.com/lidofinance/ethereum-validators-monitoring/commit/dc608bcd13de53ce132318e30f8f0bcd2bbef700))
+* add footer to discord alerts ([#59](https://github.com/lidofinance/ethereum-validators-monitoring/issues/59)) ([4ae8f64](https://github.com/lidofinance/ethereum-validators-monitoring/commit/4ae8f640e49114effe5eef23fb122c045db5e971))
+* metrics, change panels source ([#61](https://github.com/lidofinance/ethereum-validators-monitoring/issues/61)) ([064fb45](https://github.com/lidofinance/ethereum-validators-monitoring/commit/064fb451b1e627b6f1a46c5b0aaf28fc3b37cabe))
+* support telegram alerts ([#57](https://github.com/lidofinance/ethereum-validators-monitoring/issues/57)) ([383adfb](https://github.com/lidofinance/ethereum-validators-monitoring/commit/383adfbc56ca0c171bf8c01acb539c2e26975a78))
+* BREAKING CHANGES: Summary table. Related refactoring ([#53](https://github.com/lidofinance/ethereum-validators-monitoring/issues/53))
+
+
 ## [3.3.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/3.3.0...3.3.1) (2022-11-01)
 
 
@@ -56,6 +69,14 @@
 
 
 # [2.0.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/1.3.4...2.0.0) (2022-08-31)
+
+
+
+## [1.3.4](https://github.com/lidofinance/ethereum-validators-monitoring/compare/1.3.3...1.3.4) (2022-07-25)
+
+
+
+## 1.3.3 (2022-07-25)
 
 
 
