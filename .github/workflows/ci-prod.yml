@@ -44,4 +44,4 @@ jobs:
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           TARGET_REPO: "lidofinance/infra-mainnet"
           TAG: "${{ steps.tag_name.outputs.TAG }}"
-          TARGET_WORKFLOW: "build_mainnet_eth2_validators_monitoring.yaml"
+          TARGET_WORKFLOW: "build_mainnet_ethereum_validators_monitoring.yaml"
