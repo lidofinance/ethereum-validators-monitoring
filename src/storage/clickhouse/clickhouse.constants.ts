@@ -356,7 +356,7 @@ export const otherValidatorsSummaryStatsQuery = (epoch: bigint): string => `
   )
 `;
 
-export const userNodeOperatorsProposesStatsLastNEpochQuery = (fetchInterval: number, slot: string, epochInterval = 120): string => `
+export const userNodeOperatorsProposesStatsLastNEpochQuery = (fetchInterval: number, epoch: bigint, epochInterval = 120): string => `
   SELECT
     val_nos_name,
     SUM(a) as all,
@@ -365,17 +365,11 @@ export const userNodeOperatorsProposesStatsLastNEpochQuery = (fetchInterval: num
   (
     SELECT
       val_nos_name,
-      count(proposed) as a,
-      IF(proposed = 0, count(proposed), 0) as m
-    FROM stats.validator_proposes
-    WHERE (slot_to_propose <= ${slot} AND slot_to_propose > (${slot} - ${fetchInterval} * ${epochInterval}))
-    GROUP BY val_nos_name, proposed
+      count(block_proposed) as a,
+      IF(block_proposed = 0, count(block_proposed), 0) as m
+    FROM stats.validators_summary
+    WHERE is_proposer = 1 AND (epoch <= ${epoch} AND epoch > (${epoch} - ${fetchInterval} * ${epochInterval}))
+    GROUP BY val_nos_name, block_proposed
   )
   GROUP by val_nos_name
-`;
-
-export const userValidatorIDsQuery = (slot: string): string => `
-  SELECT validator_id, validator_pubkey
-  FROM stats.validator_balances
-  WHERE nos_id IS NOT NULL and slot = ${slot}
 `;

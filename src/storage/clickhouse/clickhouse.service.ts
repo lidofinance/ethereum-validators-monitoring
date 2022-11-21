@@ -439,11 +439,11 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about
    * User Node Operator proposes stats in the last N epochs
    */
-  public async getUserNodeOperatorsProposesStats(slot: bigint, epochInterval = 120): Promise<NOsProposesStats[]> {
+  public async getUserNodeOperatorsProposesStats(epoch: bigint, epochInterval = 120): Promise<NOsProposesStats[]> {
     const ret = await this.retry(
       async () =>
         await this.db
-          .query(userNodeOperatorsProposesStatsLastNEpochQuery(this.config.get('FETCH_INTERVAL_SLOTS'), slot.toString(), epochInterval))
+          .query(userNodeOperatorsProposesStatsLastNEpochQuery(this.config.get('FETCH_INTERVAL_SLOTS'), epoch, epochInterval))
           .toPromise(),
     );
     return <NOsProposesStats[]>ret;
