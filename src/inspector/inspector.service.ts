@@ -9,6 +9,8 @@ import { PrometheusService } from 'common/prometheus';
 import { DutyMetrics, DutyService } from 'duty';
 import { ClickhouseService } from 'storage';
 
+import { BlockCacheService } from '../common/eth-providers/consensus-provider/block-cache';
+
 @Injectable()
 export class InspectorService implements OnModuleInit {
   public latestProcessedEpoch = 0n;
@@ -20,6 +22,7 @@ export class InspectorService implements OnModuleInit {
     protected readonly storage: ClickhouseService,
     protected readonly prometheus: PrometheusService,
     protected readonly criticalAlerts: CriticalAlertsService,
+    protected readonly blockCacheService: BlockCacheService,
 
     protected readonly dutyService: DutyService,
     protected readonly dutyMetrics: DutyMetrics,
@@ -53,6 +56,8 @@ export class InspectorService implements OnModuleInit {
       } catch (e) {
         this.logger.error(`Error while processing and writing epoch`);
         this.logger.error(e as any);
+        // Remove the cache because there may be an error due to bad node responses
+        this.blockCacheService.clear();
         // We should make a gap before running new circle. This will avoid requests and logs spam
         await sleep(this.config.get('CHAIN_SLOT_TIME_SECONDS') * 1000);
       }
