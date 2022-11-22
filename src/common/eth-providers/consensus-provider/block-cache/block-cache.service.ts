@@ -53,4 +53,8 @@ export class BlockCacheService {
     }
     this.logger.debug(`Purged blocks cache count: ${purged}`);
   }
+
+  public clear() {
+    this.cache.clear();
+  }
 }
