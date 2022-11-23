@@ -25,8 +25,8 @@ export class CriticalSlashing extends Alert {
     return result;
   }
 
-  sendRule(): boolean {
-    return true;
+  sendRule(ruleResult: AlertRuleResult): boolean {
+    return !!Object.values(ruleResult).length;
   }
 
   alertBody(ruleResult: AlertRuleResult): AlertRequestBody {
