@@ -18,7 +18,7 @@ datasources:
     access: proxy
     orgId: 1
     uid: PDEE91DDB90597936
-    url: ${CLICKHOUSE_DB_HOST}:8123
+    url: ${CLICKHOUSE_DB_HOST}:${CLICKHOUSE_DB_PORT}
     basicAuth: true
     basicAuthUser: ${CLICKHOUSE_DB_USER}
     jsonData:
