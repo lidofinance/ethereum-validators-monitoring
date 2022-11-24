@@ -4,6 +4,10 @@ services:
     image: yandex/clickhouse-server
     container_name: clickhouse
     restart: unless-stopped
+    environment:
+      - CLICKHOUSE_USER=${DB_USER}
+      - CLICKHOUSE_PASSWORD=${DB_PASSWORD}
+      - CLICKHOUSE_DB=${DB_NAME}
     deploy:
       resources:
         limits:
@@ -21,7 +25,6 @@ services:
       - "8123:8123"
     volumes:
       - ./.volumes/clickhouse:/var/lib/clickhouse
-      - ./docker/clickhouse:/docker-entrypoint-initdb.d/
 
   client:
     image: yandex/clickhouse-client
@@ -129,6 +132,10 @@ services:
       - GF_SMTP_FROM_ADDRESS=myaddress@gmail.com
       - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource
       - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
+      - CLICKHOUSE_DB_HOST=${DB_HOST}
+      - CLICKHOUSE_DB_USER=${DB_USER}
+      - CLICKHOUSE_DB_PASSWORD=${DB_PASSWORD}
+      - CLICKHOUSE_DB_NAME=${DB_NAME}
     ports:
       - "8082:3000"
 
