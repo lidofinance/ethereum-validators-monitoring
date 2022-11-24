@@ -3862,8 +3862,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
-              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 161306\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 161306 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
+              "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
+              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 161306\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 161306 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4122,8 +4122,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id",
-              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= 161306 AND epoch >= (161306 - 20))\nORDER BY block_to_propose DESC, val_id",
+              "query": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id",
+              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= 161306 AND epoch >= (161306 - 20))\nORDER BY block_to_propose DESC, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4563,8 +4563,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent",
-              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = 161306 AND sync_percent < (97.59954616427422 - 10)\nORDER BY sync_percent",
+              "query": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent",
+              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = 161306 AND sync_percent < (97.59954616427422 - 10)\nORDER BY sync_percent",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4778,7 +4778,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://prater.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -4842,8 +4842,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5040,7 +5040,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://prater.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -5104,8 +5104,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5301,7 +5301,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://prater.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -5365,8 +5365,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5562,7 +5562,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://prater.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -5626,8 +5626,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5823,7 +5823,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://prater.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -5887,8 +5887,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM stats.validators_summary\n    WHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "query": "\nSELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  count() as Fails,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND\n    (epoch <= 161306 AND epoch > (161306 - 20))\n    ORDER BY val_id\n)\nGROUP BY val_id, val_nos_name\nORDER BY Fails DESC, val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -6053,7 +6053,7 @@
                     "value": [
                       {
                         "title": "beaconcha.in",
-                        "url": "https://prater.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   }
@@ -6107,8 +6107,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = ${epoch_number_var}",
-              "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = 161306",
+              "query": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = ${epoch_number_var}",
+              "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = 161306",
               "refId": "A",
               "round": "0s",
               "skip_comments": true

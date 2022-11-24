@@ -69,6 +69,9 @@ export class ClickhouseService implements OnModuleInit {
     this.db = new ClickHouse({
       url: this.config.get('DB_HOST'),
       port: parseInt(this.config.get('DB_PORT'), 10),
+      config: {
+        database: this.config.get('DB_NAME'),
+      },
       basicAuth: {
         username: this.config.get('DB_USER'),
         password: this.config.get('DB_PASSWORD'),
@@ -82,9 +85,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async getMaxEpoch(): Promise<bigint> {
-    const data: any = await this.retry(
-      async () => await this.db.query('SELECT max(epoch) as max FROM stats.validators_summary').toPromise(),
-    );
+    const data: any = await this.retry(async () => await this.db.query('SELECT max(epoch) as max FROM validators_summary').toPromise());
     const slot = BigInt(parseInt(data[0].max, 10) || 0);
 
     this.logger.log(`Max (latest) stored epoch in DB [${slot}]`);
@@ -97,7 +98,7 @@ export class ClickhouseService implements OnModuleInit {
     const statesCopy = [...states];
     while (statesCopy.length > 0) {
       const chunk = statesCopy.splice(0, this.chunkSize);
-      const ws = this.db.insert('INSERT INTO stats.validators_index ' + '(val_id, val_pubkey) VALUES').stream();
+      const ws = this.db.insert('INSERT INTO validators_index ' + '(val_id, val_pubkey) VALUES').stream();
       for (const v of chunk) {
         await ws.writeRow(`(${v.index}, '${v.validator.pubkey}')`);
       }
@@ -112,7 +113,7 @@ export class ClickhouseService implements OnModuleInit {
       const chunk = summaryCopy.splice(0, this.chunkSize);
       const ws = this.db
         .insert(
-          'INSERT INTO stats.validators_summary ' +
+          'INSERT INTO validators_summary ' +
             '(epoch, val_id, val_nos_id, val_nos_name, ' +
             'val_slashed, val_status, val_balance, is_proposer, block_to_propose, block_proposed, ' +
             'is_sync, sync_percent, ' +
