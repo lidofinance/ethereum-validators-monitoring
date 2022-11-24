@@ -23,15 +23,19 @@ and when the application completes its first cycle, you can restart your instanc
 
 1. Use `.env.example` file content to create your own `.env` file
 2. Build app image via `docker-compose build app`
-3. Create `.volumes` directory from `docker` directory:
+3. Set owner for validators registry sources
+```bash
+chown -R 1000:1000 ./docker/validators
+```
+4. Create `.volumes` directory from `docker` directory:
 ```bash
 cp -r docker .volumes
 chown -R 65534:65534 .volumes/prometheus
 chown -R 65534:65534 .volumes/alertmanager
 chown -R 472:472 .volumes/grafana
 ```
-4. Run `docker-compose up -d`
-5. Open Grafana UI at `http://localhost:8082/`
+5. Run `docker-compose up -d`
+6. Open Grafana UI at `http://localhost:8082/`
    (login: `admin`, password: `MYPASSWORT`) and wait
    first app cycle execution for display data
 
@@ -44,8 +48,12 @@ chown -R 472:472 .volumes/grafana
 ```bash
 docker-compose up -d clickhouse
 ```
-5. Change `DB_HOST` value to `localhost`
-6. Run `yarn start:prod`
+5. Change `DB_HOST` value to `http://localhost`
+6. Set owner for validators registry sources
+```bash
+chown -R 1000:1000 ./docker/validators
+```
+7. Run `yarn start:prod`
 
 ## Use custom validators list
 

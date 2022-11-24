@@ -147,7 +147,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2g
+          memory: 3g
     ulimits:
       nofile:
         soft: 262144
@@ -162,7 +162,6 @@ services:
       - DB_NAME=${DB_NAME}
       - START_EPOCH=${START_EPOCH}
       - ETH_NETWORK=${ETH_NETWORK}
-      - CL_BEACON_RPC_URL=${CL_BEACON_RPC_URL}
       - VALIDATOR_REGISTRY_SOURCE=${VALIDATOR_REGISTRY_SOURCE}
       - EL_RPC_URLS=${EL_RPC_URLS}
       - CL_API_URLS=${CL_API_URLS}
