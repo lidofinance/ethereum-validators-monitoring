@@ -1,5 +1,5 @@
 const sql = `
-CREATE TABLE IF NOT EXISTS stats.validators_summary (
+CREATE TABLE IF NOT EXISTS validators_summary (
     "epoch" Int64,
     "val_id" Int64,
     "val_nos_id" Nullable(UInt32),

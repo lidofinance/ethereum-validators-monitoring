@@ -1,5 +1,5 @@
 const sql = `
-CREATE TABLE IF NOT EXISTS stats.validators_index (
+CREATE TABLE IF NOT EXISTS validators_index (
     "val_id" Int64,
     "val_pubkey" String
 )
