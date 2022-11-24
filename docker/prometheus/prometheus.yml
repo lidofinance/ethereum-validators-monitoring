@@ -22,6 +22,6 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: 'bal_val'
+  - job_name: 'ethereum_validators_monitoring'
     static_configs:
-      - targets: ['balval_app:8080']
+      - targets: ['ethereum-validators-monitoring:8080']
