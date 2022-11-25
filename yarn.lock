@@ -2634,10 +2634,10 @@ cli-width@^3.0.0:
   resolved "https://registry.yarnpkg.com/cli-width/-/cli-width-3.0.0.tgz#a2f48437a2caa9a22436e794bf071ec9e61cedf6"
   integrity sha512-FxqpkPPwu1HjuN93Omfm4h8uIanXofW0RxVEW3k5RKx+mJJYSthzNhp32Kzxxy3YAEZ/Dc/EWN1vZRY0+kOhbw==
 
-clickhouse@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/clickhouse/-/clickhouse-2.5.0.tgz#29cece9aeb2e4f449ffb75933f32725a8f7798b3"
-  integrity sha512-3eszr5FUDnApZDCQOnpHVmNk6opTnzDNdZyG8n3MF1kf/dts47e7o2DbKC2xEG22orGMski1Flvf1J6nkUhvZA==
+clickhouse@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/clickhouse/-/clickhouse-2.6.0.tgz#6218e3978fd5f343bdff395d988c5cd44e8b9a03"
+  integrity sha512-HC5OV99GJOup4qZsTuWWPpXlj+847Z0OeygDU2x22rNYost0V/vWapzFWYZdV/5iRbGMrhFQPOyQEzmGvoaWRQ==
   dependencies:
     JSONStream "1.3.4"
     lodash "4.17.21"
