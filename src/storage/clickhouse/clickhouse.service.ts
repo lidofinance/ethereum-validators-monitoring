@@ -86,11 +86,11 @@ export class ClickhouseService implements OnModuleInit {
 
   public async getMaxEpoch(): Promise<bigint> {
     const data: any = await this.retry(async () => await this.db.query('SELECT max(epoch) as max FROM validators_summary').toPromise());
-    const slot = BigInt(parseInt(data[0].max, 10) || 0);
+    const epoch = BigInt(parseInt(data[0].max, 10) || 0);
 
-    this.logger.log(`Max (latest) stored epoch in DB [${slot}]`);
+    this.logger.log(`Max (latest) stored epoch in DB [${epoch}]`);
 
-    return slot;
+    return epoch;
   }
 
   @TrackTask('write-indexes')
@@ -102,15 +102,14 @@ export class ClickhouseService implements OnModuleInit {
       for (const v of chunk) {
         await ws.writeRow(`(${v.index}, '${v.validator.pubkey}')`);
       }
-      await this.retry(async () => await ws.exec());
+      await this.retry(async () => await ws.exec().finally(() => ws.destroy()));
     }
   }
 
   @TrackTask('write-summary')
   public async writeSummary(summary: ValidatorDutySummary[]): Promise<void> {
-    const summaryCopy = [...summary];
-    while (summaryCopy.length > 0) {
-      const chunk = summaryCopy.splice(0, this.chunkSize);
+    while (summary.length > 0) {
+      const chunk = summary.splice(0, this.chunkSize);
       const ws = this.db
         .insert(
           'INSERT INTO validators_summary ' +
@@ -133,7 +132,7 @@ export class ClickhouseService implements OnModuleInit {
             )`,
         );
       }
-      await this.retry(async () => await ws.exec());
+      await this.retry(async () => await ws.exec().finally(() => ws.destroy()));
     }
   }
 

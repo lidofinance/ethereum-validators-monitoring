@@ -477,7 +477,8 @@ export function TrackTask(name: string) {
         })
         .finally(() => {
           const duration = stop();
-          this.logger.debug(`Task '${name}' is complete. Duration: ${duration}`);
+          const used = process.memoryUsage().heapUsed / 1024 / 1024;
+          this.logger.debug(`Task '${name}' is complete. Used MB: ${used}. Duration: ${duration}`);
         });
     };
   };
