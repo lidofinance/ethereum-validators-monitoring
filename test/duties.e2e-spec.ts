@@ -136,6 +136,7 @@ describe('Duties', () => {
   });
   jest.spyOn(SimpleFallbackJsonRpcBatchProvider.prototype, 'detectNetwork').mockImplementation(async () => getNetwork('mainnet'));
   const writeIndexesSpy = jest.spyOn(ClickhouseService.prototype, 'writeIndexes');
+  jest.spyOn(ClickhouseService.prototype, 'writeSummary');
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -183,8 +184,8 @@ describe('Duties', () => {
 
     await Promise.all([dutyService['prefetch'](epochNumber), dutyService['checkAll'](epochNumber, stateSlot)]);
     summaryToSave = dutyService['summary'].values();
-    await dutyService['write']();
     indexesToSave = writeIndexesSpy.mock.calls[0][0].map((i) => i.index);
+    await dutyService['write']();
   });
 
   describe('should be processes validators info', () => {
