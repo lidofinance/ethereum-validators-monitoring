@@ -173,6 +173,7 @@ describe('Duties', () => {
           stream: () => ({
             writeRow: async () => [],
             exec: async () => [],
+            destroy: async () => [],
           }),
         }),
       },
