@@ -29,7 +29,7 @@ export class InspectorService implements OnModuleInit {
   ) {}
 
   public async onModuleInit(): Promise<void> {
-    this.logger.log(`Starting slot [${this.config.get('START_SLOT')}]`);
+    this.logger.log(`Starting epoch [${this.config.get('START_EPOCH')}]`);
     this.latestProcessedEpoch = await this.storage.getMaxEpoch();
     this.prometheus.epochTime = await this.clClient.getSlotTime(this.latestProcessedEpoch * 32n);
     this.prometheus.epochNumber.set(Number(this.latestProcessedEpoch));

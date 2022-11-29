@@ -21,7 +21,7 @@ export class AppService implements OnModuleInit, OnApplicationBootstrap {
 
   public async onModuleInit(): Promise<void> {
     const env = this.configService.get('NODE_ENV');
-    const startSlot = this.configService.get('START_SLOT');
+    const startSlot = this.configService.get('START_EPOCH');
     const network = await this.executionProviderService.getNetworkName();
     const version = buildInfo.version;
     const commit = buildInfo.commit;
