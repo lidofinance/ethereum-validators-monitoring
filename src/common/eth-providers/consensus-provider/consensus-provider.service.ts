@@ -1,3 +1,5 @@
+import { Readable } from 'stream';
+
 import { parseChunked } from '@discoveryjs/json-ext';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
@@ -195,7 +197,7 @@ export class ConsensusProviderService {
   public async getBlockInfoWithSlotAttestations(
     slot: Slot,
     maxDeep = this.defaultMaxSlotDeepCount,
-  ): Promise<[BlockInfoResponse | undefined, Array<string>]> {
+  ): Promise<[BlockInfoResponse | undefined, Array<bigint>]> {
     const nearestBlockIncludedAttestations = slot + 1n; // good attestation should be included to the next block
     let blockInfo;
     let missedSlots: bigint[] = [];
@@ -215,7 +217,7 @@ export class ConsensusProviderService {
     if (blockInfo && nearestBlockIncludedAttestations != BigInt(blockInfo.message.slot)) {
       missedSlots = bigintRange(nearestBlockIncludedAttestations, BigInt(blockInfo.message.slot));
     }
-    return [blockInfo, missedSlots.map((v) => v.toString())];
+    return [blockInfo, missedSlots];
   }
 
   public async getNextNotMissedBlockInfo(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockInfoResponse | undefined> {
@@ -415,33 +417,31 @@ export class ConsensusProviderService {
 
   @TrackCLRequest
   protected async apiLargeGet<T>(apiURL: string, subUrl: string): Promise<T> {
-    return await parseChunked(
-      got.stream
-        .get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
-        .on('response', (r: Response) => {
-          if (r.statusCode != 200) throw new HTTPError(r);
-        }),
-    ).catch((e) => {
-      if (e instanceof HTTPError) {
-        throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
-      }
-      throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-    });
+    const readStream = got.stream.get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } });
+    return await this._requestStream(readStream, subUrl, apiURL);
   }
 
   @TrackCLRequest
   protected async apiLargePost<T>(apiURL: string, subUrl: string, params?: Record<string, any>): Promise<T> {
-    return await parseChunked(
-      got.stream
-        .post(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') }, ...params })
-        .on('response', (r: Response) => {
-          if (r.statusCode != 200) throw new HTTPError(r);
-        }),
-    ).catch((e) => {
-      if (e instanceof HTTPError) {
-        throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
-      }
-      throw new ResponseError(errCommon(e.message, subUrl, apiURL));
+    const readStream = got.stream.post(urljoin(apiURL, subUrl), {
+      timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') },
+      ...params,
     });
+    return await this._requestStream(readStream, subUrl, apiURL);
+  }
+
+  protected async _requestStream(req: Readable, subUrl: string, apiURL: string) {
+    return await parseChunked(
+      req.on('response', (r: Response) => {
+        if (r.statusCode != 200) throw new HTTPError(r);
+      }),
+    )
+      .catch((e) => {
+        if (e instanceof HTTPError) {
+          throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
+        }
+        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
+      })
+      .finally(() => req.destroy());
   }
 }
