@@ -24,7 +24,7 @@ export class SyncService {
   @TrackTask('check-sync-duties')
   public async check(epoch: bigint, stateSlot: bigint): Promise<void> {
     this.logger.log(`Getting sync committee participation info`);
-    const SyncCommitteeBits = new BitVectorType({ length: SYNC_COMMITTEE_SIZE }); // sync participants count in committee
+    const SyncCommitteeBits = new BitVectorType(SYNC_COMMITTEE_SIZE); // sync participants count in committee
     const indexedValidators = await this.getSyncCommitteeIndexedValidators(epoch, stateSlot);
     this.logger.log(`Processing sync committee participation info`);
     const epochBlocks: BlockInfoResponse[] = [];
@@ -36,7 +36,7 @@ export class SyncService {
     }
     this.logger.debug(`All missed slots in getting sync committee info process: ${missedSlots}`);
     const epochBlocksBits = epochBlocks.map((block) =>
-      Array.from(SyncCommitteeBits.deserialize(fromHexString(block.message.body.sync_aggregate.sync_committee_bits))),
+      SyncCommitteeBits.deserialize(fromHexString(block.message.body.sync_aggregate.sync_committee_bits)).toBoolArray(),
     );
     for (const indexedValidator of indexedValidators) {
       let sync_count = 0;
