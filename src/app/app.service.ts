@@ -21,7 +21,7 @@ export class AppService implements OnModuleInit, OnApplicationBootstrap {
 
   public async onModuleInit(): Promise<void> {
     const env = this.configService.get('NODE_ENV');
-    const startSlot = this.configService.get('START_EPOCH');
+    const startEpoch = this.configService.get('START_EPOCH');
     const network = await this.executionProviderService.getNetworkName();
     const version = buildInfo.version;
     const commit = buildInfo.commit;
@@ -29,7 +29,7 @@ export class AppService implements OnModuleInit, OnApplicationBootstrap {
     const name = APP_NAME;
 
     this.prometheus.buildInfo.labels({ env, name, version, commit, branch }).inc();
-    this.logger.log('Init app', { env, network, name, version, startSlot });
+    this.logger.log('Init app', { env, network, name, version, startEpoch });
     this.logger.log(`DRY RUN ${this.configService.get('DRY_RUN') ? 'enabled' : 'disabled'}`);
     this.logger.log(`Slot time: ${this.configService.get('CHAIN_SLOT_TIME_SECONDS')} seconds`);
     this.logger.log(`Epoch size: ${this.configService.get('FETCH_INTERVAL_SLOTS')} slots`);
