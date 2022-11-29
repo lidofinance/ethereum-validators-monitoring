@@ -1,3 +1,15 @@
+## [4.0.2](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.0.1...4.0.2) (2022-11-29)
+
+
+### Bug Fixes
+
+* compose, readme ([1bcfddd](https://github.com/lidofinance/ethereum-validators-monitoring/commit/1bcfddd62b1a52e80d41191064b300b9ac00027c))
+* DB_NAME and other DB env vars now make sense ([ca44ece](https://github.com/lidofinance/ethereum-validators-monitoring/commit/ca44ece380730b73e9168054afe1867549e925aa))
+* fantom alert ([b6bb128](https://github.com/lidofinance/ethereum-validators-monitoring/commit/b6bb128d75459ee891264f7d8e0cd46c0d902b54))
+* health check ([a456793](https://github.com/lidofinance/ethereum-validators-monitoring/commit/a456793faab1d67ed7221524553249dea8bc44a6))
+
+
+
 ## [4.0.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.0.0...4.0.1) (2022-11-22)
 
 
@@ -83,10 +95,6 @@
 
 
 # [2.0.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/1.3.4...2.0.0) (2022-08-31)
-
-
-
-## [1.3.4](https://github.com/lidofinance/ethereum-validators-monitoring/compare/1.3.3...1.3.4) (2022-07-25)
 
 
 
