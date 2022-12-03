@@ -9,6 +9,7 @@ import { PrometheusService, TrackTask } from 'common/prometheus';
 import { ClickhouseService } from 'storage';
 
 import { AttestationService } from './attestation';
+import { DutyRewards } from './duty.rewards';
 import { ProposeService } from './propose';
 import { StateService } from './state';
 import { SummaryService } from './summary';
@@ -29,6 +30,7 @@ export class DutyService {
     protected readonly sync: SyncService,
     protected readonly summary: SummaryService,
     protected readonly storage: ClickhouseService,
+    protected readonly rewards: DutyRewards,
   ) {}
 
   public async checkAndWrite(epoch: bigint, stateSlot: bigint): Promise<any> {
@@ -37,7 +39,8 @@ export class DutyService {
     // If for some reason prefetch task will be slower than duty by state requests,
     // blocks and headers will be fetched inside tasks of checks
     await Promise.all([this.prefetch(epoch), this.checkAll(epoch, stateSlot)]);
-    await this.write();
+    await this.writeSummary();
+    await this.writeEpochMeta(epoch);
   }
 
   @TrackTask('check-all-duties')
@@ -50,6 +53,8 @@ export class DutyService {
       this.sync.check(epoch, stateSlot),
       this.propose.check(epoch),
     ]);
+    // calculate rewards after check all duties
+    await this.rewards.calculate(epoch);
   }
 
   @TrackTask('prefetch-slots')
@@ -66,9 +71,15 @@ export class DutyService {
     }
   }
 
-  protected async write(): Promise<any> {
+  protected async writeSummary(): Promise<any> {
     this.logger.log('Writing summary of duties into DB');
     await this.storage.writeSummary(this.summary.values());
     this.summary.clear();
+  }
+
+  protected async writeEpochMeta(epoch: bigint): Promise<any> {
+    this.logger.log('Writing epoch metadata into DB');
+    await this.storage.writeEpochMeta(epoch, this.summary.getMeta(epoch));
+    this.summary.clearMeta();
   }
 }

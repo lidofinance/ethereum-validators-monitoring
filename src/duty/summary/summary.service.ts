@@ -1,6 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { merge } from 'lodash';
 
 import { ValStatus } from 'common/eth-providers';
+
+type Epoch = bigint;
+type BlockNumber = bigint;
+type ValidatorId = bigint;
+
+interface ValidatorAttestationReward {
+  source: number;
+  target: number;
+  head: number;
+}
+
+interface ValidatorAttestationPenalty extends ValidatorAttestationReward {}
 
 export interface ValidatorDutySummary {
   epoch: bigint;
@@ -11,6 +24,7 @@ export interface ValidatorDutySummary {
   val_slashed?: boolean;
   val_status?: ValStatus;
   val_balance?: bigint;
+  val_effective_balance?: bigint;
   ///
   is_proposer?: boolean;
   block_to_propose?: bigint;
@@ -24,14 +38,63 @@ export interface ValidatorDutySummary {
   att_valid_head?: boolean;
   att_valid_target?: boolean;
   att_valid_source?: boolean;
+  // Metadata. Necessary for calculating rewards and will not be stored in DB
+  sync_meta?: {
+    synced_blocks?: bigint[];
+  };
+  att_meta?: {
+    included_in_block?: bigint;
+    reward_per_increment?: ValidatorAttestationReward;
+    penalty_per_increment?: ValidatorAttestationPenalty;
+  };
+  // Rewards
+  att_earned_reward?: bigint;
+  att_missed_reward?: bigint;
+  att_penalty?: bigint;
+  sync_earned_reward?: bigint;
+  sync_missed_reward?: bigint;
+  sync_penalty?: bigint;
+  propose_earned_reward?: bigint;
+  propose_missed_reward?: bigint;
+  propose_penalty?: bigint;
+}
+
+export interface EpochMeta {
+  // will be stored in DB in separate table
+  state?: {
+    active_validators?: number;
+    active_validators_total_increments?: bigint;
+    base_reward?: number;
+  };
+  attestation?: {
+    blocks_rewards?: Map<BlockNumber, bigint>;
+    correct_source?: number;
+    correct_target?: number;
+    correct_head?: number;
+  };
+  sync?: {
+    blocks_rewards?: Map<BlockNumber, bigint>;
+    blocks_to_sync?: bigint[];
+  };
 }
 
 @Injectable()
 export class SummaryService {
-  protected storage: Map<bigint, ValidatorDutySummary>;
+  protected storage: Map<ValidatorId, ValidatorDutySummary>;
+  protected meta: Map<Epoch, EpochMeta>;
 
   constructor() {
-    this.storage = new Map<bigint, ValidatorDutySummary>();
+    this.storage = new Map<ValidatorId, ValidatorDutySummary>();
+    this.meta = new Map<Epoch, EpochMeta>();
+  }
+
+  public setMeta(epoch: bigint, val: EpochMeta) {
+    const curr = this.meta.get(epoch) ?? {};
+    this.meta.set(epoch, merge(curr, val));
+  }
+
+  public getMeta(epoch: bigint) {
+    return this.meta.get(epoch);
   }
 
   public get(index: bigint) {
@@ -39,7 +102,8 @@ export class SummaryService {
   }
 
   public set(index: bigint, summary: ValidatorDutySummary) {
-    this.storage.set(index, { ...(this.get(index) ?? {}), ...summary });
+    const curr = this.get(index) ?? {};
+    this.storage.set(index, merge(curr, summary));
   }
 
   public values(): ValidatorDutySummary[] {
@@ -48,5 +112,9 @@ export class SummaryService {
 
   public clear() {
     this.storage.clear();
+  }
+
+  public clearMeta() {
+    this.meta.clear();
   }
 }

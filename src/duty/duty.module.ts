@@ -5,13 +5,14 @@ import { BlockCacheModule } from 'common/eth-providers/consensus-provider/block-
 import { RegistryModule } from 'common/validators-registry';
 import { ClickhouseModule } from 'storage/clickhouse';
 
-import { AttestationModule, AttestationService } from './attestation';
+import { AttestationModule } from './attestation';
 import { DutyMetrics } from './duty.metrics';
+import { DutyRewards } from './duty.rewards';
 import { DutyService } from './duty.service';
-import { ProposeModule, ProposeService } from './propose';
-import { StateModule, StateService } from './state';
-import { SummaryModule, SummaryService } from './summary';
-import { SyncModule, SyncService } from './sync';
+import { ProposeModule } from './propose';
+import { StateModule } from './state';
+import { SummaryModule } from './summary';
+import { SyncModule } from './sync';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { SyncModule, SyncService } from './sync';
     ClickhouseModule,
     RegistryModule,
   ],
-  providers: [DutyService, DutyMetrics, AttestationService, ProposeService, StateService, SyncService, SummaryService],
-  exports: [DutyService, DutyMetrics, AttestationService, ProposeService, StateService, SyncService, SummaryService],
+  providers: [DutyService, DutyMetrics, DutyRewards],
+  exports: [DutyService, DutyMetrics],
 })
 export class DutyModule {}

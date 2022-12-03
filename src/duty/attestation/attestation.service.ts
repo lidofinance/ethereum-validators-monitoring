@@ -8,6 +8,7 @@ import { bigintRange } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { SummaryService } from '../summary';
+import { attestationPenalties, attestationRewards, timelyHead, timelySource, timelyTarget } from './attestation.constants';
 
 interface SlotAttestation {
   included_in_block: bigint;
@@ -39,7 +40,7 @@ export class AttestationService {
   @TrackTask('check-attestation-duties')
   public async check(epoch: bigint, stateSlot: bigint): Promise<void> {
     this.savedCanonSlotsAttProperties.clear();
-    const { attestations, allMissedSlots } = await this.getProcessedAttestations(epoch);
+    const { attestations } = await this.getProcessedAttestations(epoch);
     this.logger.log(`Getting attestation duties info`);
     const committees = (await this.clClient.getAttestationCommitteesInfo(stateSlot, epoch)).map((c) => ({
       index: Number(c.index),
@@ -47,6 +48,9 @@ export class AttestationService {
       validators: c.validators.map((v) => BigInt(v)),
     }));
     this.logger.log(`Processing attestation duty info`);
+    let correctSourceCount = 0;
+    let correctTargetCount = 0;
+    let correctHeadCount = 0;
     for (const committee of committees) {
       for (const attestation of attestations) {
         if (
@@ -55,10 +59,6 @@ export class AttestationService {
           attestation.included_in_block <= committee.slot
         )
           continue;
-        const missedSlotsCount = allMissedSlots.filter(
-          (missed) => missed > committee.slot && missed < attestation.included_in_block,
-        ).length;
-        const att_inc_delay = Number(attestation.included_in_block - committee.slot) - missedSlotsCount;
         const [canonHead, canonTarget, canonSource] = await Promise.all([
           this.getCanonSlotRoot(attestation.slot),
           this.getCanonSlotRoot(attestation.target_epoch * this.slotsInEpoch),
@@ -67,16 +67,43 @@ export class AttestationService {
         const att_valid_head = attestation.head == canonHead;
         const att_valid_target = attestation.target_root == canonTarget;
         const att_valid_source = attestation.source_root == canonSource;
+        const att_inc_delay = Number(attestation.included_in_block - committee.slot);
+        const reward_per_increment = attestationRewards(att_inc_delay, att_valid_source, att_valid_target, att_valid_head);
+        const penalty_per_increment = attestationPenalties(att_inc_delay, att_valid_source, att_valid_target, att_valid_head);
+        const properties = { att_inc_delay, att_valid_head, att_valid_source, att_valid_target };
         for (const [valCommIndex, validatorIndex] of committee.validators.entries()) {
-          if (this.summary.get(validatorIndex)?.att_happened) continue;
           const att_happened = attestation.bits[valCommIndex];
-          let summary = { epoch, val_id: validatorIndex, att_happened };
-          const properties = { att_inc_delay, att_valid_head, att_valid_source, att_valid_target };
-          if (att_happened) summary = { ...summary, ...properties };
+          const fromSummary = this.summary.get(validatorIndex);
+          if (fromSummary?.att_happened) continue;
+          let summary = {
+            epoch,
+            val_id: validatorIndex,
+            att_happened,
+            att_meta: {
+              included_in_block: undefined,
+              reward_per_increment: attestationRewards(32, false, false, false),
+              penalty_per_increment: attestationPenalties(32, false, false, false),
+            },
+          };
+          if (att_happened) {
+            const att_meta = {
+              included_in_block: attestation.included_in_block,
+              reward_per_increment,
+              penalty_per_increment,
+            };
+            summary = { ...summary, ...properties, att_meta };
+            // Count for calculate multipliers of rewards
+            if (timelySource(att_inc_delay, att_valid_source)) correctSourceCount++;
+            if (timelyTarget(att_inc_delay, att_valid_target)) correctTargetCount++;
+            if (timelyHead(att_inc_delay, att_valid_head)) correctHeadCount++;
+          }
           this.summary.set(validatorIndex, summary);
         }
       }
     }
+    this.summary.setMeta(epoch, {
+      attestation: { correct_source: correctSourceCount, correct_target: correctTargetCount, correct_head: correctHeadCount },
+    });
   }
 
   protected async getCanonSlotRoot(slot: bigint) {
