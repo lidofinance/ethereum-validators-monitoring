@@ -366,3 +366,9 @@ export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: bigint, epo
   )
   GROUP by val_nos_id
 `;
+
+export const epochMetadata = (epoch: bigint): string => `
+  SELECT *
+  FROM epochs_metadata
+  WHERE epoch = ${epoch}
+`;

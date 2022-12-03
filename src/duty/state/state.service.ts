@@ -2,7 +2,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { ConsensusProviderService } from 'common/eth-providers';
+import { ConsensusProviderService, ValStatus } from 'common/eth-providers';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { RegistryService } from 'common/validators-registry';
 import { ClickhouseService } from 'storage/clickhouse';
@@ -28,6 +28,8 @@ export class StateService {
     this.logger.log('Getting all validators state');
     const states = await this.clClient.getValidatorsState(stateSlot);
     this.logger.log('Processing all validators state');
+    let activeValidatorsCount = 0;
+    let activeValidatorsEffectiveBalance = 0n;
     const setSummary = (): void => {
       for (const state of states) {
         const index = BigInt(state.index);
@@ -40,9 +42,23 @@ export class StateService {
           val_slashed: state.validator.slashed,
           val_status: state.status,
           val_balance: BigInt(state.balance),
+          val_effective_balance: BigInt(state.validator.effective_balance),
         });
+        if ([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(state.status)) {
+          activeValidatorsCount++;
+          activeValidatorsEffectiveBalance += BigInt(state.validator.effective_balance);
+        }
       }
     };
     await Promise.all([this.storage.writeIndexes(states), setSummary()]);
+    // todo: change to bigint.sqrt
+    const baseReward = Math.trunc((64 * 10 ** 9) / Math.trunc(Math.sqrt(Number(activeValidatorsEffectiveBalance))));
+    this.summary.setMeta(epoch, {
+      state: {
+        active_validators: activeValidatorsCount,
+        active_validators_total_increments: activeValidatorsEffectiveBalance / BigInt(10 ** 9),
+        base_reward: baseReward,
+      },
+    });
   }
 }

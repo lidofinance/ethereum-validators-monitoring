@@ -6,10 +6,11 @@ import { ConfigService } from 'common/config';
 import { StateValidatorResponse } from 'common/eth-providers';
 import { retrier } from 'common/functions/retrier';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-import { ValidatorDutySummary } from 'duty/summary';
+import { EpochMeta, ValidatorDutySummary } from 'duty/summary';
 
 import {
   chainSyncParticipationAvgPercentQuery,
+  epochMetadata,
   operatorBalance24hDifferenceQuery,
   operatorsSyncParticipationAvgPercentsQuery,
   otherSyncParticipationAvgPercentQuery,
@@ -41,6 +42,8 @@ import {
 } from './clickhouse.types';
 import migration_000000_summary from './migrations/migration_000000_summary';
 import migration_000001_indexes from './migrations/migration_000001_indexes';
+import migration_000002_rewards from './migrations/migration_000002_rewards';
+import migration_000003_epoch_meta from './migrations/migration_000003_epoch_meta';
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -121,10 +124,34 @@ export class ClickhouseService implements OnModuleInit {
     }
   }
 
+  @TrackTask('write-epoch-meta')
+  public async writeEpochMeta(epoch: bigint, meta: EpochMeta): Promise<void> {
+    const ws = this.db
+      .insert(
+        'INSERT INTO epochs_metadata ' +
+          '(epoch, active_validators, active_validators_total_increments, base_reward, ' +
+          'att_blocks_rewards, att_correct_source, att_correct_target, att_correct_head, ' +
+          'sync_blocks_rewards, sync_blocks_to_sync ' +
+          ') VALUES',
+      )
+      .stream();
+    const attBlockRewardsArr = `[${Array.from(meta.attestation.blocks_rewards).join('],[')}]`;
+    const syncBlockRewardsArr = `[${Array.from(meta.sync.blocks_rewards).join('],[')}]`;
+    const syncBlocksToSyncArr = Array.from(meta.sync.blocks_to_sync);
+    await ws.writeRow(
+      `(${epoch}, ${meta.state.active_validators}, ${meta.state.active_validators_total_increments}, ${meta.state.base_reward}, ` +
+        `[${attBlockRewardsArr}], ${meta.attestation.correct_source}, ${meta.attestation.correct_head}, ${meta.attestation.correct_target}, ` +
+        `[${syncBlockRewardsArr}], [${syncBlocksToSyncArr}])`,
+    );
+    await this.retry(async () => await ws.exec().finally(() => ws.destroy()));
+  }
+
   public async migrate(): Promise<void> {
     this.logger.log('Running migrations');
     await this.db.exec({ query: migration_000000_summary });
     await this.db.exec({ query: migration_000001_indexes });
+    await this.db.exec({ query: migration_000000_summary });
+    await this.db.exec({ query: migration_000003_epoch_meta });
   }
 
   public async getValidatorBalancesDelta(epoch: bigint): Promise<NOsDelta[]> {
@@ -454,5 +481,28 @@ export class ClickhouseService implements OnModuleInit {
       all: Number(v.all),
       missed: Number(v.missed),
     }));
+  }
+
+  async getEpochMetadata(epoch: bigint): Promise<EpochMeta> {
+    const ret = (await this.retry(async () => await this.db.query(epochMetadata(epoch)).toPromise()))[0];
+    const metadata = {};
+    if (ret) {
+      metadata['state'] = {
+        active_validators: BigInt(ret['active_validators']),
+        active_validators_total_increments: BigInt(ret['active_validators_total_increments']),
+        base_reward: Number(ret['base_reward']),
+      };
+      metadata['attestation'] = {
+        blocks_rewards: new Map(ret['att_blocks_rewards'].map(([b, r]) => [BigInt(b), BigInt(r)])),
+        correct_source: Number(ret['att_correct_source']),
+        correct_target: Number(ret['att_correct_target']),
+        correct_head: Number(ret['att_correct_head']),
+      };
+      metadata['sync'] = {
+        blocks_rewards: new Map(ret['sync_blocks_rewards'].map(([b, r]) => [BigInt(b), BigInt(r)])),
+        blocks_to_sync: ret['sync_blocks_to_sync'].map((b) => BigInt(b)),
+      };
+    }
+    return metadata;
   }
 }
