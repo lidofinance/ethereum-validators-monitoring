@@ -152,7 +152,7 @@ export class StateMetrics {
   private async operatorBalance24hDifference() {
     const result = await this.storage.getOperatorBalance24hDifference(this.processedEpoch);
     result.forEach((d) => {
-      this.prometheus.operatorBalance24hDifference.set({ nos_name: d.nos_name }, d.diff);
+      this.prometheus.operatorBalance24hDifference.set({ nos_name: d.val_nos_name }, d.diff);
     });
   }
 
