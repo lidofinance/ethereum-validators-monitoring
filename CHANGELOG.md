@@ -1,3 +1,12 @@
+## [4.0.3](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.0.2...4.0.3) (2022-12-08)
+
+
+### Bug Fixes
+
+* 'operator_balance_24h_difference' metric ([#82](https://github.com/lidofinance/ethereum-validators-monitoring/issues/82)) ([9619376](https://github.com/lidofinance/ethereum-validators-monitoring/commit/961937621ebbd287bec0b4a2ad463522f4392b93))
+
+
+
 ## [4.0.2](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.0.1...4.0.2) (2022-11-29)
 
 
@@ -91,10 +100,6 @@
 ### BREAKING CHANGES
 
 * rename EL and CL related env vars
-
-
-
-# [2.0.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/1.3.4...2.0.0) (2022-08-31)
 
 
 
