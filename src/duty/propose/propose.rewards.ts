@@ -23,7 +23,7 @@ export class ProposeRewards {
     let syncSumOfSum = 0n;
     // Merge attestations meta data from two epochs
     const blocksAttestationsRewardSum = new Map<bigint, bigint>();
-    const prevEpoch = (await this.storage.getEpochMetadata(epoch - 1n))?.attestation.blocks_rewards ?? new Map();
+    const prevEpoch = (await this.storage.getEpochMetadata(epoch - 1n))?.attestation?.blocks_rewards ?? new Map();
     const currEpoch = this.summary.getMeta(epoch).attestation.blocks_rewards;
     for (const block of new Map([...prevEpoch.entries(), ...currEpoch.entries()]).keys()) {
       let merged = 0n;
