@@ -116,6 +116,10 @@ export class ClickhouseService implements OnModuleInit {
   public async writeSummary(summary: ValidatorDutySummary[]): Promise<void> {
     while (summary.length > 0) {
       const chunk = summary.splice(0, this.chunkSize);
+      chunk.forEach((s) => {
+        s.att_meta = undefined;
+        s.sync_meta = undefined;
+      });
       await this.db.insert({
         table: 'validators_summary',
         values: chunk,
@@ -126,31 +130,31 @@ export class ClickhouseService implements OnModuleInit {
 
   @TrackTask('write-epoch-meta')
   public async writeEpochMeta(epoch: bigint, meta: EpochMeta): Promise<void> {
-    const ws = this.db
-      .insert(
-        'INSERT INTO epochs_metadata ' +
-          '(epoch, active_validators, active_validators_total_increments, base_reward, ' +
-          'att_blocks_rewards, att_correct_source, att_correct_target, att_correct_head, ' +
-          'sync_blocks_rewards, sync_blocks_to_sync ' +
-          ') VALUES',
-      )
-      .stream();
-    const attBlockRewardsArr = `[${Array.from(meta.attestation.blocks_rewards).join('],[')}]`;
-    const syncBlockRewardsArr = `[${Array.from(meta.sync.blocks_rewards).join('],[')}]`;
-    const syncBlocksToSyncArr = Array.from(meta.sync.blocks_to_sync);
-    await ws.writeRow(
-      `(${epoch}, ${meta.state.active_validators}, ${meta.state.active_validators_total_increments}, ${meta.state.base_reward}, ` +
-        `[${attBlockRewardsArr}], ${meta.attestation.correct_source}, ${meta.attestation.correct_head}, ${meta.attestation.correct_target}, ` +
-        `[${syncBlockRewardsArr}], [${syncBlocksToSyncArr}])`,
-    );
-    await this.retry(async () => await ws.exec().finally(() => ws.destroy()));
+    await this.db.insert({
+      table: 'epochs_metadata',
+      values: [
+        {
+          epoch,
+          active_validators: meta.state.active_validators,
+          active_validators_total_increments: meta.state.active_validators_total_increments,
+          base_reward: meta.state.base_reward,
+          att_blocks_rewards: Array.from(meta.attestation.blocks_rewards),
+          att_correct_source: meta.attestation.correct_source,
+          att_correct_target: meta.attestation.correct_target,
+          att_correct_head: meta.attestation.correct_head,
+          sync_blocks_rewards: Array.from(meta.sync.blocks_rewards),
+          sync_blocks_to_sync: meta.sync.blocks_to_sync,
+        },
+      ],
+      format: 'JSONEachRow',
+    });
   }
 
   public async migrate(): Promise<void> {
     this.logger.log('Running migrations');
     await this.db.exec({ query: migration_000000_summary });
     await this.db.exec({ query: migration_000001_indexes });
-    await this.db.exec({ query: migration_000000_summary });
+    await this.db.exec({ query: migration_000002_rewards });
     await this.db.exec({ query: migration_000003_epoch_meta });
   }
 
@@ -484,7 +488,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   async getEpochMetadata(epoch: bigint): Promise<EpochMeta> {
-    const ret = (await this.retry(async () => await this.db.query(epochMetadata(epoch)).toPromise()))[0];
+    const ret = (await this.select(epochMetadata(epoch)))[0];
     const metadata = {};
     if (ret) {
       metadata['state'] = {
