@@ -372,3 +372,35 @@ export const epochMetadata = (epoch: bigint): string => `
   FROM epochs_metadata
   WHERE epoch = ${epoch}
 `;
+
+export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: bigint): string => `
+  SELECT
+    val_nos_name,
+    sum(prop_reward) as prop_reward,
+    sum(prop_missed) as prop_missed,
+    sum(prop_penalty) as prop_penalty,
+    sum(sync_reward) as sync_reward,
+    sum(sync_missed) as sync_missed,
+    sum(sync_penalty) as sync_penalty,
+    sum(attestation_reward) as attestation_reward,
+    sum(attestation_missed) as attestation_missed,
+    sum(attestation_penalty) as attestation_penalty
+  FROM (
+    SELECT
+      val_nos_name,
+      IF(is_proposer = 1, sum(propose_earned_reward), 0) as prop_reward,
+      IF(is_proposer = 1, sum(propose_missed_reward), 0) as prop_missed,
+      IF(is_proposer = 1, sum(propose_penalty), 0) as prop_penalty,
+      IF(is_sync = 1, sum(sync_earned_reward), 0) as sync_reward,
+      IF(is_sync = 1, sum(sync_missed_reward), 0) as sync_missed,
+      IF(is_sync = 1, sum(sync_penalty), 0) as sync_penalty,
+      sum(att_earned_reward) as attestation_reward,
+      sum(att_missed_reward) as attestation_missed,
+      sum(att_penalty) as attestation_penalty
+    FROM stats.validators_summary
+    WHERE epoch = ${epoch} and val_nos_name != 'NULL'
+    GROUP BY val_nos_name, is_proposer, is_sync
+  ) as prev
+  GROUP by val_nos_name
+  ORDER BY val_nos_name
+`;

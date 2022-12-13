@@ -18,6 +18,9 @@ import {
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
   METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
+  METRIC_OPERATOR_MISSED_REWARD,
+  METRIC_OPERATOR_PENALTY,
+  METRIC_OPERATOR_REWARD,
   METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_OTHER_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_OTHER_VALIDATOR_COUNT_GOOD_PROPOSE,
@@ -405,6 +408,24 @@ export class PrometheusService implements OnApplicationBootstrap {
     name: METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
     help: 'Operator balance difference (24 hours)',
     labelNames: ['nos_name'],
+  });
+
+  public operatorReward = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_REWARD,
+    help: 'rewards for each duty for each operator',
+    labelNames: ['nos_name', 'duty'],
+  });
+
+  public operatorMissedReward = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_MISSED_REWARD,
+    help: 'missed rewards for each duty for each operator',
+    labelNames: ['nos_name', 'duty'],
+  });
+
+  public operatorPenalty = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_PENALTY,
+    help: 'operator penalty for each duty',
+    labelNames: ['nos_name', 'duty'],
   });
 
   public contractKeysTotal = this.getOrCreateMetric('Gauge', {

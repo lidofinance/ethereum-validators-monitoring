@@ -17,6 +17,7 @@ import {
   otherValidatorsSummaryStatsQuery,
   totalBalance24hDifferenceQuery,
   userNodeOperatorsProposesStatsLastNEpochQuery,
+  userNodeOperatorsRewardsAndPenaltiesStats,
   userNodeOperatorsStatsQuery,
   userSyncParticipationAvgPercentQuery,
   userValidatorsSummaryStatsQuery,
@@ -34,6 +35,7 @@ import {
   NOsValidatorsByConditionAttestationCount,
   NOsValidatorsByConditionProposeCount,
   NOsValidatorsNegDeltaCount,
+  NOsValidatorsRewardsStats,
   NOsValidatorsStatusStats,
   NOsValidatorsSyncAvgPercent,
   NOsValidatorsSyncByConditionCount,
@@ -116,13 +118,9 @@ export class ClickhouseService implements OnModuleInit {
   public async writeSummary(summary: ValidatorDutySummary[]): Promise<void> {
     while (summary.length > 0) {
       const chunk = summary.splice(0, this.chunkSize);
-      chunk.forEach((s) => {
-        s.att_meta = undefined;
-        s.sync_meta = undefined;
-      });
       await this.db.insert({
         table: 'validators_summary',
-        values: chunk,
+        values: chunk.map((s) => ({ ...s, att_meta: undefined, sync_meta: undefined })),
         format: 'JSONEachRow',
       });
     }
@@ -508,5 +506,20 @@ export class ClickhouseService implements OnModuleInit {
       };
     }
     return metadata;
+  }
+
+  public async getUserNodeOperatorsRewardsAndPenaltiesStats(epoch: bigint): Promise<NOsValidatorsRewardsStats[]> {
+    return (await this.select<NOsValidatorsRewardsStats[]>(userNodeOperatorsRewardsAndPenaltiesStats(epoch))).map((v) => ({
+      ...v,
+      prop_reward: +v.prop_reward,
+      prop_missed: +v.prop_missed,
+      prop_penalty: +v.prop_penalty,
+      sync_reward: +v.sync_reward,
+      sync_missed: +v.sync_missed,
+      sync_penalty: +v.sync_penalty,
+      attestation_reward: +v.attestation_reward,
+      attestation_missed: +v.attestation_missed,
+      attestation_penalty: +v.attestation_penalty,
+    }));
   }
 }
