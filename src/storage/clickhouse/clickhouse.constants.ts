@@ -356,7 +356,7 @@ export const otherValidatorsSummaryStatsQuery = (epoch: bigint): string => `
   )
 `;
 
-export const userNodeOperatorsProposesStatsLastNEpochQuery = (fetchInterval: number, epoch: bigint, epochInterval = 120): string => `
+export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: bigint, epochInterval = 120): string => `
   SELECT
     val_nos_name,
     SUM(a) as all,
@@ -368,7 +368,7 @@ export const userNodeOperatorsProposesStatsLastNEpochQuery = (fetchInterval: num
       count(block_proposed) as a,
       IF(block_proposed = 0, count(block_proposed), 0) as m
     FROM validators_summary
-    WHERE is_proposer = 1 AND (epoch <= ${epoch} AND epoch > (${epoch} - ${fetchInterval} * ${epochInterval}))
+    WHERE is_proposer = 1 AND (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
     GROUP BY val_nos_name, block_proposed
   )
   GROUP by val_nos_name
