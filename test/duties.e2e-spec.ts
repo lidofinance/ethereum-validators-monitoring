@@ -169,13 +169,7 @@ describe('Duties', () => {
     // stub writing to db
     Object.defineProperty(clickhouseService, 'db', {
       value: {
-        insert: () => ({
-          stream: () => ({
-            writeRow: async () => [],
-            exec: async () => [],
-            destroy: async () => [],
-          }),
-        }),
+        insert: () => [],
       },
     });
 
