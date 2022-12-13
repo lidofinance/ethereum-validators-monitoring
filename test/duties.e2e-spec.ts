@@ -1,3 +1,5 @@
+import * as process from 'process';
+
 import { getNetwork } from '@ethersproject/providers';
 import { createMock } from '@golevelup/ts-jest';
 import { FallbackProviderModule, SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
@@ -122,6 +124,7 @@ describe('Duties', () => {
   let indexesToSave: string[];
   let summaryToSave: ValidatorDutySummary[];
 
+  process.env['DB_HOST'] = 'http://localhost'; // stub to avoid lib validator
   const getActualKeysIndexedMock = jest.fn().mockImplementation(async () => {
     const map = new Map();
     testValidators.forEach((v) =>
