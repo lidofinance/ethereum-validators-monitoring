@@ -68,5 +68,6 @@ export class AttestationRewards {
       this.summary.set(v.val_id, { epoch, val_id: v.val_id, att_earned_reward, att_missed_reward, att_penalty });
     }
     this.summary.setMeta(epoch, { attestation: { blocks_rewards: blocksAttestationsRewardSum } });
+    return true;
   }
 }

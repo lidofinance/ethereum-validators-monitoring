@@ -1,9 +1,10 @@
+import { Duplex } from 'stream';
+
 import { ClickHouseClient, createClient } from '@clickhouse/client';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { StateValidatorResponse } from 'common/eth-providers';
 import { retrier } from 'common/functions/retrier';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { EpochMeta, ValidatorDutySummary } from 'duty/summary';
@@ -102,16 +103,12 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   @TrackTask('write-indexes')
-  public async writeIndexes(states: StateValidatorResponse[]): Promise<void> {
-    const statesCopy = [...states];
-    while (statesCopy.length > 0) {
-      const chunk = statesCopy.splice(0, this.chunkSize);
-      await this.db.insert({
-        table: 'validators_index',
-        values: chunk.map((s) => ({ val_id: s.index, val_pubkey: s.validator.pubkey })),
-        format: 'JSONEachRow',
-      });
-    }
+  public async writeIndexes(pipeline: Duplex): Promise<void> {
+    await this.db.insert({
+      table: 'validators_index',
+      values: pipeline,
+      format: 'JSONEachRow',
+    });
   }
 
   @TrackTask('write-summary')

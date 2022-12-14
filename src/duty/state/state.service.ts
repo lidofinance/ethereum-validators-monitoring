@@ -1,8 +1,12 @@
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { chain } from 'stream-chain';
+import { parser } from 'stream-json';
+import { pick } from 'stream-json/filters/Pick';
+import { streamArray } from 'stream-json/streamers/StreamArray';
 
 import { ConfigService } from 'common/config';
-import { ConsensusProviderService, ValStatus } from 'common/eth-providers';
+import { ConsensusProviderService, StateValidatorResponse, ValStatus } from 'common/eth-providers';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { RegistryService } from 'common/validators-registry';
 import { ClickhouseService } from 'storage/clickhouse';
@@ -26,12 +30,17 @@ export class StateService {
     const slotTime = await this.clClient.getSlotTime(epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS')));
     const keysIndexed = await this.registry.getActualKeysIndexed(Number(slotTime));
     this.logger.log('Getting all validators state');
-    const states = await this.clClient.getValidatorsState(stateSlot);
+    const readStream = await this.clClient.getValidatorsState(stateSlot);
     this.logger.log('Processing all validators state');
     let activeValidatorsCount = 0;
     let activeValidatorsEffectiveBalance = 0n;
-    const setSummary = (): void => {
-      for (const state of states) {
+    const pipeline = chain([
+      readStream,
+      parser(),
+      pick({ filter: 'data' }),
+      streamArray(),
+      (data) => {
+        const state: StateValidatorResponse = data.value;
         const index = BigInt(state.index);
         const operator = keysIndexed.get(state.validator.pubkey);
         this.summary.set(index, {
@@ -48,9 +57,10 @@ export class StateService {
           activeValidatorsCount++;
           activeValidatorsEffectiveBalance += BigInt(state.validator.effective_balance);
         }
-      }
-    };
-    await Promise.all([this.storage.writeIndexes(states), setSummary()]);
+        return { val_id: state.index, val_pubkey: state.validator.pubkey };
+      },
+    ]);
+    await this.storage.writeIndexes(pipeline);
     // todo: change to bigint.sqrt
     const baseReward = Math.trunc((64 * 10 ** 9) / Math.trunc(Math.sqrt(Number(activeValidatorsEffectiveBalance))));
     this.summary.setMeta(epoch, {
