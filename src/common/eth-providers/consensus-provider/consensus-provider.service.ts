@@ -16,14 +16,12 @@ import { PrometheusService, TrackCLRequest } from 'common/prometheus';
 import { BlockCache, BlockCacheService } from './block-cache';
 import { MaxDeepError, ResponseError, errCommon, errRequest } from './errors';
 import {
-  AttestationCommitteeInfo,
   AttesterDutyInfo,
   BlockHeaderResponse,
   BlockInfoResponse,
   FinalityCheckpointsResponse,
   GenesisResponse,
   ProposerDutyInfo,
-  StateValidatorResponse,
   SyncCommitteeDutyInfo,
   SyncCommitteeInfo,
   VersionResponse,
@@ -232,8 +230,10 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getValidatorsState(stateId: StateId): Promise<StateValidatorResponse[]> {
-    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.validatorsState(stateId)));
+  public async getValidatorsState(stateId: StateId): Promise<Request> {
+    return await this.retryRequest(async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.validatorsState(stateId)), {
+      dataOnly: false,
+    });
   }
 
   public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse | void> {
@@ -260,8 +260,13 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getAttestationCommitteesInfo(stateId: StateId, epoch: Epoch): Promise<AttestationCommitteeInfo[]> {
-    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.attestationCommittees(stateId, epoch)));
+  public async getAttestationCommitteesInfo(stateId: StateId, epoch: Epoch): Promise<Request> {
+    return await this.retryRequest(
+      async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.attestationCommittees(stateId, epoch)),
+      {
+        dataOnly: false,
+      },
+    );
   }
 
   public async getSyncCommitteeInfo(stateId: StateId, epoch: Epoch): Promise<SyncCommitteeInfo> {
@@ -413,6 +418,27 @@ export class ConsensusProviderService {
     } catch (e) {
       throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
     }
+  }
+
+  @TrackCLRequest
+  protected async apiGetStream(apiURL: string, subUrl: string): Promise<Request> {
+    const readStream = got.stream.get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } });
+    const promisedStream = async () =>
+      new Promise((resolve, reject) => {
+        readStream.on('response', (r: Response) => {
+          if (r.statusCode != 200) reject(new HTTPError(r));
+          resolve(readStream);
+        });
+        readStream.on('error', (e) => reject(e));
+      })
+        .then((r: Request) => r)
+        .catch((e) => {
+          if (e instanceof HTTPError) {
+            throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
+          }
+          throw new ResponseError(errCommon(e.message, subUrl, apiURL));
+        });
+    return await promisedStream();
   }
 
   @TrackCLRequest

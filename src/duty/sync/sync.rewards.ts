@@ -39,5 +39,6 @@ export class SyncRewards {
       this.summary.set(v.val_id, { epoch, val_id: v.val_id, sync_earned_reward, sync_penalty, sync_missed_reward });
     }
     this.summary.setMeta(epoch, { sync: { blocks_rewards: blocksSyncRewardSum } });
+    return true;
   }
 }

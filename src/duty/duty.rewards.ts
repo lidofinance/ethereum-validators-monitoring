@@ -22,8 +22,7 @@ export class DutyRewards {
   @TrackTask('calc-all-duties-rewards')
   public async calculate(epoch: bigint) {
     // todo: 'Slashed' case
-    this.attestationRewards.calculate(epoch);
-    this.syncRewards.calculate(epoch);
+    await Promise.all([this.attestationRewards.calculate(epoch), this.syncRewards.calculate(epoch)]);
     // should be calculated based on attestation and sync rewards
     await this.proposerRewards.calculate(epoch);
   }

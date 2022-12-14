@@ -37,13 +37,13 @@ export class SyncService {
     const epochBlocksBits = epochBlocks.map((block) => {
       return {
         block: BigInt(block.message.slot),
-        bits: SyncCommitteeBits.deserialize(fromHexString(block.message.body.sync_aggregate.sync_committee_bits)).toBoolArray(),
+        bits: SyncCommitteeBits.deserialize(fromHexString(block.message.body.sync_aggregate.sync_committee_bits)),
       };
     });
     for (const indexedValidator of indexedValidators) {
       const synced_blocks: bigint[] = [];
       for (const blockBits of epochBlocksBits) {
-        if (blockBits.bits[indexedValidator.in_committee_index]) {
+        if (blockBits.bits.get(indexedValidator.in_committee_index)) {
           synced_blocks.push(blockBits.block);
         }
       }
