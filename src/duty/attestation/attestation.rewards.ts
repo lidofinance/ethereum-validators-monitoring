@@ -26,10 +26,11 @@ export class AttestationRewards {
     const headParticipation = epochMeta.attestation.correct_head / epochMeta.state.active_validators;
     // Perfect attestation (with multipliers). Need for calculating missed reward
     const perfect = attestationRewards(1, true, true, true);
-    const perfectAttestationRewards =
-      BigInt(Math.trunc(perfect.source * epochMeta.state.base_reward * 32 * sourceParticipation)) +
-      BigInt(Math.trunc(perfect.target * epochMeta.state.base_reward * 32 * targetParticipation)) +
-      BigInt(Math.trunc(perfect.head * epochMeta.state.base_reward * 32 * headParticipation));
+    const perfectAttestationRewards = BigInt(
+      Math.trunc(perfect.source * epochMeta.state.base_reward * 32 * sourceParticipation) +
+        Math.trunc(perfect.target * epochMeta.state.base_reward * 32 * targetParticipation) +
+        Math.trunc(perfect.head * epochMeta.state.base_reward * 32 * headParticipation),
+    );
     //
     for (const v of this.summary.values()) {
       // Only active validator can participate in attestation
@@ -46,12 +47,14 @@ export class AttestationRewards {
       const penaltyTarget = Math.trunc(v.att_meta.penalty_per_increment.target * epochMeta.state.base_reward * increments);
       const penaltyHead = Math.trunc(v.att_meta.penalty_per_increment.head * epochMeta.state.base_reward * increments);
       att_earned_reward = BigInt(
-        Math.trunc(rewardSource * sourceParticipation + rewardTarget * targetParticipation + rewardHead * headParticipation),
+        Math.trunc(rewardSource * sourceParticipation) +
+          Math.trunc(rewardTarget * targetParticipation) +
+          Math.trunc(rewardHead * headParticipation),
       );
       att_missed_reward = perfectAttestationRewards - att_earned_reward;
       att_penalty = BigInt(penaltySource + penaltyTarget + penaltyHead);
 
-      if (v.att_happened) {
+      if (att_earned_reward != 0n) {
         // Calculate sum of all attestation rewards in block (without multipliers). It's needed for calculation proposer reward
         let rewards = blocksAttestationsRewardSum.get(v.att_meta.included_in_block) ?? 0n;
         rewards += BigInt(rewardSource + rewardTarget + rewardHead);

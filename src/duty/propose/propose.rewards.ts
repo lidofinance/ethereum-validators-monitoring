@@ -21,7 +21,10 @@ export class ProposeRewards {
   public async calculate(epoch: bigint) {
     let attestationsSumOfSum = 0n;
     let syncSumOfSum = 0n;
-    // Merge attestations meta data from two epochs
+    // Merge attestations metadata from two epochs
+    // It's needed to calculate rewards of checkpoint block. Because first block of epoch contains attestations from previous
+    // At the first app start it is possible that reward for such block will not be calculated,
+    // because there is no metadata of the previous epoch
     const blocksAttestationsRewardSum = new Map<bigint, bigint>();
     const prevEpoch = (await this.storage.getEpochMetadata(epoch - 1n))?.attestation?.blocks_rewards ?? new Map();
     const currEpoch = this.summary.getMeta().attestation.blocks_rewards;
@@ -46,15 +49,14 @@ export class ProposeRewards {
       let propose_missed_reward = 0n;
       const propose_penalty = 0n;
       if (v.block_proposed) {
-        if (!blocksAttestationsRewardSum.get(v.block_to_propose)) {
-          this.logger.warn(`Can't calculate reward for block ${v.block_to_propose}`);
+        const attRewardSum = blocksAttestationsRewardSum.get(v.block_to_propose);
+        const syncRewardSum = blocksSyncRewardSum.get(v.block_to_propose);
+        if (!attRewardSum || !syncRewardSum) {
+          this.logger.warn(`Can't calculate reward for block ${v.block_to_propose}. There is no metadata of previous epoch`);
           continue;
         }
         // Accuracy ~200 GWei
-        propose_earned_reward = proposerReward(
-          blocksAttestationsRewardSum.get(v.block_to_propose),
-          blocksSyncRewardSum.get(v.block_to_propose),
-        );
+        propose_earned_reward = proposerReward(attRewardSum, syncRewardSum);
       } else {
         propose_missed_reward = proposerReward(attestationsAvg, syncAvg);
       }
