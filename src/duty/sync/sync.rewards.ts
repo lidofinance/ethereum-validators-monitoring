@@ -17,7 +17,7 @@ export class SyncRewards {
   ) {}
 
   public calculate(epoch: bigint) {
-    const epochMeta = this.summary.getMeta(epoch);
+    const epochMeta = this.summary.getMeta();
     let sync_earned_reward = 0n;
     let sync_missed_reward = 0n;
     let sync_penalty = 0n;
@@ -38,7 +38,7 @@ export class SyncRewards {
 
       this.summary.set(v.val_id, { epoch, val_id: v.val_id, sync_earned_reward, sync_penalty, sync_missed_reward });
     }
-    this.summary.setMeta(epoch, { sync: { blocks_rewards: blocksSyncRewardSum } });
+    this.summary.setMeta({ sync: { blocks_rewards: blocksSyncRewardSum } });
     return true;
   }
 }

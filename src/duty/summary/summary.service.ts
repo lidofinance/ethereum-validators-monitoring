@@ -3,7 +3,6 @@ import { merge } from 'lodash';
 
 import { ValStatus } from 'common/eth-providers';
 
-type Epoch = bigint;
 type BlockNumber = bigint;
 type ValidatorId = bigint;
 
@@ -81,20 +80,20 @@ export interface EpochMeta {
 @Injectable()
 export class SummaryService {
   protected storage: Map<ValidatorId, ValidatorDutySummary>;
-  protected meta: Map<Epoch, EpochMeta>;
+  protected meta: EpochMeta;
 
   constructor() {
     this.storage = new Map<ValidatorId, ValidatorDutySummary>();
-    this.meta = new Map<Epoch, EpochMeta>();
+    this.meta = {};
   }
 
-  public setMeta(epoch: bigint, val: EpochMeta) {
-    const curr = this.meta.get(epoch) ?? {};
-    this.meta.set(epoch, merge(curr, val));
+  public setMeta(val: EpochMeta) {
+    const curr = this.meta ?? {};
+    this.meta = merge(curr, val);
   }
 
-  public getMeta(epoch: bigint) {
-    return this.meta.get(epoch);
+  public getMeta() {
+    return this.meta;
   }
 
   public get(index: bigint) {
@@ -106,8 +105,8 @@ export class SummaryService {
     this.storage.set(index, merge(curr, summary));
   }
 
-  public values(): ValidatorDutySummary[] {
-    return [...this.storage.values()];
+  public values(): IterableIterator<ValidatorDutySummary> {
+    return this.storage.values();
   }
 
   public clear() {
@@ -115,6 +114,6 @@ export class SummaryService {
   }
 
   public clearMeta() {
-    this.meta.clear();
+    delete this.meta;
   }
 }

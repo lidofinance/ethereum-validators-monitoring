@@ -63,7 +63,7 @@ export class StateService {
     await this.storage.writeIndexes(pipeline);
     // todo: change to bigint.sqrt
     const baseReward = Math.trunc((64 * 10 ** 9) / Math.trunc(Math.sqrt(Number(activeValidatorsEffectiveBalance))));
-    this.summary.setMeta(epoch, {
+    this.summary.setMeta({
       state: {
         active_validators: activeValidatorsCount,
         active_validators_total_increments: activeValidatorsEffectiveBalance / BigInt(10 ** 9),

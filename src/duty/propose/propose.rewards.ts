@@ -24,7 +24,7 @@ export class ProposeRewards {
     // Merge attestations meta data from two epochs
     const blocksAttestationsRewardSum = new Map<bigint, bigint>();
     const prevEpoch = (await this.storage.getEpochMetadata(epoch - 1n))?.attestation?.blocks_rewards ?? new Map();
-    const currEpoch = this.summary.getMeta(epoch).attestation.blocks_rewards;
+    const currEpoch = this.summary.getMeta().attestation.blocks_rewards;
     for (const block of new Map([...prevEpoch.entries(), ...currEpoch.entries()]).keys()) {
       let merged = 0n;
       const prev = prevEpoch.get(block) ?? 0n;
@@ -33,7 +33,7 @@ export class ProposeRewards {
       blocksAttestationsRewardSum.set(block, merged);
     }
     //
-    const blocksSyncRewardSum = this.summary.getMeta(epoch).sync.blocks_rewards;
+    const blocksSyncRewardSum = this.summary.getMeta().sync.blocks_rewards;
     blocksAttestationsRewardSum.forEach((rewards) => (attestationsSumOfSum += rewards));
     const attestationsAvg = attestationsSumOfSum / BigInt(blocksAttestationsRewardSum.size);
 

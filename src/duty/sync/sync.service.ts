@@ -59,7 +59,7 @@ export class SyncService {
         },
       });
     }
-    this.summary.setMeta(epoch, { sync: { blocks_to_sync: epochBlocksBits.map((b) => b.block) } });
+    this.summary.setMeta({ sync: { blocks_to_sync: epochBlocksBits.map((b) => b.block) } });
   }
 
   public async getSyncCommitteeIndexedValidators(epoch: bigint, stateId: StateId): Promise<SyncCommitteeValidator[]> {
