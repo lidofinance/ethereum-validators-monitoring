@@ -60,7 +60,7 @@ export class AttestationMetrics {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountPerfectAttestation.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
     });
-    const other = result.find((a) => a.val_nos_name == 'NULL');
+    const other = result.find((a) => a.val_nos_name == null);
     this.prometheus.otherValidatorsCountPerfectAttestation.set(other ? other.amount : 0);
   }
 
@@ -70,7 +70,7 @@ export class AttestationMetrics {
       const operatorResult = result.find((a) => a.val_nos_name == operator.name);
       this.prometheus.validatorsCountMissAttestation.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
     });
-    const other = result.find((a) => a.val_nos_name == 'NULL');
+    const other = result.find((a) => a.val_nos_name == null);
     this.prometheus.otherValidatorsCountMissAttestation.set(other ? other.amount : 0);
   }
 
@@ -83,7 +83,7 @@ export class AttestationMetrics {
         operatorResult ? operatorResult.amount : 0,
       );
     });
-    const other = result.find((a) => a.val_nos_name == 'NULL');
+    const other = result.find((a) => a.val_nos_name == null);
     this.prometheus.otherValidatorsCountInvalidAttestation.set({ reason: BadAttReason.HighIncDelay }, other ? other.amount : 0);
   }
 
@@ -96,7 +96,7 @@ export class AttestationMetrics {
         operatorResult ? operatorResult.amount : 0,
       );
     });
-    const other = result.find((a) => a.val_nos_name == 'NULL');
+    const other = result.find((a) => a.val_nos_name == null);
     this.prometheus.otherValidatorsCountInvalidAttestation.set({ reason: BadAttReason.InvalidHead }, other ? other.amount : 0);
   }
 
@@ -109,7 +109,7 @@ export class AttestationMetrics {
         operatorResult ? operatorResult.amount : 0,
       );
     });
-    const other = result.find((a) => a.val_nos_name == 'NULL');
+    const other = result.find((a) => a.val_nos_name == null);
     this.prometheus.otherValidatorsCountInvalidAttestation.set({ reason: BadAttReason.InvalidTarget }, other ? other.amount : 0);
   }
 
@@ -122,7 +122,7 @@ export class AttestationMetrics {
         operatorResult ? operatorResult.amount : 0,
       );
     });
-    const other = result.find((a) => a.val_nos_name == 'NULL');
+    const other = result.find((a) => a.val_nos_name == null);
     this.prometheus.otherValidatorsCountInvalidAttestation.set({ reason: BadAttReason.InvalidSource }, other ? other.amount : 0);
   }
 

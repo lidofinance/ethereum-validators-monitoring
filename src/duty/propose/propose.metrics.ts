@@ -32,7 +32,7 @@ export class ProposeMetrics {
       const operatorResult = result.find((p) => p.val_nos_name == operator.name);
       this.prometheus.validatorsCountGoodPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
     });
-    const other = result.find((p) => p.val_nos_name == 'NULL');
+    const other = result.find((p) => p.val_nos_name == null);
     this.prometheus.otherValidatorsCountGoodPropose.set(other ? other.amount : 0);
   }
 
@@ -42,7 +42,7 @@ export class ProposeMetrics {
       const operatorResult = result.find((p) => p.val_nos_name == operator.name);
       this.prometheus.validatorsCountMissPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
     });
-    const other = result.find((p) => p.val_nos_name == 'NULL');
+    const other = result.find((p) => p.val_nos_name == null);
     this.prometheus.otherValidatorsCountMissPropose.set(other ? other.amount : 0);
   }
 
