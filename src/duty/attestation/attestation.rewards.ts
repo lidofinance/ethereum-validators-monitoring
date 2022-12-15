@@ -18,7 +18,7 @@ export class AttestationRewards {
   ) {}
 
   public calculate(epoch: bigint) {
-    const epochMeta = this.summary.getMeta(epoch);
+    const epochMeta = this.summary.getMeta();
     const blocksAttestationsRewardSum = new Map<bigint, bigint>();
     // Attestation reward multipliers
     const sourceParticipation = epochMeta.attestation.correct_source / epochMeta.state.active_validators;
@@ -39,35 +39,26 @@ export class AttestationRewards {
       let att_earned_reward = 0n;
       let att_missed_reward = 0n;
       let att_penalty = 0n;
-      const rewardSource = Math.trunc(
-        v.att_meta.reward_per_increment.source * epochMeta.state.base_reward * increments * sourceParticipation,
-      );
-      const rewardTarget = Math.trunc(
-        v.att_meta.reward_per_increment.target * epochMeta.state.base_reward * increments * targetParticipation,
-      );
-      const rewardHead = Math.trunc(v.att_meta.reward_per_increment.head * epochMeta.state.base_reward * increments * headParticipation);
+      const rewardSource = Math.trunc(v.att_meta.reward_per_increment.source * epochMeta.state.base_reward * increments);
+      const rewardTarget = Math.trunc(v.att_meta.reward_per_increment.target * epochMeta.state.base_reward * increments);
+      const rewardHead = Math.trunc(v.att_meta.reward_per_increment.head * epochMeta.state.base_reward * increments);
       const penaltySource = Math.trunc(v.att_meta.penalty_per_increment.source * epochMeta.state.base_reward * increments);
       const penaltyTarget = Math.trunc(v.att_meta.penalty_per_increment.target * epochMeta.state.base_reward * increments);
       const penaltyHead = Math.trunc(v.att_meta.penalty_per_increment.head * epochMeta.state.base_reward * increments);
-      att_earned_reward = BigInt(rewardSource + rewardTarget + rewardHead);
+      att_earned_reward = BigInt(rewardSource * sourceParticipation + rewardTarget * targetParticipation + rewardHead * headParticipation);
       att_missed_reward = perfectAttestationRewards - att_earned_reward;
       att_penalty = BigInt(penaltySource + penaltyTarget + penaltyHead);
 
       if (v.att_happened) {
         // Calculate sum of all attestation rewards in block (without multipliers). It's needed for calculation proposer reward
         let rewards = blocksAttestationsRewardSum.get(v.att_meta.included_in_block) ?? 0n;
-        const clearReward = BigInt(
-          Math.trunc(v.att_meta.reward_per_increment.source * epochMeta.state.base_reward * increments) +
-            Math.trunc(v.att_meta.reward_per_increment.target * epochMeta.state.base_reward * increments) +
-            Math.trunc(v.att_meta.reward_per_increment.head * epochMeta.state.base_reward * increments),
-        );
-        rewards += clearReward;
+        rewards += BigInt(rewardSource + rewardTarget + rewardHead);
         blocksAttestationsRewardSum.set(v.att_meta.included_in_block, rewards);
       }
 
       this.summary.set(v.val_id, { epoch, val_id: v.val_id, att_earned_reward, att_missed_reward, att_penalty });
     }
-    this.summary.setMeta(epoch, { attestation: { blocks_rewards: blocksAttestationsRewardSum } });
+    this.summary.setMeta({ attestation: { blocks_rewards: blocksAttestationsRewardSum } });
     return true;
   }
 }

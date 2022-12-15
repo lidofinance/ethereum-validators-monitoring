@@ -7,12 +7,12 @@ import { pick } from 'stream-json/filters/Pick';
 import { streamArray } from 'stream-json/streamers/StreamArray';
 
 import { ConfigService } from 'common/config';
-import { AttestationCommitteeInfo, BlockInfoResponse, ConsensusProviderService } from 'common/eth-providers';
+import { BlockInfoResponse, ConsensusProviderService } from 'common/eth-providers';
 import { bigintRange } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { SummaryService } from '../summary';
-import { attestationPenalties, attestationRewards, timelyHead, timelySource, timelyTarget } from './attestation.constants';
+import { MISSED_ATTESTATION, attestationPenalties, attestationRewards } from './attestation.constants';
 
 interface SlotAttestation {
   included_in_block: bigint;
@@ -55,27 +55,10 @@ export class AttestationService {
       correctTargetCount: 0,
       correctHeadCount: 0,
     };
-    for (const committee of committees) {
-      await this.checkCommittee(committee, attestations, counters);
-    }
-    this.summary.setMeta(epoch, {
-      attestation: {
-        correct_source: counters.correctSourceCount,
-        correct_target: counters.correctTargetCount,
-        correct_head: counters.correctHeadCount,
-      },
-    });
-  }
-
-  protected async checkCommittee(committee, attestations, counters) {
     for (const attestation of attestations) {
-      if (
-        attestation.slot != committee.slot ||
-        attestation.committee_index != committee.index ||
-        // slot attestation can be only in next blocks
-        attestation.included_in_block <= committee.slot
-      )
-        continue;
+      // Each attestation corresponds to committee. Committee may have several aggregate attestations
+      const committee = committees.get(`${attestation.committee_index}_${attestation.slot}`);
+      if (!committee) continue;
       await this.processAttestation(attestation, committee, counters);
       await new Promise((resolve) => {
         // Long loop (2048 committees will be checked by ~7k attestations).
@@ -86,9 +69,16 @@ export class AttestationService {
         return setImmediate(() => resolve(true));
       });
     }
+    this.summary.setMeta({
+      attestation: {
+        correct_source: counters.correctSourceCount,
+        correct_target: counters.correctTargetCount,
+        correct_head: counters.correctHeadCount,
+      },
+    });
   }
 
-  protected async processAttestation(attestation, committee, counters) {
+  protected async processAttestation(attestation: SlotAttestation, committee: bigint[], counters) {
     const [canonHead, canonTarget, canonSource] = await Promise.all([
       this.getCanonSlotRoot(attestation.slot),
       this.getCanonSlotRoot(attestation.target_epoch * this.slotsInEpoch),
@@ -97,37 +87,35 @@ export class AttestationService {
     const att_valid_head = attestation.head == canonHead;
     const att_valid_target = attestation.target_root == canonTarget;
     const att_valid_source = attestation.source_root == canonSource;
-    const att_inc_delay = Number(attestation.included_in_block - committee.slot);
+    const att_inc_delay = Number(attestation.included_in_block - attestation.slot);
     const reward_per_increment = attestationRewards(att_inc_delay, att_valid_source, att_valid_target, att_valid_head);
     const penalty_per_increment = attestationPenalties(att_inc_delay, att_valid_source, att_valid_target, att_valid_head);
-    const properties = { att_inc_delay, att_valid_head, att_valid_source, att_valid_target };
-    for (const [valCommIndex, validatorIndex] of committee.validators.entries()) {
+    for (const [valCommIndex, validatorIndex] of committee.entries()) {
+      const isProcessed = this.summary.get(validatorIndex)?.att_happened;
+      if (isProcessed) continue; // already processed validator. it was in one of previous attestation
       const att_happened = attestation.bits.get(valCommIndex);
-      const fromSummary = this.summary.get(validatorIndex);
-      if (fromSummary?.att_happened) continue;
-      let summary = {
-        epoch: this.processedEpoch,
-        val_id: validatorIndex,
-        att_happened,
-        att_meta: {
-          included_in_block: undefined,
-          reward_per_increment: attestationRewards(32, false, false, false),
-          penalty_per_increment: attestationPenalties(32, false, false, false),
-        },
-      };
       if (att_happened) {
-        const att_meta = {
-          included_in_block: attestation.included_in_block,
-          reward_per_increment,
-          penalty_per_increment,
-        };
-        summary = { ...summary, ...properties, att_meta };
         // Count for calculate multipliers of rewards
-        if (timelySource(att_inc_delay, att_valid_source)) counters.correctSourceCount++;
-        if (timelyTarget(att_inc_delay, att_valid_target)) counters.correctTargetCount++;
-        if (timelyHead(att_inc_delay, att_valid_head)) counters.correctHeadCount++;
+        if (reward_per_increment.source != 0) counters.correctSourceCount++;
+        if (reward_per_increment.target != 0) counters.correctTargetCount++;
+        if (reward_per_increment.head != 0) counters.correctHeadCount++;
+        this.summary.set(validatorIndex, {
+          val_id: validatorIndex,
+          epoch: this.processedEpoch,
+          att_happened: true,
+          att_inc_delay,
+          att_valid_head,
+          att_valid_source,
+          att_valid_target,
+          att_meta: {
+            included_in_block: attestation.included_in_block,
+            reward_per_increment,
+            penalty_per_increment,
+          },
+        });
+        continue;
       }
-      this.summary.set(validatorIndex, summary);
+      this.summary.set(validatorIndex, { epoch: this.processedEpoch, val_id: validatorIndex, ...MISSED_ATTESTATION });
     }
   }
 
@@ -142,6 +130,7 @@ export class AttestationService {
   @TrackTask('process-chain-attestations')
   protected async getProcessedAttestations() {
     this.logger.log(`Processing attestations from blocks info`);
+    // todo: Should we check orphaned blocks and how? eg. https://beaconcha.in/slot/5306177
     const bitsMap = new Map<string, BitArray>();
     const attestations: SlotAttestation[] = [];
     let allMissedSlots: bigint[] = [];
@@ -185,30 +174,22 @@ export class AttestationService {
   }
 
   @TrackTask('get-attestation-committees')
-  protected async getAttestationCommittees(stateSlot: bigint) {
+  protected async getAttestationCommittees(stateSlot: bigint): Promise<Map<string, bigint[]>> {
     const readStream = await this.clClient.getAttestationCommitteesInfo(stateSlot, this.processedEpoch);
-    const committees = [];
-    const pipeline = chain([
-      readStream,
-      parser(),
-      pick({ filter: 'data' }),
-      streamArray(),
-      (data) => {
-        const committee: AttestationCommitteeInfo = data.value;
-        return {
-          index: Number(committee.index),
-          slot: BigInt(committee.slot),
-          validators: committee.validators.map((v) => BigInt(v)),
-        };
-      },
-    ]);
+    const committees = new Map<string, bigint[]>();
+    const pipeline = chain([readStream, parser(), pick({ filter: 'data' }), streamArray(), (data) => data.value]);
     const streamTask = async () =>
       new Promise((resolve, reject) => {
-        pipeline.on('data', (data) => committees.push(data));
+        pipeline.on('data', (committee) =>
+          committees.set(
+            `${committee.index}_${committee.slot}`,
+            committee.validators.map((v) => BigInt(v)),
+          ),
+        );
         pipeline.on('error', (error) => reject(error));
         pipeline.on('end', () => resolve(true));
       });
-    await streamTask();
+    await streamTask().finally(() => pipeline.destroy());
     return committees;
   }
 }

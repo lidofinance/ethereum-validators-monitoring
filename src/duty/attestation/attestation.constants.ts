@@ -3,6 +3,20 @@ const TIMELY_SOURCE_WEIGHT = 14; // Ws
 const TIMELY_TARGET_WEIGHT = 26; // Wt
 const TIMELY_HEAD_WEIGHT = 14; // Wh
 const WEIGHT_DENOMINATOR = 64; // W sigma
+export const ATT_REWARD_FOR_MISSED = { source: 0, target: 0, head: 0 };
+export const ATT_PENALTY_FOR_MISSED = {
+  source: TIMELY_SOURCE_WEIGHT / WEIGHT_DENOMINATOR,
+  target: TIMELY_TARGET_WEIGHT / WEIGHT_DENOMINATOR,
+  head: 0,
+};
+export const MISSED_ATTESTATION = {
+  att_happened: false,
+  att_meta: {
+    included_in_block: undefined,
+    reward_per_increment: ATT_REWARD_FOR_MISSED,
+    penalty_per_increment: ATT_PENALTY_FOR_MISSED,
+  },
+};
 
 // Rewards
 export const timelySource = (att_inc_delay: number, att_valid_source: boolean): number => {
