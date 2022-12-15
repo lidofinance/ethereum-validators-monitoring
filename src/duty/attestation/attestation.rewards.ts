@@ -45,7 +45,9 @@ export class AttestationRewards {
       const penaltySource = Math.trunc(v.att_meta.penalty_per_increment.source * epochMeta.state.base_reward * increments);
       const penaltyTarget = Math.trunc(v.att_meta.penalty_per_increment.target * epochMeta.state.base_reward * increments);
       const penaltyHead = Math.trunc(v.att_meta.penalty_per_increment.head * epochMeta.state.base_reward * increments);
-      att_earned_reward = BigInt(rewardSource * sourceParticipation + rewardTarget * targetParticipation + rewardHead * headParticipation);
+      att_earned_reward = BigInt(
+        Math.trunc(rewardSource * sourceParticipation + rewardTarget * targetParticipation + rewardHead * headParticipation),
+      );
       att_missed_reward = perfectAttestationRewards - att_earned_reward;
       att_penalty = BigInt(penaltySource + penaltyTarget + penaltyHead);
 
