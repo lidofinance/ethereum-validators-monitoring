@@ -51,7 +51,7 @@ export class ProposeRewards {
       if (v.block_proposed) {
         const attRewardSum = blocksAttestationsRewardSum.get(v.block_to_propose);
         const syncRewardSum = blocksSyncRewardSum.get(v.block_to_propose);
-        if (!attRewardSum || !syncRewardSum) {
+        if (!attRewardSum) {
           this.logger.warn(`Can't calculate reward for block ${v.block_to_propose}. There is no metadata of previous epoch`);
           continue;
         }
