@@ -4,7 +4,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { ConsensusProviderService } from 'common/eth-providers';
+import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
 import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
 import { bigintRange } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
@@ -35,14 +35,20 @@ export class DutyService {
     protected readonly rewards: DutyRewards,
   ) {}
 
-  public async checkAndWrite(epoch: bigint, stateSlot: bigint): Promise<any> {
+  public async checkAndWrite(epoch: bigint, stateSlot: bigint): Promise<string[]> {
     // Prefetch will be done before main checks because duty by state requests are heavy
     // and while we wait for their responses we fetch blocks and headers.
     // If for some reason prefetch task will be slower than duty by state requests,
     // blocks and headers will be fetched inside tasks of checks
-    await Promise.all([this.prefetch(epoch), this.checkAll(epoch, stateSlot)]);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [a, b, possibleHighRewardVals] = await Promise.all([
+      this.prefetch(epoch),
+      this.checkAll(epoch, stateSlot),
+      this.getPossibleHighRewardValidators(),
+    ]);
     await this.writeSummary();
     await this.writeEpochMeta(epoch);
+    return possibleHighRewardVals;
   }
 
   @TrackTask('check-all-duties')
@@ -71,6 +77,19 @@ export class DutyService {
       const chunk = toFetch.splice(0, 32);
       await Promise.all(chunk);
     }
+  }
+
+  @TrackTask('high-reward-validators')
+  public async getPossibleHighRewardValidators(): Promise<string[]> {
+    const actualSlotHeader = <BlockHeaderResponse>await this.clClient.getBlockHeader('head');
+    const headEpoch = BigInt(actualSlotHeader.header.message.slot) / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
+    this.logger.log('Getting possible high reward validator indexes');
+    const propDependentRoot = await this.clClient.getDutyDependentRoot(headEpoch);
+    const [sync, prop] = await Promise.all([
+      this.clClient.getSyncCommitteeInfo('finalized', headEpoch),
+      this.clClient.getCanonicalProposerDuties(headEpoch, propDependentRoot),
+    ]);
+    return [...new Set([...prop.map((v) => v.validator_index), ...sync.validators])];
   }
 
   protected async writeSummary(): Promise<any> {
