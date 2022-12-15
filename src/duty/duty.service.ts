@@ -1,3 +1,5 @@
+import { Readable } from 'stream';
+
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
@@ -80,7 +82,7 @@ export class DutyService {
 
   protected async writeEpochMeta(epoch: bigint): Promise<any> {
     this.logger.log('Writing epoch metadata into DB');
-    await this.storage.writeEpochMeta(epoch, this.summary.getMeta(epoch));
+    await this.storage.writeEpochMeta(epoch, this.summary.getMeta());
     this.summary.clearMeta();
   }
 
