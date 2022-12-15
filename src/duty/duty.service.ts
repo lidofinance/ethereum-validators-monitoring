@@ -73,7 +73,8 @@ export class DutyService {
 
   protected async writeSummary(): Promise<any> {
     this.logger.log('Writing summary of duties into DB');
-    await this.storage.writeSummary(this.summary.values());
+    const stream = new Readable({ objectMode: true });
+    await Promise.all([this.storage.writeSummary(stream), this.streamSummary(stream)]);
     this.summary.clear();
   }
 
@@ -81,5 +82,15 @@ export class DutyService {
     this.logger.log('Writing epoch metadata into DB');
     await this.storage.writeEpochMeta(epoch, this.summary.getMeta(epoch));
     this.summary.clearMeta();
+  }
+
+  protected async streamSummary(stream: Readable) {
+    const summary = this.summary.values();
+    let next = summary.next();
+    while (!next.done) {
+      stream.push({ ...next.value, att_meta: undefined, sync_meta: undefined });
+      next = summary.next();
+    }
+    stream.push(null);
   }
 }
