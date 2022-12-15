@@ -68,7 +68,7 @@ export class DutyService {
     const slots: bigint[] = bigintRange(firstSlotInEpoch, firstSlotInEpoch + slotsInEpoch * 2n);
     const toFetch = slots.map((s) => [this.clClient.getBlockHeader(s), this.clClient.getBlockInfo(s)]).flat();
     while (toFetch.length > 0) {
-      const chunk = toFetch.splice(0, 64);
+      const chunk = toFetch.splice(0, 32);
       await Promise.all(chunk);
     }
   }
