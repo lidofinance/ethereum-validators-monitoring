@@ -1,4 +1,4 @@
-import { Duplex } from 'stream';
+import { Duplex, Readable } from 'stream';
 
 import { ClickHouseClient, createClient } from '@clickhouse/client';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
@@ -7,7 +7,7 @@ import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from 'common/config';
 import { retrier } from 'common/functions/retrier';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-import { EpochMeta, ValidatorDutySummary } from 'duty/summary';
+import { EpochMeta } from 'duty/summary';
 
 import {
   chainSyncParticipationAvgPercentQuery,
@@ -104,23 +104,24 @@ export class ClickhouseService implements OnModuleInit {
 
   @TrackTask('write-indexes')
   public async writeIndexes(pipeline: Duplex): Promise<void> {
-    await this.db.insert({
-      table: 'validators_index',
-      values: pipeline,
-      format: 'JSONEachRow',
-    });
+    await this.db
+      .insert({
+        table: 'validators_index',
+        values: pipeline,
+        format: 'JSONEachRow',
+      })
+      .finally(() => pipeline.destroy());
   }
 
   @TrackTask('write-summary')
-  public async writeSummary(summary: ValidatorDutySummary[]): Promise<void> {
-    while (summary.length > 0) {
-      const chunk = summary.splice(0, this.chunkSize);
-      await this.db.insert({
+  public async writeSummary(stream: Readable): Promise<void> {
+    await this.db
+      .insert({
         table: 'validators_summary',
-        values: chunk.map((s) => ({ ...s, att_meta: undefined, sync_meta: undefined })),
+        values: stream,
         format: 'JSONEachRow',
-      });
-    }
+      })
+      .finally(() => stream.destroy());
   }
 
   @TrackTask('write-epoch-meta')
