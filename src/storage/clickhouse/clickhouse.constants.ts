@@ -33,7 +33,7 @@ export const operatorBalanceQuery = (epoch: bigint): string => `
         sum(val_balance) as amount
     FROM
         validators_summary
-    WHERE epoch = ${epoch} AND val_nos_id IS NOT NULL
+    WHERE epoch = ${epoch} AND val_nos_id IS NOT NULL and val_status != '${ValStatus.PendingQueued}'
     GROUP by val_nos_name
 `;
 
