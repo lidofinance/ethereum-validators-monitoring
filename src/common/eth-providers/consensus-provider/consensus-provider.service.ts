@@ -359,6 +359,8 @@ export class ConsensusProviderService {
   }
 
   protected async retryRequest<T>(callback: (apiURL: string) => any, options?: RequestRetryOptions): Promise<T> {
+    // todo: there are some problems with request timeout if host is unreachable.
+    //  sometimes they cannot be caught, so they freeze requests and don't switch to fallback
     options = {
       maxRetries: options?.maxRetries ?? this.config.get('CL_API_MAX_RETRIES'),
       dataOnly: options?.dataOnly ?? true,

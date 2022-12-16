@@ -10,9 +10,13 @@ import { PrometheusService, TrackTask } from 'common/prometheus';
 import { EpochMeta } from 'duty/summary';
 
 import {
+  avgValidatorBalanceDelta,
+  calculatedBalanceDelta,
   chainSyncParticipationAvgPercentQuery,
   epochMetadata,
   operatorBalance24hDifferenceQuery,
+  operatorBalanceDeltaQuery,
+  operatorBalanceQuery,
   operatorsSyncParticipationAvgPercentsQuery,
   otherSyncParticipationAvgPercentQuery,
   otherValidatorsSummaryStatsQuery,
@@ -22,7 +26,6 @@ import {
   userNodeOperatorsStatsQuery,
   userSyncParticipationAvgPercentQuery,
   userValidatorsSummaryStatsQuery,
-  validatorBalancesDeltaQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
   validatorCountHighAvgIncDelayAttestationOfNEpochQuery,
   validatorQuantile0001BalanceDeltasQuery,
@@ -154,10 +157,31 @@ export class ClickhouseService implements OnModuleInit {
     await this.db.exec({ query: migration_000003_epoch_meta });
   }
 
-  public async getValidatorBalancesDelta(epoch: bigint): Promise<NOsDelta[]> {
-    return (await this.select<NOsDelta[]>(validatorBalancesDeltaQuery(epoch))).map((v) => ({
+  public async getAvgValidatorBalanceDelta(epoch: bigint): Promise<NOsDelta[]> {
+    return (await this.select<NOsDelta[]>(avgValidatorBalanceDelta(epoch))).map((v) => ({
       ...v,
       delta: Number(v.delta),
+    }));
+  }
+
+  public async getOperatorBalanceQuery(epoch: bigint): Promise<{ val_nos_name; amount }[]> {
+    return (await this.select<{ val_nos_name; amount }[]>(operatorBalanceQuery(epoch))).map((v) => ({
+      ...v,
+      amount: Number(v.amount),
+    }));
+  }
+
+  public async getOperatorRealBalanceDeltaQuery(epoch: bigint): Promise<{ val_nos_name; amount }[]> {
+    return (await this.select<{ val_nos_name; amount }[]>(operatorBalanceDeltaQuery(epoch))).map((v) => ({
+      ...v,
+      amount: Number(v.amount),
+    }));
+  }
+
+  public async getOperatorCalculatedBalanceDeltaQuery(epoch: bigint): Promise<{ val_nos_name; amount }[]> {
+    return (await this.select<{ val_nos_name; balance_change }[]>(calculatedBalanceDelta(epoch))).map((v) => ({
+      ...v,
+      amount: Number(v.balance_change),
     }));
   }
 
