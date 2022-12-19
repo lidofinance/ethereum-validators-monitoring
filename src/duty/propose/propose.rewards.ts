@@ -27,6 +27,12 @@ export class ProposeRewards {
     // because there is no metadata of the previous epoch
     const blocksAttestationsRewardSum = new Map<bigint, bigint>();
     const prevEpoch = (await this.storage.getEpochMetadata(epoch - 1n))?.attestation?.blocks_rewards ?? new Map();
+    if (prevEpoch.size == 0) {
+      this.logger.warn(
+        "Proposal reward will not be calculated accurately because previous epoch's metadata does not exist. " +
+          "Probably, it's the first run of application",
+      );
+    }
     const currEpoch = this.summary.getMeta().attestation.blocks_rewards;
     for (const block of new Map([...prevEpoch.entries(), ...currEpoch.entries()]).keys()) {
       let merged = 0n;
@@ -35,8 +41,8 @@ export class ProposeRewards {
       merged += prev + curr;
       blocksAttestationsRewardSum.set(block, merged);
     }
-    //
     const blocksSyncRewardSum = this.summary.getMeta().sync.blocks_rewards;
+
     blocksAttestationsRewardSum.forEach((rewards) => (attestationsSumOfSum += rewards));
     const attestationsAvg = attestationsSumOfSum / BigInt(blocksAttestationsRewardSum.size);
 
@@ -55,7 +61,8 @@ export class ProposeRewards {
           this.logger.warn(`Can't calculate reward for block ${v.block_to_propose}. There is no metadata of previous epoch`);
           continue;
         }
-        // Accuracy ~200 GWei
+        // todo: there is a diff in the calculation of sync committee rewards summ (about ~3000 GWei)
+        //  and it has a little impact on reward for proposal
         propose_earned_reward = proposerReward(attRewardSum, syncRewardSum);
       } else {
         propose_missed_reward = proposerReward(attestationsAvg, syncAvg);
