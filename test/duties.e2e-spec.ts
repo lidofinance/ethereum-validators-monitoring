@@ -18,7 +18,6 @@ import { ClickhouseService } from 'storage';
 
 import { ValStatus } from '../src/common/eth-providers';
 import { DutyModule, DutyService } from '../src/duty';
-import { ValidatorDutySummary } from '../src/duty/summary';
 
 const MikroORMMockProvider = {
   provide: MikroORM,
@@ -121,8 +120,8 @@ describe('Duties', () => {
   let clickhouseService: ClickhouseService;
 
   let epochNumber, stateSlot;
-  let indexesToSave: string[];
-  let summaryToSave: ValidatorDutySummary[];
+  const indexesToSave = [];
+  const summaryToSave = [];
 
   process.env['DB_HOST'] = 'http://localhost'; // stub to avoid lib validator
   const getActualKeysIndexedMock = jest.fn().mockImplementation(async () => {
@@ -138,8 +137,24 @@ describe('Duties', () => {
     return map;
   });
   jest.spyOn(SimpleFallbackJsonRpcBatchProvider.prototype, 'detectNetwork').mockImplementation(async () => getNetwork('mainnet'));
-  const writeIndexesSpy = jest.spyOn(ClickhouseService.prototype, 'writeIndexes');
-  jest.spyOn(ClickhouseService.prototype, 'writeSummary');
+  jest.spyOn(ClickhouseService.prototype, 'writeIndexes').mockImplementation(
+    async (pipeline): Promise<void> =>
+      await new Promise((resolve, reject) => {
+        pipeline.on('data', (data) => indexesToSave.push(data));
+        pipeline.on('error', (e) => reject(e));
+        pipeline.on('end', () => resolve());
+      }),
+  );
+  jest.spyOn(ClickhouseService.prototype, 'writeSummary').mockImplementation(
+    async (pipeline): Promise<void> =>
+      await new Promise((resolve, reject) => {
+        pipeline.on('data', (data) => summaryToSave.push(data));
+        pipeline.on('error', (e) => reject(e));
+        pipeline.on('end', () => resolve());
+      }),
+  );
+  // const writeIndexesSpy = jest.spyOn(ClickhouseService.prototype, 'writeIndexes');
+  // jest.spyOn(ClickhouseService.prototype, 'writeSummary');
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -180,9 +195,9 @@ describe('Duties', () => {
     epochNumber = BigInt(process.env['TEST_EPOCH_NUMBER']);
 
     await Promise.all([dutyService['prefetch'](epochNumber), dutyService['checkAll'](epochNumber, stateSlot)]);
-    summaryToSave = dutyService['summary'].values();
-    indexesToSave = writeIndexesSpy.mock.calls[0][0].map((i) => i.index);
-    await dutyService['write']();
+    // summaryToSave = [...dutyService['summary'].values()];
+    // indexesToSave = writeIndexesSpy.mock.calls[0][0].map((i) => i.index);
+    await dutyService['writeSummary']();
   });
 
   describe('should be processes validators info', () => {
