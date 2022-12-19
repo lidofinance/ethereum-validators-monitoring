@@ -22,6 +22,7 @@ export class SyncRewards {
     let sync_missed_reward = 0n;
     let sync_penalty = 0n;
     const perBlockSyncReward = syncReward(epochMeta.state.active_validators_total_increments, epochMeta.state.base_reward);
+    const perSyncProposerReward = Math.trunc((Number(perBlockSyncReward) * 8) / 56);
     const perfectSync = perBlockSyncReward * BigInt(epochMeta.sync.blocks_to_sync.length);
     const blocksSyncRewardSum = new Map<bigint, bigint>();
     // block can be with zero synchronization
@@ -29,7 +30,7 @@ export class SyncRewards {
     for (const v of this.summary.values()) {
       if (!v.is_sync) continue;
       for (const block of v.sync_meta.synced_blocks) {
-        blocksSyncRewardSum.set(block, blocksSyncRewardSum.get(block) + perBlockSyncReward);
+        blocksSyncRewardSum.set(block, blocksSyncRewardSum.get(block) + BigInt(perSyncProposerReward));
       }
 
       sync_earned_reward = perBlockSyncReward * BigInt(v.sync_meta.synced_blocks.length);
