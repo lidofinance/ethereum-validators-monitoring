@@ -2570,7 +2570,7 @@
               "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name!='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
-              "legendFormat": "Rest of User",
+              "legendFormat": "Rest of User's",
               "refId": "B"
             },
             {
