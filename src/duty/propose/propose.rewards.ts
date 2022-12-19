@@ -3,10 +3,10 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { PrometheusService } from 'common/prometheus';
+import { ClickhouseService } from 'storage';
 
-import { ClickhouseService } from '../../storage';
 import { SummaryService } from '../summary';
-import { proposerReward } from './propose.constants';
+import { proposerAttPartReward } from './propose.constants';
 
 @Injectable()
 export class ProposeRewards {
@@ -61,11 +61,9 @@ export class ProposeRewards {
           this.logger.warn(`Can't calculate reward for block ${v.block_to_propose}. There is no metadata of previous epoch`);
           continue;
         }
-        // todo: there is a diff in the calculation of sync committee rewards summ (about ~3000 GWei)
-        //  and it has a little impact on reward for proposal
-        propose_earned_reward = proposerReward(attRewardSum, syncRewardSum);
+        propose_earned_reward = proposerAttPartReward(attRewardSum) + syncRewardSum;
       } else {
-        propose_missed_reward = proposerReward(attestationsAvg, syncAvg);
+        propose_missed_reward = proposerAttPartReward(attestationsAvg) + syncAvg;
       }
       this.summary.set(v.val_id, {
         epoch,
