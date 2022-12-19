@@ -24,7 +24,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1668942230709,
+  "id": 14,
+  "iteration": 1671106440275,
   "links": [
     {
       "asDropdown": false,
@@ -117,7 +118,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -183,7 +184,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -264,7 +265,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -328,7 +329,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -399,7 +400,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -461,7 +462,7 @@
         "text": {},
         "textMode": "name"
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -932,7 +933,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -1053,7 +1054,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -1186,7 +1187,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -1287,7 +1288,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -1399,7 +1400,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -1512,7 +1513,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -1557,8 +1558,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               }
             ]
           }
@@ -2448,8 +2448,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "red",
@@ -2555,13 +2554,11 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
-              "editorMode": "code",
               "exemplar": true,
               "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "Rest of chain",
-              "range": true,
               "refId": "A"
             },
             {
@@ -2569,13 +2566,11 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
-              "editorMode": "code",
               "exemplar": true,
               "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name!='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
-              "legendFormat": "Rest of user's",
-              "range": true,
+              "legendFormat": "Rest of User",
               "refId": "B"
             },
             {
@@ -2651,8 +2646,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2792,8 +2786,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3016,14 +3009,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_name = 'Figment' AND epoch = 164441\n    ORDER BY val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of MISSED attestations (${epochs_range} epochs range)",
+          "title": "Validators with MISSED attestation",
           "type": "table"
         },
         {
@@ -3090,8 +3083,8 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "displayMode": "hidden",
-              "placement": "right",
+              "displayMode": "list",
+              "placement": "bottom",
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -3122,7 +3115,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "inc. delay > 2",
+          "description": "inc. delay > 1",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -3260,14 +3253,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = 'Figment' AND epoch = 164441\n    ORDER BY val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with high INC. DELAY (${epochs_range} epochs range)",
+          "title": "Validators with high INC. DELAY attestation",
           "type": "table"
         },
         {
@@ -3334,8 +3327,8 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "displayMode": "hidden",
-              "placement": "right",
+              "displayMode": "list",
+              "placement": "bottom",
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -3516,14 +3509,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = 'Figment' AND epoch = 164441\n    ORDER BY val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with invalid HEAD (${epochs_range} epochs range)",
+          "title": "Validators with invalid HEAD",
           "type": "table"
         },
         {
@@ -3590,8 +3583,8 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "displayMode": "hidden",
-              "placement": "right",
+              "displayMode": "list",
+              "placement": "bottom",
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -3760,14 +3753,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = 'Figment' AND epoch = 164400\n    ORDER BY val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with invalid TARGET (${epochs_range} epochs range)",
+          "title": "Validators with invalid TARGET",
           "type": "table"
         },
         {
@@ -3834,8 +3827,8 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "displayMode": "hidden",
-              "placement": "right",
+              "displayMode": "list",
+              "placement": "bottom",
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -4004,14 +3997,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = 'Figment' AND epoch = 164400\n    ORDER BY val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with invalid SOURCE (${epochs_range} epochs range)",
+          "title": "Validator with invalid SOURCE",
           "type": "table"
         },
         {
@@ -4078,8 +4071,8 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "displayMode": "hidden",
-              "placement": "right",
+              "displayMode": "list",
+              "placement": "bottom",
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -4119,8 +4112,8 @@
       {
         "current": {
           "selected": false,
-          "text": "EU Nordic & East",
-          "value": "EU Nordic & East"
+          "text": "Allnodes",
+          "value": "Allnodes"
         },
         "datasource": {
           "type": "prometheus",
@@ -4147,8 +4140,8 @@
       {
         "current": {
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": "167399",
+          "value": "167399"
         },
         "datasource": {
           "type": "prometheus",
@@ -4175,8 +4168,8 @@
       {
         "current": {
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": "10",
+          "value": "10"
         },
         "datasource": {
           "type": "prometheus",
@@ -4275,8 +4268,8 @@
       {
         "current": {
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": "96.038818359375",
+          "value": "96.038818359375"
         },
         "datasource": {
           "type": "prometheus",
@@ -4303,8 +4296,8 @@
       {
         "current": {
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": "10",
+          "value": "10"
         },
         "datasource": {
           "type": "prometheus",
@@ -4340,6 +4333,6 @@
   "timezone": "",
   "title": "NodeOperators",
   "uid": "3wimU2H7h",
-  "version": 10,
+  "version": 2,
   "weekStart": ""
 }
