@@ -79,7 +79,7 @@ const testSyncMember = {
     att_valid_target: true,
     att_valid_source: true,
     // rewards
-    att_earned_reward: 14272n,
+    att_earned_reward: 14270n,
     att_missed_reward: 0n,
     att_penalty: 0n,
     val_effective_balance: 32000000000n,
@@ -117,7 +117,7 @@ const testProposerMember = {
     att_valid_target: true,
     att_valid_source: true,
     // rewards
-    att_earned_reward: 14272n,
+    att_earned_reward: 14270n,
     att_missed_reward: 0n,
     att_penalty: 0n,
     val_effective_balance: 32000000000n,

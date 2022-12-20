@@ -136,9 +136,6 @@ export class ClickhouseService implements OnModuleInit {
           active_validators_total_increments: meta.state.active_validators_total_increments,
           base_reward: meta.state.base_reward,
           att_blocks_rewards: Array.from(meta.attestation.blocks_rewards),
-          att_correct_source: meta.attestation.correct_source,
-          att_correct_target: meta.attestation.correct_target,
-          att_correct_head: meta.attestation.correct_head,
           sync_blocks_rewards: Array.from(meta.sync.blocks_rewards),
           sync_blocks_to_sync: meta.sync.blocks_to_sync,
         },
@@ -516,9 +513,6 @@ export class ClickhouseService implements OnModuleInit {
       };
       metadata['attestation'] = {
         blocks_rewards: new Map(ret['att_blocks_rewards'].map(([b, r]) => [BigInt(b), BigInt(r)])),
-        correct_source: Number(ret['att_correct_source']),
-        correct_target: Number(ret['att_correct_target']),
-        correct_head: Number(ret['att_correct_head']),
       };
       metadata['sync'] = {
         blocks_rewards: new Map(ret['sync_blocks_rewards'].map(([b, r]) => [BigInt(b), BigInt(r)])),

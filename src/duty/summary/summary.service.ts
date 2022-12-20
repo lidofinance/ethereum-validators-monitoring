@@ -67,9 +67,6 @@ export interface EpochMeta {
   };
   attestation?: {
     blocks_rewards?: Map<BlockNumber, bigint>;
-    correct_source?: number;
-    correct_target?: number;
-    correct_head?: number;
   };
   sync?: {
     blocks_rewards?: Map<BlockNumber, bigint>;

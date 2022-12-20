@@ -50,16 +50,11 @@ export class AttestationService {
     this.logger.log(`Getting attestation duties info`);
     const committees = await this.getAttestationCommittees(stateSlot);
     this.logger.log(`Processing attestation duty info`);
-    const counters = {
-      correctSourceCount: 0,
-      correctTargetCount: 0,
-      correctHeadCount: 0,
-    };
     for (const attestation of attestations) {
       // Each attestation corresponds to committee. Committee may have several aggregate attestations
       const committee = committees.get(`${attestation.committee_index}_${attestation.slot}`);
       if (!committee) continue;
-      await this.processAttestation(attestation, committee, counters);
+      await this.processAttestation(attestation, committee);
       await new Promise((resolve) => {
         // Long loop (2048 committees will be checked by ~7k attestations).
         // We need to unblock event loop immediately after each iteration
@@ -69,16 +64,9 @@ export class AttestationService {
         return setImmediate(() => resolve(true));
       });
     }
-    this.summary.setMeta({
-      attestation: {
-        correct_source: counters.correctSourceCount,
-        correct_target: counters.correctTargetCount,
-        correct_head: counters.correctHeadCount,
-      },
-    });
   }
 
-  protected async processAttestation(attestation: SlotAttestation, committee: bigint[], counters) {
+  protected async processAttestation(attestation: SlotAttestation, committee: bigint[]) {
     const [canonHead, canonTarget, canonSource] = await Promise.all([
       this.getCanonSlotRoot(attestation.slot),
       this.getCanonSlotRoot(attestation.target_epoch * this.slotsInEpoch),
@@ -98,10 +86,6 @@ export class AttestationService {
         this.summary.set(validatorIndex, { epoch: this.processedEpoch, val_id: validatorIndex, ...MISSED_ATTESTATION });
         continue;
       }
-      // Count for calculate multipliers of rewards
-      if (reward_per_increment.source != 0) counters.correctSourceCount++;
-      if (reward_per_increment.target != 0) counters.correctTargetCount++;
-      if (reward_per_increment.head != 0) counters.correctHeadCount++;
       this.summary.set(validatorIndex, {
         val_id: validatorIndex,
         epoch: this.processedEpoch,
