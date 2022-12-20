@@ -32,7 +32,10 @@ export class StateMetrics {
       this.nosStats(),
       this.userValidatorsStats(),
       this.otherValidatorsStats(),
-      this.deltas(),
+      this.avgDeltas(),
+      this.operatorsBalance(),
+      this.operatorsRealDelta(),
+      this.operatorsCalculatedDelta(),
       this.minDeltas(),
       this.negativeValidatorsCount(),
       this.totalBalance24hDifference(),
@@ -120,10 +123,31 @@ export class StateMetrics {
     );
   }
 
-  private async deltas() {
-    const result = await this.storage.getValidatorBalancesDelta(this.processedEpoch);
+  private async avgDeltas() {
+    const result = await this.storage.getAvgValidatorBalanceDelta(this.processedEpoch);
     for (const delta of result) {
-      this.prometheus.validatorBalanceDelta.set({ nos_name: delta.val_nos_name }, delta.delta);
+      this.prometheus.avgValidatorBalanceDelta.set({ nos_name: delta.val_nos_name }, delta.delta);
+    }
+  }
+
+  private async operatorsBalance() {
+    const result = await this.storage.getOperatorBalanceQuery(this.processedEpoch);
+    for (const r of result) {
+      this.prometheus.operatorBalance.set({ nos_name: r.val_nos_name }, r.amount);
+    }
+  }
+
+  private async operatorsRealDelta() {
+    const result = await this.storage.getOperatorRealBalanceDeltaQuery(this.processedEpoch);
+    for (const r of result) {
+      this.prometheus.operatorRealBalanceDelta.set({ nos_name: r.val_nos_name }, r.amount);
+    }
+  }
+
+  private async operatorsCalculatedDelta() {
+    const result = await this.storage.getOperatorCalculatedBalanceDeltaQuery(this.processedEpoch);
+    for (const r of result) {
+      this.prometheus.operatorCalculatedBalanceDelta.set({ nos_name: r.val_nos_name }, r.amount);
     }
   }
 

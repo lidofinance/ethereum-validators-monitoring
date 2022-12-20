@@ -45,10 +45,7 @@ export class InspectorService implements OnModuleInit {
         const nextFinalized = await this.waitForNextFinalizedSlot();
         if (nextFinalized) {
           const { epoch, stateSlot } = nextFinalized;
-          const [possibleHighRewardValidators] = await Promise.all([
-            this.dutyMetrics.getPossibleHighRewardValidators(),
-            this.dutyService.checkAndWrite(epoch, stateSlot),
-          ]);
+          const possibleHighRewardValidators = await this.dutyService.checkAndWrite(epoch, stateSlot);
           await this.dutyMetrics.calculate(epoch, possibleHighRewardValidators);
           await this.criticalAlerts.send(epoch);
           this.latestProcessedEpoch = epoch;

@@ -1,6 +1,6 @@
 import { ValStatus } from 'common/eth-providers';
 
-export const validatorBalancesDeltaQuery = (epoch: bigint): string => `
+export const avgValidatorBalanceDelta = (epoch: bigint): string => `
   SELECT
     val_nos_name,
     avg(current.val_balance - previous.val_balance) AS delta
@@ -26,6 +26,44 @@ export const validatorBalancesDeltaQuery = (epoch: bigint): string => `
     previous.val_id = current.val_id
   GROUP BY val_nos_name
   ORDER BY delta DESC
+`;
+
+export const operatorBalanceQuery = (epoch: bigint): string => `
+    SELECT
+        val_nos_name,
+        sum(val_balance) as amount
+    FROM
+        validators_summary
+    WHERE epoch = ${epoch} AND val_nos_id IS NOT NULL and val_status != '${ValStatus.PendingQueued}'
+    GROUP by val_nos_name
+`;
+
+export const operatorBalanceDeltaQuery = (epoch: bigint): string => `
+  SELECT
+    val_nos_name,
+    sum(current.val_balance - previous.val_balance) AS amount
+  FROM
+    (
+      SELECT val_balance, val_id, val_nos_name
+      FROM validators_summary
+      WHERE
+        val_status != '${ValStatus.PendingQueued}' AND
+        val_nos_id IS NOT NULL AND
+        epoch = ${epoch}
+    ) AS current
+  INNER JOIN
+    (
+      SELECT val_balance, val_id, val_nos_name
+      FROM validators_summary
+      WHERE
+        val_status != '${ValStatus.PendingQueued}' AND
+        val_nos_id IS NOT NULL AND
+        epoch = (${epoch} - 1)
+    ) AS previous
+  ON
+    previous.val_id = current.val_id
+  GROUP BY val_nos_name
+  ORDER BY amount DESC
 `;
 
 export const validatorQuantile0001BalanceDeltasQuery = (epoch: bigint): string => `
@@ -372,4 +410,105 @@ export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: bigint, epo
     GROUP BY val_nos_name, block_proposed
   )
   GROUP by val_nos_name
+`;
+
+export const epochMetadata = (epoch: bigint): string => `
+  SELECT *
+  FROM epochs_metadata
+  WHERE epoch = ${epoch}
+`;
+
+export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: bigint): string => `
+  SELECT
+    att.val_nos_name as val_nos_name,
+    attestation_reward,
+    ifNull(prop_reward, 0) as prop_reward,
+    ifNull(sync_reward, 0) as sync_reward,
+    attestation_missed,
+    ifNull(prop_missed, 0) as prop_missed,
+    ifNull(sync_missed, 0) as sync_missed,
+    attestation_penalty,
+    ifNull(prop_penalty, 0) as prop_penalty,
+    ifNull(sync_penalty, 0) as sync_penalty
+  FROM
+  (
+    select
+      val_nos_name,
+      sum(att_earned_reward) as attestation_reward,
+      sum(att_missed_reward) as attestation_missed,
+      sum(att_penalty) as attestation_penalty
+    from validators_summary
+    where val_nos_name is not NULL and epoch = ${epoch} - 2
+    group by val_nos_name
+  ) as att
+  LEFT JOIN
+	  (
+		select
+			val_nos_name,
+			sum(propose_earned_reward) as prop_reward,
+			sum(propose_missed_reward) as prop_missed,
+			sum(propose_penalty) as prop_penalty
+		from validators_summary
+		where val_nos_name is not NULL and epoch = ${epoch} and is_proposer = 1
+		group by val_nos_name
+	  ) as prop
+  ON
+    att.val_nos_name = prop.val_nos_name
+  LEFT JOIN    (
+	select
+		val_nos_name,
+		sum(sync_earned_reward) as sync_reward,
+		sum(sync_missed_reward) as sync_missed,
+		sum(sync_penalty) as sync_penalty
+	from validators_summary
+	where val_nos_name is not NULL and epoch = ${epoch} and is_sync = 1
+	group by val_nos_name
+  ) as sync
+  ON
+    att.val_nos_name = sync.val_nos_name
+`;
+
+export const calculatedBalanceDelta = (epoch: bigint): string => `
+  SELECT
+    att.val_nos_name as val_nos_name,
+    att_reward + ifNull(prop_reward, 0) + ifNull(sync_reward, 0) as reward,
+    att_missed + ifNull(prop_missed, 0) + ifNull(sync_missed, 0) as missed,
+    att_penalty + ifNull(prop_penalty, 0) + ifNull(sync_penalty, 0) as penalty,
+    reward - penalty as balance_change
+  FROM
+  (
+    select
+      val_nos_name,
+      sum(att_earned_reward) as att_reward,
+      sum(att_missed_reward) as att_missed,
+      sum(att_penalty) as att_penalty
+    from validators_summary
+    where val_nos_name is not NULL and epoch = ${epoch} - 2
+    group by val_nos_name
+  ) as att
+  LEFT JOIN
+	  (
+		select
+			val_nos_name,
+			sum(propose_earned_reward) as prop_reward,
+			sum(propose_missed_reward) as prop_missed,
+			sum(propose_penalty) as prop_penalty
+		from validators_summary
+		where val_nos_name is not NULL and epoch = ${epoch} and is_proposer = 1
+		group by val_nos_name
+	  ) as prop
+  ON
+    att.val_nos_name = prop.val_nos_name
+  LEFT JOIN    (
+	select
+		val_nos_name,
+		sum(sync_earned_reward) as sync_reward,
+		sum(sync_missed_reward) as sync_missed,
+		sum(sync_penalty) as sync_penalty
+	from validators_summary
+	where val_nos_name is not NULL and epoch = ${epoch} and is_sync = 1
+	group by val_nos_name
+  ) as sync
+  ON
+    att.val_nos_name = sync.val_nos_name
 `;

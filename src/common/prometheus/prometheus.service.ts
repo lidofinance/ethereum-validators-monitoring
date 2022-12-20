@@ -17,7 +17,13 @@ import {
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
+  METRIC_OPERATOR_BALANCE,
   METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
+  METRIC_OPERATOR_CALCULATED_BALANCE_DELTA,
+  METRIC_OPERATOR_MISSED_REWARD,
+  METRIC_OPERATOR_PENALTY,
+  METRIC_OPERATOR_REAL_BALANCE_DELTA,
+  METRIC_OPERATOR_REWARD,
   METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_OTHER_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_OTHER_VALIDATOR_COUNT_GOOD_PROPOSE,
@@ -202,15 +208,33 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_name', 'status'],
   });
 
-  public validatorBalanceDelta = this.getOrCreateMetric('Gauge', {
+  public avgValidatorBalanceDelta = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_BALANCES_DELTA,
-    help: 'validator balances delta',
+    help: 'average validator balances delta (6 epochs delta)',
+    labelNames: ['nos_name'],
+  });
+
+  public operatorBalance = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_BALANCE,
+    help: 'operator balance (according to state)',
+    labelNames: ['nos_name'],
+  });
+
+  public operatorRealBalanceDelta = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_REAL_BALANCE_DELTA,
+    help: 'operator real balance delta (according to state)',
+    labelNames: ['nos_name'],
+  });
+
+  public operatorCalculatedBalanceDelta = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_CALCULATED_BALANCE_DELTA,
+    help: 'operator calculated balance delta (according to calculated rewards and penalties)',
     labelNames: ['nos_name'],
   });
 
   public validatorQuantile001BalanceDelta = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_QUANTILE_001_BALANCES_DELTA,
-    help: 'validator 0.1% quantile balances delta',
+    help: 'validator 0.1% quantile balances delta (6 epochs delta)',
     labelNames: ['nos_name'],
   });
 
@@ -398,6 +422,24 @@ export class PrometheusService implements OnApplicationBootstrap {
     name: METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
     help: 'Operator balance difference (24 hours)',
     labelNames: ['nos_name'],
+  });
+
+  public operatorReward = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_REWARD,
+    help: 'rewards for each duty for each operator',
+    labelNames: ['nos_name', 'duty'],
+  });
+
+  public operatorMissedReward = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_MISSED_REWARD,
+    help: 'missed rewards for each duty for each operator',
+    labelNames: ['nos_name', 'duty'],
+  });
+
+  public operatorPenalty = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_PENALTY,
+    help: 'operator penalty for each duty',
+    labelNames: ['nos_name', 'duty'],
   });
 
   public contractKeysTotal = this.getOrCreateMetric('Gauge', {

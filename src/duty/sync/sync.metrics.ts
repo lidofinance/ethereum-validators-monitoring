@@ -74,7 +74,7 @@ export class SyncMetrics {
       const operatorResult = result.find((p) => p.val_nos_name == operator.name);
       this.prometheus.validatorsCountWithGoodSyncParticipation.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
     });
-    const other = result.find((p) => p.val_nos_name == 'NULL');
+    const other = result.find((p) => p.val_nos_name == null);
     this.prometheus.otherValidatorsCountWithGoodSyncParticipation.set(other ? other.amount : 0);
   }
 
@@ -87,7 +87,7 @@ export class SyncMetrics {
         operatorResult ? operatorResult.amount : 0,
       );
     });
-    const other = result.find((p) => p.val_nos_name == 'NULL');
+    const other = result.find((p) => p.val_nos_name == null);
     this.prometheus.otherValidatorsCountWithSyncParticipationLessAvg.set(other ? other.amount : 0);
   }
 

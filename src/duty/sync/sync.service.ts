@@ -8,8 +8,7 @@ import { StateId } from 'common/eth-providers/consensus-provider/types';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { SummaryService } from '../summary';
-
-const SYNC_COMMITTEE_SIZE = 512;
+import { SYNC_COMMITTEE_SIZE } from './sync.constants';
 
 @Injectable()
 export class SyncService {
@@ -35,23 +34,32 @@ export class SyncService {
       blockInfo ? epochBlocks.push(blockInfo) : missedSlots.push(slot);
     }
     this.logger.debug(`All missed slots in getting sync committee info process: ${missedSlots}`);
-    const epochBlocksBits = epochBlocks.map((block) =>
-      SyncCommitteeBits.deserialize(fromHexString(block.message.body.sync_aggregate.sync_committee_bits)).toBoolArray(),
-    );
+    const epochBlocksBits = epochBlocks.map((block) => {
+      return {
+        block: BigInt(block.message.slot),
+        bits: SyncCommitteeBits.deserialize(fromHexString(block.message.body.sync_aggregate.sync_committee_bits)),
+      };
+    });
     for (const indexedValidator of indexedValidators) {
-      let sync_count = 0;
-      for (const bits of epochBlocksBits) {
-        if (bits[indexedValidator.in_committee_index]) sync_count++;
+      const synced_blocks: bigint[] = [];
+      for (const blockBits of epochBlocksBits) {
+        if (blockBits.bits.get(indexedValidator.in_committee_index)) {
+          synced_blocks.push(blockBits.block);
+        }
       }
       const index = BigInt(indexedValidator.validator_index);
-      const percent = (sync_count / epochBlocksBits.length) * 100;
+      const percent = (synced_blocks.length / epochBlocksBits.length) * 100;
       this.summary.set(index, {
         epoch,
         val_id: index,
         is_sync: true,
         sync_percent: percent,
+        sync_meta: {
+          synced_blocks,
+        },
       });
     }
+    this.summary.setMeta({ sync: { blocks_to_sync: epochBlocksBits.map((b) => b.block) } });
   }
 
   public async getSyncCommitteeIndexedValidators(epoch: bigint, stateId: StateId): Promise<SyncCommitteeValidator[]> {
