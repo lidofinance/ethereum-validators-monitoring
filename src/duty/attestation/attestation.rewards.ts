@@ -21,19 +21,29 @@ export class AttestationRewards {
     const epochMeta = this.summary.getMeta();
     const blocksAttestationsRewardSum = new Map<bigint, bigint>();
     // Attestation reward multipliers
-    const sourceParticipation = epochMeta.attestation.correct_source / epochMeta.state.active_validators;
-    const targetParticipation = epochMeta.attestation.correct_target / epochMeta.state.active_validators;
-    const headParticipation = epochMeta.attestation.correct_head / epochMeta.state.active_validators;
+    const counters = { source: 0n, target: 0n, head: 0n };
+    for (const v of this.summary.values()) {
+      if (![ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(v.val_status)) continue;
+      if (v.att_meta.reward_per_increment.source != 0) {
+        counters.source += v.val_effective_balance / BigInt(10 ** 9);
+      }
+      if (v.att_meta.reward_per_increment.target != 0) {
+        counters.target += v.val_effective_balance / BigInt(10 ** 9);
+      }
+      if (v.att_meta.reward_per_increment.head != 0) {
+        counters.head += v.val_effective_balance / BigInt(10 ** 9);
+      }
+    }
+    const sourceParticipation = Number(counters.source) / Number(epochMeta.state.active_validators_total_increments);
+    const targetParticipation = Number(counters.target) / Number(epochMeta.state.active_validators_total_increments);
+    const headParticipation = Number(counters.head) / Number(epochMeta.state.active_validators_total_increments);
     // Perfect attestation (with multipliers). Need for calculating missed reward
     const perfect = attestationRewards(1, true, true, true);
     const perfectAttestationRewards = BigInt(
-      Math.trunc(
-        perfect.source * epochMeta.state.base_reward * 32 * sourceParticipation +
-          perfect.target * epochMeta.state.base_reward * 32 * targetParticipation +
-          perfect.head * epochMeta.state.base_reward * 32 * headParticipation,
-      ),
+      Math.trunc(perfect.source * epochMeta.state.base_reward * 32 * sourceParticipation) +
+        Math.trunc(perfect.target * epochMeta.state.base_reward * 32 * targetParticipation) +
+        Math.trunc(perfect.head * epochMeta.state.base_reward * 32 * headParticipation),
     );
-    //
     for (const v of this.summary.values()) {
       // Only active validator can participate in attestation
       if (![ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(v.val_status)) continue;
@@ -49,7 +59,9 @@ export class AttestationRewards {
       const penaltyTarget = Math.trunc(v.att_meta.penalty_per_increment.target * epochMeta.state.base_reward * increments);
       const penaltyHead = Math.trunc(v.att_meta.penalty_per_increment.head * epochMeta.state.base_reward * increments);
       att_earned_reward = BigInt(
-        Math.trunc(rewardSource * sourceParticipation + rewardTarget * targetParticipation + rewardHead * headParticipation),
+        Math.trunc(rewardSource * sourceParticipation) +
+          Math.trunc(rewardTarget * targetParticipation) +
+          Math.trunc(rewardHead * headParticipation),
       );
       att_missed_reward = perfectAttestationRewards - att_earned_reward;
       att_penalty = BigInt(penaltySource + penaltyTarget + penaltyHead);
