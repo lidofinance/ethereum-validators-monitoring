@@ -54,6 +54,7 @@ export class DutyService {
   @TrackTask('check-all-duties')
   protected async checkAll(epoch: bigint, stateSlot: bigint): Promise<any> {
     this.summary.clear();
+    this.summary.clearMeta();
     this.logger.log('Checking duties of validators');
     await Promise.all([
       this.state.check(epoch, stateSlot),
