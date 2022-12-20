@@ -27,9 +27,11 @@ export class AttestationRewards {
     // Perfect attestation (with multipliers). Need for calculating missed reward
     const perfect = attestationRewards(1, true, true, true);
     const perfectAttestationRewards = BigInt(
-      Math.trunc(perfect.source * epochMeta.state.base_reward * 32 * sourceParticipation) +
-        Math.trunc(perfect.target * epochMeta.state.base_reward * 32 * targetParticipation) +
-        Math.trunc(perfect.head * epochMeta.state.base_reward * 32 * headParticipation),
+      Math.trunc(
+        perfect.source * epochMeta.state.base_reward * 32 * sourceParticipation +
+          perfect.target * epochMeta.state.base_reward * 32 * targetParticipation +
+          perfect.head * epochMeta.state.base_reward * 32 * headParticipation,
+      ),
     );
     //
     for (const v of this.summary.values()) {
@@ -47,9 +49,7 @@ export class AttestationRewards {
       const penaltyTarget = Math.trunc(v.att_meta.penalty_per_increment.target * epochMeta.state.base_reward * increments);
       const penaltyHead = Math.trunc(v.att_meta.penalty_per_increment.head * epochMeta.state.base_reward * increments);
       att_earned_reward = BigInt(
-        Math.trunc(rewardSource * sourceParticipation) +
-          Math.trunc(rewardTarget * targetParticipation) +
-          Math.trunc(rewardHead * headParticipation),
+        Math.trunc(rewardSource * sourceParticipation + rewardTarget * targetParticipation + rewardHead * headParticipation),
       );
       att_missed_reward = perfectAttestationRewards - att_earned_reward;
       att_penalty = BigInt(penaltySource + penaltyTarget + penaltyHead);
@@ -60,7 +60,6 @@ export class AttestationRewards {
         rewards += BigInt(rewardSource + rewardTarget + rewardHead);
         blocksAttestationsRewardSum.set(v.att_meta.included_in_block, rewards);
       }
-
       this.summary.set(v.val_id, { epoch, val_id: v.val_id, att_earned_reward, att_missed_reward, att_penalty });
     }
     this.summary.setMeta({ attestation: { blocks_rewards: blocksAttestationsRewardSum } });
