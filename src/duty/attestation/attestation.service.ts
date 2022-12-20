@@ -94,28 +94,28 @@ export class AttestationService {
       const isProcessed = this.summary.get(validatorIndex)?.att_happened;
       if (isProcessed) continue; // already processed validator. it was in one of previous attestation
       const att_happened = attestation.bits.get(valCommIndex);
-      if (att_happened) {
-        // Count for calculate multipliers of rewards
-        if (reward_per_increment.source != 0) counters.correctSourceCount++;
-        if (reward_per_increment.target != 0) counters.correctTargetCount++;
-        if (reward_per_increment.head != 0) counters.correctHeadCount++;
-        this.summary.set(validatorIndex, {
-          val_id: validatorIndex,
-          epoch: this.processedEpoch,
-          att_happened: true,
-          att_inc_delay,
-          att_valid_head,
-          att_valid_source,
-          att_valid_target,
-          att_meta: {
-            included_in_block: attestation.included_in_block,
-            reward_per_increment,
-            penalty_per_increment,
-          },
-        });
+      if (!att_happened) {
+        this.summary.set(validatorIndex, { epoch: this.processedEpoch, val_id: validatorIndex, ...MISSED_ATTESTATION });
         continue;
       }
-      this.summary.set(validatorIndex, { epoch: this.processedEpoch, val_id: validatorIndex, ...MISSED_ATTESTATION });
+      // Count for calculate multipliers of rewards
+      if (reward_per_increment.source != 0) counters.correctSourceCount++;
+      if (reward_per_increment.target != 0) counters.correctTargetCount++;
+      if (reward_per_increment.head != 0) counters.correctHeadCount++;
+      this.summary.set(validatorIndex, {
+        val_id: validatorIndex,
+        epoch: this.processedEpoch,
+        att_happened: true,
+        att_inc_delay,
+        att_valid_head,
+        att_valid_source,
+        att_valid_target,
+        att_meta: {
+          included_in_block: attestation.included_in_block,
+          reward_per_increment,
+          penalty_per_increment,
+        },
+      });
     }
   }
 
