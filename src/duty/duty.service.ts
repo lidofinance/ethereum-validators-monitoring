@@ -4,7 +4,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
+import { BlockHeaderResponse, ConsensusProviderService, ValStatus } from 'common/eth-providers';
 import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
 import { bigintRange } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
@@ -16,6 +16,7 @@ import { ProposeService } from './propose';
 import { StateService } from './state';
 import { SummaryService } from './summary';
 import { SyncService } from './sync';
+import { syncReward } from './sync/sync.constants';
 
 @Injectable()
 export class DutyService {
@@ -62,8 +63,11 @@ export class DutyService {
       this.sync.check(epoch, stateSlot),
       this.propose.check(epoch),
     ]);
+    // must be done after all duties check
+    await this.fillCurrentEpochMetadata();
     // calculate rewards after check all duties
-    await this.rewards.calculate(epoch);
+    const prevEpochMetadata = await this.storage.getEpochMetadata(epoch - 1n);
+    await this.rewards.calculate(epoch, prevEpochMetadata);
   }
 
   @TrackTask('prefetch-slots')
@@ -93,6 +97,46 @@ export class DutyService {
     return [...new Set([...prop.map((v) => v.validator_index), ...sync.validators])];
   }
 
+  @TrackTask('fill-epoch-metadata')
+  protected async fillCurrentEpochMetadata() {
+    const meta = this.summary.getMeta();
+    meta.attestation = {
+      participation: { source: 0n, target: 0n, head: 0n },
+      blocks_rewards: new Map<bigint, bigint>(),
+    };
+    meta.sync.blocks_rewards = new Map<bigint, bigint>();
+    // block can be with zero synchronization
+    meta.sync.blocks_to_sync.forEach((b) => meta.sync.blocks_rewards.set(b, 0n));
+    meta.sync.per_block_reward = syncReward(meta.state.active_validators_total_increments, meta.state.base_reward);
+    const perSyncProposerReward = Math.trunc((Number(meta.sync.per_block_reward) * 8) / 56);
+    for (const v of this.summary.values()) {
+      if (![ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(v.val_status)) continue;
+      if (v.att_meta?.reward_per_increment.source != 0) {
+        meta.attestation.participation.source += v.val_effective_balance / BigInt(10 ** 9);
+      }
+      if (v.att_meta?.reward_per_increment.target != 0) {
+        meta.attestation.participation.target += v.val_effective_balance / BigInt(10 ** 9);
+      }
+      if (v.att_meta?.reward_per_increment.head != 0) {
+        meta.attestation.participation.head += v.val_effective_balance / BigInt(10 ** 9);
+      }
+      // Calculate sum of all attestation rewards in block. It's needed for calculation proposer reward
+      const increments = Number(BigInt(v.val_effective_balance) / BigInt(10 ** 9));
+      const rewardSource = Math.trunc(v.att_meta.reward_per_increment.source * meta.state.base_reward * increments);
+      const rewardTarget = Math.trunc(v.att_meta.reward_per_increment.target * meta.state.base_reward * increments);
+      const rewardHead = Math.trunc(v.att_meta.reward_per_increment.head * meta.state.base_reward * increments);
+      let rewards = meta.attestation.blocks_rewards.get(v.att_meta.included_in_block) ?? 0n;
+      rewards += BigInt(rewardSource + rewardTarget + rewardHead);
+      meta.attestation.blocks_rewards.set(v.att_meta.included_in_block, rewards);
+      if (v.is_sync) {
+        for (const block of v.sync_meta.synced_blocks) {
+          meta.sync.blocks_rewards.set(block, meta.sync.blocks_rewards.get(block) + BigInt(perSyncProposerReward));
+        }
+      }
+    }
+    this.summary.setMeta(meta);
+  }
+
   protected async writeSummary(): Promise<any> {
     this.logger.log('Writing summary of duties into DB');
     const stream = new Readable({ objectMode: true });
@@ -102,7 +146,8 @@ export class DutyService {
 
   protected async writeEpochMeta(epoch: bigint): Promise<any> {
     this.logger.log('Writing epoch metadata into DB');
-    await this.storage.writeEpochMeta(epoch, this.summary.getMeta());
+    const meta = this.summary.getMeta();
+    await this.storage.writeEpochMeta(epoch, meta);
     this.summary.clearMeta();
   }
 

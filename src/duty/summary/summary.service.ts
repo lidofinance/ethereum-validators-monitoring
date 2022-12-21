@@ -66,10 +66,12 @@ export interface EpochMeta {
     base_reward?: number;
   };
   attestation?: {
+    participation?: { source: bigint; target: bigint; head: bigint };
     blocks_rewards?: Map<BlockNumber, bigint>;
   };
   sync?: {
     blocks_rewards?: Map<BlockNumber, bigint>;
+    per_block_reward?: bigint;
     blocks_to_sync?: bigint[];
   };
 }

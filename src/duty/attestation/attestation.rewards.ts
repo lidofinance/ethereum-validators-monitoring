@@ -10,6 +10,7 @@ import { attestationRewards } from './attestation.constants';
 
 @Injectable()
 export class AttestationRewards {
+  prevEpoch: any;
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
@@ -17,26 +18,14 @@ export class AttestationRewards {
     protected readonly summary: SummaryService,
   ) {}
 
-  public calculate(epoch: bigint) {
+  public async calculate(epoch: bigint) {
     const epochMeta = this.summary.getMeta();
-    const blocksAttestationsRewardSum = new Map<bigint, bigint>();
     // Attestation reward multipliers
-    const counters = { source: 0n, target: 0n, head: 0n };
-    for (const v of this.summary.values()) {
-      if (![ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(v.val_status)) continue;
-      if (v.att_meta.reward_per_increment.source != 0) {
-        counters.source += v.val_effective_balance / BigInt(10 ** 9);
-      }
-      if (v.att_meta.reward_per_increment.target != 0) {
-        counters.target += v.val_effective_balance / BigInt(10 ** 9);
-      }
-      if (v.att_meta.reward_per_increment.head != 0) {
-        counters.head += v.val_effective_balance / BigInt(10 ** 9);
-      }
-    }
-    const sourceParticipation = Number(counters.source) / Number(epochMeta.state.active_validators_total_increments);
-    const targetParticipation = Number(counters.target) / Number(epochMeta.state.active_validators_total_increments);
-    const headParticipation = Number(counters.head) / Number(epochMeta.state.active_validators_total_increments);
+    const sourceParticipation =
+      Number(epochMeta.attestation.participation.source) / Number(epochMeta.state.active_validators_total_increments);
+    const targetParticipation =
+      Number(epochMeta.attestation.participation.target) / Number(epochMeta.state.active_validators_total_increments);
+    const headParticipation = Number(epochMeta.attestation.participation.head) / Number(epochMeta.state.active_validators_total_increments);
     // Perfect attestation (with multipliers). Need for calculating missed reward
     const perfect = attestationRewards(1, true, true, true);
     const perfectAttestationRewards = BigInt(
@@ -65,16 +54,8 @@ export class AttestationRewards {
       );
       att_missed_reward = perfectAttestationRewards - att_earned_reward;
       att_penalty = BigInt(penaltySource + penaltyTarget + penaltyHead);
-
-      if (att_earned_reward != 0n) {
-        // Calculate sum of all attestation rewards in block (without multipliers). It's needed for calculation proposer reward
-        let rewards = blocksAttestationsRewardSum.get(v.att_meta.included_in_block) ?? 0n;
-        rewards += BigInt(rewardSource + rewardTarget + rewardHead);
-        blocksAttestationsRewardSum.set(v.att_meta.included_in_block, rewards);
-      }
       this.summary.set(v.val_id, { epoch, val_id: v.val_id, att_earned_reward, att_missed_reward, att_penalty });
     }
-    this.summary.setMeta({ attestation: { blocks_rewards: blocksAttestationsRewardSum } });
     return true;
   }
 }

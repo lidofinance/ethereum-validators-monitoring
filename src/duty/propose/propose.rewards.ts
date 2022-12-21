@@ -3,9 +3,8 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { PrometheusService } from 'common/prometheus';
-import { ClickhouseService } from 'storage';
 
-import { SummaryService } from '../summary';
+import { EpochMeta, SummaryService } from '../summary';
 import { proposerAttPartReward } from './propose.constants';
 
 @Injectable()
@@ -15,10 +14,9 @@ export class ProposeRewards {
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
     protected readonly summary: SummaryService,
-    protected readonly storage: ClickhouseService,
   ) {}
 
-  public async calculate(epoch: bigint) {
+  public async calculate(epoch: bigint, prevEpochMetadata: EpochMeta) {
     let attestationsSumOfSum = 0n;
     let syncSumOfSum = 0n;
     // Merge attestations metadata from two epochs
@@ -26,7 +24,7 @@ export class ProposeRewards {
     // At the first app start it is possible that reward for such block will not be calculated,
     // because there is no metadata of the previous epoch
     const blocksAttestationsRewardSum = new Map<bigint, bigint>();
-    const prevEpoch = (await this.storage.getEpochMetadata(epoch - 1n))?.attestation?.blocks_rewards ?? new Map();
+    const prevEpoch = prevEpochMetadata.attestation?.blocks_rewards ?? new Map();
     if (prevEpoch.size == 0) {
       this.logger.warn(
         "Proposal reward will not be calculated accurately because previous epoch's metadata does not exist. " +
