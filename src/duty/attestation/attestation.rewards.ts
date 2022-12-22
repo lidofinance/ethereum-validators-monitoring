@@ -2,7 +2,6 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { ValStatus } from 'common/eth-providers';
 import { PrometheusService } from 'common/prometheus';
 
 import { SummaryService } from '../summary';
@@ -34,9 +33,7 @@ export class AttestationRewards {
         Math.trunc(perfect.head * epochMeta.state.base_reward * 32 * headParticipation),
     );
     for (const v of this.summary.values()) {
-      // Only active validator can participate in attestation
-      if (![ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(v.val_status)) continue;
-
+      if (!v.att_meta) continue;
       const increments = Number(BigInt(v.val_effective_balance) / BigInt(10 ** 9));
       let att_earned_reward = 0n;
       let att_missed_reward = 0n;

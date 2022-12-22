@@ -448,7 +448,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: bigint): string
     group by val_nos_id
 	) as prop
   ON
-    att.val_nos_name = prop.val_nos_name
+    att.val_nos_id = prop.val_nos_id
   LEFT JOIN
   (
     select

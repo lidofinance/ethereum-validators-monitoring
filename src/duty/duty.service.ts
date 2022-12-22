@@ -4,7 +4,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { BlockHeaderResponse, ConsensusProviderService, ValStatus } from 'common/eth-providers';
+import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
 import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
 import { bigintRange } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
@@ -13,6 +13,7 @@ import { ClickhouseService } from 'storage';
 import { AttestationService } from './attestation';
 import { DutyRewards } from './duty.rewards';
 import { ProposeService } from './propose';
+import { PROPOSER_WEIGHT, WEIGHT_DENOMINATOR } from './propose/propose.constants';
 import { StateService } from './state';
 import { SummaryService } from './summary';
 import { SyncService } from './sync';
@@ -108,26 +109,27 @@ export class DutyService {
     // block can be with zero synchronization
     meta.sync.blocks_to_sync.forEach((b) => meta.sync.blocks_rewards.set(b, 0n));
     meta.sync.per_block_reward = syncReward(meta.state.active_validators_total_increments, meta.state.base_reward);
-    const perSyncProposerReward = Math.trunc((Number(meta.sync.per_block_reward) * 8) / 56);
+    const perSyncProposerReward = Math.trunc(
+      (Number(meta.sync.per_block_reward) * PROPOSER_WEIGHT) / (WEIGHT_DENOMINATOR - PROPOSER_WEIGHT),
+    );
     for (const v of this.summary.values()) {
-      if (![ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(v.val_status)) continue;
-      if (v.att_meta?.reward_per_increment.source != 0) {
-        meta.attestation.participation.source += v.val_effective_balance / BigInt(10 ** 9);
+      if (v.att_meta && v.att_meta.included_in_block) {
+        let rewards = meta.attestation.blocks_rewards.get(v.att_meta.included_in_block) ?? 0n;
+        const increments = Number(BigInt(v.val_effective_balance) / BigInt(10 ** 9));
+        if (v.att_meta?.reward_per_increment.source != 0) {
+          meta.attestation.participation.source += v.val_effective_balance / BigInt(10 ** 9);
+          rewards += BigInt(Math.trunc(meta.state.base_reward * increments * v.att_meta.reward_per_increment.source));
+        }
+        if (v.att_meta?.reward_per_increment.target != 0) {
+          meta.attestation.participation.target += v.val_effective_balance / BigInt(10 ** 9);
+          rewards += BigInt(Math.trunc(meta.state.base_reward * increments * v.att_meta.reward_per_increment.target));
+        }
+        if (v.att_meta?.reward_per_increment.head != 0) {
+          meta.attestation.participation.head += v.val_effective_balance / BigInt(10 ** 9);
+          rewards += BigInt(Math.trunc(meta.state.base_reward * increments * v.att_meta.reward_per_increment.head));
+        }
+        meta.attestation.blocks_rewards.set(v.att_meta.included_in_block, rewards);
       }
-      if (v.att_meta?.reward_per_increment.target != 0) {
-        meta.attestation.participation.target += v.val_effective_balance / BigInt(10 ** 9);
-      }
-      if (v.att_meta?.reward_per_increment.head != 0) {
-        meta.attestation.participation.head += v.val_effective_balance / BigInt(10 ** 9);
-      }
-      // Calculate sum of all attestation rewards in block. It's needed for calculation proposer reward
-      const increments = Number(BigInt(v.val_effective_balance) / BigInt(10 ** 9));
-      const rewardSource = Math.trunc(v.att_meta.reward_per_increment.source * meta.state.base_reward * increments);
-      const rewardTarget = Math.trunc(v.att_meta.reward_per_increment.target * meta.state.base_reward * increments);
-      const rewardHead = Math.trunc(v.att_meta.reward_per_increment.head * meta.state.base_reward * increments);
-      let rewards = meta.attestation.blocks_rewards.get(v.att_meta.included_in_block) ?? 0n;
-      rewards += BigInt(rewardSource + rewardTarget + rewardHead);
-      meta.attestation.blocks_rewards.set(v.att_meta.included_in_block, rewards);
       if (v.is_sync) {
         for (const block of v.sync_meta.synced_blocks) {
           meta.sync.blocks_rewards.set(block, meta.sync.blocks_rewards.get(block) + BigInt(perSyncProposerReward));
