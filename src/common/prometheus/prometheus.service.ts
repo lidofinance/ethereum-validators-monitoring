@@ -36,6 +36,7 @@ import {
   METRIC_TASK_DURATION_SECONDS,
   METRIC_TASK_RESULT_COUNT,
   METRIC_TOTAL_BALANCE_24H_DIFFERENCE,
+  METRIC_USER_OPERATORS_IDENTIFIES,
   METRIC_USER_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_USER_VALIDATORS,
   METRIC_VALIDATORS,
@@ -188,6 +189,12 @@ export class PrometheusService implements OnApplicationBootstrap {
     name: METRIC_TASK_RESULT_COUNT,
     help: 'Count of passed or failed tasks',
     labelNames: ['name', 'status'],
+  });
+
+  public operatorsIdentifies = this.getOrCreateMetric('Gauge', {
+    name: METRIC_USER_OPERATORS_IDENTIFIES,
+    help: 'Operators identifies',
+    labelNames: ['nos_id', 'nos_name'],
   });
 
   public validators = this.getOrCreateMetric('Gauge', {

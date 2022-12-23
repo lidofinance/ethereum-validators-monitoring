@@ -2,11 +2,11 @@ import { ValStatus } from 'common/eth-providers';
 
 export const validatorBalancesDeltaQuery = (epoch: bigint): string => `
   SELECT
-    val_nos_name,
+    val_nos_id,
     avg(current.val_balance - previous.val_balance) AS delta
   FROM
     (
-      SELECT val_balance, val_id, val_nos_name
+      SELECT val_balance, val_id, val_nos_id
       FROM validators_summary
       WHERE
         val_status != '${ValStatus.PendingQueued}' AND
@@ -15,7 +15,7 @@ export const validatorBalancesDeltaQuery = (epoch: bigint): string => `
     ) AS current
   INNER JOIN
     (
-      SELECT val_balance, val_id, val_nos_name
+      SELECT val_balance, val_id, val_nos_id
       FROM validators_summary
       WHERE
         val_status != '${ValStatus.PendingQueued}' AND
@@ -24,17 +24,16 @@ export const validatorBalancesDeltaQuery = (epoch: bigint): string => `
     ) AS previous
   ON
     previous.val_id = current.val_id
-  GROUP BY val_nos_name
-  ORDER BY delta DESC
+  GROUP BY val_nos_id
 `;
 
 export const validatorQuantile0001BalanceDeltasQuery = (epoch: bigint): string => `
   SELECT
-    val_nos_name,
+    val_nos_id,
     quantileExact(0.001)(current.val_balance - previous.val_balance) AS delta
   FROM
     (
-      SELECT val_balance, val_id, val_nos_name
+      SELECT val_balance, val_id, val_nos_id
       FROM validators_summary
       WHERE
         val_status != '${ValStatus.PendingQueued}' AND
@@ -43,7 +42,7 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: bigint): string =
     ) AS current
   INNER JOIN
     (
-      SELECT val_balance, val_id, val_nos_name
+      SELECT val_balance, val_id, val_nos_id
       FROM validators_summary
       WHERE
         val_status != '${ValStatus.PendingQueued}' AND
@@ -52,17 +51,16 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: bigint): string =
     ) AS previous
   ON
     previous.val_id = current.val_id
-  GROUP BY val_nos_name
-  ORDER BY delta DESC
+  GROUP BY val_nos_id
 `;
 
 export const validatorsCountWithNegativeDeltaQuery = (epoch: bigint): string => `
   SELECT
-    val_nos_name,
-    COUNT(val_id) AS neg_count
+    val_nos_id,
+    count(val_id) AS neg_count
   FROM
     (
-      SELECT val_balance, val_id, val_nos_name
+      SELECT val_balance, val_id, val_nos_id
       FROM validators_summary
       WHERE
         val_status != '${ValStatus.PendingQueued}' AND
@@ -71,7 +69,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: bigint): string => 
     ) AS current
   INNER JOIN
     (
-      SELECT val_balance, val_id, val_nos_name
+      SELECT val_balance, val_id, val_nos_id
       FROM validators_summary
       WHERE
         val_status != '${ValStatus.PendingQueued}' AND
@@ -80,9 +78,8 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: bigint): string => 
     ) AS previous
   ON
     previous.val_id = current.val_id
-  GROUP BY val_nos_name
+  GROUP BY val_nos_id
   HAVING (current.val_balance - previous.val_balance) < 0
-  ORDER BY neg_count DESC
 `;
 
 export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
@@ -97,29 +94,25 @@ export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
   }
   return `
     SELECT
-      val_nos_name,
+      val_nos_id,
       count() as amount
     FROM (
       SELECT
-        val_nos_name,
+        val_nos_id,
         count() AS count_fail
       FROM (
-        SELECT
-          val_id,
-          val_nos_name
-        FROM
-          validators_summary
+        SELECT val_id, val_nos_id
+        FROM validators_summary
         WHERE
           is_sync = 1 AND
           ${condition} AND
           (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
           ${strFilterValIndexes}
       )
-      GROUP BY val_id, val_nos_name
-      ORDER BY count_fail DESC, val_id
+      GROUP BY val_id, val_nos_id
     )
     WHERE count_fail = ${epochInterval}
-    GROUP BY val_nos_name
+    GROUP BY val_nos_id
   `;
 };
 
@@ -135,52 +128,46 @@ export const validatorCountByConditionAttestationLastNEpochQuery = (
   }
   return `
     SELECT
-      val_nos_name,
+      val_nos_id,
       count() as amount
     FROM (
       SELECT
-        val_id,
-        count() as count_fail,
-        val_nos_name
+        val_nos_id,
+        count() as count_fail
       FROM (
-        SELECT
-          val_id,
-          val_nos_name
+        SELECT val_id, val_nos_id
         FROM validators_summary
         WHERE
           ${condition}
           AND (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
           ${strFilterValIndexes}
-        ORDER BY epoch DESC, val_id
       )
-      GROUP BY val_id, val_nos_name
-      ORDER BY count_fail DESC, val_id
+      GROUP BY val_id, val_nos_id
     )
     WHERE count_fail = ${epochInterval}
-    GROUP BY val_nos_name
-    ORDER BY amount DESC
+    GROUP BY val_nos_id
   `;
 };
 
 export const validatorCountHighAvgIncDelayAttestationOfNEpochQuery = (epoch: bigint, epochInterval: number): string => {
   return `
     SELECT
-      val_nos_name,
+      val_nos_id,
       count() as amount
     FROM (
       SELECT
-        val_id,
-        avg(att_inc_delay) as avg_inclusion_delay,
-        val_nos_name
-      FROM validators_summary
-      WHERE
-        (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
-      GROUP BY val_id, val_nos_name
+        val_nos_id,
+        avg(att_inc_delay) as avg_inclusion_delay
+      FROM (
+        SELECT val_id, val_nos_id, att_inc_delay
+        FROM validators_summary
+        WHERE
+          (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
+      )
+      GROUP BY val_id, val_nos_id
       HAVING avg_inclusion_delay > 2
-      ORDER BY avg_inclusion_delay DESC, val_id
     )
-    GROUP BY val_nos_name
-    ORDER BY amount DESC
+    GROUP BY val_nos_id
   `;
 };
 
@@ -191,57 +178,56 @@ export const validatorsCountByConditionMissProposeQuery = (epoch: bigint, valida
   }
   return `
     SELECT
-      val_nos_name,
+      val_nos_id,
       count() as amount
     FROM (
-      SELECT
-        val_id,
-        val_nos_name
+      SELECT val_nos_id
       FROM validators_summary
       WHERE
         is_proposer = 1 AND
         ${condition} AND
         (epoch <= ${epoch} AND epoch > (${epoch} - 1))
         ${strFilterValIndexes}
-      ORDER BY epoch DESC, val_id
     )
-    GROUP BY val_nos_name
-    ORDER BY amount DESC
+    GROUP BY val_nos_id
   `;
 };
 
 export const userSyncParticipationAvgPercentQuery = (epoch: bigint): string => `
-    SELECT
-        avg(sync_percent) as avg_percent
-    FROM
-        validators_summary
-    WHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch}
+  SELECT
+    avg(sync_percent) as avg_percent
+  FROM validators_summary
+  WHERE
+    is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch}
 `;
 
 export const otherSyncParticipationAvgPercentQuery = (epoch: bigint): string => `
-    SELECT
-        avg(sync_percent) as avg_percent
-    FROM
-        validators_summary
-    WHERE is_sync = 1 AND val_nos_id IS NULL AND epoch = ${epoch}
+  SELECT
+    avg(sync_percent) as avg_percent
+  FROM validators_summary
+  WHERE
+    is_sync = 1 AND val_nos_id IS NULL AND epoch = ${epoch}
 `;
 
 export const chainSyncParticipationAvgPercentQuery = (epoch: bigint): string => `
-    SELECT
-        avg(sync_percent) as avg_percent
-    FROM
-        validators_summary
-    WHERE is_sync = 1 AND epoch = ${epoch}
+  SELECT
+    avg(sync_percent) as avg_percent
+  FROM validators_summary
+  WHERE
+    is_sync = 1 AND epoch = ${epoch}
 `;
 
 export const operatorsSyncParticipationAvgPercentsQuery = (epoch: bigint): string => `
-    SELECT
-        val_nos_name,
-        avg(sync_percent) as avg_percent
-    FROM
-        validators_summary
-    WHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch}
-    GROUP BY val_nos_name
+  SELECT
+    val_nos_id,
+    avg(sync_percent) as avg_percent
+  FROM (
+    SELECT val_nos_id, sync_percent
+    FROM validators_summary
+    WHERE
+      is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch}
+  )
+  GROUP BY val_nos_id
 `;
 
 export const totalBalance24hDifferenceQuery = (epoch: bigint): string => `
@@ -249,14 +235,13 @@ export const totalBalance24hDifferenceQuery = (epoch: bigint): string => `
     SELECT SUM(curr.val_balance)
     FROM
       validators_summary AS curr
-    INNER JOIN
-      (
-        SELECT val_balance, val_id, val_nos_id
-        FROM validators_summary
-        WHERE
-          val_status != '${ValStatus.PendingQueued}' AND
-          val_nos_id IS NOT NULL AND
-          epoch = ${epoch} - 225
+    INNER JOIN (
+      SELECT val_balance, val_id, val_nos_id
+      FROM validators_summary
+      WHERE
+        val_status != '${ValStatus.PendingQueued}' AND
+        val_nos_id IS NOT NULL AND
+        epoch = ${epoch} - 225
     ) AS previous
     ON
       previous.val_nos_id = curr.val_nos_id AND
@@ -278,48 +263,50 @@ export const totalBalance24hDifferenceQuery = (epoch: bigint): string => `
 `;
 
 export const operatorBalance24hDifferenceQuery = (epoch: bigint): string => `
-    SELECT
-        val_nos_name,
-        SUM(curr.val_balance - previous.val_balance) as diff
-    FROM
-      validators_summary AS curr
-    INNER JOIN
-      (
-        SELECT val_balance, val_id, val_nos_id
-        FROM validators_summary
-        WHERE
-          val_status != '${ValStatus.PendingQueued}' AND
-          val_nos_id IS NOT NULL AND
-          epoch = ${epoch} - 225
-    ) AS previous
-    ON
-      previous.val_nos_id = curr.val_nos_id AND
-      previous.val_id = curr.val_id
+  SELECT
+    curr.val_nos_id as val_nos_id,
+    SUM(curr.val_balance - previous.val_balance) as diff
+  FROM
+    validators_summary AS curr
+  INNER JOIN (
+    SELECT val_balance, val_id, val_nos_id
+    FROM validators_summary
     WHERE
-      curr.epoch = ${epoch}
-      AND curr.val_status != '${ValStatus.PendingQueued}'
-      AND curr.val_nos_id IS NOT NULL
-    GROUP BY curr.val_nos_name
+      val_status != '${ValStatus.PendingQueued}' AND
+      val_nos_id IS NOT NULL AND
+      epoch = ${epoch} - 225
+  ) AS previous
+  ON
+    previous.val_nos_id = curr.val_nos_id AND
+    previous.val_id = curr.val_id
+  WHERE
+    curr.epoch = ${epoch}
+    AND curr.val_status != '${ValStatus.PendingQueued}'
+    AND curr.val_nos_id IS NOT NULL
+  GROUP BY curr.val_nos_id
 `;
 
 export const userNodeOperatorsStatsQuery = (epoch: bigint): string => `
   SELECT
-    val_nos_name,
+    val_nos_id,
     SUM(a) as active_ongoing,
     SUM(p) as pending,
     SUM(s) as slashed
-  FROM
-  (
+  FROM (
     SELECT
-      val_nos_name,
+      val_nos_id,
       IF(val_status = '${ValStatus.ActiveOngoing}', count(val_status), 0) as a,
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) as p,
       IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) as s
-    FROM validators_summary
-    WHERE val_nos_id IS NOT NULL and epoch = ${epoch}
-    GROUP BY val_nos_name, val_status, val_slashed
+    FROM (
+      SELECT val_nos_id, val_status, val_slashed
+      FROM validators_summary
+      WHERE
+        val_nos_id IS NOT NULL and epoch = ${epoch}
+    )
+    GROUP BY val_nos_id, val_status, val_slashed
   )
-  GROUP by val_nos_name
+  GROUP by val_nos_id
 `;
 
 export const userValidatorsSummaryStatsQuery = (epoch: bigint): string => `
@@ -334,7 +321,8 @@ export const userValidatorsSummaryStatsQuery = (epoch: bigint): string => `
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) as p,
       IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) as s
     FROM validators_summary
-    WHERE val_nos_id IS NOT NULL and epoch = ${epoch}
+    WHERE
+      val_nos_id IS NOT NULL and epoch = ${epoch}
     GROUP BY val_status, val_slashed
   )
 `;
@@ -351,25 +339,30 @@ export const otherValidatorsSummaryStatsQuery = (epoch: bigint): string => `
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) as p,
       IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) as s
     FROM validators_summary
-    WHERE val_nos_id IS NULL and epoch = ${epoch}
+    WHERE
+      val_nos_id IS NULL and epoch = ${epoch}
     GROUP BY val_status, val_slashed
   )
 `;
 
 export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: bigint, epochInterval = 120): string => `
   SELECT
-    val_nos_name,
+    val_nos_id,
     SUM(a) as all,
     SUM(m) as missed
   FROM
   (
     SELECT
-      val_nos_name,
+      val_nos_id,
       count(block_proposed) as a,
       IF(block_proposed = 0, count(block_proposed), 0) as m
-    FROM validators_summary
-    WHERE is_proposer = 1 AND (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
-    GROUP BY val_nos_name, block_proposed
+    FROM (
+      SELECT val_nos_id, block_proposed
+      FROM validators_summary
+      WHERE
+        is_proposer = 1 AND (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
+    )
+    GROUP BY val_nos_id, block_proposed
   )
-  GROUP by val_nos_name
+  GROUP by val_nos_id
 `;

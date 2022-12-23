@@ -4,22 +4,26 @@ import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
 import { ClickhouseService } from 'storage';
 
+import { RegistrySourceOperator } from '../../validators-registry';
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
+const VALIDATORS_WITH_MISSED_PROPOSALS_COUNT_THRESHOLD = 1 / 3;
+
 export class CriticalMissedProposes extends Alert {
-  constructor(config: ConfigService, storage: ClickhouseService) {
-    super(CriticalMissedProposes.name, config, storage);
+  constructor(config: ConfigService, storage: ClickhouseService, operators: RegistrySourceOperator[]) {
+    super(CriticalMissedProposes.name, config, storage, operators);
   }
 
   async alertRule(epoch: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
-    const operators = await this.storage.getUserNodeOperatorsStats(epoch);
+    const nosStats = await this.storage.getUserNodeOperatorsStats(epoch);
     const proposes = await this.storage.getUserNodeOperatorsProposesStats(epoch); // ~12h range
-    for (const operator of operators.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
-      const proposeStats = proposes.find((a) => a.val_nos_name == operator.val_nos_name);
+    for (const noStats of nosStats.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
+      const operator = this.operators.find((o) => +noStats.val_nos_id == o.index);
+      const proposeStats = proposes.find((a) => a.val_nos_id != null && +a.val_nos_id == operator.index);
       if (!proposeStats) continue;
-      if (proposeStats.missed > proposeStats.all / 3) {
-        result[operator.val_nos_name] = { all: proposeStats.all, missed: proposeStats.missed };
+      if (proposeStats.missed > proposeStats.all * VALIDATORS_WITH_MISSED_PROPOSALS_COUNT_THRESHOLD) {
+        result[operator.name] = { all: proposeStats.all, missed: proposeStats.missed };
       }
     }
     return result;

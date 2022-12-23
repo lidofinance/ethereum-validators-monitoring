@@ -29,6 +29,7 @@ export class StateMetrics {
     this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();
     await Promise.all([
+      this.operatorsIdentifies(),
       this.nosStats(),
       this.userValidatorsStats(),
       this.otherValidatorsStats(),
@@ -41,31 +42,36 @@ export class StateMetrics {
     ]);
   }
 
+  private async operatorsIdentifies() {
+    this.operators.forEach((operator) => this.prometheus.operatorsIdentifies.set({ nos_id: operator.index, nos_name: operator.name }, 1));
+  }
+
   private async nosStats() {
     const result = await this.storage.getUserNodeOperatorsStats(this.processedEpoch);
-    for (const nosStat of result) {
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
       this.prometheus.userValidators.set(
         {
-          nos_name: nosStat.val_nos_name,
+          nos_name: operator.name,
           status: PrometheusValStatus.Slashed,
         },
-        nosStat.slashed,
+        operatorResult ? operatorResult.slashed : 0,
       );
       this.prometheus.userValidators.set(
         {
-          nos_name: nosStat.val_nos_name,
+          nos_name: operator.name,
           status: PrometheusValStatus.Ongoing,
         },
-        nosStat.active_ongoing,
+        operatorResult ? operatorResult.active_ongoing : 0,
       );
       this.prometheus.userValidators.set(
         {
-          nos_name: nosStat.val_nos_name,
+          nos_name: operator.name,
           status: PrometheusValStatus.Pending,
         },
-        nosStat.pending,
+        operatorResult ? operatorResult.pending : 0,
       );
-    }
+    });
   }
 
   private async userValidatorsStats() {
@@ -122,23 +128,28 @@ export class StateMetrics {
 
   private async deltas() {
     const result = await this.storage.getValidatorBalancesDelta(this.processedEpoch);
-    for (const delta of result) {
-      this.prometheus.validatorBalanceDelta.set({ nos_name: delta.val_nos_name }, delta.delta);
-    }
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
+      this.prometheus.validatorBalanceDelta.set({ nos_name: operator.name }, operatorResult ? operatorResult.delta : 0);
+    });
   }
 
   private async minDeltas() {
     const result = await this.storage.getValidatorQuantile0001BalanceDeltas(this.processedEpoch);
-    for (const minDelta of result) {
-      this.prometheus.validatorQuantile001BalanceDelta.set({ nos_name: minDelta.val_nos_name }, minDelta.delta);
-    }
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
+      this.prometheus.validatorQuantile001BalanceDelta.set({ nos_name: operator.name }, operatorResult ? operatorResult.delta : 0);
+    });
   }
 
   private async negativeValidatorsCount() {
     const result = await this.storage.getValidatorsCountWithNegativeDelta(this.processedEpoch);
     this.operators.forEach((operator) => {
-      const negDelta = result.find((d) => d.val_nos_name == operator.name);
-      this.prometheus.validatorsCountWithNegativeBalanceDelta.set({ nos_name: operator.name }, negDelta ? negDelta.neg_count : 0);
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
+      this.prometheus.validatorsCountWithNegativeBalanceDelta.set(
+        { nos_name: operator.name },
+        operatorResult ? operatorResult.neg_count : 0,
+      );
     });
   }
 
@@ -151,8 +162,9 @@ export class StateMetrics {
 
   private async operatorBalance24hDifference() {
     const result = await this.storage.getOperatorBalance24hDifference(this.processedEpoch);
-    result.forEach((d) => {
-      this.prometheus.operatorBalance24hDifference.set({ nos_name: d.val_nos_name }, d.diff);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
+      this.prometheus.operatorBalance24hDifference.set({ nos_name: operator.name }, operatorResult ? operatorResult.diff : 0);
     });
   }
 

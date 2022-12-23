@@ -406,8 +406,8 @@ export class ClickhouseService implements OnModuleInit {
     return Number(total_diff);
   }
 
-  public async getOperatorBalance24hDifference(epoch: bigint): Promise<{ val_nos_name; diff }[]> {
-    return (await this.select<{ val_nos_name; diff }[]>(operatorBalance24hDifferenceQuery(epoch))).map((v) => ({
+  public async getOperatorBalance24hDifference(epoch: bigint): Promise<{ val_nos_id; diff }[]> {
+    return (await this.select<{ val_nos_id; diff }[]>(operatorBalance24hDifferenceQuery(epoch))).map((v) => ({
       ...v,
       diff: Number(v.diff),
     }));

@@ -1,6 +1,8 @@
 import { ConfigService } from 'common/config';
 import { ClickhouseService } from 'storage';
 
+import { RegistrySourceOperator } from '../../validators-registry';
+
 export interface AlertRequestBody {
   startsAt: string;
   endsAt: string;
@@ -23,11 +25,13 @@ export abstract class Alert {
   protected sendTimestamp = 0;
   protected readonly config: ConfigService;
   protected readonly storage: ClickhouseService;
+  protected readonly operators: RegistrySourceOperator[];
 
-  protected constructor(name: string, config: ConfigService, storage: ClickhouseService) {
+  protected constructor(name: string, config: ConfigService, storage: ClickhouseService, operators: RegistrySourceOperator[]) {
     this.alertname = name;
     this.config = config;
     this.storage = storage;
+    this.operators = operators;
   }
 
   abstract alertRule(bySlot: bigint): Promise<AlertRuleResult>;

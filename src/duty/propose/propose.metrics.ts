@@ -29,20 +29,20 @@ export class ProposeMetrics {
   private async goodProposes() {
     const result = await this.storage.getValidatorsCountWithGoodProposes(this.processedEpoch);
     this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_name == operator.name);
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
       this.prometheus.validatorsCountGoodPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
     });
-    const other = result.find((p) => p.val_nos_name == 'NULL');
+    const other = result.find((p) => p.val_nos_id == null);
     this.prometheus.otherValidatorsCountGoodPropose.set(other ? other.amount : 0);
   }
 
   private async missProposes() {
     const result = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch);
     this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_name == operator.name);
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
       this.prometheus.validatorsCountMissPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
     });
-    const other = result.find((p) => p.val_nos_name == 'NULL');
+    const other = result.find((p) => p.val_nos_id == null);
     this.prometheus.otherValidatorsCountMissPropose.set(other ? other.amount : 0);
   }
 
@@ -51,7 +51,7 @@ export class ProposeMetrics {
     if (possibleHighRewardValidators.length > 0)
       result = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch, possibleHighRewardValidators);
     this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_name == operator.name);
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
       this.prometheus.highRewardValidatorsCountMissPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
     });
   }
