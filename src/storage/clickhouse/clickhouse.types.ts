@@ -46,9 +46,15 @@ export interface NOsValidatorsRewardsStats {
   sync_reward: number;
   sync_missed: number;
   sync_penalty: number;
-  attestation_reward: number;
-  attestation_missed: number;
-  attestation_penalty: number;
+  att_reward: number;
+  att_missed: number;
+  att_penalty: number;
+  total_reward: number;
+  total_missed: number;
+  total_penalty: number;
+  calculated_balance_change: number;
+  real_balance_change: number;
+  calculation_error: number;
 }
 
 export interface NOsProposesStats {

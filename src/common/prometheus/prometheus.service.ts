@@ -17,8 +17,8 @@ import {
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
-  METRIC_OPERATOR_BALANCE,
   METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
+  METRIC_OPERATOR_CALCULATED_BALANCE_CALCULATION_ERROR,
   METRIC_OPERATOR_CALCULATED_BALANCE_DELTA,
   METRIC_OPERATOR_MISSED_REWARD,
   METRIC_OPERATOR_PENALTY,
@@ -221,12 +221,6 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_name'],
   });
 
-  public operatorBalance = this.getOrCreateMetric('Gauge', {
-    name: METRIC_OPERATOR_BALANCE,
-    help: 'operator balance (according to state)',
-    labelNames: ['nos_name'],
-  });
-
   public operatorRealBalanceDelta = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_REAL_BALANCE_DELTA,
     help: 'operator real balance delta (according to state)',
@@ -236,6 +230,12 @@ export class PrometheusService implements OnApplicationBootstrap {
   public operatorCalculatedBalanceDelta = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_CALCULATED_BALANCE_DELTA,
     help: 'operator calculated balance delta (according to calculated rewards and penalties)',
+    labelNames: ['nos_name'],
+  });
+
+  public operatorCalculatedBalanceCalculationError = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_CALCULATED_BALANCE_CALCULATION_ERROR,
+    help: 'operator calculated balance delta calculation error by real balance change',
     labelNames: ['nos_name'],
   });
 

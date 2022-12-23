@@ -34,9 +34,6 @@ export class StateMetrics {
       this.userValidatorsStats(),
       this.otherValidatorsStats(),
       this.avgDeltas(),
-      this.operatorsBalance(),
-      this.operatorsRealDelta(),
-      this.operatorsCalculatedDelta(),
       this.minDeltas(),
       this.negativeValidatorsCount(),
       this.totalBalance24hDifference(),
@@ -135,27 +132,6 @@ export class StateMetrics {
       const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
       this.prometheus.validatorBalanceDelta.set({ nos_name: operator.name }, operatorResult ? operatorResult.delta : 0);
     });
-
-  private async operatorsBalance() {
-    const result = await this.storage.getOperatorBalanceQuery(this.processedEpoch);
-    for (const r of result) {
-      this.prometheus.operatorBalance.set({ nos_name: r.val_nos_name }, r.amount);
-    }
-  }
-
-  private async operatorsRealDelta() {
-    const result = await this.storage.getOperatorRealBalanceDeltaQuery(this.processedEpoch);
-    for (const r of result) {
-      this.prometheus.operatorRealBalanceDelta.set({ nos_name: r.val_nos_name }, r.amount);
-    }
-  }
-
-  private async operatorsCalculatedDelta() {
-    const result = await this.storage.getOperatorCalculatedBalanceDeltaQuery(this.processedEpoch);
-    for (const r of result) {
-      this.prometheus.operatorCalculatedBalanceDelta.set({ nos_name: r.val_nos_name }, r.amount);
-    }
-  }
 
   private async minDeltas() {
     const result = await this.storage.getValidatorQuantile0001BalanceDeltas(this.processedEpoch);

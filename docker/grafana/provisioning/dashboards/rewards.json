@@ -24,7 +24,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1671620848504,
+  "id": 2,
+  "iteration": 1671779306951,
   "links": [
     {
       "asDropdown": false,
@@ -205,7 +206,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
-      "description": "Related to inactivity leaks and slashing case ",
+      "description": "Related to 'inactivity leaks' or 'slashing case' or math accuracy",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -253,11 +254,11 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "(abs(${real_balance_change} - sum_over_time((sum by () (ethereum_validators_monitoring_operator_calculated_balance_delta{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) / ${real_balance_change}) * 100",
+          "expr": "(sum_over_time((sum(ethereum_validators_monitoring_operator_calculated_balance_calculation_error{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / sum_over_time((sum(ethereum_validators_monitoring_operator_real_balance_delta{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) * 100",
           "refId": "A"
         }
       ],
-      "title": "Сomputational error",
+      "title": "Calculation error",
       "transformations": [],
       "type": "stat"
     },
@@ -591,6 +592,7 @@
           "refId": "missed rewards median"
         }
       ],
+      "title": "Life line",
       "transparent": true,
       "type": "timeseries"
     },
@@ -1565,7 +1567,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-red"
+                    "color": "light-red",
+                    "value": null
                   }
                 ]
               }
@@ -1835,7 +1838,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -1917,7 +1921,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-purple"
+                    "color": "light-purple",
+                    "value": null
                   }
                 ]
               }
@@ -2220,7 +2225,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -2280,8 +2286,8 @@
       {
         "current": {
           "selected": false,
-          "text": "165529",
-          "value": "165529"
+          "text": "169033",
+          "value": "169033"
         },
         "datasource": {
           "type": "prometheus",
@@ -2388,8 +2394,8 @@
       {
         "current": {
           "selected": false,
-          "text": "92.42691382486373",
-          "value": "92.42691382486373"
+          "text": "96.4599609375",
+          "value": "96.4599609375"
         },
         "datasource": {
           "type": "prometheus",
@@ -2416,8 +2422,8 @@
       {
         "current": {
           "selected": false,
-          "text": "30",
-          "value": "30"
+          "text": "20",
+          "value": "20"
         },
         "datasource": {
           "type": "prometheus",
@@ -2443,7 +2449,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "Allnodes",
             "Anyblock Analytics",
@@ -2554,30 +2560,6 @@
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "60021683043",
-          "value": "60021683043"
-        },
-        "datasource": {
-          "type": "vertamedia-clickhouse-datasource",
-          "uid": "PDEE91DDB90597936"
-        },
-        "definition": "    SELECT\n        SUM(curr.val_balance - previous.val_balance) as \"Balance change\"\n    FROM\n      validators_summary AS curr\n    INNER JOIN\n      (\n        SELECT val_balance, val_id, val_nos_id\n        FROM validators_summary\n        WHERE\n          val_status != 'pending_queued' AND\n          val_nos_id IS NOT NULL AND\n          epoch = ${epoch_number_var} - ${epochs_range}\n          AND val_nos_name in [${nos_name_var}]\n    ) AS previous\n    ON\n      previous.val_nos_id = curr.val_nos_id AND\n      previous.val_id = curr.val_id\n    WHERE\n      curr.epoch = ${epoch_number_var}\n      AND curr.val_status != 'pending_queued'\n      AND curr.val_nos_id IS NOT NULL\n      AND val_nos_name in [${nos_name_var}]",
-        "hide": 2,
-        "includeAll": false,
-        "label": "Balance change",
-        "multi": false,
-        "name": "real_balance_change",
-        "options": [],
-        "query": "    SELECT\n        SUM(curr.val_balance - previous.val_balance) as \"Balance change\"\n    FROM\n      validators_summary AS curr\n    INNER JOIN\n      (\n        SELECT val_balance, val_id, val_nos_id\n        FROM validators_summary\n        WHERE\n          val_status != 'pending_queued' AND\n          val_nos_id IS NOT NULL AND\n          epoch = ${epoch_number_var} - ${epochs_range}\n          AND val_nos_name in [${nos_name_var}]\n    ) AS previous\n    ON\n      previous.val_nos_id = curr.val_nos_id AND\n      previous.val_id = curr.val_id\n    WHERE\n      curr.epoch = ${epoch_number_var}\n      AND curr.val_status != 'pending_queued'\n      AND curr.val_nos_id IS NOT NULL\n      AND val_nos_name in [${nos_name_var}]",
-        "refresh": 2,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
       }
     ]
   },
@@ -2599,6 +2581,6 @@
   "timezone": "",
   "title": "Rewards & Penalties",
   "uid": "poBeaLaRD",
-  "version": 31,
+  "version": 4,
   "weekStart": ""
 }

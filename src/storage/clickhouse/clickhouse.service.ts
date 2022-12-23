@@ -11,12 +11,9 @@ import { EpochMeta } from 'duty/summary';
 
 import {
   avgValidatorBalanceDelta,
-  calculatedBalanceDelta,
   chainSyncParticipationAvgPercentQuery,
   epochMetadata,
   operatorBalance24hDifferenceQuery,
-  operatorBalanceDeltaQuery,
-  operatorBalanceQuery,
   operatorsSyncParticipationAvgPercentsQuery,
   otherSyncParticipationAvgPercentQuery,
   otherValidatorsSummaryStatsQuery,
@@ -159,27 +156,6 @@ export class ClickhouseService implements OnModuleInit {
     return (await this.select<NOsDelta[]>(avgValidatorBalanceDelta(epoch))).map((v) => ({
       ...v,
       delta: Number(v.delta),
-    }));
-  }
-
-  public async getOperatorBalanceQuery(epoch: bigint): Promise<{ val_nos_name; amount }[]> {
-    return (await this.select<{ val_nos_name; amount }[]>(operatorBalanceQuery(epoch))).map((v) => ({
-      ...v,
-      amount: Number(v.amount),
-    }));
-  }
-
-  public async getOperatorRealBalanceDeltaQuery(epoch: bigint): Promise<{ val_nos_name; amount }[]> {
-    return (await this.select<{ val_nos_name; amount }[]>(operatorBalanceDeltaQuery(epoch))).map((v) => ({
-      ...v,
-      amount: Number(v.amount),
-    }));
-  }
-
-  public async getOperatorCalculatedBalanceDeltaQuery(epoch: bigint): Promise<{ val_nos_name; amount }[]> {
-    return (await this.select<{ val_nos_name; balance_change }[]>(calculatedBalanceDelta(epoch))).map((v) => ({
-      ...v,
-      amount: Number(v.balance_change),
     }));
   }
 
@@ -539,9 +515,15 @@ export class ClickhouseService implements OnModuleInit {
       sync_reward: +v.sync_reward,
       sync_missed: +v.sync_missed,
       sync_penalty: +v.sync_penalty,
-      attestation_reward: +v.attestation_reward,
-      attestation_missed: +v.attestation_missed,
-      attestation_penalty: +v.attestation_penalty,
+      att_reward: +v.att_reward,
+      att_missed: +v.att_missed,
+      att_penalty: +v.att_penalty,
+      total_reward: +v.total_reward,
+      total_missed: +v.total_missed,
+      total_penalty: +v.total_penalty,
+      calculated_balance_change: +v.calculated_balance_change,
+      real_balance_change: +v.real_balance_change,
+      calculation_error: +v.calculation_error,
     }));
   }
 }

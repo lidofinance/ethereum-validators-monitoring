@@ -47,14 +47,14 @@ export class SummaryMetrics {
       // Rewards
       this.prometheus.operatorReward.set(
         { nos_name: operator.name, duty: Duty.Attestation },
-        operatorResult ? operatorResult.attestation_reward : 0,
+        operatorResult ? operatorResult.att_reward : 0,
       );
       this.prometheus.operatorReward.set({ nos_name: operator.name, duty: Duty.Proposal }, operatorResult ? operatorResult.prop_reward : 0);
       this.prometheus.operatorReward.set({ nos_name: operator.name, duty: Duty.Sync }, operatorResult ? operatorResult.sync_reward : 0);
       // Missed rewards
       this.prometheus.operatorMissedReward.set(
         { nos_name: operator.name, duty: Duty.Attestation },
-        operatorResult ? operatorResult.attestation_missed : 0,
+        operatorResult ? operatorResult.att_missed : 0,
       );
       this.prometheus.operatorMissedReward.set(
         { nos_name: operator.name, duty: Duty.Proposal },
@@ -67,13 +67,24 @@ export class SummaryMetrics {
       // Penalty
       this.prometheus.operatorPenalty.set(
         { nos_name: operator.name, duty: Duty.Attestation },
-        operatorResult ? operatorResult.attestation_penalty : 0,
+        operatorResult ? operatorResult.att_penalty : 0,
       );
       this.prometheus.operatorPenalty.set(
         { nos_name: operator.name, duty: Duty.Proposal },
         operatorResult ? operatorResult.prop_penalty : 0,
       );
       this.prometheus.operatorPenalty.set({ nos_name: operator.name, duty: Duty.Sync }, operatorResult ? operatorResult.sync_penalty : 0);
+      // Balance deltas (calculated and real)
+      this.prometheus.operatorRealBalanceDelta.set({ nos_name: operator.name }, operatorResult ? operatorResult.real_balance_change : 0);
+      this.prometheus.operatorCalculatedBalanceDelta.set(
+        { nos_name: operator.name },
+        operatorResult ? operatorResult.calculated_balance_change : 0,
+      );
+      // Calculation error
+      this.prometheus.operatorCalculatedBalanceCalculationError.set(
+        { nos_name: operator.name },
+        operatorResult ? operatorResult.calculation_error : 0,
+      );
     });
   }
 }

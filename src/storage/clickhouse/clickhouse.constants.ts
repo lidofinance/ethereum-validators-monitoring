@@ -27,44 +27,6 @@ export const avgValidatorBalanceDelta = (epoch: bigint): string => `
   GROUP BY val_nos_id
 `;
 
-export const operatorBalanceQuery = (epoch: bigint): string => `
-    SELECT
-        max(val_nos_name) as val_nos_name,
-        sum(val_balance) as amount
-    FROM
-        validators_summary
-    WHERE epoch = ${epoch} AND val_nos_id IS NOT NULL and val_status != '${ValStatus.PendingQueued}'
-    GROUP by val_nos_id
-`;
-
-export const operatorBalanceDeltaQuery = (epoch: bigint): string => `
-  SELECT
-    max(val_nos_name) as val_nos_name,
-    sum(current.val_balance - previous.val_balance) AS amount
-  FROM
-    (
-      SELECT val_balance, val_id, val_nos_name, val_nos_id
-      FROM validators_summary
-      WHERE
-        val_status != '${ValStatus.PendingQueued}' AND
-        val_nos_id IS NOT NULL AND
-        epoch = ${epoch}
-    ) AS current
-  INNER JOIN
-    (
-      SELECT val_balance, val_id, val_nos_name, val_nos_id
-      FROM validators_summary
-      WHERE
-        val_status != '${ValStatus.PendingQueued}' AND
-        val_nos_id IS NOT NULL AND
-        epoch = (${epoch} - 1)
-    ) AS previous
-  ON
-    previous.val_id = current.val_id
-  GROUP BY val_nos_id
-  ORDER BY amount DESC
-`;
-
 export const validatorQuantile0001BalanceDeltasQuery = (epoch: bigint): string => `
   SELECT
     val_nos_id,
@@ -413,102 +375,81 @@ export const epochMetadata = (epoch: bigint): string => `
 
 export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: bigint): string => `
   SELECT
-    att.val_nos_name as val_nos_name,
-    attestation_reward,
+    att.val_nos_id as val_nos_id,
+    bal.val_nos_name as val_nos_name,
+    --
+    attestation_reward as att_reward,
     ifNull(prop_reward, 0) as prop_reward,
     ifNull(sync_reward, 0) as sync_reward,
-    attestation_missed,
+    attestation_missed as att_missed,
     ifNull(prop_missed, 0) as prop_missed,
     ifNull(sync_missed, 0) as sync_missed,
-    attestation_penalty,
+    attestation_penalty as att_penalty,
     ifNull(prop_penalty, 0) as prop_penalty,
-    ifNull(sync_penalty, 0) as sync_penalty
+    ifNull(sync_penalty, 0) as sync_penalty,
+    --
+    att_reward + prop_reward + sync_reward as total_reward,
+    att_missed + prop_missed + sync_missed as total_missed,
+    att_penalty + prop_penalty + sync_penalty as total_penalty,
+    total_reward - total_penalty as calculated_balance_change,
+    real_balance_change,
+    abs(real_balance_change - calculated_balance_change) as calculation_error
   FROM
   (
-    select
+    SELECT
       val_nos_id,
-      max(val_nos_name) as val_nos_name,
       sum(att_earned_reward) as attestation_reward,
       sum(att_missed_reward) as attestation_missed,
       sum(att_penalty) as attestation_penalty
-    from validators_summary
-    where val_nos_id is not NULL and epoch = ${epoch} - 2
-    group by val_nos_id
+    FROM validators_summary
+    WHERE val_nos_id IS NOT NULL and epoch = ${epoch} - 2
+    GROUP BY val_nos_id
   ) as att
   LEFT JOIN
 	(
-    select
+    SELECT
       val_nos_id,
-      max(val_nos_name) as val_nos_name,
       sum(propose_earned_reward) as prop_reward,
       sum(propose_missed_reward) as prop_missed,
       sum(propose_penalty) as prop_penalty
-    from validators_summary
-    where val_nos_id is not NULL and epoch = ${epoch} and is_proposer = 1
-    group by val_nos_id
-	) as prop
-  ON
-    att.val_nos_id = prop.val_nos_id
+    FROM validators_summary
+    WHERE val_nos_id IS NOT NULL and epoch = ${epoch} and is_proposer = 1
+    GROUP BY val_nos_id
+	) as prop ON att.val_nos_id = prop.val_nos_id
   LEFT JOIN
   (
-    select
+    SELECT
       val_nos_id,
-      max(val_nos_name) as val_nos_name,
       sum(sync_earned_reward) as sync_reward,
       sum(sync_missed_reward) as sync_missed,
       sum(sync_penalty) as sync_penalty
-    from validators_summary
-    where val_nos_id is not NULL and epoch = ${epoch} and is_sync = 1
-    group by val_nos_id
-  ) as sync
-  ON
-    att.val_nos_id = sync.val_nos_id
-`;
-
-export const calculatedBalanceDelta = (epoch: bigint): string => `
-  SELECT
-    att.val_nos_name as val_nos_name,
-    att_reward + ifNull(prop_reward, 0) + ifNull(sync_reward, 0) as reward,
-    att_missed + ifNull(prop_missed, 0) + ifNull(sync_missed, 0) as missed,
-    att_penalty + ifNull(prop_penalty, 0) + ifNull(sync_penalty, 0) as penalty,
-    reward - penalty as balance_change
-  FROM
-  (
-    select
-      val_nos_id,
-      max(val_nos_name) as val_nos_name,
-      sum(att_earned_reward) as att_reward,
-      sum(att_missed_reward) as att_missed,
-      sum(att_penalty) as att_penalty
-    from validators_summary
-    where val_nos_id is not NULL and epoch = ${epoch} - 2
-    group by val_nos_id
-  ) as att
+    FROM validators_summary
+    WHERE val_nos_id IS NOT NULL and epoch = ${epoch} and is_sync = 1
+    GROUP BY val_nos_id
+  ) as sync ON att.val_nos_id = sync.val_nos_id
   LEFT JOIN
-	  (
-		select
-		  val_nos_id,
-			max(val_nos_name) as val_nos_name,
-			sum(propose_earned_reward) as prop_reward,
-			sum(propose_missed_reward) as prop_missed,
-			sum(propose_penalty) as prop_penalty
-		from validators_summary
-		where val_nos_id is not NULL and epoch = ${epoch} and is_proposer = 1
-		group by val_nos_id
-	  ) as prop
-  ON
-    att.val_nos_id = prop.val_nos_id
-  LEFT JOIN    (
-    select
+  (
+    SELECT
       val_nos_id,
-      max(val_nos_name) as val_nos_name,
-      sum(sync_earned_reward) as sync_reward,
-      sum(sync_missed_reward) as sync_missed,
-      sum(sync_penalty) as sync_penalty
-    from validators_summary
-    where val_nos_id is not NULL and epoch = ${epoch} and is_sync = 1
-    group by val_nos_id
-  ) as sync
-  ON
-    att.val_nos_id = sync.val_nos_id
+      max(current.val_nos_name) as val_nos_name,
+      sum(current.val_balance - previous.val_balance) AS real_balance_change
+    FROM (
+      SELECT val_balance, val_id, val_nos_id, val_nos_name
+      FROM validators_summary as curr
+      WHERE
+        val_status != '${ValStatus.PendingQueued}' AND
+        val_nos_id IS NOT NULL AND
+        epoch = ${epoch}
+    ) AS current
+    INNER JOIN
+    (
+      SELECT val_balance, val_id, val_nos_id
+      FROM validators_summary
+      WHERE
+        val_status != '${ValStatus.PendingQueued}' AND
+        val_nos_id IS NOT NULL AND
+        epoch = (${epoch} - 1)
+    ) AS previous ON previous.val_id = current.val_id
+    GROUP BY val_nos_id
+  ) as bal ON att.val_nos_id = bal.val_nos_id
 `;
