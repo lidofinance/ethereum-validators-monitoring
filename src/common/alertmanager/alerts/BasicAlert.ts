@@ -1,7 +1,6 @@
 import { ConfigService } from 'common/config';
+import { RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
-
-import { RegistrySourceOperator } from '../../validators-registry';
 
 export interface AlertRequestBody {
   startsAt: string;

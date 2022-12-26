@@ -2,9 +2,9 @@ import { join } from 'lodash';
 
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
+import { RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
-import { RegistrySourceOperator } from '../../validators-registry';
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
 const VALIDATORS_WITH_MISSED_PROPOSALS_COUNT_THRESHOLD = 1 / 3;

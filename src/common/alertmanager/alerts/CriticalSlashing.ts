@@ -1,9 +1,9 @@
 import { join } from 'lodash';
 
 import { ConfigService } from 'common/config';
+import { RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
-import { RegistrySourceOperator } from '../../validators-registry';
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
 export class CriticalSlashing extends Alert {

@@ -4,9 +4,9 @@ import got from 'got';
 
 import { ConfigService } from 'common/config';
 import { PrometheusService } from 'common/prometheus';
+import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
-import { RegistryService, RegistrySourceOperator } from '../validators-registry';
 import { AlertRequestBody, PreparedToSendAlert } from './alerts/BasicAlert';
 import { CriticalMissedAttestations } from './alerts/CriticalMissedAttestations';
 import { CriticalMissedProposes } from './alerts/CriticalMissedProposes';
