@@ -137,7 +137,7 @@ describe('Duties', () => {
 
   let epochNumber, stateSlot;
   const indexesToSave = [];
-  const summaryToSave = [];
+  let summaryToSave = [];
 
   process.env['DB_HOST'] = 'http://localhost'; // stub to avoid lib validator
   const getActualKeysIndexedMock = jest.fn().mockImplementation(async () => {
@@ -161,14 +161,7 @@ describe('Duties', () => {
         pipeline.on('end', () => resolve(true));
       }).finally(() => pipeline.destroy()),
   );
-  jest.spyOn(ClickhouseService.prototype, 'writeSummary').mockImplementation(
-    async (pipeline): Promise<any> =>
-      await new Promise((resolve, reject) => {
-        pipeline.on('data', (data) => summaryToSave.push(data));
-        pipeline.on('error', (e) => reject(e));
-        pipeline.on('end', () => resolve(true));
-      }).finally(() => pipeline.destroy()),
-  );
+  jest.spyOn(ClickhouseService.prototype, 'writeSummary');
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -214,6 +207,7 @@ describe('Duties', () => {
     epochNumber = BigInt(process.env['TEST_EPOCH_NUMBER']);
 
     await Promise.all([dutyService['prefetch'](epochNumber), dutyService['checkAll'](epochNumber, stateSlot)]);
+    summaryToSave = [...dutyService['summary'].values()].map((v) => ({ ...v, att_meta: undefined, sync_meta: undefined }));
     await dutyService['writeSummary']();
   });
 
