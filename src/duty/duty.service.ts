@@ -1,5 +1,3 @@
-import { Readable } from 'stream';
-
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
@@ -140,8 +138,7 @@ export class DutyService {
 
   protected async writeSummary(): Promise<any> {
     this.logger.log('Writing summary of duties into DB');
-    const stream = new Readable({ objectMode: true });
-    await Promise.all([this.storage.writeSummary(stream), this.streamSummary(stream)]);
+    await this.storage.writeSummary(this.summary.valuesToWrite());
     this.summary.clear();
   }
 
@@ -150,15 +147,5 @@ export class DutyService {
     const meta = this.summary.getMeta();
     await this.storage.writeEpochMeta(epoch, meta);
     this.summary.clearMeta();
-  }
-
-  protected async streamSummary(stream: Readable) {
-    const summary = this.summary.values();
-    let next = summary.next();
-    while (!next.done) {
-      stream.push({ ...next.value, att_meta: undefined, sync_meta: undefined });
-      next = summary.next();
-    }
-    stream.push(null);
   }
 }

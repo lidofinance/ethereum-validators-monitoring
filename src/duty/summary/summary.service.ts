@@ -108,6 +108,10 @@ export class SummaryService {
     return this.storage.values();
   }
 
+  public valuesToWrite(): ValidatorDutySummary[] {
+    return [...this.storage.values()].map((v) => ({ ...v, att_meta: undefined, sync_meta: undefined }));
+  }
+
   public clear() {
     this.storage.clear();
   }
