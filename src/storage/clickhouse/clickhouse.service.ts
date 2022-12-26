@@ -1,4 +1,4 @@
-import { Duplex, Readable } from 'stream';
+import { Duplex } from 'stream';
 
 import { ClickHouseClient, createClient } from '@clickhouse/client';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
@@ -7,7 +7,7 @@ import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from 'common/config';
 import { retrier } from 'common/functions/retrier';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-import { EpochMeta } from 'duty/summary';
+import { EpochMeta, ValidatorDutySummary } from 'duty/summary';
 
 import {
   avgChainRewardsAndPenaltiesStats,
@@ -56,6 +56,7 @@ export class ClickhouseService implements OnModuleInit {
   private readonly maxRetries: number;
   private readonly minBackoff: number;
   private readonly maxBackoff: number;
+  private readonly chunkSize: number;
   private readonly retry: ReturnType<typeof retrier>;
 
   public constructor(
@@ -66,6 +67,7 @@ export class ClickhouseService implements OnModuleInit {
     this.maxRetries = this.config.get('DB_MAX_RETRIES');
     this.minBackoff = this.config.get('DB_MIN_BACKOFF_SEC');
     this.maxBackoff = this.config.get('DB_MAX_BACKOFF_SEC');
+    this.chunkSize = this.config.get('DB_INSERT_CHUNK_SIZE');
 
     this.logger.log(`DB backoff set to (min=[${this.minBackoff}], max=[${this.maxBackoff}] seconds`);
     this.logger.log(`DB max retries set to [${this.maxRetries}]`);
@@ -114,14 +116,25 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   @TrackTask('write-summary')
-  public async writeSummary(stream: Readable): Promise<void> {
-    await this.db
-      .insert({
+  public async writeSummary(summary: IterableIterator<ValidatorDutySummary>): Promise<void> {
+    let chunk: any[] = [];
+    const write = async (data) => {
+      await this.db.insert({
         table: 'validators_summary',
-        values: stream,
+        values: data,
         format: 'JSONEachRow',
-      })
-      .finally(() => stream.destroy());
+      });
+    };
+    for await (const item of summary) {
+      chunk.push({ ...item, att_meta: undefined, sync_meta: undefined });
+      if (chunk.length === this.chunkSize) {
+        await write(chunk);
+        chunk = [];
+      }
+    }
+    if (chunk.length > 0) {
+      await write(chunk);
+    }
   }
 
   @TrackTask('write-epoch-meta')

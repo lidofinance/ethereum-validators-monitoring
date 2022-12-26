@@ -114,6 +114,11 @@ export class EnvironmentVariables {
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public DB_MAX_BACKOFF_SEC = 120;
 
+  @IsNumber()
+  @Min(100)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public DB_INSERT_CHUNK_SIZE = 100_000;
+
   @IsNotEmpty()
   @IsInt()
   @Min(1)
