@@ -8,6 +8,9 @@ import { ConfigService } from 'common/config';
 import { Metric, Options } from './interfaces';
 import {
   METRICS_PREFIX,
+  METRIC_AVG_CHAIN_MISSED_REWARD,
+  METRIC_AVG_CHAIN_PENALTY,
+  METRIC_AVG_CHAIN_REWARD,
   METRIC_BUILD_INFO,
   METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_CONTRACT_KEYS_TOTAL,
@@ -431,16 +434,34 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_name'],
   });
 
+  public avgChainReward = this.getOrCreateMetric('Gauge', {
+    name: METRIC_AVG_CHAIN_REWARD,
+    help: 'avg rewards for each duty',
+    labelNames: ['duty'],
+  });
+
   public operatorReward = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_REWARD,
     help: 'rewards for each duty for each operator',
     labelNames: ['nos_name', 'duty'],
   });
 
+  public avgChainMissedReward = this.getOrCreateMetric('Gauge', {
+    name: METRIC_AVG_CHAIN_MISSED_REWARD,
+    help: 'avg missed rewards for each duty',
+    labelNames: ['duty'],
+  });
+
   public operatorMissedReward = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_MISSED_REWARD,
     help: 'missed rewards for each duty for each operator',
     labelNames: ['nos_name', 'duty'],
+  });
+
+  public avgChainPenalty = this.getOrCreateMetric('Gauge', {
+    name: METRIC_AVG_CHAIN_PENALTY,
+    help: 'avg penalty for each duty',
+    labelNames: ['duty'],
   });
 
   public operatorPenalty = this.getOrCreateMetric('Gauge', {

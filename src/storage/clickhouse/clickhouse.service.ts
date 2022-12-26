@@ -10,6 +10,7 @@ import { PrometheusService, TrackTask } from 'common/prometheus';
 import { EpochMeta } from 'duty/summary';
 
 import {
+  avgChainRewardsAndPenaltiesStats,
   avgValidatorBalanceDelta,
   chainSyncParticipationAvgPercentQuery,
   epochMetadata,
@@ -31,6 +32,7 @@ import {
   validatorsCountWithSyncParticipationByConditionLastNEpochQuery,
 } from './clickhouse.constants';
 import {
+  AvgChainRewardsStats,
   NOsDelta,
   NOsProposesStats,
   NOsValidatorsByConditionAttestationCount,
@@ -525,5 +527,19 @@ export class ClickhouseService implements OnModuleInit {
       real_balance_change: +v.real_balance_change,
       calculation_error: +v.calculation_error,
     }));
+  }
+
+  public async getAvgChainRewardsAndPenaltiesStats(epoch: bigint): Promise<AvgChainRewardsStats> {
+    return (await this.select<AvgChainRewardsStats[]>(avgChainRewardsAndPenaltiesStats(epoch))).map((v) => ({
+      prop_reward: +v.prop_reward,
+      prop_missed: +v.prop_missed,
+      prop_penalty: +v.prop_penalty,
+      sync_reward: +v.sync_reward,
+      sync_missed: +v.sync_missed,
+      sync_penalty: +v.sync_penalty,
+      att_reward: +v.att_reward,
+      att_missed: +v.att_missed,
+      att_penalty: +v.att_penalty,
+    }))[0];
   }
 }

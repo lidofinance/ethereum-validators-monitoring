@@ -24,8 +24,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1671779306951,
+  "id": 6,
+  "iteration": 1672044101442,
   "links": [
     {
       "asDropdown": false,
@@ -263,12 +263,775 @@
       "type": "stat"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 5
+      },
+      "id": 1774,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 0,
+            "y": 6
+          },
+          "id": 1765,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "hidden",
+              "placement": "right",
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "ethereum_validators_monitoring_avg_chain_reward{duty=\"attestation\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "interval": "",
+              "legendFormat": "avg",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Attestation reward",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 8,
+            "y": 6
+          },
+          "id": 1766,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "hidden",
+              "placement": "right",
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "ethereum_validators_monitoring_avg_chain_reward{duty=\"proposal\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "interval": "",
+              "legendFormat": "avg",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Proposal reward",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 16,
+            "y": 6
+          },
+          "id": 1767,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "hidden",
+              "placement": "right",
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "ethereum_validators_monitoring_avg_chain_reward{duty=\"sync\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "interval": "",
+              "legendFormat": "avg",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Sync reward",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "red",
+                "mode": "fixed"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 12,
+            "x": 0,
+            "y": 10
+          },
+          "id": 1768,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "hidden",
+              "placement": "right",
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "ethereum_validators_monitoring_avg_chain_penalty{duty=\"attestation\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "interval": "",
+              "legendFormat": "avg",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Attestation penalty",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "red",
+                "mode": "fixed"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 12,
+            "x": 12,
+            "y": 10
+          },
+          "id": 1769,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "hidden",
+              "placement": "right",
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "ethereum_validators_monitoring_avg_chain_penalty{duty=\"sync\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "interval": "",
+              "legendFormat": "avg",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Sync penalty",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "purple",
+                "mode": "fixed"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 0,
+            "y": 14
+          },
+          "id": 1770,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "hidden",
+              "placement": "right",
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "ethereum_validators_monitoring_avg_chain_missed_reward{duty=\"attestation\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "interval": "",
+              "legendFormat": "avg",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Attestation missed reward",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "purple",
+                "mode": "fixed"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 8,
+            "y": 14
+          },
+          "id": 1771,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "hidden",
+              "placement": "right",
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "ethereum_validators_monitoring_avg_chain_missed_reward{duty=\"proposal\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "interval": "",
+              "legendFormat": "avg",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Proposal missed reward",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "purple",
+                "mode": "fixed"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 8,
+            "x": 16,
+            "y": 14
+          },
+          "id": 1772,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "hidden",
+              "placement": "right",
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "ethereum_validators_monitoring_avg_chain_missed_reward{duty=\"sync\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "interval": "",
+              "legendFormat": "avg",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Sync missed reward",
+          "type": "timeseries"
+        }
+      ],
+      "title": "⛓️ Average chain validator stats",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 6
       },
       "id": 1729,
       "panels": [],
@@ -502,9 +1265,9 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 6
+        "y": 7
       },
-      "id": 1763,
+      "id": 1764,
       "options": {
         "legend": {
           "calcs": [],
@@ -630,7 +1393,7 @@
         "h": 6,
         "w": 10,
         "x": 0,
-        "y": 12
+        "y": 13
       },
       "id": 1732,
       "options": {
@@ -766,6 +1529,24 @@
                 "value": 125
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Calc error"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 125
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed"
+                }
+              }
+            ]
           }
         ]
       },
@@ -773,7 +1554,7 @@
         "h": 13,
         "w": 14,
         "x": 10,
-        "y": 12
+        "y": 13
       },
       "id": 1758,
       "options": {
@@ -852,6 +1633,21 @@
           "legendFormat": "{{nos_name}}",
           "range": false,
           "refId": "earned"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "(sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_calculated_balance_calculation_error{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9)",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "{{nos_name}}",
+          "range": false,
+          "refId": "error"
         }
       ],
       "title": "Total summary (${epochs_range} epochs range)",
@@ -879,6 +1675,12 @@
                 "operation": "aggregate"
               },
               "Value #earned": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #error": {
                 "aggregations": [
                   "sum"
                 ],
@@ -952,6 +1754,7 @@
               "Value #att (sum)": "Attestation",
               "Value #bad (sum)": "Bad",
               "Value #earned (sum)": "Earned",
+              "Value #error (sum)": "Calc error",
               "Value #good (sum)": "Good",
               "Value #missed (sum)": "Missed rewards",
               "Value #penalty (sum)": "Penalty",
@@ -999,7 +1802,7 @@
         "h": 4,
         "w": 5,
         "x": 0,
-        "y": 18
+        "y": 19
       },
       "id": 1727,
       "options": {
@@ -1064,7 +1867,7 @@
         "h": 4,
         "w": 5,
         "x": 5,
-        "y": 18
+        "y": 19
       },
       "id": 1730,
       "options": {
@@ -1128,7 +1931,7 @@
         "h": 3,
         "w": 10,
         "x": 0,
-        "y": 22
+        "y": 23
       },
       "id": 1731,
       "options": {
@@ -1165,7 +1968,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 25
+        "y": 26
       },
       "id": 1735,
       "panels": [
@@ -1191,8 +1994,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-green",
-                    "value": null
+                    "color": "light-green"
                   }
                 ]
               }
@@ -1275,7 +2077,7 @@
             "h": 13,
             "w": 11,
             "x": 0,
-            "y": 26
+            "y": 27
           },
           "id": 1754,
           "options": {
@@ -1484,8 +2286,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -1496,7 +2297,7 @@
             "h": 13,
             "w": 13,
             "x": 11,
-            "y": 26
+            "y": 27
           },
           "id": 1744,
           "options": {
@@ -1541,7 +2342,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 27
       },
       "id": 1737,
       "panels": [
@@ -1567,8 +2368,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-red",
-                    "value": null
+                    "color": "light-red"
                   }
                 ]
               }
@@ -1643,7 +2443,7 @@
             "h": 13,
             "w": 11,
             "x": 0,
-            "y": 27
+            "y": 41
           },
           "id": 1755,
           "options": {
@@ -1838,8 +2638,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -1850,7 +2649,7 @@
             "h": 13,
             "w": 13,
             "x": 11,
-            "y": 27
+            "y": 41
           },
           "id": 1750,
           "options": {
@@ -1895,7 +2694,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 28
       },
       "id": 1739,
       "panels": [
@@ -1921,8 +2720,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-purple",
-                    "value": null
+                    "color": "light-purple"
                   }
                 ]
               }
@@ -2005,7 +2803,7 @@
             "h": 13,
             "w": 11,
             "x": 0,
-            "y": 28
+            "y": 55
           },
           "id": 1756,
           "options": {
@@ -2225,8 +3023,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -2237,7 +3034,7 @@
             "h": 13,
             "w": 13,
             "x": 11,
-            "y": 28
+            "y": 55
           },
           "id": 1751,
           "options": {
@@ -2286,8 +3083,8 @@
       {
         "current": {
           "selected": false,
-          "text": "169033",
-          "value": "169033"
+          "text": "169815",
+          "value": "169815"
         },
         "datasource": {
           "type": "prometheus",
@@ -2394,8 +3191,8 @@
       {
         "current": {
           "selected": false,
-          "text": "96.4599609375",
-          "value": "96.4599609375"
+          "text": "95.953369140625",
+          "value": "95.953369140625"
         },
         "datasource": {
           "type": "prometheus",
@@ -2422,8 +3219,8 @@
       {
         "current": {
           "selected": false,
-          "text": "20",
-          "value": "20"
+          "text": "6",
+          "value": "6"
         },
         "datasource": {
           "type": "prometheus",
@@ -2581,6 +3378,6 @@
   "timezone": "",
   "title": "Rewards & Penalties",
   "uid": "poBeaLaRD",
-  "version": 4,
+  "version": 2,
   "weekStart": ""
 }

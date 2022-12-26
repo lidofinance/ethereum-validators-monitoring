@@ -40,7 +40,23 @@ export class SummaryMetrics {
     this.prometheus.epochNumber.set(Number(this.processedEpoch));
   }
 
-  private async rewards() {
+  private async avgChainRewards() {
+    const result = await this.storage.getAvgChainRewardsAndPenaltiesStats(this.processedEpoch);
+    // Rewards
+    this.prometheus.avgChainReward.set({ duty: Duty.Attestation }, result ? result.att_reward : 0);
+    this.prometheus.avgChainReward.set({ duty: Duty.Proposal }, result ? result.prop_reward : 0);
+    this.prometheus.avgChainReward.set({ duty: Duty.Sync }, result ? result.sync_reward : 0);
+    // Missed rewards
+    this.prometheus.avgChainMissedReward.set({ duty: Duty.Attestation }, result ? result.att_missed : 0);
+    this.prometheus.avgChainMissedReward.set({ duty: Duty.Proposal }, result ? result.prop_missed : 0);
+    this.prometheus.avgChainMissedReward.set({ duty: Duty.Sync }, result ? result.sync_missed : 0);
+    // Penalty
+    this.prometheus.avgChainPenalty.set({ duty: Duty.Attestation }, result ? result.att_penalty : 0);
+    this.prometheus.avgChainPenalty.set({ duty: Duty.Proposal }, result ? result.prop_penalty : 0);
+    this.prometheus.avgChainPenalty.set({ duty: Duty.Sync }, result ? result.sync_penalty : 0);
+  }
+
+  private async userRewards() {
     const result = await this.storage.getUserNodeOperatorsRewardsAndPenaltiesStats(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
