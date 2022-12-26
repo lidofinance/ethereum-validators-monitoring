@@ -4,12 +4,11 @@ import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common'
 import { CriticalAlertsService } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
 import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
+import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
 import { sleep } from 'common/functions/sleep';
 import { PrometheusService } from 'common/prometheus';
 import { DutyMetrics, DutyService } from 'duty';
 import { ClickhouseService } from 'storage';
-
-import { BlockCacheService } from '../common/eth-providers/consensus-provider/block-cache';
 
 @Injectable()
 export class InspectorService implements OnModuleInit {
@@ -45,10 +44,7 @@ export class InspectorService implements OnModuleInit {
         const nextFinalized = await this.waitForNextFinalizedSlot();
         if (nextFinalized) {
           const { epoch, stateSlot } = nextFinalized;
-          const [possibleHighRewardValidators] = await Promise.all([
-            this.dutyMetrics.getPossibleHighRewardValidators(),
-            this.dutyService.checkAndWrite(epoch, stateSlot),
-          ]);
+          const possibleHighRewardValidators = await this.dutyService.checkAndWrite(epoch, stateSlot);
           await this.dutyMetrics.calculate(epoch, possibleHighRewardValidators);
           await this.criticalAlerts.send(epoch);
           this.latestProcessedEpoch = epoch;

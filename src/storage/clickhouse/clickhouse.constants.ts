@@ -1,6 +1,6 @@
 import { ValStatus } from 'common/eth-providers';
 
-export const validatorBalancesDeltaQuery = (epoch: bigint): string => `
+export const avgValidatorBalanceDelta = (epoch: bigint): string => `
   SELECT
     val_nos_id,
     avg(current.val_balance - previous.val_balance) AS delta
@@ -365,4 +365,127 @@ export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: bigint, epo
     GROUP BY val_nos_id, block_proposed
   )
   GROUP by val_nos_id
+`;
+
+export const epochMetadata = (epoch: bigint): string => `
+  SELECT *
+  FROM epochs_metadata
+  WHERE epoch = ${epoch}
+`;
+
+export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: bigint): string => `
+  SELECT
+    att.val_nos_id as val_nos_id,
+    --
+    attestation_reward as att_reward,
+    ifNull(prop_reward, 0) as prop_reward,
+    ifNull(sync_reward, 0) as sync_reward,
+    attestation_missed as att_missed,
+    ifNull(prop_missed, 0) as prop_missed,
+    ifNull(sync_missed, 0) as sync_missed,
+    attestation_penalty as att_penalty,
+    ifNull(prop_penalty, 0) as prop_penalty,
+    ifNull(sync_penalty, 0) as sync_penalty,
+    --
+    att_reward + prop_reward + sync_reward as total_reward,
+    att_missed + prop_missed + sync_missed as total_missed,
+    att_penalty + prop_penalty + sync_penalty as total_penalty,
+    total_reward - total_penalty as calculated_balance_change,
+    real_balance_change,
+    calculated_balance_change - real_balance_change as calculation_error
+  FROM
+  (
+    SELECT
+      val_nos_id,
+      sum(att_earned_reward) as attestation_reward,
+      sum(att_missed_reward) as attestation_missed,
+      sum(att_penalty) as attestation_penalty
+    FROM validators_summary
+    WHERE val_nos_id IS NOT NULL and epoch = ${epoch} - 2
+    GROUP BY val_nos_id
+  ) as att
+  LEFT JOIN
+	(
+    SELECT
+      val_nos_id,
+      sum(propose_earned_reward) as prop_reward,
+      sum(propose_missed_reward) as prop_missed,
+      sum(propose_penalty) as prop_penalty
+    FROM validators_summary
+    WHERE val_nos_id IS NOT NULL and epoch = ${epoch} and is_proposer = 1
+    GROUP BY val_nos_id
+	) as prop ON att.val_nos_id = prop.val_nos_id
+  LEFT JOIN
+  (
+    SELECT
+      val_nos_id,
+      sum(sync_earned_reward) as sync_reward,
+      sum(sync_missed_reward) as sync_missed,
+      sum(sync_penalty) as sync_penalty
+    FROM validators_summary
+    WHERE val_nos_id IS NOT NULL and epoch = ${epoch} and is_sync = 1
+    GROUP BY val_nos_id
+  ) as sync ON att.val_nos_id = sync.val_nos_id
+  LEFT JOIN
+  (
+    SELECT
+      val_nos_id,
+      sum(current.val_balance - previous.val_balance) AS real_balance_change
+    FROM (
+      SELECT val_balance, val_id, val_nos_id
+      FROM validators_summary as curr
+      WHERE
+        val_status != '${ValStatus.PendingQueued}' AND
+        val_nos_id IS NOT NULL AND
+        epoch = ${epoch}
+    ) AS current
+    INNER JOIN
+    (
+      SELECT val_balance, val_id, val_nos_id
+      FROM validators_summary
+      WHERE
+        val_status != '${ValStatus.PendingQueued}' AND
+        val_nos_id IS NOT NULL AND
+        epoch = (${epoch} - 1)
+    ) AS previous ON previous.val_id = current.val_id
+    GROUP BY val_nos_id
+  ) as bal ON att.val_nos_id = bal.val_nos_id
+`;
+
+export const avgChainRewardsAndPenaltiesStats = (epoch: bigint): string => `
+  SELECT
+    attestation_reward as att_reward,
+    ifNull(prop_reward, 0) as prop_reward,
+    ifNull(sync_reward, 0) as sync_reward,
+    attestation_missed as att_missed,
+    ifNull(prop_missed, 0) as prop_missed,
+    ifNull(sync_missed, 0) as sync_missed,
+    attestation_penalty as att_penalty,
+    ifNull(prop_penalty, 0) as prop_penalty,
+    ifNull(sync_penalty, 0) as sync_penalty
+  FROM
+  (
+    SELECT
+      avg(att_earned_reward) as attestation_reward,
+      avg(att_missed_reward) as attestation_missed,
+      avg(att_penalty) as attestation_penalty
+    FROM validators_summary
+    WHERE epoch = ${epoch} - 2
+  ) as att,
+	(
+    SELECT
+      avg(propose_earned_reward) as prop_reward,
+      avg(propose_missed_reward) as prop_missed,
+      avg(propose_penalty) as prop_penalty
+    FROM validators_summary
+    WHERE epoch = ${epoch} and is_proposer = 1
+	) as prop,
+  (
+    SELECT
+      avg(sync_earned_reward) as sync_reward,
+      avg(sync_missed_reward) as sync_missed,
+      avg(sync_penalty) as sync_penalty
+    FROM validators_summary
+    WHERE epoch = ${epoch} and is_sync = 1
+  ) as sync
 `;

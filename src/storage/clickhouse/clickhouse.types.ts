@@ -38,6 +38,37 @@ export interface NOsValidatorsStatusStats extends ValidatorsStatusStats {
   val_nos_id: string;
 }
 
+export interface NOsValidatorsRewardsStats {
+  val_nos_id: string;
+  prop_reward: number;
+  prop_missed: number;
+  prop_penalty: number;
+  sync_reward: number;
+  sync_missed: number;
+  sync_penalty: number;
+  att_reward: number;
+  att_missed: number;
+  att_penalty: number;
+  total_reward: number;
+  total_missed: number;
+  total_penalty: number;
+  calculated_balance_change: number;
+  real_balance_change: number;
+  calculation_error: number;
+}
+
+export interface AvgChainRewardsStats {
+  prop_reward: number;
+  prop_missed: number;
+  prop_penalty: number;
+  sync_reward: number;
+  sync_missed: number;
+  sync_penalty: number;
+  att_reward: number;
+  att_missed: number;
+  att_penalty: number;
+}
+
 export interface NOsProposesStats {
   val_nos_id: string;
   all: number;

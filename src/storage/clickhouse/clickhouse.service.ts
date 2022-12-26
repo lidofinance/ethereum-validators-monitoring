@@ -1,25 +1,29 @@
+import { Duplex, Readable } from 'stream';
+
 import { ClickHouseClient, createClient } from '@clickhouse/client';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { StateValidatorResponse } from 'common/eth-providers';
 import { retrier } from 'common/functions/retrier';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-import { ValidatorDutySummary } from 'duty/summary';
+import { EpochMeta } from 'duty/summary';
 
 import {
+  avgChainRewardsAndPenaltiesStats,
+  avgValidatorBalanceDelta,
   chainSyncParticipationAvgPercentQuery,
+  epochMetadata,
   operatorBalance24hDifferenceQuery,
   operatorsSyncParticipationAvgPercentsQuery,
   otherSyncParticipationAvgPercentQuery,
   otherValidatorsSummaryStatsQuery,
   totalBalance24hDifferenceQuery,
   userNodeOperatorsProposesStatsLastNEpochQuery,
+  userNodeOperatorsRewardsAndPenaltiesStats,
   userNodeOperatorsStatsQuery,
   userSyncParticipationAvgPercentQuery,
   userValidatorsSummaryStatsQuery,
-  validatorBalancesDeltaQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
   validatorCountHighAvgIncDelayAttestationOfNEpochQuery,
   validatorQuantile0001BalanceDeltasQuery,
@@ -28,11 +32,13 @@ import {
   validatorsCountWithSyncParticipationByConditionLastNEpochQuery,
 } from './clickhouse.constants';
 import {
+  AvgChainRewardsStats,
   NOsDelta,
   NOsProposesStats,
   NOsValidatorsByConditionAttestationCount,
   NOsValidatorsByConditionProposeCount,
   NOsValidatorsNegDeltaCount,
+  NOsValidatorsRewardsStats,
   NOsValidatorsStatusStats,
   NOsValidatorsSyncAvgPercent,
   NOsValidatorsSyncByConditionCount,
@@ -41,6 +47,8 @@ import {
 } from './clickhouse.types';
 import migration_000000_summary from './migrations/migration_000000_summary';
 import migration_000001_indexes from './migrations/migration_000001_indexes';
+import migration_000002_rewards from './migrations/migration_000002_rewards';
+import migration_000003_epoch_meta from './migrations/migration_000003_epoch_meta';
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -48,7 +56,6 @@ export class ClickhouseService implements OnModuleInit {
   private readonly maxRetries: number;
   private readonly minBackoff: number;
   private readonly maxBackoff: number;
-  private readonly chunkSize: number;
   private readonly retry: ReturnType<typeof retrier>;
 
   public constructor(
@@ -59,7 +66,6 @@ export class ClickhouseService implements OnModuleInit {
     this.maxRetries = this.config.get('DB_MAX_RETRIES');
     this.minBackoff = this.config.get('DB_MIN_BACKOFF_SEC');
     this.maxBackoff = this.config.get('DB_MAX_BACKOFF_SEC');
-    this.chunkSize = this.config.get('DB_INSERT_CHUNK_SIZE');
 
     this.logger.log(`DB backoff set to (min=[${this.minBackoff}], max=[${this.maxBackoff}] seconds`);
     this.logger.log(`DB max retries set to [${this.maxRetries}]`);
@@ -97,38 +103,59 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   @TrackTask('write-indexes')
-  public async writeIndexes(states: StateValidatorResponse[]): Promise<void> {
-    const statesCopy = [...states];
-    while (statesCopy.length > 0) {
-      const chunk = statesCopy.splice(0, this.chunkSize);
-      await this.db.insert({
+  public async writeIndexes(pipeline: Duplex): Promise<void> {
+    await this.db
+      .insert({
         table: 'validators_index',
-        values: chunk.map((s) => ({ val_id: s.index, val_pubkey: s.validator.pubkey })),
+        values: pipeline,
         format: 'JSONEachRow',
-      });
-    }
+      })
+      .finally(() => pipeline.destroy());
   }
 
   @TrackTask('write-summary')
-  public async writeSummary(summary: ValidatorDutySummary[]): Promise<void> {
-    while (summary.length > 0) {
-      const chunk = summary.splice(0, this.chunkSize);
-      await this.db.insert({
+  public async writeSummary(stream: Readable): Promise<void> {
+    await this.db
+      .insert({
         table: 'validators_summary',
-        values: chunk,
+        values: stream,
         format: 'JSONEachRow',
-      });
-    }
+      })
+      .finally(() => stream.destroy());
+  }
+
+  @TrackTask('write-epoch-meta')
+  public async writeEpochMeta(epoch: bigint, meta: EpochMeta): Promise<void> {
+    await this.db.insert({
+      table: 'epochs_metadata',
+      values: [
+        {
+          epoch,
+          active_validators: meta.state.active_validators,
+          active_validators_total_increments: meta.state.active_validators_total_increments,
+          base_reward: meta.state.base_reward,
+          att_blocks_rewards: Array.from(meta.attestation.blocks_rewards),
+          att_source_participation: meta.attestation.participation.source,
+          att_target_participation: meta.attestation.participation.target,
+          att_head_participation: meta.attestation.participation.head,
+          sync_blocks_rewards: Array.from(meta.sync.blocks_rewards),
+          sync_blocks_to_sync: meta.sync.blocks_to_sync,
+        },
+      ],
+      format: 'JSONEachRow',
+    });
   }
 
   public async migrate(): Promise<void> {
     this.logger.log('Running migrations');
     await this.db.exec({ query: migration_000000_summary });
     await this.db.exec({ query: migration_000001_indexes });
+    await this.db.exec({ query: migration_000002_rewards });
+    await this.db.exec({ query: migration_000003_epoch_meta });
   }
 
-  public async getValidatorBalancesDelta(epoch: bigint): Promise<NOsDelta[]> {
-    return (await this.select<NOsDelta[]>(validatorBalancesDeltaQuery(epoch))).map((v) => ({
+  public async getAvgValidatorBalanceDelta(epoch: bigint): Promise<NOsDelta[]> {
+    return (await this.select<NOsDelta[]>(avgValidatorBalanceDelta(epoch))).map((v) => ({
       ...v,
       delta: Number(v.delta),
     }));
@@ -454,5 +481,65 @@ export class ClickhouseService implements OnModuleInit {
       all: Number(v.all),
       missed: Number(v.missed),
     }));
+  }
+
+  async getEpochMetadata(epoch: bigint): Promise<EpochMeta> {
+    const ret = (await this.select(epochMetadata(epoch)))[0];
+    const metadata = {};
+    if (ret) {
+      metadata['state'] = {
+        active_validators: BigInt(ret['active_validators']),
+        active_validators_total_increments: BigInt(ret['active_validators_total_increments']),
+        base_reward: Number(ret['base_reward']),
+      };
+      metadata['attestation'] = {
+        blocks_rewards: new Map(ret['att_blocks_rewards'].map(([b, r]) => [BigInt(b), BigInt(r)])),
+        participation: {
+          source: BigInt(ret['att_source_participation']),
+          target: BigInt(ret['att_target_participation']),
+          head: BigInt(ret['att_head_participation']),
+        },
+      };
+      metadata['sync'] = {
+        blocks_rewards: new Map(ret['sync_blocks_rewards'].map(([b, r]) => [BigInt(b), BigInt(r)])),
+        blocks_to_sync: ret['sync_blocks_to_sync'].map((b) => BigInt(b)),
+      };
+    }
+    return metadata;
+  }
+
+  public async getUserNodeOperatorsRewardsAndPenaltiesStats(epoch: bigint): Promise<NOsValidatorsRewardsStats[]> {
+    return (await this.select<NOsValidatorsRewardsStats[]>(userNodeOperatorsRewardsAndPenaltiesStats(epoch))).map((v) => ({
+      ...v,
+      prop_reward: +v.prop_reward,
+      prop_missed: +v.prop_missed,
+      prop_penalty: +v.prop_penalty,
+      sync_reward: +v.sync_reward,
+      sync_missed: +v.sync_missed,
+      sync_penalty: +v.sync_penalty,
+      att_reward: +v.att_reward,
+      att_missed: +v.att_missed,
+      att_penalty: +v.att_penalty,
+      total_reward: +v.total_reward,
+      total_missed: +v.total_missed,
+      total_penalty: +v.total_penalty,
+      calculated_balance_change: +v.calculated_balance_change,
+      real_balance_change: +v.real_balance_change,
+      calculation_error: +v.calculation_error,
+    }));
+  }
+
+  public async getAvgChainRewardsAndPenaltiesStats(epoch: bigint): Promise<AvgChainRewardsStats> {
+    return (await this.select<AvgChainRewardsStats[]>(avgChainRewardsAndPenaltiesStats(epoch))).map((v) => ({
+      prop_reward: +v.prop_reward,
+      prop_missed: +v.prop_missed,
+      prop_penalty: +v.prop_penalty,
+      sync_reward: +v.sync_reward,
+      sync_missed: +v.sync_missed,
+      sync_penalty: +v.sync_penalty,
+      att_reward: +v.att_reward,
+      att_missed: +v.att_missed,
+      att_penalty: +v.att_penalty,
+    }))[0];
   }
 }

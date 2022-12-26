@@ -18,7 +18,6 @@ import { ClickhouseService } from 'storage';
 
 import { ValStatus } from '../src/common/eth-providers';
 import { DutyModule, DutyService } from '../src/duty';
-import { ValidatorDutySummary } from '../src/duty/summary';
 
 const MikroORMMockProvider = {
   provide: MikroORM,
@@ -79,6 +78,16 @@ const testSyncMember = {
     att_valid_head: true,
     att_valid_target: true,
     att_valid_source: true,
+    // rewards
+    att_earned_reward: 14270n,
+    att_missed_reward: 0n,
+    att_penalty: 0n,
+    val_effective_balance: 32000000000n,
+    sync_earned_reward: 362525n,
+    sync_missed_reward: 101507n,
+    sync_penalty: 101507n,
+    sync_meta: undefined,
+    att_meta: undefined,
   },
 };
 
@@ -107,22 +116,28 @@ const testProposerMember = {
     att_valid_head: true,
     att_valid_target: true,
     att_valid_source: true,
+    // rewards
+    att_earned_reward: 14270n,
+    att_missed_reward: 0n,
+    att_penalty: 0n,
+    val_effective_balance: 32000000000n,
+    sync_meta: undefined,
+    att_meta: undefined,
   },
 };
 
 const testValidators = [testSyncMember, testProposerMember];
-const testValidatorIndexes = testValidators.map((v) => v.index);
 
 describe('Duties', () => {
-  jest.setTimeout(240 * 1000);
+  jest.setTimeout(360 * 1000);
 
   let dutyService: DutyService;
   let validatorsRegistryService: RegistryService;
   let clickhouseService: ClickhouseService;
 
   let epochNumber, stateSlot;
-  let indexesToSave: string[];
-  let summaryToSave: ValidatorDutySummary[];
+  const indexesToSave = [];
+  const summaryToSave = [];
 
   process.env['DB_HOST'] = 'http://localhost'; // stub to avoid lib validator
   const getActualKeysIndexedMock = jest.fn().mockImplementation(async () => {
@@ -138,8 +153,22 @@ describe('Duties', () => {
     return map;
   });
   jest.spyOn(SimpleFallbackJsonRpcBatchProvider.prototype, 'detectNetwork').mockImplementation(async () => getNetwork('mainnet'));
-  const writeIndexesSpy = jest.spyOn(ClickhouseService.prototype, 'writeIndexes');
-  jest.spyOn(ClickhouseService.prototype, 'writeSummary');
+  jest.spyOn(ClickhouseService.prototype, 'writeIndexes').mockImplementation(
+    async (pipeline): Promise<any> =>
+      await new Promise((resolve, reject) => {
+        pipeline.on('data', (data) => indexesToSave.push(data));
+        pipeline.on('error', (e) => reject(e));
+        pipeline.on('end', () => resolve(true));
+      }).finally(() => pipeline.destroy()),
+  );
+  jest.spyOn(ClickhouseService.prototype, 'writeSummary').mockImplementation(
+    async (pipeline): Promise<any> =>
+      await new Promise((resolve, reject) => {
+        pipeline.on('data', (data) => summaryToSave.push(data));
+        pipeline.on('error', (e) => reject(e));
+        pipeline.on('end', () => resolve(true));
+      }).finally(() => pipeline.destroy()),
+  );
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -173,6 +202,11 @@ describe('Duties', () => {
     Object.defineProperty(clickhouseService, 'db', {
       value: {
         insert: () => [],
+        query: () => {
+          return {
+            json: () => [],
+          };
+        },
       },
     });
 
@@ -180,9 +214,7 @@ describe('Duties', () => {
     epochNumber = BigInt(process.env['TEST_EPOCH_NUMBER']);
 
     await Promise.all([dutyService['prefetch'](epochNumber), dutyService['checkAll'](epochNumber, stateSlot)]);
-    summaryToSave = dutyService['summary'].values();
-    indexesToSave = writeIndexesSpy.mock.calls[0][0].map((i) => i.index);
-    await dutyService['write']();
+    await dutyService['writeSummary']();
   });
 
   describe('should be processes validators info', () => {
@@ -195,7 +227,11 @@ describe('Duties', () => {
     });
 
     it('indexes content to save should contains all tested validators', () => {
-      testValidatorIndexes.forEach((i) => expect(indexesToSave).toContain(String(i)));
+      testValidators.forEach((i) => {
+        const toSaveTestedIndex = indexesToSave.find((v) => v.val_id == String(i.index));
+        expect(toSaveTestedIndex).toBeDefined();
+        expect(toSaveTestedIndex).toEqual({ val_id: String(i.index), val_pubkey: i.pubkey });
+      });
     });
 
     it('summary content to save should contains right tested sync validator performance info', () => {
