@@ -2,6 +2,7 @@ import { join } from 'lodash';
 
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
+import { RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
@@ -9,19 +10,20 @@ import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 const VALIDATORS_WITH_MISSED_ATTESTATION_COUNT_THRESHOLD = 1 / 3;
 
 export class CriticalMissedAttestations extends Alert {
-  constructor(config: ConfigService, storage: ClickhouseService) {
-    super(CriticalMissedAttestations.name, config, storage);
+  constructor(config: ConfigService, storage: ClickhouseService, operators: RegistrySourceOperator[]) {
+    super(CriticalMissedAttestations.name, config, storage, operators);
   }
 
   async alertRule(epoch: bigint): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
-    const operators = await this.storage.getUserNodeOperatorsStats(epoch);
+    const nosStats = await this.storage.getUserNodeOperatorsStats(epoch);
     const missedAttValidatorsCount = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(epoch);
-    for (const operator of operators.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
-      const missedAtt = missedAttValidatorsCount.find((a) => a.val_nos_name == operator.val_nos_name);
+    for (const noStats of nosStats.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
+      const operator = this.operators.find((o) => +noStats.val_nos_id == o.index);
+      const missedAtt = missedAttValidatorsCount.find((a) => a.val_nos_id != null && +a.val_nos_id == operator.index);
       if (!missedAtt) continue;
-      if (missedAtt.amount > operator.active_ongoing * VALIDATORS_WITH_MISSED_ATTESTATION_COUNT_THRESHOLD) {
-        result[operator.val_nos_name] = { ongoing: operator.active_ongoing, missedAtt: missedAtt.amount };
+      if (missedAtt.amount > noStats.active_ongoing * VALIDATORS_WITH_MISSED_ATTESTATION_COUNT_THRESHOLD) {
+        result[operator.name] = { ongoing: noStats.active_ongoing, missedAtt: missedAtt.amount };
       }
     }
     return result;

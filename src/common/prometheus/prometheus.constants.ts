@@ -13,6 +13,7 @@ export const METRIC_TASK_DURATION_SECONDS = `task_duration_seconds`;
 export const METRIC_TASK_RESULT_COUNT = `task_result_count`;
 export const METRIC_DATA_ACTUALITY = `data_actuality`;
 
+export const METRIC_USER_OPERATORS_IDENTIFIES = `user_operators_identifies`;
 export const METRIC_VALIDATORS = `validators`;
 export const METRIC_USER_VALIDATORS = `user_validators`;
 export const METRIC_FETCH_INTERVAL = `fetch_interval`;

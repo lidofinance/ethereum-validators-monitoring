@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
-import { CriticalAlertsService } from './critical-alerts.service';
+
+import { RegistryModule } from 'common/validators-registry';
 import { ClickhouseModule } from 'storage/clickhouse';
 
+import { CriticalAlertsService } from './critical-alerts.service';
+
 @Module({
-  imports: [ClickhouseModule],
+  imports: [RegistryModule, ClickhouseModule],
   providers: [CriticalAlertsService],
   exports: [CriticalAlertsService],
 })
