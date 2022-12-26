@@ -376,7 +376,6 @@ export const epochMetadata = (epoch: bigint): string => `
 export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: bigint): string => `
   SELECT
     att.val_nos_id as val_nos_id,
-    bal.val_nos_name as val_nos_name,
     --
     attestation_reward as att_reward,
     ifNull(prop_reward, 0) as prop_reward,
@@ -431,10 +430,9 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: bigint): string
   (
     SELECT
       val_nos_id,
-      max(current.val_nos_name) as val_nos_name,
       sum(current.val_balance - previous.val_balance) AS real_balance_change
     FROM (
-      SELECT val_balance, val_id, val_nos_id, val_nos_name
+      SELECT val_balance, val_id, val_nos_id
       FROM validators_summary as curr
       WHERE
         val_status != '${ValStatus.PendingQueued}' AND

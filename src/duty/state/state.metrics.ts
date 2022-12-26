@@ -127,11 +127,12 @@ export class StateMetrics {
   }
 
   private async avgDeltas() {
-    const result = await this.storage.getValidatorBalancesDelta(this.processedEpoch);
+    const result = await this.storage.getAvgValidatorBalanceDelta(this.processedEpoch);
     this.operators.forEach((operator) => {
       const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.validatorBalanceDelta.set({ nos_name: operator.name }, operatorResult ? operatorResult.delta : 0);
+      this.prometheus.avgValidatorBalanceDelta.set({ nos_name: operator.name }, operatorResult ? operatorResult.delta : 0);
     });
+  }
 
   private async minDeltas() {
     const result = await this.storage.getValidatorQuantile0001BalanceDeltas(this.processedEpoch);

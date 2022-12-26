@@ -39,7 +39,7 @@ export interface NOsValidatorsStatusStats extends ValidatorsStatusStats {
 }
 
 export interface NOsValidatorsRewardsStats {
-  val_nos_name: string;
+  val_nos_id: string;
   prop_reward: number;
   prop_missed: number;
   prop_penalty: number;

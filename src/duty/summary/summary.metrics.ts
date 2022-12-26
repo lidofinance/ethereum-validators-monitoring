@@ -32,7 +32,7 @@ export class SummaryMetrics {
     this.logger.log('Calculating propose metrics');
     this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();
-    await Promise.all([this.rewards(), this.common()]);
+    await Promise.all([this.userRewards(), this.avgChainRewards(), this.common()]);
   }
 
   private async common() {
@@ -43,7 +43,7 @@ export class SummaryMetrics {
   private async rewards() {
     const result = await this.storage.getUserNodeOperatorsRewardsAndPenaltiesStats(this.processedEpoch);
     this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_name == operator.name);
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
       // Rewards
       this.prometheus.operatorReward.set(
         { nos_name: operator.name, duty: Duty.Attestation },
