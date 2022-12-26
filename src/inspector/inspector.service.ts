@@ -4,12 +4,11 @@ import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common'
 import { CriticalAlertsService } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
 import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
+import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
 import { sleep } from 'common/functions/sleep';
 import { PrometheusService } from 'common/prometheus';
 import { DutyMetrics, DutyService } from 'duty';
 import { ClickhouseService } from 'storage';
-
-import { BlockCacheService } from '../common/eth-providers/consensus-provider/block-cache';
 
 @Injectable()
 export class InspectorService implements OnModuleInit {

@@ -42,8 +42,7 @@ export class DutyService {
     // and while we wait for their responses we fetch blocks and headers.
     // If for some reason prefetch task will be slower than duty by state requests,
     // blocks and headers will be fetched inside tasks of checks
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [a, b, possibleHighRewardVals] = await Promise.all([
+    const [, , possibleHighRewardVals] = await Promise.all([
       this.prefetch(epoch),
       this.checkAll(epoch, stateSlot),
       this.getPossibleHighRewardValidators(),

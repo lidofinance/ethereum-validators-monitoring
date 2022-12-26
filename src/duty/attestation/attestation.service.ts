@@ -79,8 +79,8 @@ export class AttestationService {
     const reward_per_increment = attestationRewards(att_inc_delay, att_valid_source, att_valid_target, att_valid_head);
     const penalty_per_increment = attestationPenalties(att_inc_delay, att_valid_source, att_valid_target, att_valid_head);
     for (const [valCommIndex, validatorIndex] of committee.entries()) {
-      const isProcessed = this.summary.get(validatorIndex)?.att_happened;
-      if (isProcessed) continue; // already processed validator. it was in one of previous attestation
+      const attHappened = this.summary.get(validatorIndex)?.att_happened;
+      if (attHappened == true) continue; // already processed validator. it was in one of previous attestation
       const att_happened = attestation.bits.get(valCommIndex);
       if (!att_happened) {
         this.summary.set(validatorIndex, { epoch: this.processedEpoch, val_id: validatorIndex, ...MISSED_ATTESTATION });

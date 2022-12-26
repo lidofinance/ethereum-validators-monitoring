@@ -1,8 +1,9 @@
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
-import { ConfigService } from '../common/config';
-import { PrometheusService, TrackTask } from '../common/prometheus';
+import { ConfigService } from 'common/config';
+import { PrometheusService, TrackTask } from 'common/prometheus';
+
 import { AttestationRewards } from './attestation';
 import { ProposeRewards } from './propose';
 import { EpochMeta } from './summary';
