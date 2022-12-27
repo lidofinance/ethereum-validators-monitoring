@@ -1,5 +1,5 @@
 const sql = `
-ALTER TABLE stats.validators_summary
+ALTER TABLE validators_summary
 // state
 ADD COLUMN IF NOT EXISTS val_effective_balance Nullable(UInt64) AFTER val_balance,
 // att
