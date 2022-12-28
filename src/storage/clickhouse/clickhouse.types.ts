@@ -78,3 +78,9 @@ export interface NOsProposesStats {
 export interface SyncCommitteeParticipationAvgPercents {
   avg_percent: number;
 }
+
+export interface EpochProcessingState {
+  epoch: bigint;
+  is_stored?: boolean;
+  is_calculated?: boolean;
+}

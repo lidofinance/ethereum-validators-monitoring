@@ -14,6 +14,7 @@ import {
   avgValidatorBalanceDelta,
   chainSyncParticipationAvgPercentQuery,
   epochMetadata,
+  epochProcessing,
   operatorBalance24hDifferenceQuery,
   operatorsSyncParticipationAvgPercentsQuery,
   otherSyncParticipationAvgPercentQuery,
@@ -33,6 +34,7 @@ import {
 } from './clickhouse.constants';
 import {
   AvgChainRewardsStats,
+  EpochProcessingState,
   NOsDelta,
   NOsProposesStats,
   NOsValidatorsByConditionAttestationCount,
@@ -49,6 +51,7 @@ import migration_000000_summary from './migrations/migration_000000_summary';
 import migration_000001_indexes from './migrations/migration_000001_indexes';
 import migration_000002_rewards from './migrations/migration_000002_rewards';
 import migration_000003_epoch_meta from './migrations/migration_000003_epoch_meta';
+import migration_000004_epoch_processing from './migrations/migration_000004_epoch_processing';
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -84,6 +87,10 @@ export class ClickhouseService implements OnModuleInit {
       username: this.config.get('DB_USER'),
       password: this.config.get('DB_PASSWORD'),
       database: this.config.get('DB_NAME'),
+      compression: {
+        response: true,
+        request: true,
+      },
     });
   }
 
@@ -95,13 +102,20 @@ export class ClickhouseService implements OnModuleInit {
     await this.retry(async () => await this.migrate());
   }
 
-  public async getMaxEpoch(): Promise<bigint> {
-    const data = await this.select<{ max: string }[]>('SELECT max(epoch) as max FROM validators_summary');
-    const epoch = BigInt(parseInt(data[0].max, 10) || 0);
+  public async getLastProcessedEpoch(): Promise<EpochProcessingState> {
+    const data = (
+      await this.select<EpochProcessingState[]>(
+        'SELECT epoch FROM epochs_processing WHERE is_stored = 1 AND is_calculated = 1 ORDER BY epoch DESC LIMIT 1',
+      )
+    )[0];
+    if (data) return { ...data, epoch: BigInt(data.epoch) };
+    return { epoch: 0n, is_stored: undefined, is_calculated: undefined };
+  }
 
-    this.logger.log(`Max (latest) stored epoch in DB [${epoch}]`);
-
-    return epoch;
+  public async getLastEpoch(): Promise<EpochProcessingState> {
+    const data = (await this.select<EpochProcessingState[]>('SELECT * FROM epochs_processing ORDER BY epoch DESC LIMIT 1'))[0];
+    if (data) return { ...data, epoch: BigInt(data.epoch) };
+    return { epoch: 0n, is_stored: undefined, is_calculated: undefined };
   }
 
   @TrackTask('write-indexes')
@@ -132,32 +146,59 @@ export class ClickhouseService implements OnModuleInit {
 
   @TrackTask('write-epoch-meta')
   public async writeEpochMeta(epoch: bigint, meta: EpochMeta): Promise<void> {
-    await this.db.insert({
-      table: 'epochs_metadata',
-      values: [
-        {
-          epoch,
-          active_validators: meta.state.active_validators,
-          active_validators_total_increments: meta.state.active_validators_total_increments,
-          base_reward: meta.state.base_reward,
-          att_blocks_rewards: Array.from(meta.attestation.blocks_rewards),
-          att_source_participation: meta.attestation.participation.source,
-          att_target_participation: meta.attestation.participation.target,
-          att_head_participation: meta.attestation.participation.head,
-          sync_blocks_rewards: Array.from(meta.sync.blocks_rewards),
-          sync_blocks_to_sync: meta.sync.blocks_to_sync,
-        },
-      ],
-      format: 'JSONEachRow',
+    await this.retry(
+      async () =>
+        await this.db.insert({
+          table: 'epochs_metadata',
+          values: [
+            {
+              epoch,
+              active_validators: meta.state.active_validators,
+              active_validators_total_increments: meta.state.active_validators_total_increments,
+              base_reward: meta.state.base_reward,
+              att_blocks_rewards: Array.from(meta.attestation.blocks_rewards),
+              att_source_participation: meta.attestation.participation.source,
+              att_target_participation: meta.attestation.participation.target,
+              att_head_participation: meta.attestation.participation.head,
+              sync_blocks_rewards: Array.from(meta.sync.blocks_rewards),
+              sync_blocks_to_sync: meta.sync.blocks_to_sync,
+            },
+          ],
+          format: 'JSONEachRow',
+        }),
+    );
+  }
+
+  @TrackTask('update-epoch-processing')
+  public async updateEpochProcessing(state: EpochProcessingState): Promise<void> {
+    const old = await this.getOrInitEpochProcessing(state.epoch);
+    const updates = [];
+    if (state.is_stored != undefined) updates.push(`is_stored = ${+state.is_stored}`);
+    if (state.is_calculated != undefined) updates.push(`is_calculated = ${+state.is_calculated}`);
+    await this.retry(
+      async () => await this.db.exec({ query: `ALTER TABLE epochs_processing UPDATE ${updates.join(', ')} WHERE epoch = ${state.epoch}` }),
+    );
+    // update is heavy operation for clickhouse, and it takes some time
+    await this.retry(async () => {
+      const updated = await this.getOrInitEpochProcessing(state.epoch);
+      if (old.is_stored == updated.is_stored && old.is_calculated == updated.is_calculated) {
+        throw Error('Epoch processing info is not updated yet');
+      }
     });
   }
 
   public async migrate(): Promise<void> {
     this.logger.log('Running migrations');
-    await this.db.exec({ query: migration_000000_summary });
-    await this.db.exec({ query: migration_000001_indexes });
-    await this.db.exec({ query: migration_000002_rewards });
-    await this.db.exec({ query: migration_000003_epoch_meta });
+    const migrations = [
+      migration_000000_summary,
+      migration_000001_indexes,
+      migration_000002_rewards,
+      migration_000003_epoch_meta,
+      migration_000004_epoch_processing,
+    ];
+    for (const query of migrations) {
+      await this.db.exec({ query });
+    }
   }
 
   public async getAvgValidatorBalanceDelta(epoch: bigint): Promise<NOsDelta[]> {
@@ -512,6 +553,29 @@ export class ClickhouseService implements OnModuleInit {
       };
     }
     return metadata;
+  }
+
+  public async getOrInitEpochProcessing(epoch: bigint): Promise<EpochProcessingState> {
+    const curr = await this.getEpochProcessing(epoch);
+    if (curr.epoch == 0n) {
+      await this.retry(
+        async () =>
+          await this.db.insert({
+            table: 'epochs_processing',
+            values: [{ epoch }],
+            format: 'JSONEachRow',
+          }),
+      );
+      // just for readability
+      return { epoch: BigInt(epoch), is_stored: undefined, is_calculated: undefined };
+    }
+    return curr;
+  }
+
+  public async getEpochProcessing(epoch: bigint): Promise<EpochProcessingState> {
+    const ret = (await this.select(epochProcessing(epoch)))[0];
+    if (ret) return { ...ret, epoch: BigInt(ret.epoch) };
+    return { epoch: 0n, is_stored: undefined, is_calculated: undefined };
   }
 
   public async getUserNodeOperatorsRewardsAndPenaltiesStats(epoch: bigint): Promise<NOsValidatorsRewardsStats[]> {
