@@ -26,7 +26,7 @@ export class SummaryMetrics {
     protected readonly storage: ClickhouseService,
   ) {}
 
-  @TrackTask('calc-state-metrics')
+  @TrackTask('calc-summary-metrics')
   public async calculate(epoch: bigint) {
     this.logger.log('Calculating propose metrics');
     this.processedEpoch = epoch;
