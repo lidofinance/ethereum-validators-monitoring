@@ -111,7 +111,7 @@ export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
           ${condition} AND
           (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
           ${strFilterValIndexes}
-        LIMIT 1 BY val_id
+        LIMIT 1 BY epoch, val_id
       )
       GROUP BY val_id, val_nos_id
     )
@@ -145,7 +145,7 @@ export const validatorCountByConditionAttestationLastNEpochQuery = (
           ${condition}
           AND (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
           ${strFilterValIndexes}
-        LIMIT 1 BY val_id
+        LIMIT 1 BY epoch, val_id
       )
       GROUP BY val_id, val_nos_id
     )
@@ -168,7 +168,7 @@ export const validatorCountHighAvgIncDelayAttestationOfNEpochQuery = (epoch: big
         FROM validators_summary
         WHERE
           (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
-        LIMIT 1 BY val_id
+        LIMIT 1 BY epoch, val_id
       )
       GROUP BY val_id, val_nos_id
       HAVING avg_inclusion_delay > 2
@@ -194,7 +194,7 @@ export const validatorsCountByConditionMissProposeQuery = (epoch: bigint, valida
         ${condition} AND
         (epoch <= ${epoch} AND epoch > (${epoch} - 1))
         ${strFilterValIndexes}
-      LIMIT 1 BY val_id
+      LIMIT 1 BY epoch, val_id
     )
     GROUP BY val_nos_id
   `;
@@ -396,7 +396,7 @@ export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: bigint, epo
       FROM validators_summary
       WHERE
         is_proposer = 1 AND (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
-      LIMIT 1 BY val_id
+      LIMIT 1 BY epoch, val_id
     )
     GROUP BY val_nos_id, block_proposed
   )
