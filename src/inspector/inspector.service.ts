@@ -106,6 +106,7 @@ export class InspectorService implements OnModuleInit {
 
   @TrackTask('choose-epoch-to-process')
   protected async chooseEpochToProcess(): Promise<EpochProcessingState & { slot: bigint }> {
+    const step = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
     let next: EpochProcessingState = { epoch: BigInt(this.config.get('START_EPOCH')), is_stored: false, is_calculated: false };
     const last = await this.storage.getLastEpoch();
     const lastProcessed = await this.storage.getLastProcessedEpoch();
@@ -119,6 +120,6 @@ export class InspectorService implements OnModuleInit {
       next.epoch = lastProcessed.epoch + 1n;
       this.logger.log(`Next epoch to process [${next.epoch}]`);
     }
-    return { ...next, slot: next.epoch * 32n };
+    return { ...next, slot: next.epoch * step + (step - 1n) };
   }
 }
