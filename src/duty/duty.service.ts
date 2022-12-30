@@ -45,8 +45,9 @@ export class DutyService {
       this.checkAll(epoch, stateSlot),
       this.getPossibleHighRewardValidators(),
     ]);
-    await this.writeSummary();
     await this.writeEpochMeta(epoch);
+    await this.writeSummary();
+    await this.storage.updateEpochProcessing({ epoch, is_stored: true });
     return possibleHighRewardVals;
   }
 

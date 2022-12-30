@@ -5,6 +5,7 @@ import { ConfigService } from 'common/config';
 import { ConsensusProviderService } from 'common/eth-providers';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
+import { ClickhouseService } from '../storage';
 import { AttestationMetrics } from './attestation';
 import { ProposeMetrics } from './propose';
 import { StateMetrics } from './state';
@@ -24,6 +25,7 @@ export class DutyMetrics {
     protected readonly proposeMetrics: ProposeMetrics,
     protected readonly syncMetrics: SyncMetrics,
     protected readonly summaryMetrics: SummaryMetrics,
+    protected readonly storage: ClickhouseService,
   ) {}
 
   @TrackTask('calc-all-duties-metrics')
@@ -32,6 +34,7 @@ export class DutyMetrics {
     await Promise.all([this.withPossibleHighReward(epoch, possibleHighRewardValidators), this.stateMetrics.calculate(epoch)]);
     // we must calculate summary metrics after all duties to avoid errors in processing
     await this.summaryMetrics.calculate(epoch);
+    await this.storage.updateEpochProcessing({ epoch, is_calculated: true });
   }
 
   private async withPossibleHighReward(epoch: bigint, possibleHighRewardValidators: string[]): Promise<void> {

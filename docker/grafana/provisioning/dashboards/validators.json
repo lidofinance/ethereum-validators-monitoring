@@ -24,8 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 15,
-  "iteration": 1671105774080,
+  "iteration": 1672295458681,
   "links": [
     {
       "asDropdown": false,
@@ -2755,7 +2754,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "semi-dark-green"
+                "color": "semi-dark-green",
+                "value": null
               }
             ]
           }
@@ -2926,7 +2926,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -3466,7 +3466,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               },
@@ -3544,7 +3545,8 @@
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "yellow",
@@ -3595,7 +3597,7 @@
             "showUnfilled": true,
             "text": {}
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
               "datasource": {
@@ -3661,7 +3663,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -3737,7 +3740,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3827,7 +3831,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
               "datasource": {
@@ -3839,8 +3843,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
-              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 161306\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 161306 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
+              "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
+              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 170495\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 170495 - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3893,7 +3897,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -3993,7 +3998,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -4085,7 +4091,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
               "datasource": {
@@ -4097,8 +4103,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id",
-              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= 161306 AND epoch >= (161306 - 20))\nORDER BY block_to_propose DESC, val_id",
+              "query": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
+              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= 170497 AND epoch >= (170497 - 10))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4151,7 +4157,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -4263,7 +4270,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -4433,7 +4441,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -4523,7 +4532,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
               "datasource": {
@@ -4535,8 +4544,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent",
-              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = 161306 AND sync_percent < (97.59954616427422 - 10)\nORDER BY sync_percent",
+              "query": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent\nLIMIT 1 by epoch, val_id",
+              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = 170497 AND sync_percent < (97.8271484375 - 0)\nORDER BY sync_percent\nLIMIT 1 by epoch, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4589,7 +4598,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -4710,7 +4720,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -4800,7 +4811,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
               "datasource": {
@@ -4812,8 +4823,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_happened = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_happened = 0 AND val_nos_id IS NOT NULL AND epoch = 164438\nORDER BY val_id\nLIMIT 100",
+              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_happened = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_happened = 0 AND val_nos_id IS NOT NULL AND epoch = 170497\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4866,7 +4877,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -4970,7 +4982,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -5060,7 +5073,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
               "datasource": {
@@ -5072,8 +5085,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND epoch = 164441\nORDER BY val_id\nLIMIT 100",
+              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND epoch = 170497\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5126,7 +5139,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -5229,7 +5243,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -5319,7 +5334,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
               "datasource": {
@@ -5331,8 +5346,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND epoch = 164441\nORDER BY val_id\nLIMIT 100",
+              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND epoch = 170497\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5385,7 +5400,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -5488,7 +5504,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -5578,7 +5595,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
               "datasource": {
@@ -5591,7 +5608,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "\nSELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND epoch = 164441\nORDER BY val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND epoch = 170497\nORDER BY val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5644,7 +5661,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -5747,7 +5765,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -5837,7 +5856,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
               "datasource": {
@@ -5849,8 +5868,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND epoch = 164441\nORDER BY val_id\nLIMIT 100",
+              "query": "\nSELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND epoch = 170497\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5903,7 +5922,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -5988,7 +6008,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -6041,7 +6062,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 124
+            "y": 62
           },
           "id": 51,
           "options": {
@@ -6055,7 +6076,7 @@
             },
             "showHeader": true
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
               "datasource": {
@@ -6067,8 +6088,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = ${epoch_number_var}",
-              "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = 161306",
+              "query": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = ${epoch_number_var}\nLIMIT 1 by val_id",
+              "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = 170497\nLIMIT 1 by val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -6141,7 +6162,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -6241,7 +6263,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -6304,8 +6327,8 @@
       {
         "current": {
           "selected": false,
-          "text": "167397",
-          "value": "167397"
+          "text": "170497",
+          "value": "170497"
         },
         "datasource": {
           "type": "prometheus",
@@ -6332,8 +6355,8 @@
       {
         "current": {
           "selected": false,
-          "text": "10",
-          "value": "10"
+          "text": "0",
+          "value": "0"
         },
         "datasource": {
           "type": "prometheus",
@@ -6360,8 +6383,8 @@
       {
         "current": {
           "selected": false,
-          "text": "97.79052734375",
-          "value": "97.79052734375"
+          "text": "97.8271484375",
+          "value": "97.8271484375"
         },
         "datasource": {
           "type": "prometheus",
@@ -6388,8 +6411,8 @@
       {
         "current": {
           "selected": false,
-          "text": "10",
-          "value": "10"
+          "text": "9",
+          "value": "9"
         },
         "datasource": {
           "type": "prometheus",
@@ -6432,6 +6455,6 @@
   "timezone": "",
   "title": "Validators",
   "uid": "HRgPmpNnz",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
