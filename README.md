@@ -65,43 +65,122 @@ By default, monitoring bot fetches validator keys from Lido contract, but you ca
 If you want to implement your own source, it must match [RegistrySource interface](src/common/validators-registry/registry-source.interface.ts) and be included in [RegistryModule providers](src/common/validators-registry/registry.module.ts)
 
 ## Application Env variables
-| **Variable**                                     | **Description**                                                                                                                            | **Required** | **Default**                             |
-|--------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|--------------|-----------------------------------------|
-| LOG_LEVEL                                        | Balval log level                                                                                                                           |              |                                         |
-| LOG_FORMAT                                       | Balval log format (simple or json)                                                                                                         |              |                                         |
-| DB_HOST                                          | Clickhouse server host                                                                                                                     | true         |                                         |
-| DB_USER                                          | Clickhouse server user                                                                                                                     | true         |                                         |
-| DB_PASSWORD                                      | Clickhouse server password                                                                                                                 | true         |                                         |
-| DB_NAME                                          | Clickhouse server name                                                                                                                     | true         |                                         |
-| DB_PORT                                          | Clickhouse server port                                                                                                                     | false        | 8123                                    |
-| HTTP_PORT                                        | Port for Prometheus HTTP server in Balval                                                                                                  | false        | 8080                                    |
-| DB_MAX_RETRIES                                   | Max retries for each query to DB                                                                                                           | false        | 10                                      |
-| DB_MIN_BACKOFF_SEC                               | Min backoff for DB query retrier                                                                                                           | false        | 1                                       |
-| DB_MAX_BACKOFF_SEC                               | Max backoff for DB query retrier                                                                                                           | false        | 120                                     |
-| LOG_LEVEL                                        | Logging level                                                                                                                              | false        | info                                    |
-| DRY_RUN                                          | Option to run Balval in dry mode. This means that Balval runs a main cycle once every 24 hours                                             | false        | false                                   |
-| ETH_NETWORK                                      | Ethereum network ID for connection execution layer RPC                                                                                     | true         |                                         |
-| EL_RPC_URLS                                      | Ethereum execution layer comma separated RPC urls                                                                                          | true         |                                         |
-| CL_API_URLS                                      | Ethereum consensus layer comma separated API urls                                                                                          | true         |                                         |
-| CL_API_RETRY_DELAY_MS                            | Ethereum consensus layer request retry delay                                                                                               | false        | 500                                     |
-| CL_API_GET_RESPONSE_TIMEOUT                      | Ethereum consensus layer GET response (header) timeout                                                                                     | false        | 15 * 1000                               |
-| CL_API_POST_RESPONSE_TIMEOUT                     | Ethereum consensus layer POST response (header) timeout                                                                                    | false        | 15 * 1000                               |
-| CL_API_POST_REQUEST_CHUNK_SIZE                   | Ethereum consensus layer data chunk size for large POST requests                                                                           | false        | 30000                                   |
-| CL_API_MAX_RETRIES                               | Ethereum consensus layer max retries for all requests                                                                                      | false        | 1                                       |
-| CL_API_GET_BLOCK_INFO_MAX_RETRIES                | Ethereum consensus layer max retries for fetching block info. Independent of `CL_API_MAX_RETRIES`                                          | false        | 1                                       |
-| FETCH_INTERVAL_SLOTS                             | Count of slots in Ethereum consensus layer epoch                                                                                           | false        | 32                                      |
-| CHAIN_SLOT_TIME_SECONDS                          | Ethereum consensus layer time slot size                                                                                                    | false        | 12                                      |
-| START_EPOCH                                      | Ethereum consensus layer epoch for start Balval                                                                                            | false        | 155000                                  |
-| VALIDATOR_REGISTRY_SOURCE                        | Validators registry source. Possible values: lido (Lido contract), file                                                                    | false        | lido                                    |
-| VALIDATOR_REGISTRY_FILE_SOURCE_PATH              | Validators registry file source path. It makes sense to change default value if you set `VALIDATOR_REGISTRY_SOURCE` to `file`              | false        | ./docker/validators/custom_mainnet.yaml |
-| VALIDATOR_REGISTRY_LIDO_SOURCE_SQLITE_CACHE_PATH | Validators registry lido source sqlite cache path. It makes sense to change default value if you set `VALIDATOR_REGISTRY_SOURCE` to `lido` | false        | ./docker/validators/lido_mainnet.db     |
-| SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG  | Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad                         | false        | 0                                       |
-| SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG    | Number epochs after which we think that our sync participation is bad and alert about that                                                 | false        | 3                                       |
-| BAD_ATTESTATION_EPOCHS                           | Number epochs after which we think that our attestation is bad and alert about that                                                        | false        | 3                                       |
-| CRITICAL_ALERTS_ALERTMANAGER_URL                 | If passed, Balval sends additional critical alerts about validators performance to Alertmanager                                            | false        |                                         |
-| CRITICAL_ALERTS_MIN_VAL_COUNT                    | Critical alerts will be sent for Node Operators with validators count greater this value                                                   | false        |                                         |
-| CRITICAL_ALERTS_ALERTMANAGER_LABELS              | Additional labels for critical alerts. Must be in JSON string format.For example - '{"a":"valueA","b":"valueB"}'                           | false        |                                         |
 
+---
+`LOG_LEVEL` - Application log level
+* **Required:** false
+* **Default:** info
+---
+`LOG_FORMAT` - Application log format (simple or json)
+* **Required:** false
+* **Default:** json
+---
+`DB_HOST` - Clickhouse server host
+* **Required:** true
+---
+`DB_USER` - Clickhouse server user
+* **Required:** true
+---
+`DB_PASSWORD` - Clickhouse server password
+* **Required:** true
+---
+`DB_NAME` - Clickhouse server DB name
+* **Required:** true
+---
+`DB_PORT` - Clickhouse server port
+* **Required:** false
+* **Default:** 8123
+---
+`HTTP_PORT` - Port for Prometheus HTTP server in application
+* **Required:** false
+* **Default:** 8080
+---
+`DB_MAX_RETRIES` - Max retries for each query to DB
+* **Required:** false
+* **Default:** 10
+---
+`DB_MIN_BACKOFF_SEC` - Min backoff for DB query retrier
+* **Required:** false
+* **Default:** 1
+---
+`DB_MAX_BACKOFF_SEC` - Min backoff for DB query retrier
+* **Required:** false
+* **Default:** 120
+---
+`DRY_RUN` - Run application in dry mode. This means that it runs a main cycle once every 24 hours
+* **Required:** false
+* **Default:** false
+---
+`ETH_NETWORK` - Ethereum network ID for connection execution layer RPC
+* **Required:** true
+---
+`EL_RPC_URLS` - Ethereum execution layer comma separated RPC urls
+* **Required:** true
+---
+`CL_API_URLS` - Ethereum consensus layer comma separated API urls
+* **Required:** true
+---
+`CL_API_RETRY_DELAY_MS` - Ethereum consensus layer request retry delay
+* **Required:** false
+* **Default:** 500
+---
+`CL_API_GET_RESPONSE_TIMEOUT` - Ethereum consensus layer GET response (header) timeout (ms)
+* **Required:** false
+* **Default:** 15000
+---
+`CL_API_MAX_RETRIES` - Ethereum consensus layer max retries for all requests
+* **Required:** false
+* **Default:** 1 (means that request will be executed once)
+---
+`CL_API_GET_BLOCK_INFO_MAX_RETRIES` - Ethereum consensus layer max retries for fetching block info. Independent of `CL_API_MAX_RETRIES`
+* **Required:** false
+* **Default:** 1 (means that request will be executed once)
+---
+`FETCH_INTERVAL_SLOTS` - Count of slots in Ethereum consensus layer epoch
+* **Required:** false
+* **Default:** 32
+---
+`CHAIN_SLOT_TIME_SECONDS` - Ethereum consensus layer time slot size (sec)
+* **Required:** false
+* **Default:** 12
+---
+`START_EPOCH` - Ethereum consensus layer epoch for start application
+* **Required:** false
+* **Default:** 155000
+---
+`VALIDATOR_REGISTRY_SOURCE` - Validators registry source. Possible values: `lido` (Lido contract), `file`
+* **Required:** false
+* **Default:** lido
+---
+`VALIDATOR_REGISTRY_FILE_SOURCE_PATH` - Validators registry file source path. It makes sense to change default value if you set `VALIDATOR_REGISTRY_SOURCE` to `file`
+* **Required:** false
+* **Default:** ./docker/validators/custom_mainnet.yaml
+---
+`VALIDATOR_REGISTRY_LIDO_SOURCE_SQLITE_CACHE_PATH` - Validators registry lido source sqlite cache path. It makes sense to change default value if you set `VALIDATOR_REGISTRY_SOURCE` to `lido`
+* **Required:** false
+* **Default:** ./docker/validators/lido_mainnet.db
+---
+`SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG` - Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad
+* **Required:** false
+* **Default:** 0
+---
+`SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` - Number epochs after which we think that our sync participation is bad and alert about that
+* **Required:** false
+* **Default:** 3
+---
+`BAD_ATTESTATION_EPOCHS` - Number epochs after which we think that our attestation is bad and alert about that
+* **Required:** false
+* **Default:** 3
+---
+`CRITICAL_ALERTS_ALERTMANAGER_URL` - If passed, application sends additional critical alerts about validators performance to Alertmanager
+* **Required:** false
+---
+`CRITICAL_ALERTS_MIN_VAL_COUNT` - Critical alerts will be sent for Node Operators with validators count greater this value
+* **Required:** false
+---
+`CRITICAL_ALERTS_ALERTMANAGER_LABELS` - Additional labels for critical alerts. Must be in JSON string format. Example - '{"a":"valueA","b":"valueB"}'
+* **Required:** false
+---
 
 ## Application critical alerts (via Alertmanager)
 

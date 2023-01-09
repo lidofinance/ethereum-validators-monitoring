@@ -149,16 +149,6 @@ export class EnvironmentVariables {
   public CL_API_GET_RESPONSE_TIMEOUT = 15000;
 
   @IsNumber()
-  @Min(10000)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public CL_API_POST_RESPONSE_TIMEOUT = 60000;
-
-  @IsNumber()
-  @Min(10000)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public CL_API_POST_REQUEST_CHUNK_SIZE = 30000;
-
-  @IsNumber()
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public CL_API_MAX_RETRIES = 1;
 
