@@ -111,19 +111,21 @@ export class DutyService {
       (Number(meta.sync.per_block_reward) * PROPOSER_WEIGHT) / (WEIGHT_DENOMINATOR - PROPOSER_WEIGHT),
     );
     for (const v of this.summary.values()) {
+      // todo: maybe data consistency checks are needed. e.g. attested validator must have an effective balance
       if (v.att_meta && v.att_meta.included_in_block) {
         let rewards = meta.attestation.blocks_rewards.get(v.att_meta.included_in_block) ?? 0n;
-        const increments = Number(BigInt(v.val_effective_balance) / BigInt(10 ** 9));
+        const effectiveBalance = BigInt(v.val_effective_balance ?? 0n);
+        const increments = Number(effectiveBalance / BigInt(10 ** 9));
         if (v.att_meta?.reward_per_increment.source != 0) {
-          meta.attestation.participation.source += v.val_effective_balance / BigInt(10 ** 9);
+          meta.attestation.participation.source += effectiveBalance / BigInt(10 ** 9);
           rewards += BigInt(Math.trunc(meta.state.base_reward * increments * v.att_meta.reward_per_increment.source));
         }
         if (v.att_meta?.reward_per_increment.target != 0) {
-          meta.attestation.participation.target += v.val_effective_balance / BigInt(10 ** 9);
+          meta.attestation.participation.target += effectiveBalance / BigInt(10 ** 9);
           rewards += BigInt(Math.trunc(meta.state.base_reward * increments * v.att_meta.reward_per_increment.target));
         }
         if (v.att_meta?.reward_per_increment.head != 0) {
-          meta.attestation.participation.head += v.val_effective_balance / BigInt(10 ** 9);
+          meta.attestation.participation.head += effectiveBalance / BigInt(10 ** 9);
           rewards += BigInt(Math.trunc(meta.state.base_reward * increments * v.att_meta.reward_per_increment.head));
         }
         meta.attestation.blocks_rewards.set(v.att_meta.included_in_block, rewards);
