@@ -24,8 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 6,
-  "iteration": 1672044101442,
+  "iteration": 1672299121451,
   "links": [
     {
       "asDropdown": false,
@@ -316,8 +315,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -409,8 +407,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -502,8 +499,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -596,8 +592,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -690,8 +685,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -784,8 +778,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -878,8 +871,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -972,8 +964,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -1066,7 +1057,7 @@
             "lineWidth": 2,
             "pointSize": 5,
             "scaleDistribution": {
-              "log": 10,
+              "log": 2,
               "type": "log"
             },
             "showPoints": "auto",
@@ -1300,7 +1291,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by () (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) / 10^9 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s] offset 15s) > 0",
+          "expr": "sum by () (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) / 10^9 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
           "hide": false,
           "legendFormat": "Penalties",
           "range": true,
@@ -1312,7 +1303,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) / 10^9 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s] offset 30s) > 0",
+          "expr": "sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) / 10^9 AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
           "hide": false,
           "legendFormat": "Missed rewards",
           "range": true,
@@ -1324,9 +1315,9 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "avg by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+          "expr": "sum by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
           "hide": false,
-          "legendFormat": "Avg rewards",
+          "legendFormat": "Rewards (line)",
           "range": true,
           "refId": "reward median"
         },
@@ -1336,9 +1327,9 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "avg by () (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s] offset 15s) > 0",
+          "expr": "sum by () (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
           "hide": false,
-          "legendFormat": "Avg penalties",
+          "legendFormat": "Penalties (line)",
           "range": true,
           "refId": "penalty median"
         },
@@ -1348,9 +1339,9 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "avg by () (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s] offset 30s) > 0",
+          "expr": "sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
           "hide": false,
-          "legendFormat": "Avg missed rewards",
+          "legendFormat": "Missed rewards (line)",
           "range": true,
           "refId": "missed rewards median"
         }
@@ -3083,8 +3074,8 @@
       {
         "current": {
           "selected": false,
-          "text": "169815",
-          "value": "169815"
+          "text": "170506",
+          "value": "170506"
         },
         "datasource": {
           "type": "prometheus",
@@ -3191,8 +3182,8 @@
       {
         "current": {
           "selected": false,
-          "text": "95.953369140625",
-          "value": "95.953369140625"
+          "text": "98.35205078125",
+          "value": "98.35205078125"
         },
         "datasource": {
           "type": "prometheus",
@@ -3219,8 +3210,8 @@
       {
         "current": {
           "selected": false,
-          "text": "6",
-          "value": "6"
+          "text": "9",
+          "value": "9"
         },
         "datasource": {
           "type": "prometheus",
@@ -3248,68 +3239,10 @@
         "current": {
           "selected": true,
           "text": [
-            "Allnodes",
-            "Anyblock Analytics",
-            "Attestant (BVI) Limited",
-            "Blockdaemon",
-            "Blockscape",
-            "BridgeTower",
-            "Certus One",
-            "ChainLayer",
-            "ChainSafe",
-            "Chorus One",
-            "ConsenSys Codefi",
-            "CryptoManufaktur",
-            "DSRV",
-            "Everstake",
-            "Figment",
-            "HashQuark",
-            "InfStones",
-            "Kukis Global",
-            "Nethermind",
-            "P2P.ORG - P2P Validator",
-            "Prysmatic Labs",
-            "RockLogic GmbH",
-            "RockX",
-            "Sigma Prime",
-            "Simply Staking",
-            "SkillZ",
-            "Stakely",
-            "Stakin",
-            "Staking Facilities",
-            "stakefish"
+            "All"
           ],
           "value": [
-            "Allnodes",
-            "Anyblock Analytics",
-            "Attestant (BVI) Limited",
-            "Blockdaemon",
-            "Blockscape",
-            "BridgeTower",
-            "Certus One",
-            "ChainLayer",
-            "ChainSafe",
-            "Chorus One",
-            "ConsenSys Codefi",
-            "CryptoManufaktur",
-            "DSRV",
-            "Everstake",
-            "Figment",
-            "HashQuark",
-            "InfStones",
-            "Kukis Global",
-            "Nethermind",
-            "P2P.ORG - P2P Validator",
-            "Prysmatic Labs",
-            "RockLogic GmbH",
-            "RockX",
-            "Sigma Prime",
-            "Simply Staking",
-            "SkillZ",
-            "Stakely",
-            "Stakin",
-            "Staking Facilities",
-            "stakefish"
+            "$__all"
           ]
         },
         "datasource": {
@@ -3318,7 +3251,7 @@
         },
         "definition": "query_result(ethereum_validators_monitoring_user_validators)",
         "hide": 0,
-        "includeAll": false,
+        "includeAll": true,
         "label": "Node Operator",
         "multi": true,
         "name": "nos_name_var",
@@ -3378,6 +3311,6 @@
   "timezone": "",
   "title": "Rewards & Penalties",
   "uid": "poBeaLaRD",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
