@@ -27,7 +27,7 @@ interface RequestRetryOptions {
   maxRetries?: number;
   dataOnly?: boolean;
   useFallbackOnRejected?: (e: any) => boolean;
-  useFallbackOnResolved?: (r: any) => boolean;
+  useFallbackOnResolved?: (r: any) => Promise<boolean>;
 }
 
 const REQUEST_TIMEOUT_POLICY_MS = {
@@ -59,7 +59,6 @@ export class ConsensusProviderService {
   protected version = '';
   protected genesisTime = 0n;
   protected defaultMaxSlotDeepCount = 32;
-  protected lastFinalizedSlot = { slot: 0n, fetchTime: 0 };
 
   protected endpoints = {
     version: 'eth/v1/node/version',
@@ -125,13 +124,13 @@ export class ConsensusProviderService {
       (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(blockId)),
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
-        useFallbackOnResolved: (r) => {
+        useFallbackOnResolved: async (r) => {
           if (blockId == 'finalized') {
-            if (BigInt(r.data.header.message.slot) > this.lastFinalizedSlot.slot) {
-              this.lastFinalizedSlot = { slot: BigInt(r.data.header.message.slot), fetchTime: Number(Date.now()) };
-            } else if (Number(Date.now()) - this.lastFinalizedSlot.fetchTime > 420 * 1000) {
-              // if 'finalized' slot doesn't change ~7m we must switch to fallback
-              this.logger.error("Finalized slot hasn't changed in ~7m");
+            const slot = BigInt(r.data.header.message.slot);
+            const slotTime = await this.getSlotTime(slot);
+            const nowTimestamp = Date.now() / 1000;
+            if (nowTimestamp - Number(slotTime) > 1200) {
+              this.logger.error('Finalized slot was more then 20m ago. Long finality of beaconchain or node is not synced');
               return true;
             }
           }
@@ -329,7 +328,7 @@ export class ConsensusProviderService {
       maxRetries: options?.maxRetries ?? this.config.get('CL_API_MAX_RETRIES'),
       dataOnly: options?.dataOnly ?? true,
       useFallbackOnRejected: options?.useFallbackOnRejected ?? (() => true), //  use fallback on error as default
-      useFallbackOnResolved: options?.useFallbackOnResolved ?? (() => false), // do NOT use fallback on success as default
+      useFallbackOnResolved: options?.useFallbackOnResolved ?? (async () => false), // do NOT use fallback on success as default
     };
     const retry = retrier(this.logger, options.maxRetries, 100, 10000, true);
     let res;
@@ -339,8 +338,8 @@ export class ConsensusProviderService {
       res = await callback(this.apiUrls[i])
         .catch(rejectDelay(this.config.get('CL_API_RETRY_DELAY_MS')))
         .catch(() => retry(() => callback(this.apiUrls[i])))
-        .then((r: any) => {
-          if (options.useFallbackOnResolved(r)) {
+        .then(async (r: any) => {
+          if (await options.useFallbackOnResolved(r)) {
             err = Error('Unresolved data on a successful CL API response');
             return undefined;
           }
