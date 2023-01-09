@@ -30,6 +30,29 @@ interface RequestRetryOptions {
   useFallbackOnResolved?: (r: any) => boolean;
 }
 
+const REQUEST_TIMEOUT_POLICY_MS = {
+  // Starts when a socket is assigned.
+  // Ends when the hostname has been resolved.
+  lookup: undefined,
+  // Starts when lookup completes.
+  // Ends when the socket is fully connected.
+  // If lookup does not apply to the request, this event starts when the socket is assigned and ends when the socket is connected.
+  connect: 1000,
+  // Starts when connect completes.
+  // Ends when the handshake process completes.
+  secureConnect: undefined,
+  // Starts when the socket is connected.
+  // Resets when new data is transferred.
+  socket: undefined,
+  // Starts when the socket is connected.
+  // Ends when all data have been written to the socket.
+  send: undefined,
+  // Starts when request has been flushed.
+  // Ends when the headers are received.
+  // Will be redefined by `CL_API_GET_RESPONSE_TIMEOUT`
+  response: 1000,
+};
+
 @Injectable()
 export class ConsensusProviderService {
   protected apiUrls: string[];
@@ -346,7 +369,7 @@ export class ConsensusProviderService {
   @TrackCLRequest
   protected async apiGet<T>(apiURL: string, subUrl: string): Promise<T> {
     const res = await got
-      .get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
+      .get(urljoin(apiURL, subUrl), { timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
       .catch((e) => {
         if (e.response) {
           throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
@@ -365,7 +388,9 @@ export class ConsensusProviderService {
 
   @TrackCLRequest
   protected async apiGetStream(apiURL: string, subUrl: string): Promise<Request> {
-    const readStream = got.stream.get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } });
+    const readStream = got.stream.get(urljoin(apiURL, subUrl), {
+      timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') },
+    });
     const promisedStream = async () =>
       new Promise((resolve, reject) => {
         readStream.on('response', (r: Response) => {
