@@ -1,3 +1,12 @@
+# [4.1.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.0.3...4.1.0) (2023-01-10)
+
+
+### Features
+
+* Develop ([#96](https://github.com/lidofinance/ethereum-validators-monitoring/issues/96)) ([0981e34](https://github.com/lidofinance/ethereum-validators-monitoring/commit/0981e345109ffe69a823396906b618fc5582f10b)), closes [#86](https://github.com/lidofinance/ethereum-validators-monitoring/issues/86) [#87](https://github.com/lidofinance/ethereum-validators-monitoring/issues/87) [#85](https://github.com/lidofinance/ethereum-validators-monitoring/issues/85) [#89](https://github.com/lidofinance/ethereum-validators-monitoring/issues/89) [#91](https://github.com/lidofinance/ethereum-validators-monitoring/issues/91) [#93](https://github.com/lidofinance/ethereum-validators-monitoring/issues/93) [#95](https://github.com/lidofinance/ethereum-validators-monitoring/issues/95) [#90](https://github.com/lidofinance/ethereum-validators-monitoring/issues/90)
+
+
+
 ## [4.0.3](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.0.2...4.0.3) (2022-12-08)
 
 
@@ -88,18 +97,6 @@
 ### Features
 
 * Develop ([da7417f](https://github.com/lidofinance/ethereum-validators-monitoring/commit/da7417f5529ae10893e02383ae41ade86e3119a0)), closes [#29](https://github.com/lidofinance/ethereum-validators-monitoring/issues/29) [#28](https://github.com/lidofinance/ethereum-validators-monitoring/issues/28) [#30](https://github.com/lidofinance/ethereum-validators-monitoring/issues/30)
-
-
-
-# [3.0.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/2.0.0...3.0.0) (2022-09-14)
-
-
-* Develop (#25) ([fd76362](https://github.com/lidofinance/ethereum-validators-monitoring/commit/fd76362536c4c0e14c349217883cc2c42335a37e)), closes [#25](https://github.com/lidofinance/ethereum-validators-monitoring/issues/25) [#20](https://github.com/lidofinance/ethereum-validators-monitoring/issues/20) [#21](https://github.com/lidofinance/ethereum-validators-monitoring/issues/21) [#22](https://github.com/lidofinance/ethereum-validators-monitoring/issues/22) [#24](https://github.com/lidofinance/ethereum-validators-monitoring/issues/24) [#23](https://github.com/lidofinance/ethereum-validators-monitoring/issues/23)
-
-
-### BREAKING CHANGES
-
-* rename EL and CL related env vars
 
 
 
