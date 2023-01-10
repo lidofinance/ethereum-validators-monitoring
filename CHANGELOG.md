@@ -1,3 +1,12 @@
+## [4.1.2](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.1.1...4.1.2) (2023-01-10)
+
+
+### Bug Fixes
+
+* `getEpochDataToProcess` condition ([#103](https://github.com/lidofinance/ethereum-validators-monitoring/issues/103)) ([18971c5](https://github.com/lidofinance/ethereum-validators-monitoring/commit/18971c53b995c5c37e21bae28277f910a5bdabcd))
+
+
+
 ## [4.1.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.1.0...4.1.1) (2023-01-10)
 
 
@@ -88,15 +97,6 @@
 ### Bug Fixes
 
 * Develop ([#39](https://github.com/lidofinance/ethereum-validators-monitoring/issues/39)) ([aafcc6e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/aafcc6ed9854d1a835fd740a5ffe06a694bdda66)), closes [#38](https://github.com/lidofinance/ethereum-validators-monitoring/issues/38)
-
-
-
-# [3.2.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/3.1.0...3.2.0) (2022-10-03)
-
-
-### Features
-
-* Develop ([#35](https://github.com/lidofinance/ethereum-validators-monitoring/issues/35)) ([45c77ed](https://github.com/lidofinance/ethereum-validators-monitoring/commit/45c77edda2e809121fd230bad58a6049284b065f)), closes [#29](https://github.com/lidofinance/ethereum-validators-monitoring/issues/29) [#28](https://github.com/lidofinance/ethereum-validators-monitoring/issues/28) [#30](https://github.com/lidofinance/ethereum-validators-monitoring/issues/30) [#32](https://github.com/lidofinance/ethereum-validators-monitoring/issues/32) [#33](https://github.com/lidofinance/ethereum-validators-monitoring/issues/33) [#34](https://github.com/lidofinance/ethereum-validators-monitoring/issues/34)
 
 
 
