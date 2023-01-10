@@ -88,7 +88,8 @@ export class ConsensusProviderService {
     if (this.version) {
       return this.version;
     }
-    const version = (await this.retryRequest<VersionResponse>((apiURL: string) => this.apiGet(apiURL, this.endpoints.version))).version;
+    const version = (await this.retryRequest<VersionResponse>(async (apiURL: string) => this.apiGet(apiURL, this.endpoints.version)))
+      .version;
     return (this.version = version);
   }
 
@@ -98,7 +99,7 @@ export class ConsensusProviderService {
     }
 
     const genesisTime = BigInt(
-      (await this.retryRequest<GenesisResponse>((apiURL: string) => this.apiGet(apiURL, this.endpoints.genesis))).genesis_time,
+      (await this.retryRequest<GenesisResponse>(async (apiURL: string) => this.apiGet(apiURL, this.endpoints.genesis))).genesis_time,
     );
     this.logger.log(`Got genesis time [${genesisTime}] from Consensus Layer Client API`);
     return (this.genesisTime = genesisTime);
@@ -107,7 +108,7 @@ export class ConsensusProviderService {
   public async getFinalizedEpoch(): Promise<Epoch> {
     return BigInt(
       (
-        await this.retryRequest<FinalityCheckpointsResponse>((apiURL: string) =>
+        await this.retryRequest<FinalityCheckpointsResponse>(async (apiURL: string) =>
           this.apiGet(apiURL, this.endpoints.beaconHeadFinalityCheckpoints),
         )
       ).finalized.epoch,
@@ -122,7 +123,7 @@ export class ConsensusProviderService {
     }
 
     const blockHeader = await this.retryRequest<BlockHeaderResponse>(
-      (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(blockId)),
+      async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(blockId)),
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
@@ -262,7 +263,7 @@ export class ConsensusProviderService {
     }
 
     const blockInfo = await this.retryRequest<BlockInfoResponse>(
-      (apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(blockId)),
+      async (apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(blockId)),
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
       },
@@ -288,7 +289,7 @@ export class ConsensusProviderService {
   }
 
   public async getSyncCommitteeInfo(stateId: StateId, epoch: Epoch): Promise<SyncCommitteeInfo> {
-    return await this.retryRequest((apiURL: string) => this.apiGet(apiURL, this.endpoints.syncCommittee(stateId, epoch)));
+    return await this.retryRequest(async (apiURL: string) => this.apiGet(apiURL, this.endpoints.syncCommittee(stateId, epoch)));
   }
 
   public async getCanonicalProposerDuties(
@@ -299,7 +300,7 @@ export class ConsensusProviderService {
     const retry = retrier(this.logger, maxRetriesForGetCanonical, 100, 10000, true);
     const request = async () => {
       const res = <{ dependent_root: string; data: ProposerDutyInfo[] }>await this.retryRequest(
-        (apiURL: string) => this.apiGet(apiURL, this.endpoints.proposerDutes(epoch)),
+        async (apiURL: string) => this.apiGet(apiURL, this.endpoints.proposerDutes(epoch)),
         { dataOnly: false },
       ).catch((e) => {
         this.logger.error('Unexpected status code while fetching proposer duties info');
@@ -322,9 +323,7 @@ export class ConsensusProviderService {
     return (await this.getGenesisTime()) + slot * BigInt(this.config.get('CHAIN_SLOT_TIME_SECONDS'));
   }
 
-  protected async retryRequest<T>(callback: (apiURL: string) => any, options?: RequestRetryOptions): Promise<T> {
-    // todo: there are some problems with request timeout if host is unreachable.
-    //  sometimes they cannot be caught, so they freeze requests and don't switch to fallback
+  protected async retryRequest<T>(callback: (apiURL: string) => Promise<any>, options?: RequestRetryOptions): Promise<T> {
     options = {
       maxRetries: options?.maxRetries ?? this.config.get('CL_API_MAX_RETRIES'),
       dataOnly: options?.dataOnly ?? true,
