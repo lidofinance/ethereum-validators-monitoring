@@ -72,8 +72,8 @@ export class InspectorService implements OnModuleInit {
     const chosen = await this.chooseEpochToProcess();
     const latestFinalizedBeaconBlock = <BlockHeaderResponse>await this.clClient.getBlockHeader('finalized');
     const latestFinalizedEpoch = BigInt(latestFinalizedBeaconBlock.header.message.slot) / 32n;
-    if (latestFinalizedEpoch < chosen.epoch) {
-      // new finalized epoch hasn't happened, from which we should get information about needed
+    if (latestFinalizedEpoch <= chosen.epoch) {
+      // new finalized epoch hasn't happened, from which we should get information about needed state
       // just wait `CHAIN_SLOT_TIME_SECONDS` until finality happens
       const sleepTime = this.config.get('CHAIN_SLOT_TIME_SECONDS');
       this.logger.log(
@@ -84,7 +84,7 @@ export class InspectorService implements OnModuleInit {
         setTimeout(() => resolve(undefined), sleepTime * 1000);
       });
     }
-    // new finalized slot has happened, from which we can get information about needed
+    // new finalized epoch has happened, from which we can get information about needed state
     this.logger.log(`Latest finalized epoch [${latestFinalizedEpoch}]. Next epoch to process [${chosen.epoch}]`);
     const existedHeader = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(chosen.slot)).header.message;
     if (chosen.slot == BigInt(existedHeader.slot)) {
