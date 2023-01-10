@@ -1,6 +1,3 @@
-import { Readable } from 'stream';
-
-import { parseChunked } from '@discoveryjs/json-ext';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
@@ -16,19 +13,15 @@ import { PrometheusService, TrackCLRequest } from 'common/prometheus';
 import { BlockCache, BlockCacheService } from './block-cache';
 import { MaxDeepError, ResponseError, errCommon, errRequest } from './errors';
 import {
-  AttestationCommitteeInfo,
-  AttesterDutyInfo,
   BlockHeaderResponse,
   BlockInfoResponse,
   FinalityCheckpointsResponse,
   GenesisResponse,
   ProposerDutyInfo,
-  StateValidatorResponse,
-  SyncCommitteeDutyInfo,
   SyncCommitteeInfo,
   VersionResponse,
 } from './intefaces';
-import { BlockId, Epoch, RootHex, Slot, StateId, ValidatorIndex } from './types';
+import { BlockId, Epoch, RootHex, Slot, StateId } from './types';
 
 interface RequestRetryOptions {
   maxRetries?: number;
@@ -36,6 +29,29 @@ interface RequestRetryOptions {
   useFallbackOnRejected?: (e: any) => boolean;
   useFallbackOnResolved?: (r: any) => boolean;
 }
+
+const REQUEST_TIMEOUT_POLICY_MS = {
+  // Starts when a socket is assigned.
+  // Ends when the hostname has been resolved.
+  lookup: undefined,
+  // Starts when lookup completes.
+  // Ends when the socket is fully connected.
+  // If lookup does not apply to the request, this event starts when the socket is assigned and ends when the socket is connected.
+  connect: 1000,
+  // Starts when connect completes.
+  // Ends when the handshake process completes.
+  secureConnect: undefined,
+  // Starts when the socket is connected.
+  // Resets when new data is transferred.
+  socket: undefined,
+  // Starts when the socket is connected.
+  // Ends when all data have been written to the socket.
+  send: undefined,
+  // Starts when request has been flushed.
+  // Ends when the headers are received.
+  // Will be redefined by `CL_API_GET_RESPONSE_TIMEOUT`
+  response: 1000,
+};
 
 @Injectable()
 export class ConsensusProviderService {
@@ -232,8 +248,10 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getValidatorsState(stateId: StateId): Promise<StateValidatorResponse[]> {
-    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.validatorsState(stateId)));
+  public async getValidatorsState(stateId: StateId): Promise<Request> {
+    return await this.retryRequest(async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.validatorsState(stateId)), {
+      dataOnly: false,
+    });
   }
 
   public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse | void> {
@@ -260,66 +278,17 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getAttestationCommitteesInfo(stateId: StateId, epoch: Epoch): Promise<AttestationCommitteeInfo[]> {
-    return await this.retryRequest((apiURL: string) => this.apiLargeGet(apiURL, this.endpoints.attestationCommittees(stateId, epoch)));
+  public async getAttestationCommitteesInfo(stateId: StateId, epoch: Epoch): Promise<Request> {
+    return await this.retryRequest(
+      async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.attestationCommittees(stateId, epoch)),
+      {
+        dataOnly: false,
+      },
+    );
   }
 
   public async getSyncCommitteeInfo(stateId: StateId, epoch: Epoch): Promise<SyncCommitteeInfo> {
     return await this.retryRequest((apiURL: string) => this.apiGet(apiURL, this.endpoints.syncCommittee(stateId, epoch)));
-  }
-
-  public async getCanonicalAttesterDuties(
-    epoch: Epoch,
-    dependentRoot: RootHex,
-    indexes: ValidatorIndex[],
-    maxRetriesForGetCanonical = 3,
-  ): Promise<AttesterDutyInfo[]> {
-    const retry = retrier(this.logger, maxRetriesForGetCanonical, 100, 10000, true);
-    const request = async () => {
-      const res = <{ dependent_root: string; data: AttesterDutyInfo[] }>(
-        await this.retryRequest(
-          (apiURL: string) => this.apiLargePost(apiURL, this.endpoints.attesterDuties(epoch), { body: JSON.stringify(indexes) }),
-          { dataOnly: false },
-        )
-      );
-      if (res.dependent_root != dependentRoot) {
-        throw Error(`Attester duty dependent root is not as expected. Actual: ${res.dependent_root} Expected: ${dependentRoot}`);
-      }
-      return res.data;
-    };
-
-    return await request()
-      .catch(() => retry(() => request()))
-      .catch(() => {
-        throw Error(`Failed to get canonical attester duty info after ${maxRetriesForGetCanonical} retries`);
-      });
-  }
-
-  public async getChunkedAttesterDuties(epoch: Epoch, dependentRoot: RootHex, indexes: string[]): Promise<AttesterDutyInfo[]> {
-    let result: AttesterDutyInfo[] = [];
-    const chunked = [...indexes];
-    while (chunked.length > 0) {
-      const chunk = chunked.splice(0, this.config.get('CL_API_POST_REQUEST_CHUNK_SIZE')); // large payload may cause endpoint exception
-      result = result.concat(await this.getCanonicalAttesterDuties(epoch, dependentRoot, chunk));
-    }
-    return result;
-  }
-
-  public async getSyncCommitteeDuties(epoch: Epoch, indexes: string[]): Promise<SyncCommitteeDutyInfo[]> {
-    let result: SyncCommitteeDutyInfo[] = [];
-    const chunked = [...indexes];
-    while (chunked.length > 0) {
-      const chunk = chunked.splice(0, this.config.get('CL_API_POST_REQUEST_CHUNK_SIZE')); // large payload may cause endpoint exception
-      result = result.concat(
-        <SyncCommitteeDutyInfo[]>await this.retryRequest((apiURL: string) =>
-          this.apiLargePost(apiURL, this.endpoints.syncCommitteeDuties(epoch), { body: JSON.stringify(chunk) }),
-        ).catch((e) => {
-          this.logger.error('Unexpected status code while fetching sync committee duties info');
-          throw e;
-        }),
-      );
-    }
-    return result;
   }
 
   public async getCanonicalProposerDuties(
@@ -354,6 +323,8 @@ export class ConsensusProviderService {
   }
 
   protected async retryRequest<T>(callback: (apiURL: string) => any, options?: RequestRetryOptions): Promise<T> {
+    // todo: there are some problems with request timeout if host is unreachable.
+    //  sometimes they cannot be caught, so they freeze requests and don't switch to fallback
     options = {
       maxRetries: options?.maxRetries ?? this.config.get('CL_API_MAX_RETRIES'),
       dataOnly: options?.dataOnly ?? true,
@@ -398,7 +369,7 @@ export class ConsensusProviderService {
   @TrackCLRequest
   protected async apiGet<T>(apiURL: string, subUrl: string): Promise<T> {
     const res = await got
-      .get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
+      .get(urljoin(apiURL, subUrl), { timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
       .catch((e) => {
         if (e.response) {
           throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
@@ -416,32 +387,25 @@ export class ConsensusProviderService {
   }
 
   @TrackCLRequest
-  protected async apiLargeGet<T>(apiURL: string, subUrl: string): Promise<T> {
-    const readStream = got.stream.get(urljoin(apiURL, subUrl), { timeout: { response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } });
-    return await this._requestStream(readStream, subUrl, apiURL);
-  }
-
-  @TrackCLRequest
-  protected async apiLargePost<T>(apiURL: string, subUrl: string, params?: Record<string, any>): Promise<T> {
-    const readStream = got.stream.post(urljoin(apiURL, subUrl), {
-      timeout: { response: this.config.get('CL_API_POST_RESPONSE_TIMEOUT') },
-      ...params,
+  protected async apiGetStream(apiURL: string, subUrl: string): Promise<Request> {
+    const readStream = got.stream.get(urljoin(apiURL, subUrl), {
+      timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') },
     });
-    return await this._requestStream(readStream, subUrl, apiURL);
-  }
-
-  protected async _requestStream(req: Readable, subUrl: string, apiURL: string) {
-    return await parseChunked(
-      req.on('response', (r: Response) => {
-        if (r.statusCode != 200) throw new HTTPError(r);
-      }),
-    )
-      .catch((e) => {
-        if (e instanceof HTTPError) {
-          throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
-        }
-        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
+    const promisedStream = async () =>
+      new Promise((resolve, reject) => {
+        readStream.on('response', (r: Response) => {
+          if (r.statusCode != 200) reject(new HTTPError(r));
+          resolve(readStream);
+        });
+        readStream.on('error', (e) => reject(e));
       })
-      .finally(() => req.destroy());
+        .then((r: Request) => r)
+        .catch((e) => {
+          if (e instanceof HTTPError) {
+            throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
+          }
+          throw new ResponseError(errCommon(e.message, subUrl, apiURL));
+        });
+    return await promisedStream();
   }
 }

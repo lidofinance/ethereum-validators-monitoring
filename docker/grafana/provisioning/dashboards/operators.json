@@ -24,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1668942230709,
+  "iteration": 1672296019449,
   "links": [
     {
       "asDropdown": false,
@@ -117,7 +117,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -183,7 +183,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -264,7 +264,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -328,7 +328,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -399,7 +399,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -461,7 +461,7 @@
         "text": {},
         "textMode": "name"
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -932,7 +932,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -944,8 +944,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = '${nos_name_var}' AND\n      epoch = ${epoch_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = '${nos_name_var}' AND\n      epoch = ${epoch_number_var} - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance) < 0\nORDER BY GWei ASC\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = 'EU Nordic & East' AND\n      epoch = 161310\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = 'EU Nordic & East' AND\n      epoch = 161310 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance) < 0\nORDER BY GWei ASC\nLIMIT 100",
+          "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = '${nos_name_var}' AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = '${nos_name_var}' AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance) < 0\nORDER BY GWei ASC\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = 'Allnodes' AND\n      epoch = 170498\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = 'Allnodes' AND\n      epoch = 170498 - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance) < 0\nORDER BY GWei ASC\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1053,7 +1053,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -1065,8 +1065,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND block_proposed = 0 AND (epoch = ${epoch_number_var}) AND val_nos_name = '${nos_name_var}'\nORDER BY block_to_propose DESC, val_id",
-          "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND block_proposed = 0 AND (epoch = 161310) AND val_nos_name = 'EU Nordic & East'\nORDER BY block_to_propose DESC, val_id",
+          "query": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND block_proposed = 0 AND (epoch = ${epoch_number_var}) AND val_nos_name = '${nos_name_var}'\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by val_id",
+          "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND block_proposed = 0 AND (epoch = 170499) AND val_nos_name = 'Allnodes'\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by val_id",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1186,7 +1186,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -1199,8 +1199,8 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n  val_id as Validator\nFROM (\n  SELECT\n    val_id,\n    count() AS count_fail\n  FROM\n    validators_summary\n  WHERE\n    is_sync = 1 AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${sync_epochs_var})) AND\n    val_nos_name = '${nos_name_var}'\n  GROUP BY val_id\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, val_id",
-          "rawQuery": "SELECT\n  val_id as Validator\nFROM (\n  SELECT\n    val_id,\n    count() AS count_fail\n  FROM\n    validators_summary\n  WHERE\n    is_sync = 1 AND sync_percent < (97.296142578125 - 10) AND\n    (epoch <= 161310 AND epoch > (161310 - 3)) AND\n    val_nos_name = 'EU Nordic & East'\n  GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id",
+          "query": "SELECT\n  val_id as Validator\nFROM (\n  SELECT\n    val_id,\n    count() AS count_fail\n  FROM (\n    SELECT val_id\n    FROM validators_summary\n    WHERE\n      is_sync = 1 AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n      (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${sync_epochs_var})) AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 by epoch, val_id  \n  )\n  GROUP BY val_id\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, val_id",
+          "rawQuery": "SELECT\n  val_id as Validator\nFROM (\n  SELECT\n    val_id,\n    count() AS count_fail\n  FROM (\n    SELECT val_id\n    FROM validators_summary\n    WHERE\n      is_sync = 1 AND sync_percent < (98.48790320474654 - 0) AND\n      (epoch <= 170500 AND epoch > (170500 - 3)) AND\n      val_nos_name = 'Allnodes'\n    LIMIT 1 by epoch, val_id  \n  )\n  GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id",
           "refId": "B",
           "round": "0s",
           "skip_comments": true
@@ -1287,7 +1287,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -1299,8 +1299,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "\nSELECT\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM validators_summary\n    WHERE att_happened = 0 AND \n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var})) AND\n    val_nos_name = '${nos_name_var}'\n    GROUP BY val_id\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM validators_summary\n    WHERE att_happened = 0 AND \n    (epoch <= 161309 AND epoch > (161309 - 3)) AND\n    val_nos_name = 'EU Nordic & East'\n    GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "query": "\nSELECT\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM (\n      SELECT val_id\n      FROM validators_summary\n      WHERE \n        att_happened = 0 AND val_nos_name = '${nos_name_var}' AND\n        (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\n      LIMIT 1 by epoch, val_id\n    )\n    GROUP BY val_id\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM (\n      SELECT val_id\n      FROM validators_summary\n      WHERE \n        att_happened = 0 AND val_nos_name = 'Allnodes' AND\n        (epoch <= 170499 AND epoch > (170499 - 3))\n      LIMIT 1 by epoch, val_id\n    )\n    GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1399,7 +1399,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -1411,8 +1411,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM validators_summary\nWHERE\n  val_nos_name = '${nos_name_var}' AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM validators_summary\nWHERE\n  val_nos_name = 'EU Nordic & East' AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  (epoch <= 161310 AND epoch > (161310 - 3))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM (\n  SELECT val_id\n  FROM validators_summary\n  WHERE\n    val_nos_name = '${nos_name_var}' AND\n    att_happened = 1 AND\n    att_inc_delay > 1 AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM (\n  SELECT val_id\n  FROM validators_summary\n  WHERE\n    val_nos_name = 'Allnodes' AND\n    att_happened = 1 AND\n    att_inc_delay > 1 AND\n    (epoch <= 170500 AND epoch > (170500 - 3))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1512,7 +1512,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -1524,8 +1524,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM validators_summary\nWHERE\n  val_nos_name = '${nos_name_var}' AND\n  (att_valid_head + att_valid_target + att_valid_source = 1) AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM validators_summary\nWHERE\n  val_nos_name = 'EU Nordic & East' AND\n  (att_valid_head + att_valid_target + att_valid_source = 1) AND\n  (epoch <= 161310 AND epoch > (161310 - 3))\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM (\n  SELECT val_id\n  FROM validators_summary\n  WHERE\n    val_nos_name = '${nos_name_var}' AND\n    (att_valid_head + att_valid_target + att_valid_source = 1) AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
+          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM (\n  SELECT val_id\n  FROM validators_summary\n  WHERE\n    val_nos_name = 'Allnodes' AND\n    (att_valid_head + att_valid_target + att_valid_source = 1) AND\n    (epoch <= 170500 AND epoch > (170500 - 3))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1612,7 +1612,7 @@
           }
         ]
       },
-      "pluginVersion": "8.5.13",
+      "pluginVersion": "8.5.15",
       "targets": [
         {
           "datasource": {
@@ -1624,8 +1624,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    val_status as Status,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) and val_nos_name = '${nos_name_var}' and epoch = ${epoch_number_var}\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n    val_status as Status,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) and val_nos_name = 'EU Nordic & East' and epoch = 161310\nLIMIT 100",
+          "query": "SELECT\n    val_status as Status,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) and val_nos_name = '${nos_name_var}' and epoch = ${epoch_number_var}\nLIMIT 1 by val_id",
+          "rawQuery": "SELECT\n    val_status as Status,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) and val_nos_name = 'Allnodes' and epoch = 170499\nLIMIT 1 by val_id",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1696,7 +1696,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               },
@@ -1802,7 +1803,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "transparent",
@@ -1896,7 +1898,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "transparent",
@@ -1964,7 +1967,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -2038,10 +2042,10 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
-              "datasource": {
+                  "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -2050,8 +2054,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var}\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
-              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 161308\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 161308 - 6\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
+              "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
+              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 170500\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 170500 - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -2108,7 +2112,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-red"
+                    "color": "dark-red",
+                    "value": null
                   }
                 ]
               },
@@ -2193,7 +2198,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -2269,10 +2275,10 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
-              "datasource": {
+                  "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -2281,8 +2287,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_name = '${nos_name_var}' AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id",
-              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_name = 'EU Nordic & East' AND block_proposed = 0 AND (epoch <= 161308 AND epoch > (161308 - 48))\nORDER BY block_to_propose DESC, val_id",
+              "query": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_name = '${nos_name_var}' AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
+              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_name = 'Allnodes' AND block_proposed = 0 AND (epoch <= 170500 AND epoch > (170500 - 9))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -2336,7 +2342,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -2555,13 +2562,11 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
-              "editorMode": "code",
               "exemplar": true,
               "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "Rest of chain",
-              "range": true,
               "refId": "A"
             },
             {
@@ -2569,13 +2574,11 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
-              "editorMode": "code",
               "exemplar": true,
               "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name!='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
-              "legendFormat": "Rest of user's",
-              "range": true,
+              "legendFormat": "Rest of User's",
               "refId": "B"
             },
             {
@@ -2726,10 +2729,10 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
-              "datasource": {
+                  "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -2738,8 +2741,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent",
-              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_name = 'EU Nordic & East' AND epoch = 161308 AND sync_percent < (97.222900390625 - 10)\nORDER BY sync_percent",
+              "query": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent\nLIMIT 1 by val_id",
+              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_name = 'Allnodes' AND epoch = 170501 AND sync_percent < (95.4833984375 - 0)\nORDER BY sync_percent\nLIMIT 1 by val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -2930,7 +2933,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3004,10 +3008,10 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
-              "datasource": {
+                  "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -3016,14 +3020,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_name = 'Allnodes' AND epoch = 170501\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of MISSED attestations (${epochs_range} epochs range)",
+          "title": "Validators with MISSED attestation",
           "type": "table"
         },
         {
@@ -3071,7 +3075,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3090,8 +3095,8 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "displayMode": "hidden",
-              "placement": "right",
+              "displayMode": "list",
+              "placement": "bottom",
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -3122,7 +3127,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "inc. delay > 2",
+          "description": "inc. delay > 1",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -3174,7 +3179,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3248,10 +3254,10 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
-              "datasource": {
+                  "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -3260,14 +3266,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = 'Allnodes' AND epoch = 170501\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with high INC. DELAY (${epochs_range} epochs range)",
+          "title": "Validators with high INC. DELAY attestation",
           "type": "table"
         },
         {
@@ -3315,7 +3321,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3334,8 +3341,8 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "displayMode": "hidden",
-              "placement": "right",
+              "displayMode": "list",
+              "placement": "bottom",
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -3418,7 +3425,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3504,10 +3512,10 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
-              "datasource": {
+                  "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -3516,14 +3524,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 BY val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = 'Allnodes' AND epoch = 170501\n    ORDER BY val_id\n    LIMIT 1 BY val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with invalid HEAD (${epochs_range} epochs range)",
+          "title": "Validators with invalid HEAD",
           "type": "table"
         },
         {
@@ -3571,7 +3579,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3590,8 +3599,8 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "displayMode": "hidden",
-              "placement": "right",
+              "displayMode": "list",
+              "placement": "bottom",
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -3674,7 +3683,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3748,10 +3758,10 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
-              "datasource": {
+                  "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -3760,14 +3770,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = 'Allnodes' AND epoch = 170501\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with invalid TARGET (${epochs_range} epochs range)",
+          "title": "Validators with invalid TARGET",
           "type": "table"
         },
         {
@@ -3815,7 +3825,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3834,8 +3845,8 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "displayMode": "hidden",
-              "placement": "right",
+              "displayMode": "list",
+              "placement": "bottom",
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -3918,7 +3929,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -3992,10 +4004,10 @@
               }
             ]
           },
-          "pluginVersion": "8.5.13",
+          "pluginVersion": "8.5.15",
           "targets": [
             {
-              "datasource": {
+                  "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -4004,14 +4016,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = '${nos_name_var}' AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      count() as Fails,\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = 'EU Nordic & East' AND\n    (epoch <= 161309 AND epoch > (161309 - 5))\n    GROUP BY val_id\n    ORDER BY Fails DESC, val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT ${limit}",
+              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = 'Allnodes' AND epoch = 170501\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
-          "title": "Number of attestations with invalid SOURCE (${epochs_range} epochs range)",
+          "title": "Validator with invalid SOURCE",
           "type": "table"
         },
         {
@@ -4059,7 +4071,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -4078,8 +4091,8 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "displayMode": "hidden",
-              "placement": "right",
+              "displayMode": "list",
+              "placement": "bottom",
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -4119,8 +4132,8 @@
       {
         "current": {
           "selected": false,
-          "text": "EU Nordic & East",
-          "value": "EU Nordic & East"
+          "text": "Allnodes",
+          "value": "Allnodes"
         },
         "datasource": {
           "type": "prometheus",
@@ -4147,8 +4160,8 @@
       {
         "current": {
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": "170501",
+          "value": "170501"
         },
         "datasource": {
           "type": "prometheus",
@@ -4175,8 +4188,8 @@
       {
         "current": {
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": "0",
+          "value": "0"
         },
         "datasource": {
           "type": "prometheus",
@@ -4275,8 +4288,8 @@
       {
         "current": {
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": "95.4833984375",
+          "value": "95.4833984375"
         },
         "datasource": {
           "type": "prometheus",
@@ -4303,8 +4316,8 @@
       {
         "current": {
           "selected": false,
-          "text": "None",
-          "value": ""
+          "text": "10",
+          "value": "10"
         },
         "datasource": {
           "type": "prometheus",
@@ -4340,6 +4353,6 @@
   "timezone": "",
   "title": "NodeOperators",
   "uid": "3wimU2H7h",
-  "version": 10,
+  "version": 3,
   "weekStart": ""
 }

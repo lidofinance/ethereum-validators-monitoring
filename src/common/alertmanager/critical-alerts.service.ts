@@ -4,6 +4,7 @@ import got from 'got';
 
 import { ConfigService } from 'common/config';
 import { PrometheusService } from 'common/prometheus';
+import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
 import { AlertRequestBody, PreparedToSendAlert } from './alerts/BasicAlert';
@@ -21,17 +22,20 @@ export const sentAlerts: SentAlerts = {};
 @Injectable()
 export class CriticalAlertsService {
   private readonly baseUrl;
+  protected operators: RegistrySourceOperator[];
 
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly storage: ClickhouseService,
     protected readonly prometheus: PrometheusService,
+    protected readonly registryService: RegistryService,
   ) {
     this.baseUrl = this.config.get('CRITICAL_ALERTS_ALERTMANAGER_URL') ?? '';
   }
 
   public async send(epoch: bigint) {
+    this.operators = await this.registryService.getOperators();
     if (this.prometheus.getSlotTimeDiffWithNow() > 3600000) {
       this.logger.warn(`Data actuality greater than 1 hour. Critical alerts are suppressed`);
       return;
@@ -57,10 +61,10 @@ export class CriticalAlertsService {
 
   private get alerts() {
     return [
-      new CriticalNegativeDelta(this.config, this.storage),
-      new CriticalMissedProposes(this.config, this.storage),
-      new CriticalMissedAttestations(this.config, this.storage),
-      new CriticalSlashing(this.config, this.storage),
+      new CriticalNegativeDelta(this.config, this.storage, this.operators),
+      new CriticalMissedProposes(this.config, this.storage, this.operators),
+      new CriticalMissedAttestations(this.config, this.storage, this.operators),
+      new CriticalSlashing(this.config, this.storage, this.operators),
     ];
   }
 

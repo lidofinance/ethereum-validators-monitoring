@@ -47,8 +47,9 @@ export class SyncMetrics {
 
   private async operatorAvgSyncPercents() {
     const result = await this.storage.getOperatorSyncParticipationAvgPercents(this.processedEpoch);
-    result.forEach((p) => {
-      this.prometheus.operatorSyncParticipationAvgPercent.set({ nos_name: p.val_nos_name }, p.avg_percent);
+    this.operators.forEach((operator) => {
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
+      this.prometheus.operatorSyncParticipationAvgPercent.set({ nos_name: operator.name }, operatorResult ? operatorResult.avg_percent : 0);
     });
   }
 
@@ -71,23 +72,23 @@ export class SyncMetrics {
   private async goodSyncParticipationLastEpoch(chainAvgSyncPercent: number) {
     const result = await this.storage.getValidatorsCountWithGoodSyncParticipationLastNEpoch(this.processedEpoch, 1, chainAvgSyncPercent);
     this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_name == operator.name);
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
       this.prometheus.validatorsCountWithGoodSyncParticipation.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
     });
-    const other = result.find((p) => p.val_nos_name == 'NULL');
+    const other = result.find((p) => p.val_nos_id == null);
     this.prometheus.otherValidatorsCountWithGoodSyncParticipation.set(other ? other.amount : 0);
   }
 
   private async badSyncParticipationLastEpoch(chainAvgSyncPercent: number) {
     const result = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(this.processedEpoch, 1, chainAvgSyncPercent);
     this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_name == operator.name);
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
       this.prometheus.validatorsCountWithSyncParticipationLessAvg.set(
         { nos_name: operator.name },
         operatorResult ? operatorResult.amount : 0,
       );
     });
-    const other = result.find((p) => p.val_nos_name == 'NULL');
+    const other = result.find((p) => p.val_nos_id == null);
     this.prometheus.otherValidatorsCountWithSyncParticipationLessAvg.set(other ? other.amount : 0);
   }
 
@@ -98,7 +99,7 @@ export class SyncMetrics {
       chainAvgSyncPercent,
     );
     this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_name == operator.name);
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
       this.prometheus.validatorsCountWithSyncParticipationLessAvgLastNEpoch.set(
         { nos_name: operator.name, epoch_interval: this.epochInterval },
         operatorResult ? operatorResult.amount : 0,
@@ -116,7 +117,7 @@ export class SyncMetrics {
         possibleHighRewardValidators,
       );
     this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_name == operator.name);
+      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
       this.prometheus.highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch.set(
         { nos_name: operator.name, epoch_interval: this.epochInterval },
         operatorResult ? operatorResult.amount : 0,

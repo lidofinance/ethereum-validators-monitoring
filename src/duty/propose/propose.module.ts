@@ -6,11 +6,12 @@ import { ClickhouseModule } from 'storage/clickhouse';
 
 import { SummaryModule } from '../summary';
 import { ProposeMetrics } from './propose.metrics';
+import { ProposeRewards } from './propose.rewards';
 import { ProposeService } from './propose.service';
 
 @Module({
   imports: [RegistryModule, ConsensusProviderModule, ClickhouseModule, SummaryModule],
-  providers: [ProposeService, ProposeMetrics],
-  exports: [ProposeService, ProposeMetrics],
+  providers: [ProposeService, ProposeMetrics, ProposeRewards],
+  exports: [ProposeService, ProposeMetrics, ProposeRewards],
 })
 export class ProposeModule {}
