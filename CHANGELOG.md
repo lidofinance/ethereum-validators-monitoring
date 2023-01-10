@@ -1,3 +1,12 @@
+## [4.1.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.1.0...4.1.1) (2023-01-10)
+
+
+### Bug Fixes
+
+* add async notation for api request callbacks ([#100](https://github.com/lidofinance/ethereum-validators-monitoring/issues/100)) ([74a946e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/74a946ec593d1cbbdd56cf53387defef04051eb6))
+
+
+
 # [4.1.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.0.3...4.1.0) (2023-01-10)
 
 
@@ -88,15 +97,6 @@
 ### Features
 
 * Develop ([#35](https://github.com/lidofinance/ethereum-validators-monitoring/issues/35)) ([45c77ed](https://github.com/lidofinance/ethereum-validators-monitoring/commit/45c77edda2e809121fd230bad58a6049284b065f)), closes [#29](https://github.com/lidofinance/ethereum-validators-monitoring/issues/29) [#28](https://github.com/lidofinance/ethereum-validators-monitoring/issues/28) [#30](https://github.com/lidofinance/ethereum-validators-monitoring/issues/30) [#32](https://github.com/lidofinance/ethereum-validators-monitoring/issues/32) [#33](https://github.com/lidofinance/ethereum-validators-monitoring/issues/33) [#34](https://github.com/lidofinance/ethereum-validators-monitoring/issues/34)
-
-
-
-# [3.1.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/3.0.0...3.1.0) (2022-09-22)
-
-
-### Features
-
-* Develop ([da7417f](https://github.com/lidofinance/ethereum-validators-monitoring/commit/da7417f5529ae10893e02383ae41ade86e3119a0)), closes [#29](https://github.com/lidofinance/ethereum-validators-monitoring/issues/29) [#28](https://github.com/lidofinance/ethereum-validators-monitoring/issues/28) [#30](https://github.com/lidofinance/ethereum-validators-monitoring/issues/30)
 
 
 
