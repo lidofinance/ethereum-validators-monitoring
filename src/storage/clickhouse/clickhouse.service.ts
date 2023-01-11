@@ -1,5 +1,3 @@
-import { Duplex } from 'stream';
-
 import { ClickHouseClient, createClient } from '@clickhouse/client';
 import { BigNumber } from '@ethersproject/bignumber';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
@@ -121,29 +119,28 @@ export class ClickhouseService implements OnModuleInit {
     return { max: 0 };
   }
 
-  @TrackTask('write-indexes')
-  public async writeIndexes(pipeline: Duplex): Promise<void> {
-    await this.db
-      .insert({
-        table: 'validators_index',
-        values: pipeline,
-        format: 'JSONEachRow',
-      })
-      .finally(() => pipeline.destroy());
-  }
-
   @TrackTask('write-summary')
   public async writeSummary(summary: ValidatorDutySummary[]): Promise<void> {
     while (summary.length > 0) {
       const chunk = summary.splice(0, this.chunkSize);
-      await this.retry(
-        async () =>
-          await this.db.insert({
-            table: 'validators_summary',
-            values: chunk,
-            format: 'JSONEachRow',
-          }),
-      );
+      await Promise.all([
+        this.retry(
+          async () =>
+            await this.db.insert({
+              table: 'validators_index',
+              values: chunk.map((v) => ({ val_id: v.val_id, val_pubkey: v.val_pubkey })),
+              format: 'JSONEachRow',
+            }),
+        ),
+        this.retry(
+          async () =>
+            await this.db.insert({
+              table: 'validators_summary',
+              values: chunk.map((v) => ({ ...v, val_pubkey: undefined })),
+              format: 'JSONEachRow',
+            }),
+        ),
+      ]);
     }
   }
 

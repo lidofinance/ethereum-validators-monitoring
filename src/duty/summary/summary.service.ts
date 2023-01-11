@@ -20,6 +20,7 @@ export interface ValidatorDutySummary {
   epoch: Epoch;
   ///
   val_id: number;
+  val_pubkey?: string;
   val_nos_id?: number;
   val_nos_name?: string;
   val_slashed?: boolean;
