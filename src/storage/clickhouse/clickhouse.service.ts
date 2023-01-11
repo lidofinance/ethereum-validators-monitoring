@@ -5,6 +5,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { retrier } from 'common/functions/retrier';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { EpochMeta, ValidatorDutySummary } from 'duty/summary';
@@ -108,20 +109,20 @@ export class ClickhouseService implements OnModuleInit {
         'SELECT epoch FROM epochs_processing WHERE is_stored = 1 AND is_calculated = 1 ORDER BY epoch DESC LIMIT 1',
       )
     )[0];
-    if (data) return { ...data, epoch: BigInt(data.epoch) };
-    return { epoch: 0n, is_stored: undefined, is_calculated: undefined };
+    if (data) return { ...data, epoch: Number(data.epoch) };
+    return { epoch: 0, is_stored: undefined, is_calculated: undefined };
   }
 
   public async getLastEpoch(): Promise<EpochProcessingState> {
     const data = (await this.select<EpochProcessingState[]>('SELECT * FROM epochs_processing ORDER BY epoch DESC LIMIT 1'))[0];
-    if (data) return { ...data, epoch: BigInt(data.epoch) };
-    return { epoch: 0n, is_stored: undefined, is_calculated: undefined };
+    if (data) return { ...data, epoch: Number(data.epoch) };
+    return { epoch: 0, is_stored: undefined, is_calculated: undefined };
   }
 
   public async getMaxEpoch(): Promise<{ max }> {
     const data = (await this.select<{ max }[]>('SELECT max(epoch) as max FROM validators_summary'))[0];
-    if (data) return { max: BigInt(data.max) };
-    return { max: 0n };
+    if (data) return { max: Number(data.max) };
+    return { max: 0 };
   }
 
   @TrackTask('write-indexes')
@@ -151,7 +152,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   @TrackTask('write-epoch-meta')
-  public async writeEpochMeta(epoch: bigint, meta: EpochMeta): Promise<void> {
+  public async writeEpochMeta(epoch: Epoch, meta: EpochMeta): Promise<void> {
     await this.retry(
       async () =>
         await this.db.insert({
@@ -207,21 +208,21 @@ export class ClickhouseService implements OnModuleInit {
     }
   }
 
-  public async getAvgValidatorBalanceDelta(epoch: bigint): Promise<NOsDelta[]> {
+  public async getAvgValidatorBalanceDelta(epoch: Epoch): Promise<NOsDelta[]> {
     return (await this.select<NOsDelta[]>(avgValidatorBalanceDelta(epoch))).map((v) => ({
       ...v,
       delta: Number(v.delta),
     }));
   }
 
-  public async getValidatorQuantile0001BalanceDeltas(epoch: bigint): Promise<NOsDelta[]> {
+  public async getValidatorQuantile0001BalanceDeltas(epoch: Epoch): Promise<NOsDelta[]> {
     return (await this.select<NOsDelta[]>(validatorQuantile0001BalanceDeltasQuery(epoch))).map((v) => ({
       ...v,
       delta: Number(v.delta),
     }));
   }
 
-  public async getValidatorsCountWithNegativeDelta(epoch: bigint): Promise<NOsValidatorsNegDeltaCount[]> {
+  public async getValidatorsCountWithNegativeDelta(epoch: Epoch): Promise<NOsValidatorsNegDeltaCount[]> {
     return (await this.select<NOsValidatorsNegDeltaCount[]>(validatorsCountWithNegativeDeltaQuery(epoch))).map((v) => ({
       ...v,
       neg_count: Number(v.neg_count),
@@ -231,7 +232,7 @@ export class ClickhouseService implements OnModuleInit {
   /**
    * Send query to Clickhouse and receives information about User Sync Committee participants
    */
-  public async getUserSyncParticipationAvgPercent(epoch: bigint): Promise<SyncCommitteeParticipationAvgPercents> {
+  public async getUserSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
     const ret = await this.select(userSyncParticipationAvgPercentQuery(epoch));
     return { avg_percent: Number(ret[0].avg_percent) };
   }
@@ -239,7 +240,7 @@ export class ClickhouseService implements OnModuleInit {
   /**
    * Send query to Clickhouse and receives information about Other Sync Committee avg percent
    */
-  public async getOtherSyncParticipationAvgPercent(epoch: bigint): Promise<SyncCommitteeParticipationAvgPercents> {
+  public async getOtherSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
     const ret = await this.select(otherSyncParticipationAvgPercentQuery(epoch));
     return { avg_percent: Number(ret[0].avg_percent) };
   }
@@ -247,7 +248,7 @@ export class ClickhouseService implements OnModuleInit {
   /**
    * Send query to Clickhouse and receives information about Chain Sync Committee acg percent
    */
-  public async getChainSyncParticipationAvgPercent(epoch: bigint): Promise<SyncCommitteeParticipationAvgPercents> {
+  public async getChainSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
     const ret = await this.select(chainSyncParticipationAvgPercentQuery(epoch));
     return { avg_percent: Number(ret[0].avg_percent) };
   }
@@ -255,7 +256,7 @@ export class ClickhouseService implements OnModuleInit {
   /**
    * Send query to Clickhouse and receives information about Operator Sync Committee participants
    */
-  public async getOperatorSyncParticipationAvgPercents(epoch: bigint): Promise<NOsValidatorsSyncAvgPercent[]> {
+  public async getOperatorSyncParticipationAvgPercents(epoch: Epoch): Promise<NOsValidatorsSyncAvgPercent[]> {
     return (await this.select<NOsValidatorsSyncAvgPercent[]>(operatorsSyncParticipationAvgPercentsQuery(epoch))).map((v) => ({
       ...v,
       avg_percent: Number(v.avg_percent),
@@ -263,7 +264,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async getValidatorsCountWithGoodSyncParticipationLastNEpoch(
-    epoch: bigint,
+    epoch: Epoch,
     epochInterval: number,
     chainAvg: number,
     validatorIndexes: string[] = [],
@@ -288,7 +289,7 @@ export class ClickhouseService implements OnModuleInit {
    * how many User Node Operator validators have Sync Committee participation less when chain average last N epoch
    */
   public async getValidatorsCountWithBadSyncParticipationLastNEpoch(
-    epoch: bigint,
+    epoch: Epoch,
     epochInterval: number,
     chainAvg: number,
     validatorIndexes: string[] = [],
@@ -308,7 +309,7 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  public async getValidatorCountWithPerfectAttestationsLastEpoch(epoch: bigint) {
+  public async getValidatorCountWithPerfectAttestationsLastEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       1,
@@ -316,27 +317,27 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
-  public async getValidatorCountWithMissedAttestationsLastEpoch(epoch: bigint) {
+  public async getValidatorCountWithMissedAttestationsLastEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_happened = 0');
   }
 
-  public async getValidatorCountWithHighIncDelayAttestationsLastEpoch(epoch: bigint) {
+  public async getValidatorCountWithHighIncDelayAttestationsLastEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_happened = 1 AND att_inc_delay > 1');
   }
 
-  public async getValidatorCountWithInvalidHeadAttestationsLastEpoch(epoch: bigint) {
+  public async getValidatorCountWithInvalidHeadAttestationsLastEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_happened = 1 AND att_valid_head = 0');
   }
 
-  public async getValidatorCountWithInvalidTargetAttestationsLastEpoch(epoch: bigint) {
+  public async getValidatorCountWithInvalidTargetAttestationsLastEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_happened = 1 AND att_valid_target = 0');
   }
 
-  public async getValidatorCountWithInvalidSourceAttestationsLastEpoch(epoch: bigint) {
+  public async getValidatorCountWithInvalidSourceAttestationsLastEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(epoch, 1, 'att_happened = 1 AND att_valid_source = 0');
   }
 
-  public async getValidatorCountWithMissedAttestationsLastNEpoch(epoch: bigint) {
+  public async getValidatorCountWithMissedAttestationsLastNEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
@@ -344,7 +345,7 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
-  public async getValidatorCountWithHighRewardMissedAttestationsLastNEpoch(epoch: bigint, possibleHighRewardValidators: string[]) {
+  public async getValidatorCountWithHighRewardMissedAttestationsLastNEpoch(epoch: Epoch, possibleHighRewardValidators: string[]) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
@@ -353,7 +354,7 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
-  public async getValidatorCountIncDelayGtOneAttestationsLastNEpoch(epoch: bigint) {
+  public async getValidatorCountIncDelayGtOneAttestationsLastNEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
@@ -361,15 +362,15 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
-  public async getValidatorCountIncDelayGtTwoAttestationsLastNEpoch(slot: bigint) {
+  public async getValidatorCountIncDelayGtTwoAttestationsLastNEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
-      slot,
+      epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
       'att_happened = 1 AND att_inc_delay > 2',
     );
   }
 
-  public async getValidatorCountWithInvalidHeadAttestationsLastNEpoch(epoch: bigint) {
+  public async getValidatorCountWithInvalidHeadAttestationsLastNEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
@@ -377,7 +378,7 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
-  public async getValidatorCountWithInvalidTargetAttestationsLastNEpoch(epoch: bigint) {
+  public async getValidatorCountWithInvalidTargetAttestationsLastNEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
@@ -385,7 +386,7 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
-  public async getValidatorCountWithInvalidSourceAttestationsLastNEpoch(epoch: bigint) {
+  public async getValidatorCountWithInvalidSourceAttestationsLastNEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
@@ -393,7 +394,7 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
-  public async getValidatorCountWithInvalidAttestationsPropertyGtOneLastNEpoch(epoch: bigint) {
+  public async getValidatorCountWithInvalidAttestationsPropertyGtOneLastNEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
@@ -406,7 +407,7 @@ export class ClickhouseService implements OnModuleInit {
    * how many User Node Operator validators match condition
    */
   private async getValidatorCountByConditionAttestationsLastNEpoch(
-    epoch: bigint,
+    epoch: Epoch,
     epochInterval: number,
     condition: string,
     validatorIndexes: string[] = [],
@@ -425,9 +426,7 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about
    * how many User Node Operator validators have high avg inc. delay (>2) last N epoch
    */
-  public async getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(
-    epoch: bigint,
-  ): Promise<NOsValidatorsByConditionAttestationCount[]> {
+  public async getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(epoch: Epoch): Promise<NOsValidatorsByConditionAttestationCount[]> {
     return (
       await this.select<NOsValidatorsByConditionAttestationCount[]>(
         validatorCountHighAvgIncDelayAttestationOfNEpochQuery(epoch, this.config.get('BAD_ATTESTATION_EPOCHS')),
@@ -439,7 +438,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async getValidatorsCountWithGoodProposes(
-    epoch: bigint,
+    epoch: Epoch,
     validatorIndexes: string[] = [],
   ): Promise<NOsValidatorsByConditionProposeCount[]> {
     return (
@@ -457,7 +456,7 @@ export class ClickhouseService implements OnModuleInit {
    * how many User Node Operator validators miss proposes at our last processed epoch
    */
   public async getValidatorsCountWithMissedProposes(
-    epoch: bigint,
+    epoch: Epoch,
     validatorIndexes: string[] = [],
   ): Promise<NOsValidatorsByConditionProposeCount[]> {
     return (
@@ -470,7 +469,7 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  public async getTotalBalance24hDifference(epoch: bigint): Promise<number | undefined> {
+  public async getTotalBalance24hDifference(epoch: Epoch): Promise<number | undefined> {
     const ret = await this.select<{ curr_total_balance; prev_total_balance; total_diff }[]>(totalBalance24hDifferenceQuery(epoch));
 
     if (ret.length < 1) {
@@ -486,7 +485,7 @@ export class ClickhouseService implements OnModuleInit {
     return Number(total_diff);
   }
 
-  public async getOperatorBalance24hDifference(epoch: bigint): Promise<{ val_nos_id; diff }[]> {
+  public async getOperatorBalance24hDifference(epoch: Epoch): Promise<{ val_nos_id; diff }[]> {
     return (await this.select<{ val_nos_id; diff }[]>(operatorBalance24hDifferenceQuery(epoch))).map((v) => ({
       ...v,
       diff: Number(v.diff),
@@ -497,7 +496,7 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about
    * how many User Node Operator validators have active, slashed, pending status
    */
-  public async getUserNodeOperatorsStats(epoch: bigint): Promise<NOsValidatorsStatusStats[]> {
+  public async getUserNodeOperatorsStats(epoch: Epoch): Promise<NOsValidatorsStatusStats[]> {
     return (await this.select<NOsValidatorsStatusStats[]>(userNodeOperatorsStatsQuery(epoch))).map((v) => ({
       ...v,
       active_ongoing: Number(v.active_ongoing),
@@ -510,7 +509,7 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about summary
    * how many User Node Operator validators have active, slashed, pending status
    */
-  public async getUserValidatorsSummaryStats(epoch: bigint): Promise<ValidatorsStatusStats> {
+  public async getUserValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats> {
     const ret = await this.select(userValidatorsSummaryStatsQuery(epoch));
     return { active_ongoing: Number(ret[0].active_ongoing), pending: Number(ret[0].pending), slashed: Number(ret[0].slashed) };
   }
@@ -519,7 +518,7 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about summary
    * how many other (not user) validators have active, slashed, pending status
    */
-  public async getOtherValidatorsSummaryStats(epoch: bigint): Promise<ValidatorsStatusStats> {
+  public async getOtherValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats> {
     const ret = await this.select(otherValidatorsSummaryStatsQuery(epoch));
     return { active_ongoing: Number(ret[0].active_ongoing), pending: Number(ret[0].pending), slashed: Number(ret[0].slashed) };
   }
@@ -528,7 +527,7 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about
    * User Node Operator proposes stats in the last N epochs
    */
-  public async getUserNodeOperatorsProposesStats(epoch: bigint, epochInterval = 120): Promise<NOsProposesStats[]> {
+  public async getUserNodeOperatorsProposesStats(epoch: Epoch, epochInterval = 120): Promise<NOsProposesStats[]> {
     return (await this.select<NOsProposesStats[]>(userNodeOperatorsProposesStatsLastNEpochQuery(epoch, epochInterval))).map((v) => ({
       ...v,
       all: Number(v.all),
@@ -536,17 +535,17 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  async getEpochMetadata(epoch: bigint): Promise<EpochMeta> {
+  async getEpochMetadata(epoch: Epoch): Promise<EpochMeta> {
     const ret = (await this.select(epochMetadata(epoch)))[0];
     const metadata = {};
     if (ret) {
       metadata['state'] = {
-        active_validators: BigInt(ret['active_validators']),
+        active_validators: Number(ret['active_validators']),
         active_validators_total_increments: BigInt(ret['active_validators_total_increments']),
         base_reward: Number(ret['base_reward']),
       };
       metadata['attestation'] = {
-        blocks_rewards: new Map(ret['att_blocks_rewards'].map(([b, r]) => [BigInt(b), BigInt(r)])),
+        blocks_rewards: new Map(ret['att_blocks_rewards'].map(([b, r]) => [Number(b), BigInt(r)])),
         participation: {
           source: BigInt(ret['att_source_participation']),
           target: BigInt(ret['att_target_participation']),
@@ -554,16 +553,16 @@ export class ClickhouseService implements OnModuleInit {
         },
       };
       metadata['sync'] = {
-        blocks_rewards: new Map(ret['sync_blocks_rewards'].map(([b, r]) => [BigInt(b), BigInt(r)])),
-        blocks_to_sync: ret['sync_blocks_to_sync'].map((b) => BigInt(b)),
+        blocks_rewards: new Map(ret['sync_blocks_rewards'].map(([b, r]) => [Number(b), BigInt(r)])),
+        blocks_to_sync: ret['sync_blocks_to_sync'].map((b) => Number(b)),
       };
     }
     return metadata;
   }
 
-  public async getOrInitEpochProcessing(epoch: bigint): Promise<EpochProcessingState> {
+  public async getOrInitEpochProcessing(epoch: Epoch): Promise<EpochProcessingState> {
     const curr = await this.getEpochProcessing(epoch);
-    if (curr.epoch == 0n) {
+    if (curr.epoch == 0) {
       await this.retry(
         async () =>
           await this.db.insert({
@@ -573,18 +572,18 @@ export class ClickhouseService implements OnModuleInit {
           }),
       );
       // just for readability
-      return { epoch: BigInt(epoch), is_stored: undefined, is_calculated: undefined };
+      return { epoch, is_stored: undefined, is_calculated: undefined };
     }
     return curr;
   }
 
-  public async getEpochProcessing(epoch: bigint): Promise<EpochProcessingState> {
+  public async getEpochProcessing(epoch: Epoch): Promise<EpochProcessingState> {
     const ret = (await this.select(epochProcessing(epoch)))[0];
-    if (ret) return { ...ret, epoch: BigInt(ret.epoch) };
-    return { epoch: 0n, is_stored: undefined, is_calculated: undefined };
+    if (ret) return { ...ret, epoch: ret.epoch };
+    return { epoch: 0, is_stored: undefined, is_calculated: undefined };
   }
 
-  public async getUserNodeOperatorsRewardsAndPenaltiesStats(epoch: bigint): Promise<NOsValidatorsRewardsStats[]> {
+  public async getUserNodeOperatorsRewardsAndPenaltiesStats(epoch: Epoch): Promise<NOsValidatorsRewardsStats[]> {
     return (await this.select<NOsValidatorsRewardsStats[]>(userNodeOperatorsRewardsAndPenaltiesStats(epoch))).map((v) => ({
       ...v,
       prop_reward: +v.prop_reward,
@@ -605,7 +604,7 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  public async getAvgChainRewardsAndPenaltiesStats(epoch: bigint): Promise<AvgChainRewardsStats> {
+  public async getAvgChainRewardsAndPenaltiesStats(epoch: Epoch): Promise<AvgChainRewardsStats> {
     return (await this.select<AvgChainRewardsStats[]>(avgChainRewardsAndPenaltiesStats(epoch))).map((v) => ({
       prop_reward: +v.prop_reward,
       prop_missed: +v.prop_missed,

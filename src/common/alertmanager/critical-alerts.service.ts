@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import got from 'got';
 
 import { ConfigService } from 'common/config';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { PrometheusService } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
@@ -34,7 +35,7 @@ export class CriticalAlertsService {
     this.baseUrl = this.config.get('CRITICAL_ALERTS_ALERTMANAGER_URL') ?? '';
   }
 
-  public async send(epoch: bigint) {
+  public async send(epoch: Epoch) {
     this.operators = await this.registryService.getOperators();
     if (this.prometheus.getSlotTimeDiffWithNow() > 3600000) {
       this.logger.warn(`Data actuality greater than 1 hour. Critical alerts are suppressed`);

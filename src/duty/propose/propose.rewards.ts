@@ -2,6 +2,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { PrometheusService } from 'common/prometheus';
 
 import { EpochMeta, SummaryService } from '../summary';
@@ -16,14 +17,14 @@ export class ProposeRewards {
     protected readonly summary: SummaryService,
   ) {}
 
-  public async calculate(epoch: bigint, prevEpochMetadata: EpochMeta) {
+  public async calculate(epoch: Epoch, prevEpochMetadata: EpochMeta) {
     let attestationsSumOfSum = 0n;
     let syncSumOfSum = 0n;
     // Merge attestations metadata from two epochs
     // It's needed to calculate rewards of checkpoint block. Because first block of epoch contains attestations from previous
     // At the first app start it is possible that reward for such block will not be calculated,
     // because there is no metadata of the previous epoch
-    const blocksAttestationsRewardSum = new Map<bigint, bigint>();
+    const blocksAttestationsRewardSum = new Map<number, bigint>();
     const prevEpoch = prevEpochMetadata.attestation?.blocks_rewards ?? new Map();
     if (prevEpoch.size == 0) {
       this.logger.warn(

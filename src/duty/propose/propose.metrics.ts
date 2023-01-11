@@ -2,13 +2,14 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
 @Injectable()
 export class ProposeMetrics {
-  protected processedEpoch: bigint;
+  protected processedEpoch: number;
   protected operators: RegistrySourceOperator[];
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
@@ -19,7 +20,7 @@ export class ProposeMetrics {
   ) {}
 
   @TrackTask('calc-propose-metrics')
-  public async calculate(epoch: bigint, possibleHighRewardValidators: string[]) {
+  public async calculate(epoch: Epoch, possibleHighRewardValidators: string[]) {
     this.logger.log('Calculating propose metrics');
     this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();

@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { merge } from 'lodash';
 
 import { ValStatus } from 'common/eth-providers';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 
-type BlockNumber = bigint;
-type ValidatorId = bigint;
+type BlockNumber = number;
+type ValidatorId = number;
 
 interface ValidatorAttestationReward {
   source: number;
@@ -15,9 +16,9 @@ interface ValidatorAttestationReward {
 interface ValidatorAttestationPenalty extends ValidatorAttestationReward {}
 
 export interface ValidatorDutySummary {
-  epoch: bigint;
+  epoch: Epoch;
   ///
-  val_id: bigint;
+  val_id: number;
   val_nos_id?: number;
   val_nos_name?: string;
   val_slashed?: boolean;
@@ -26,7 +27,7 @@ export interface ValidatorDutySummary {
   val_effective_balance?: bigint;
   ///
   is_proposer?: boolean;
-  block_to_propose?: bigint;
+  block_to_propose?: number;
   block_proposed?: boolean;
   ///
   is_sync?: boolean;
@@ -39,20 +40,20 @@ export interface ValidatorDutySummary {
   att_valid_source?: boolean;
   // Metadata. Necessary for calculating rewards and will not be stored in DB
   sync_meta?: {
-    synced_blocks?: bigint[];
+    synced_blocks?: number[];
   };
   att_meta?: {
-    included_in_block?: bigint;
+    included_in_block?: number;
     reward_per_increment?: ValidatorAttestationReward;
     penalty_per_increment?: ValidatorAttestationPenalty;
   };
   // Rewards
-  att_earned_reward?: bigint;
-  att_missed_reward?: bigint;
-  att_penalty?: bigint;
-  sync_earned_reward?: bigint;
-  sync_missed_reward?: bigint;
-  sync_penalty?: bigint;
+  att_earned_reward?: number;
+  att_missed_reward?: number;
+  att_penalty?: number;
+  sync_earned_reward?: number;
+  sync_missed_reward?: number;
+  sync_penalty?: number;
   propose_earned_reward?: bigint;
   propose_missed_reward?: bigint;
   propose_penalty?: bigint;
@@ -71,8 +72,8 @@ export interface EpochMeta {
   };
   sync?: {
     blocks_rewards?: Map<BlockNumber, bigint>;
-    per_block_reward?: bigint;
-    blocks_to_sync?: bigint[];
+    per_block_reward?: number;
+    blocks_to_sync?: number[];
   };
 }
 
@@ -95,11 +96,11 @@ export class SummaryService {
     return this.meta;
   }
 
-  public get(index: bigint) {
+  public get(index: number) {
     return this.storage.get(index);
   }
 
-  public set(index: bigint, summary: ValidatorDutySummary) {
+  public set(index: number, summary: ValidatorDutySummary) {
     const curr = this.get(index) ?? {};
     this.storage.set(index, merge(curr, summary));
   }

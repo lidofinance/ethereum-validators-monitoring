@@ -7,6 +7,7 @@ import { streamArray } from 'stream-json/streamers/StreamArray';
 
 import { ConfigService } from 'common/config';
 import { ConsensusProviderService, StateValidatorResponse, ValStatus } from 'common/eth-providers';
+import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { RegistryService } from 'common/validators-registry';
 import { ClickhouseService } from 'storage/clickhouse';
@@ -26,8 +27,8 @@ export class StateService {
   ) {}
 
   @TrackTask('check-state-duties')
-  public async check(epoch: bigint, stateSlot: bigint): Promise<void> {
-    const slotTime = await this.clClient.getSlotTime(epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS')));
+  public async check(epoch: Epoch, stateSlot: Slot): Promise<void> {
+    const slotTime = await this.clClient.getSlotTime(epoch * this.config.get('FETCH_INTERVAL_SLOTS'));
     const keysIndexed = await this.registry.getActualKeysIndexed(Number(slotTime));
     this.logger.log('Getting all validators state');
     const readStream = await this.clClient.getValidatorsState(stateSlot);
@@ -41,7 +42,7 @@ export class StateService {
       streamArray(),
       (data) => {
         const state: StateValidatorResponse = data.value;
-        const index = BigInt(state.index);
+        const index = Number(state.index);
         const operator = keysIndexed.get(state.validator.pubkey);
         this.summary.set(index, {
           epoch,

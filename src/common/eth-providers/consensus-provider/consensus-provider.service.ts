@@ -4,7 +4,7 @@ import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
 import got, { HTTPError, Response } from 'got';
 
 import { ConfigService } from 'common/config';
-import { bigintRange } from 'common/functions/range';
+import { range } from 'common/functions/range';
 import { rejectDelay } from 'common/functions/rejectDelay';
 import { retrier } from 'common/functions/retrier';
 import { urljoin } from 'common/functions/urljoin';
@@ -57,9 +57,9 @@ const REQUEST_TIMEOUT_POLICY_MS = {
 export class ConsensusProviderService {
   protected apiUrls: string[];
   protected version = '';
-  protected genesisTime = 0n;
+  protected genesisTime = 0;
   protected defaultMaxSlotDeepCount = 32;
-  protected lastFinalizedSlot = { slot: 0n, fetchTime: 0 };
+  protected lastFinalizedSlot = { slot: 0, fetchTime: 0 };
 
   protected endpoints = {
     version: 'eth/v1/node/version',
@@ -93,12 +93,12 @@ export class ConsensusProviderService {
     return (this.version = version);
   }
 
-  public async getGenesisTime(): Promise<bigint> {
+  public async getGenesisTime(): Promise<number> {
     if (this.genesisTime > 0) {
       return this.genesisTime;
     }
 
-    const genesisTime = BigInt(
+    const genesisTime = Number(
       (await this.retryRequest<GenesisResponse>(async (apiURL: string) => this.apiGet(apiURL, this.endpoints.genesis))).genesis_time,
     );
     this.logger.log(`Got genesis time [${genesisTime}] from Consensus Layer Client API`);
@@ -106,7 +106,7 @@ export class ConsensusProviderService {
   }
 
   public async getFinalizedEpoch(): Promise<Epoch> {
-    return BigInt(
+    return Number(
       (
         await this.retryRequest<FinalityCheckpointsResponse>(async (apiURL: string) =>
           this.apiGet(apiURL, this.endpoints.beaconHeadFinalityCheckpoints),
@@ -128,8 +128,8 @@ export class ConsensusProviderService {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
           if (blockId == 'finalized') {
-            if (BigInt(r.data.header.message.slot) > this.lastFinalizedSlot.slot) {
-              this.lastFinalizedSlot = { slot: BigInt(r.data.header.message.slot), fetchTime: Number(Date.now()) };
+            if (Number(r.data.header.message.slot) > this.lastFinalizedSlot.slot) {
+              this.lastFinalizedSlot = { slot: Number(r.data.header.message.slot), fetchTime: Number(Date.now()) };
             } else if (Number(Date.now()) - this.lastFinalizedSlot.fetchTime > 420 * 1000) {
               // if 'finalized' slot doesn't change ~7m we must switch to fallback
               this.logger.error("Finalized slot hasn't changed in ~7m");
@@ -161,7 +161,7 @@ export class ConsensusProviderService {
     const header = await this.getBlockHeader(slot);
     if (header) return header;
     // if block is missed, try to get next not missed block header
-    const nextNotMissedHeader = await this.getNextNotMissedBlockHeader(slot + 1n);
+    const nextNotMissedHeader = await this.getNextNotMissedBlockHeader(slot + 1);
 
     this.logger.log(
       `Found next not missed slot [${nextNotMissedHeader.header.message.slot}] root [${nextNotMissedHeader.root}] after slot [${slot}]`,
@@ -178,10 +178,10 @@ export class ConsensusProviderService {
     const header = await this.getBlockHeader(slot);
     if (!header) {
       if (maxDeep < 1) {
-        throw new MaxDeepError(`Error when trying to get next not missed block header. From ${slot} to ${slot + BigInt(maxDeep)}`);
+        throw new MaxDeepError(`Error when trying to get next not missed block header. From ${slot} to ${slot + maxDeep}`);
       }
-      this.logger.log(`Try to get next header from ${slot + 1n} slot because ${slot} is missing`);
-      return await this.getNextNotMissedBlockHeader(slot + 1n, maxDeep - 1);
+      this.logger.log(`Try to get next header from ${slot + 1} slot because ${slot} is missing`);
+      return await this.getNextNotMissedBlockHeader(slot + 1, maxDeep - 1);
     }
     return header;
   }
@@ -190,10 +190,10 @@ export class ConsensusProviderService {
     const header = await this.getBlockHeader(slot);
     if (!header) {
       if (maxDeep < 1) {
-        throw new MaxDeepError(`Error when trying to get previous not missed block header. From ${slot} to ${slot - BigInt(maxDeep)}`);
+        throw new MaxDeepError(`Error when trying to get previous not missed block header. From ${slot} to ${slot - maxDeep}`);
       }
-      this.logger.log(`Try to get previous info from ${slot - 1n} slot because ${slot} is missing`);
-      return await this.getPreviousNotMissedBlockHeader(slot - 1n, maxDeep - 1);
+      this.logger.log(`Try to get previous info from ${slot - 1} slot because ${slot} is missing`);
+      return await this.getPreviousNotMissedBlockHeader(slot - 1, maxDeep - 1);
     }
     return header;
   }
@@ -203,7 +203,7 @@ export class ConsensusProviderService {
    */
   public async getDutyDependentRoot(epoch: Epoch): Promise<string> {
     this.logger.log(`Getting duty dependent root for epoch ${epoch}`);
-    const dutyRootSlot = epoch * BigInt(this.config.get('FETCH_INTERVAL_SLOTS')) - 1n;
+    const dutyRootSlot = epoch * this.config.get('FETCH_INTERVAL_SLOTS') - 1;
     return (await this.getPreviousNotMissedBlockHeader(dutyRootSlot)).root;
   }
 
@@ -214,25 +214,23 @@ export class ConsensusProviderService {
   public async getBlockInfoWithSlotAttestations(
     slot: Slot,
     maxDeep = this.defaultMaxSlotDeepCount,
-  ): Promise<[BlockInfoResponse | undefined, Array<bigint>]> {
-    const nearestBlockIncludedAttestations = slot + 1n; // good attestation should be included to the next block
+  ): Promise<[BlockInfoResponse | undefined, Array<number>]> {
+    const nearestBlockIncludedAttestations = slot + 1; // good attestation should be included to the next block
     let blockInfo;
-    let missedSlots: bigint[] = [];
+    let missedSlots: number[] = [];
     try {
       blockInfo = await this.getNextNotMissedBlockInfo(nearestBlockIncludedAttestations, maxDeep);
     } catch (e) {
       if (e instanceof MaxDeepError) {
-        this.logger.error(
-          `Error when trying to get nearest block with attestations for slot ${slot}: from ${slot} to ${slot + BigInt(maxDeep)}`,
-        );
-        missedSlots = bigintRange(nearestBlockIncludedAttestations, nearestBlockIncludedAttestations + BigInt(maxDeep + 1));
+        this.logger.error(`Error when trying to get nearest block with attestations for slot ${slot}: from ${slot} to ${slot + maxDeep}`);
+        missedSlots = range(nearestBlockIncludedAttestations, nearestBlockIncludedAttestations + maxDeep + 1);
       } else {
         throw e;
       }
     }
 
-    if (blockInfo && nearestBlockIncludedAttestations != BigInt(blockInfo.message.slot)) {
-      missedSlots = bigintRange(nearestBlockIncludedAttestations, BigInt(blockInfo.message.slot));
+    if (blockInfo && nearestBlockIncludedAttestations != Number(blockInfo.message.slot)) {
+      missedSlots = range(nearestBlockIncludedAttestations, Number(blockInfo.message.slot));
     }
     return [blockInfo, missedSlots];
   }
@@ -241,10 +239,10 @@ export class ConsensusProviderService {
     const blockInfo = await this.getBlockInfo(slot);
     if (!blockInfo) {
       if (maxDeep < 1) {
-        throw new MaxDeepError(`Error when trying to get next not missed block info. From ${slot} to ${slot + BigInt(maxDeep)}`);
+        throw new MaxDeepError(`Error when trying to get next not missed block info. From ${slot} to ${slot + maxDeep}`);
       }
-      this.logger.log(`Try to get next info from ${slot + 1n} slot because ${slot} is missing`);
-      return await this.getNextNotMissedBlockInfo(slot + 1n, maxDeep - 1);
+      this.logger.log(`Try to get next info from ${slot + 1} slot because ${slot} is missing`);
+      return await this.getNextNotMissedBlockInfo(slot + 1, maxDeep - 1);
     }
     return blockInfo;
   }
@@ -319,8 +317,8 @@ export class ConsensusProviderService {
       });
   }
 
-  public async getSlotTime(slot: Slot): Promise<bigint> {
-    return (await this.getGenesisTime()) + slot * BigInt(this.config.get('CHAIN_SLOT_TIME_SECONDS'));
+  public async getSlotTime(slot: Slot): Promise<number> {
+    return (await this.getGenesisTime()) + slot * this.config.get('CHAIN_SLOT_TIME_SECONDS');
   }
 
   protected async retryRequest<T>(callback: (apiURL: string) => Promise<any>, options?: RequestRetryOptions): Promise<T> {

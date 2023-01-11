@@ -2,6 +2,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { PrometheusService } from 'common/prometheus';
 
 import { SummaryService } from '../summary';
@@ -15,16 +16,16 @@ export class SyncRewards {
     protected readonly summary: SummaryService,
   ) {}
 
-  public calculate(epoch: bigint) {
+  public calculate(epoch: Epoch) {
     const epochMeta = this.summary.getMeta();
-    let sync_earned_reward = 0n;
-    let sync_missed_reward = 0n;
-    let sync_penalty = 0n;
-    const perfectSync = epochMeta.sync.per_block_reward * BigInt(epochMeta.sync.blocks_to_sync.length);
+    let sync_earned_reward = 0;
+    let sync_missed_reward = 0;
+    let sync_penalty = 0;
+    const perfectSync = epochMeta.sync.per_block_reward * epochMeta.sync.blocks_to_sync.length;
     for (const v of this.summary.values()) {
       if (!v.is_sync) continue;
-      sync_earned_reward = epochMeta.sync.per_block_reward * BigInt(v.sync_meta.synced_blocks.length);
-      sync_penalty = epochMeta.sync.per_block_reward * BigInt(epochMeta.sync.blocks_to_sync.length - v.sync_meta.synced_blocks.length);
+      sync_earned_reward = epochMeta.sync.per_block_reward * v.sync_meta.synced_blocks.length;
+      sync_penalty = epochMeta.sync.per_block_reward * (epochMeta.sync.blocks_to_sync.length - v.sync_meta.synced_blocks.length);
       sync_missed_reward = perfectSync - sync_earned_reward;
 
       this.summary.set(v.val_id, { epoch, val_id: v.val_id, sync_earned_reward, sync_penalty, sync_missed_reward });

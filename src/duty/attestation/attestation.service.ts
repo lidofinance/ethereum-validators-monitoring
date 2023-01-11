@@ -8,29 +8,30 @@ import { streamArray } from 'stream-json/streamers/StreamArray';
 
 import { ConfigService } from 'common/config';
 import { BlockInfoResponse, ConsensusProviderService } from 'common/eth-providers';
-import { bigintRange } from 'common/functions/range';
+import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
+import { range } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { SummaryService } from '../summary';
 import { MISSED_ATTESTATION, attestationPenalties, attestationRewards } from './attestation.constants';
 
 interface SlotAttestation {
-  included_in_block: bigint;
+  included_in_block: number;
   bits: BitArray;
   head: string;
   target_root: string;
-  target_epoch: bigint;
+  target_epoch: number;
   source_root: string;
-  source_epoch: bigint;
-  slot: bigint;
+  source_epoch: number;
+  slot: number;
   committee_index: number;
 }
 
 @Injectable()
 export class AttestationService {
-  private processedEpoch: bigint;
-  private readonly slotsInEpoch: bigint;
-  private readonly savedCanonSlotsAttProperties: Map<bigint, string>;
+  private processedEpoch: number;
+  private readonly slotsInEpoch: number;
+  private readonly savedCanonSlotsAttProperties: Map<number, string>;
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
@@ -38,12 +39,12 @@ export class AttestationService {
     protected readonly clClient: ConsensusProviderService,
     protected readonly summary: SummaryService,
   ) {
-    this.slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
-    this.savedCanonSlotsAttProperties = new Map<bigint, string>();
+    this.slotsInEpoch = this.config.get('FETCH_INTERVAL_SLOTS');
+    this.savedCanonSlotsAttProperties = new Map<number, string>();
   }
 
   @TrackTask('check-attestation-duties')
-  public async check(epoch: bigint, stateSlot: bigint): Promise<void> {
+  public async check(epoch: Epoch, stateSlot: Slot): Promise<void> {
     this.processedEpoch = epoch;
     this.savedCanonSlotsAttProperties.clear();
     const { attestations } = await this.getProcessedAttestations();
@@ -66,7 +67,7 @@ export class AttestationService {
     }
   }
 
-  protected async processAttestation(attestation: SlotAttestation, committee: bigint[]) {
+  protected async processAttestation(attestation: SlotAttestation, committee: number[]) {
     const [canonHead, canonTarget, canonSource] = await Promise.all([
       this.getCanonSlotRoot(attestation.slot),
       this.getCanonSlotRoot(attestation.target_epoch * this.slotsInEpoch),
@@ -103,7 +104,7 @@ export class AttestationService {
     }
   }
 
-  protected async getCanonSlotRoot(slot: bigint) {
+  protected async getCanonSlotRoot(slot: Slot) {
     const cached = this.savedCanonSlotsAttProperties.get(slot);
     if (cached) return cached;
     const root = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(slot)).root;
@@ -117,12 +118,12 @@ export class AttestationService {
     // todo: Should we check orphaned blocks and how? eg. https://beaconcha.in/slot/5306177
     const bitsMap = new Map<string, BitArray>();
     const attestations: SlotAttestation[] = [];
-    let allMissedSlots: bigint[] = [];
+    let allMissedSlots: number[] = [];
     let lastBlockInfo: BlockInfoResponse | undefined;
-    let lastMissedSlots: bigint[];
+    let lastMissedSlots: number[];
     // Check all slots from epoch start to last epoch slot + 32 (max inclusion delay)
     const firstSlotInEpoch = this.processedEpoch * this.slotsInEpoch;
-    const slotsToCheck: bigint[] = bigintRange(firstSlotInEpoch, firstSlotInEpoch + this.slotsInEpoch * 2n);
+    const slotsToCheck: number[] = range(firstSlotInEpoch, firstSlotInEpoch + this.slotsInEpoch * 2);
     for (const slotToCheck of slotsToCheck) {
       if (lastBlockInfo && lastBlockInfo.message.slot > slotToCheck.toString()) {
         continue; // If we have lastBlockInfo > slotToCheck it means we have already processed this
@@ -141,14 +142,14 @@ export class AttestationService {
           bitsMap.set(att.aggregation_bits, bits);
         }
         attestations.push({
-          included_in_block: BigInt(lastBlockInfo.message.slot),
+          included_in_block: Number(lastBlockInfo.message.slot),
           bits: bits,
           head: att.data.beacon_block_root,
           target_root: att.data.target.root,
-          target_epoch: BigInt(att.data.target.epoch),
+          target_epoch: Number(att.data.target.epoch),
           source_root: att.data.source.root,
-          source_epoch: BigInt(att.data.source.epoch),
-          slot: BigInt(att.data.slot),
+          source_epoch: Number(att.data.source.epoch),
+          slot: Number(att.data.slot),
           committee_index: Number(att.data.index),
         });
       }
@@ -158,16 +159,16 @@ export class AttestationService {
   }
 
   @TrackTask('get-attestation-committees')
-  protected async getAttestationCommittees(stateSlot: bigint): Promise<Map<string, bigint[]>> {
+  protected async getAttestationCommittees(stateSlot: Slot): Promise<Map<string, number[]>> {
     const readStream = await this.clClient.getAttestationCommitteesInfo(stateSlot, this.processedEpoch);
-    const committees = new Map<string, bigint[]>();
+    const committees = new Map<string, number[]>();
     const pipeline = chain([readStream, parser(), pick({ filter: 'data' }), streamArray(), (data) => data.value]);
     const streamTask = async () =>
       new Promise((resolve, reject) => {
         pipeline.on('data', (committee) =>
           committees.set(
             `${committee.index}_${committee.slot}`,
-            committee.validators.map((v) => BigInt(v)),
+            committee.validators.map((v) => Number(v)),
           ),
         );
         pipeline.on('error', (error) => reject(error));
