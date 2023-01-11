@@ -1,6 +1,7 @@
 import { Duplex } from 'stream';
 
 import { ClickHouseClient, createClient } from '@clickhouse/client';
+import { BigNumber } from '@ethersproject/bignumber';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 
@@ -77,11 +78,6 @@ export class ClickhouseService implements OnModuleInit {
     this.logger.log(`DB max retries set to [${this.maxRetries}]`);
 
     this.retry = retrier(this.logger, this.maxRetries, this.minBackoff * 1000, this.maxBackoff * 1000, true);
-
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
-    BigInt.prototype['toJSON'] = function () {
-      return this.toString();
-    };
 
     this.db = createClient({
       host: `${this.config.get('DB_HOST')}:${this.config.get('DB_PORT')}`,
@@ -161,13 +157,13 @@ export class ClickhouseService implements OnModuleInit {
             {
               epoch,
               active_validators: meta.state.active_validators,
-              active_validators_total_increments: meta.state.active_validators_total_increments,
+              active_validators_total_increments: meta.state.active_validators_total_increments.toString(),
               base_reward: meta.state.base_reward,
-              att_blocks_rewards: Array.from(meta.attestation.blocks_rewards),
-              att_source_participation: meta.attestation.participation.source,
-              att_target_participation: meta.attestation.participation.target,
-              att_head_participation: meta.attestation.participation.head,
-              sync_blocks_rewards: Array.from(meta.sync.blocks_rewards),
+              att_blocks_rewards: Array.from(meta.attestation.blocks_rewards).map(([b, r]) => [b, r.toString()]),
+              att_source_participation: meta.attestation.participation.source.toString(),
+              att_target_participation: meta.attestation.participation.target.toString(),
+              att_head_participation: meta.attestation.participation.head.toString(),
+              sync_blocks_rewards: Array.from(meta.sync.blocks_rewards).map(([b, r]) => [b, r.toString()]),
               sync_blocks_to_sync: meta.sync.blocks_to_sync,
             },
           ],
@@ -541,19 +537,19 @@ export class ClickhouseService implements OnModuleInit {
     if (ret) {
       metadata['state'] = {
         active_validators: Number(ret['active_validators']),
-        active_validators_total_increments: BigInt(ret['active_validators_total_increments']),
+        active_validators_total_increments: BigNumber.from(ret['active_validators_total_increments']),
         base_reward: Number(ret['base_reward']),
       };
       metadata['attestation'] = {
-        blocks_rewards: new Map(ret['att_blocks_rewards'].map(([b, r]) => [Number(b), BigInt(r)])),
+        blocks_rewards: new Map(ret['att_blocks_rewards'].map(([b, r]) => [Number(b), BigNumber.from(r)])),
         participation: {
-          source: BigInt(ret['att_source_participation']),
-          target: BigInt(ret['att_target_participation']),
-          head: BigInt(ret['att_head_participation']),
+          source: BigNumber.from(ret['att_source_participation']),
+          target: BigNumber.from(ret['att_target_participation']),
+          head: BigNumber.from(ret['att_head_participation']),
         },
       };
       metadata['sync'] = {
-        blocks_rewards: new Map(ret['sync_blocks_rewards'].map(([b, r]) => [Number(b), BigInt(r)])),
+        blocks_rewards: new Map(ret['sync_blocks_rewards'].map(([b, r]) => [Number(b), BigNumber.from(r)])),
         blocks_to_sync: ret['sync_blocks_to_sync'].map((b) => Number(b)),
       };
     }

@@ -1,3 +1,4 @@
+import { BigNumber } from '@ethersproject/bignumber';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
@@ -101,12 +102,12 @@ export class DutyService {
   protected async fillCurrentEpochMetadata() {
     const meta = this.summary.getMeta();
     meta.attestation = {
-      participation: { source: 0n, target: 0n, head: 0n },
-      blocks_rewards: new Map<number, bigint>(),
+      participation: { source: BigNumber.from(0), target: BigNumber.from(0), head: BigNumber.from(0) },
+      blocks_rewards: new Map<number, BigNumber>(),
     };
-    meta.sync.blocks_rewards = new Map<number, bigint>();
+    meta.sync.blocks_rewards = new Map<number, BigNumber>();
     // block can be with zero synchronization
-    meta.sync.blocks_to_sync.forEach((b) => meta.sync.blocks_rewards.set(b, 0n));
+    meta.sync.blocks_to_sync.forEach((b) => meta.sync.blocks_rewards.set(b, BigNumber.from(0)));
     meta.sync.per_block_reward = Number(syncReward(meta.state.active_validators_total_increments, meta.state.base_reward));
     const perSyncProposerReward = Math.trunc(
       (Number(meta.sync.per_block_reward) * PROPOSER_WEIGHT) / (WEIGHT_DENOMINATOR - PROPOSER_WEIGHT),
@@ -114,26 +115,27 @@ export class DutyService {
     for (const v of this.summary.values()) {
       // todo: maybe data consistency checks are needed. e.g. attested validator must have an effective balance
       if (v.att_meta && v.att_meta.included_in_block) {
-        let rewards = meta.attestation.blocks_rewards.get(v.att_meta.included_in_block) ?? 0n;
-        const effectiveBalance = v.val_effective_balance ?? 0n;
-        const increments = Number(effectiveBalance / BigInt(10 ** 9));
+        let rewards = meta.attestation.blocks_rewards.get(v.att_meta.included_in_block) ?? BigNumber.from(0);
+        const effectiveBalance = v.val_effective_balance ?? BigNumber.from(0);
+        const increments = effectiveBalance.div(10 ** 9);
+        const incBaseReward = increments.mul(meta.state.base_reward);
         if (v.att_meta?.reward_per_increment.source != 0) {
-          meta.attestation.participation.source += effectiveBalance / BigInt(10 ** 9);
-          rewards += BigInt(Math.trunc(meta.state.base_reward * increments * v.att_meta.reward_per_increment.source));
+          meta.attestation.participation.source = meta.attestation.participation.source.add(increments);
+          rewards = rewards.add(Math.trunc(incBaseReward.toNumber() * v.att_meta.reward_per_increment.source));
         }
         if (v.att_meta?.reward_per_increment.target != 0) {
-          meta.attestation.participation.target += effectiveBalance / BigInt(10 ** 9);
-          rewards += BigInt(Math.trunc(meta.state.base_reward * increments * v.att_meta.reward_per_increment.target));
+          meta.attestation.participation.target = meta.attestation.participation.target.add(increments);
+          rewards = rewards.add(Math.trunc(incBaseReward.toNumber() * v.att_meta.reward_per_increment.target));
         }
         if (v.att_meta?.reward_per_increment.head != 0) {
-          meta.attestation.participation.head += effectiveBalance / BigInt(10 ** 9);
-          rewards += BigInt(Math.trunc(meta.state.base_reward * increments * v.att_meta.reward_per_increment.head));
+          meta.attestation.participation.head = meta.attestation.participation.head.add(increments);
+          rewards = rewards.add(Math.trunc(incBaseReward.toNumber() * v.att_meta.reward_per_increment.head));
         }
         meta.attestation.blocks_rewards.set(v.att_meta.included_in_block, rewards);
       }
       if (v.is_sync) {
         for (const block of v.sync_meta.synced_blocks) {
-          meta.sync.blocks_rewards.set(block, meta.sync.blocks_rewards.get(block) + BigInt(perSyncProposerReward));
+          meta.sync.blocks_rewards.set(block, meta.sync.blocks_rewards.get(block).add(perSyncProposerReward));
         }
       }
     }

@@ -1,3 +1,4 @@
+import { FixedNumber } from '@ethersproject/bignumber';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
@@ -21,11 +22,21 @@ export class AttestationRewards {
   public async calculate(epoch: Epoch) {
     const epochMeta = this.summary.getMeta();
     // Attestation reward multipliers
-    const sourceParticipation =
-      Number(epochMeta.attestation.participation.source) / Number(epochMeta.state.active_validators_total_increments);
-    const targetParticipation =
-      Number(epochMeta.attestation.participation.target) / Number(epochMeta.state.active_validators_total_increments);
-    const headParticipation = Number(epochMeta.attestation.participation.head) / Number(epochMeta.state.active_validators_total_increments);
+    const sourceParticipation = Number.parseFloat(
+      FixedNumber.from(epochMeta.attestation.participation.source)
+        .divUnsafe(FixedNumber.from(epochMeta.state.active_validators_total_increments))
+        .toString(),
+    );
+    const targetParticipation = Number.parseFloat(
+      FixedNumber.from(epochMeta.attestation.participation.target)
+        .divUnsafe(FixedNumber.from(epochMeta.state.active_validators_total_increments))
+        .toString(),
+    );
+    const headParticipation = Number.parseFloat(
+      FixedNumber.from(epochMeta.attestation.participation.head)
+        .divUnsafe(FixedNumber.from(epochMeta.state.active_validators_total_increments))
+        .toString(),
+    );
     // Perfect attestation (with multipliers). Need for calculating missed reward
     const perfect = attestationRewards(1, true, true, true);
     const perfectAttestationRewards =
@@ -34,7 +45,7 @@ export class AttestationRewards {
       Math.trunc(perfect.head * epochMeta.state.base_reward * 32 * headParticipation);
     for (const v of this.summary.values()) {
       if (!v.att_meta) continue;
-      const increments = Number(BigInt(v.val_effective_balance) / BigInt(10 ** 9));
+      const increments = v.val_effective_balance.div(10 ** 9).toNumber();
       let att_earned_reward = 0;
       let att_missed_reward = 0;
       let att_penalty = 0;
