@@ -1,5 +1,6 @@
 import * as process from 'process';
 
+import { BigNumber } from '@ethersproject/bignumber';
 import { getNetwork } from '@ethersproject/providers';
 import { createMock } from '@golevelup/ts-jest';
 import { FallbackProviderModule, SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
@@ -68,7 +69,7 @@ const testSyncMember = {
     val_nos_name: 'test1',
     val_slashed: false,
     val_status: ValStatus.ActiveOngoing,
-    val_balance: 33085196809n,
+    val_balance: BigNumber.from('33085196809'),
     ///
     is_sync: true,
     sync_percent: 78.125,
@@ -82,7 +83,7 @@ const testSyncMember = {
     att_earned_reward: 14270,
     att_missed_reward: 0,
     att_penalty: 0,
-    val_effective_balance: 32000000000n,
+    val_effective_balance: BigNumber.from('32000000000'),
     sync_earned_reward: 362525,
     sync_missed_reward: 101507,
     sync_penalty: 101507,
@@ -105,7 +106,7 @@ const testProposerMember = {
     val_nos_name: 'test2',
     val_slashed: false,
     val_status: ValStatus.ActiveOngoing,
-    val_balance: 35258194732n,
+    val_balance: BigNumber.from('35258194732'),
     ///
     is_proposer: true,
     block_to_propose: 4895296,
@@ -120,7 +121,7 @@ const testProposerMember = {
     att_earned_reward: 14270,
     att_missed_reward: 0,
     att_penalty: 0,
-    val_effective_balance: 32000000000n,
+    val_effective_balance: BigNumber.from('32000000000'),
     sync_meta: undefined,
     att_meta: undefined,
   },
