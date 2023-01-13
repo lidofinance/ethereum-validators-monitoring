@@ -5,6 +5,7 @@ import { CriticalAlertsService } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
 import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
 import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
+import { Slot } from 'common/eth-providers/consensus-provider/types';
 import { sleep } from 'common/functions/sleep';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { DutyMetrics, DutyService } from 'duty';
@@ -29,7 +30,7 @@ export class InspectorService implements OnModuleInit {
   public async onModuleInit(): Promise<void> {
     this.logger.log(`Starting epoch [${this.config.get('START_EPOCH')}]`);
     const latestProcessedEpoch = await this.storage.getLastProcessedEpoch();
-    this.prometheus.epochTime = await this.clClient.getSlotTime(latestProcessedEpoch.epoch * 32n);
+    this.prometheus.epochTime = await this.clClient.getSlotTime(latestProcessedEpoch.epoch * 32);
     this.prometheus.epochNumber.set(Number(latestProcessedEpoch.epoch));
   }
 
@@ -45,7 +46,7 @@ export class InspectorService implements OnModuleInit {
           const { epoch, slot, is_stored, is_calculated } = toProcess;
           let possibleHighRewardValidators = [];
           if (!is_stored) {
-            possibleHighRewardValidators = await this.dutyService.checkAndWrite(epoch, slot);
+            possibleHighRewardValidators = await this.dutyService.checkAndWrite({ epoch: epoch, stateSlot: slot });
           }
           if (!is_calculated) {
             await this.dutyMetrics.calculate(epoch, possibleHighRewardValidators);
@@ -68,10 +69,10 @@ export class InspectorService implements OnModuleInit {
     }
   }
 
-  protected async getEpochDataToProcess(): Promise<EpochProcessingState & { slot: bigint }> {
+  protected async getEpochDataToProcess(): Promise<EpochProcessingState & { slot: Slot }> {
     const chosen = await this.chooseEpochToProcess();
     const latestFinalizedBeaconBlock = <BlockHeaderResponse>await this.clClient.getBlockHeader('finalized');
-    const latestFinalizedEpoch = BigInt(latestFinalizedBeaconBlock.header.message.slot) / 32n;
+    const latestFinalizedEpoch = Math.trunc(latestFinalizedBeaconBlock.header.message.slot / this.config.get('FETCH_INTERVAL_SLOTS'));
     if (latestFinalizedEpoch <= chosen.epoch) {
       // new finalized epoch hasn't happened, from which we should get information about needed state
       // just wait `CHAIN_SLOT_TIME_SECONDS` until finality happens
@@ -87,14 +88,14 @@ export class InspectorService implements OnModuleInit {
     // new finalized epoch has happened, from which we can get information about needed state
     this.logger.log(`Latest finalized epoch [${latestFinalizedEpoch}]. Next epoch to process [${chosen.epoch}]`);
     const existedHeader = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(chosen.slot)).header.message;
-    if (chosen.slot == BigInt(existedHeader.slot)) {
+    if (chosen.slot == Number(existedHeader.slot)) {
       this.logger.log(
         `Epoch [${chosen.epoch}] is chosen to process with state slot [${chosen.slot}] with root [${existedHeader.state_root}]`,
       );
     } else {
       this.logger.log(
         `Epoch [${chosen.epoch}] is chosen to process with state slot [${existedHeader.slot}] with root [${existedHeader.state_root}] ` +
-          `instead of slot [${chosen.slot}]. Difference [${BigInt(existedHeader.slot) - chosen.slot}] slots`,
+          `instead of slot [${chosen.slot}]. Difference [${Number(existedHeader.slot) - chosen.slot}] slots`,
       );
     }
 
@@ -105,12 +106,12 @@ export class InspectorService implements OnModuleInit {
   }
 
   @TrackTask('choose-epoch-to-process')
-  protected async chooseEpochToProcess(): Promise<EpochProcessingState & { slot: bigint }> {
-    const step = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
-    let next: EpochProcessingState = { epoch: BigInt(this.config.get('START_EPOCH')), is_stored: false, is_calculated: false };
+  protected async chooseEpochToProcess(): Promise<EpochProcessingState & { slot: Slot }> {
+    const step = this.config.get('FETCH_INTERVAL_SLOTS');
+    let next: EpochProcessingState = { epoch: this.config.get('START_EPOCH'), is_stored: false, is_calculated: false };
     let lastProcessed = await this.storage.getLastProcessedEpoch();
     const last = await this.storage.getLastEpoch();
-    if (last.epoch == 0n) {
+    if (last.epoch == 0) {
       // if it's first time, we should get max stored in summary table
       const max = await this.storage.getMaxEpoch();
       lastProcessed = { epoch: max.max, is_stored: true, is_calculated: true };
@@ -122,9 +123,9 @@ export class InspectorService implements OnModuleInit {
       next = last;
     }
     if (lastProcessed.epoch >= next.epoch) {
-      next.epoch = lastProcessed.epoch + 1n;
+      next.epoch = lastProcessed.epoch + 1;
     }
     this.logger.log(`Next epoch to process [${next.epoch}]`);
-    return { ...next, slot: next.epoch * step + (step - 1n) };
+    return { ...next, slot: next.epoch * step + (step - 1) };
   }
 }

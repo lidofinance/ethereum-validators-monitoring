@@ -1,10 +1,12 @@
+import { BigNumber } from '@ethersproject/bignumber';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
 import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
-import { bigintRange } from 'common/functions/range';
+import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
+import { range } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { ClickhouseService } from 'storage';
 
@@ -35,7 +37,7 @@ export class DutyService {
     protected readonly rewards: DutyRewards,
   ) {}
 
-  public async checkAndWrite(epoch: bigint, stateSlot: bigint): Promise<string[]> {
+  public async checkAndWrite({ epoch, stateSlot }: { epoch: Epoch; stateSlot: Slot }): Promise<string[]> {
     // Prefetch will be done before main checks because duty by state requests are heavy
     // and while we wait for their responses we fetch blocks and headers.
     // If for some reason prefetch task will be slower than duty by state requests,
@@ -52,7 +54,7 @@ export class DutyService {
   }
 
   @TrackTask('check-all-duties')
-  protected async checkAll(epoch: bigint, stateSlot: bigint): Promise<any> {
+  protected async checkAll(epoch: Epoch, stateSlot: Slot): Promise<any> {
     this.summary.clear();
     this.summary.clearMeta();
     this.logger.log('Checking duties of validators');
@@ -65,17 +67,17 @@ export class DutyService {
     // must be done after all duties check
     await this.fillCurrentEpochMetadata();
     // calculate rewards after check all duties
-    const prevEpochMetadata = await this.storage.getEpochMetadata(epoch - 1n);
+    const prevEpochMetadata = await this.storage.getEpochMetadata(epoch - 1);
     await this.rewards.calculate(epoch, prevEpochMetadata);
   }
 
   @TrackTask('prefetch-slots')
-  protected async prefetch(epoch: bigint): Promise<any> {
+  protected async prefetch(epoch: Epoch): Promise<any> {
     this.blockCacheService.purgeOld(epoch);
     this.logger.log('Prefetching blocks header, info and write to cache');
-    const slotsInEpoch = BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
+    const slotsInEpoch = this.config.get('FETCH_INTERVAL_SLOTS');
     const firstSlotInEpoch = epoch * slotsInEpoch;
-    const slots: bigint[] = bigintRange(firstSlotInEpoch, firstSlotInEpoch + slotsInEpoch * 2n);
+    const slots: number[] = range(firstSlotInEpoch, firstSlotInEpoch + slotsInEpoch * 2);
     const toFetch = slots.map((s) => [this.clClient.getBlockHeader(s), this.clClient.getBlockInfo(s)]).flat();
     while (toFetch.length > 0) {
       const chunk = toFetch.splice(0, 32);
@@ -86,7 +88,7 @@ export class DutyService {
   @TrackTask('high-reward-validators')
   public async getPossibleHighRewardValidators(): Promise<string[]> {
     const actualSlotHeader = <BlockHeaderResponse>await this.clClient.getBlockHeader('head');
-    const headEpoch = BigInt(actualSlotHeader.header.message.slot) / BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
+    const headEpoch = Math.trunc(actualSlotHeader.header.message.slot / this.config.get('FETCH_INTERVAL_SLOTS'));
     this.logger.log('Getting possible high reward validator indexes');
     const propDependentRoot = await this.clClient.getDutyDependentRoot(headEpoch);
     const [sync, prop] = await Promise.all([
@@ -100,39 +102,40 @@ export class DutyService {
   protected async fillCurrentEpochMetadata() {
     const meta = this.summary.getMeta();
     meta.attestation = {
-      participation: { source: 0n, target: 0n, head: 0n },
-      blocks_rewards: new Map<bigint, bigint>(),
+      participation: { source: BigNumber.from(0), target: BigNumber.from(0), head: BigNumber.from(0) },
+      blocks_rewards: new Map<number, BigNumber>(),
     };
-    meta.sync.blocks_rewards = new Map<bigint, bigint>();
+    meta.sync.blocks_rewards = new Map<number, BigNumber>();
     // block can be with zero synchronization
-    meta.sync.blocks_to_sync.forEach((b) => meta.sync.blocks_rewards.set(b, 0n));
-    meta.sync.per_block_reward = syncReward(meta.state.active_validators_total_increments, meta.state.base_reward);
+    meta.sync.blocks_to_sync.forEach((b) => meta.sync.blocks_rewards.set(b, BigNumber.from(0)));
+    meta.sync.per_block_reward = Number(syncReward(meta.state.active_validators_total_increments, meta.state.base_reward));
     const perSyncProposerReward = Math.trunc(
       (Number(meta.sync.per_block_reward) * PROPOSER_WEIGHT) / (WEIGHT_DENOMINATOR - PROPOSER_WEIGHT),
     );
     for (const v of this.summary.values()) {
       // todo: maybe data consistency checks are needed. e.g. attested validator must have an effective balance
       if (v.att_meta && v.att_meta.included_in_block) {
-        let rewards = meta.attestation.blocks_rewards.get(v.att_meta.included_in_block) ?? 0n;
-        const effectiveBalance = BigInt(v.val_effective_balance ?? 0n);
-        const increments = Number(effectiveBalance / BigInt(10 ** 9));
+        let rewards = meta.attestation.blocks_rewards.get(v.att_meta.included_in_block) ?? BigNumber.from(0);
+        const effectiveBalance = v.val_effective_balance ?? BigNumber.from(0);
+        const increments = effectiveBalance.div(10 ** 9);
+        const incBaseReward = increments.mul(meta.state.base_reward);
         if (v.att_meta?.reward_per_increment.source != 0) {
-          meta.attestation.participation.source += effectiveBalance / BigInt(10 ** 9);
-          rewards += BigInt(Math.trunc(meta.state.base_reward * increments * v.att_meta.reward_per_increment.source));
+          meta.attestation.participation.source = meta.attestation.participation.source.add(increments);
+          rewards = rewards.add(Math.trunc(incBaseReward.toNumber() * v.att_meta.reward_per_increment.source));
         }
         if (v.att_meta?.reward_per_increment.target != 0) {
-          meta.attestation.participation.target += effectiveBalance / BigInt(10 ** 9);
-          rewards += BigInt(Math.trunc(meta.state.base_reward * increments * v.att_meta.reward_per_increment.target));
+          meta.attestation.participation.target = meta.attestation.participation.target.add(increments);
+          rewards = rewards.add(Math.trunc(incBaseReward.toNumber() * v.att_meta.reward_per_increment.target));
         }
         if (v.att_meta?.reward_per_increment.head != 0) {
-          meta.attestation.participation.head += effectiveBalance / BigInt(10 ** 9);
-          rewards += BigInt(Math.trunc(meta.state.base_reward * increments * v.att_meta.reward_per_increment.head));
+          meta.attestation.participation.head = meta.attestation.participation.head.add(increments);
+          rewards = rewards.add(Math.trunc(incBaseReward.toNumber() * v.att_meta.reward_per_increment.head));
         }
         meta.attestation.blocks_rewards.set(v.att_meta.included_in_block, rewards);
       }
       if (v.is_sync) {
         for (const block of v.sync_meta.synced_blocks) {
-          meta.sync.blocks_rewards.set(block, meta.sync.blocks_rewards.get(block) + BigInt(perSyncProposerReward));
+          meta.sync.blocks_rewards.set(block, meta.sync.blocks_rewards.get(block).add(perSyncProposerReward));
         }
       }
     }
@@ -145,7 +148,7 @@ export class DutyService {
     this.summary.clear();
   }
 
-  protected async writeEpochMeta(epoch: bigint): Promise<any> {
+  protected async writeEpochMeta(epoch: Epoch): Promise<any> {
     this.logger.log('Writing epoch metadata into DB');
     const meta = this.summary.getMeta();
     await this.storage.writeEpochMeta(epoch, meta);

@@ -107,7 +107,7 @@ export function requestLabels(apiUrl: string, subUrl: string) {
 export class PrometheusService implements OnApplicationBootstrap {
   private prefix = METRICS_PREFIX;
 
-  public epochTime = 0n; // latest fetched slot time
+  public epochTime = 0; // latest fetched slot time
   public getSlotTimeDiffWithNow = () => Date.now() - Number(this.epochTime) * 1000;
 
   constructor(@Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService, private config: ConfigService) {}

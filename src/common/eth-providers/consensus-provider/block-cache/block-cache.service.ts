@@ -39,14 +39,14 @@ export class BlockCacheService {
    */
   public purgeOld(epoch: Epoch): void {
     let purged = 0;
-    const firstSlotPrevEpoch = (epoch - 1n) * BigInt(this.config.get('FETCH_INTERVAL_SLOTS'));
+    const firstSlotPrevEpoch = (epoch - 1) * this.config.get('FETCH_INTERVAL_SLOTS');
     for (const blockId of this.cache.keys()) {
       // Data can be cached by block's root. Managing the lifetime of such records is not trivial at this moment
       // In order for this to be possible it is necessary
       // todo:
       //   - save data to cache by composite Id: slot number + root
       //   - get data by one of part of multiply id: slot number or root
-      if (blockId.startsWith('0x') || BigInt(blockId) < firstSlotPrevEpoch) {
+      if (blockId.startsWith('0x') || Number(blockId) < firstSlotPrevEpoch) {
         purged++;
         this.cache.delete(blockId);
       }

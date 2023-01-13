@@ -1,3 +1,5 @@
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
+
 export interface ValidatorsStatusStats {
   active_ongoing: number;
   pending: number;
@@ -80,7 +82,7 @@ export interface SyncCommitteeParticipationAvgPercents {
 }
 
 export interface EpochProcessingState {
-  epoch: bigint;
+  epoch: Epoch;
   is_stored?: boolean;
   is_calculated?: boolean;
 }
