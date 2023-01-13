@@ -3,6 +3,7 @@ import { RegistryOperator } from '@lido-nestjs/registry';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { Owner, PrometheusService, PrometheusValStatus, TrackTask } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { LidoSourceService } from 'common/validators-registry/lido-source';
@@ -13,7 +14,7 @@ const ETH_GWEI_RATIO = 1e9;
 
 @Injectable()
 export class StateMetrics {
-  protected processedEpoch: bigint;
+  protected processedEpoch: number;
   protected operators: RegistrySourceOperator[];
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
@@ -24,7 +25,7 @@ export class StateMetrics {
   ) {}
 
   @TrackTask('calc-state-metrics')
-  public async calculate(epoch: bigint) {
+  public async calculate(epoch: Epoch) {
     this.logger.log('Calculating state metrics');
     this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();

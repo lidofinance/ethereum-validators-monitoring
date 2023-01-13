@@ -1,5 +1,6 @@
 import * as process from 'process';
 
+import { BigNumber } from '@ethersproject/bignumber';
 import { getNetwork } from '@ethersproject/providers';
 import { createMock } from '@golevelup/ts-jest';
 import { FallbackProviderModule, SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
@@ -55,20 +56,20 @@ const MikroORMStub = {
 };
 
 const testSyncMember = {
-  index: 285113n,
+  index: 285113,
   pubkey: '0x82750f01239832e15f0706f38cbbe35bed4cdfa4537391c14af00d8c2ae8dd695f1db09a1fbe81956ade016b245a2343',
   registry_index: 0,
   operator_index: 0,
   operator_name: 'test1',
   performance_summary: {
-    epoch: BigInt(process.env['TEST_EPOCH_NUMBER']),
+    epoch: Number(process.env['TEST_EPOCH_NUMBER']),
     ///
-    val_id: 285113n,
+    val_id: 285113,
     val_nos_id: 0,
     val_nos_name: 'test1',
     val_slashed: false,
     val_status: ValStatus.ActiveOngoing,
-    val_balance: 33085196809n,
+    val_balance: BigNumber.from('33085196809'),
     ///
     is_sync: true,
     sync_percent: 78.125,
@@ -79,36 +80,36 @@ const testSyncMember = {
     att_valid_target: true,
     att_valid_source: true,
     // rewards
-    att_earned_reward: 14270n,
-    att_missed_reward: 0n,
-    att_penalty: 0n,
-    val_effective_balance: 32000000000n,
-    sync_earned_reward: 362525n,
-    sync_missed_reward: 101507n,
-    sync_penalty: 101507n,
+    att_earned_reward: 14270,
+    att_missed_reward: 0,
+    att_penalty: 0,
+    val_effective_balance: BigNumber.from('32000000000'),
+    sync_earned_reward: 362525,
+    sync_missed_reward: 101507,
+    sync_penalty: 101507,
     sync_meta: undefined,
     att_meta: undefined,
   },
 };
 
 const testProposerMember = {
-  index: 71737n,
+  index: 71737,
   pubkey: '0xad635abd7655116d2b4a59502094f2a6dc82fc436b59f0353798c550ae56d6bbd66a56cc67c29b1c7c82433f3e3742ee',
   registry_index: 0,
   operator_index: 1,
   operator_name: 'test2',
   performance_summary: {
-    epoch: BigInt(process.env['TEST_EPOCH_NUMBER']),
+    epoch: Number(process.env['TEST_EPOCH_NUMBER']),
     ///
-    val_id: 71737n,
+    val_id: 71737,
     val_nos_id: 1,
     val_nos_name: 'test2',
     val_slashed: false,
     val_status: ValStatus.ActiveOngoing,
-    val_balance: 35258194732n,
+    val_balance: BigNumber.from('35258194732'),
     ///
     is_proposer: true,
-    block_to_propose: 4895296n,
+    block_to_propose: 4895296,
     block_proposed: true,
     ///
     att_happened: true,
@@ -117,10 +118,10 @@ const testProposerMember = {
     att_valid_target: true,
     att_valid_source: true,
     // rewards
-    att_earned_reward: 14270n,
-    att_missed_reward: 0n,
-    att_penalty: 0n,
-    val_effective_balance: 32000000000n,
+    att_earned_reward: 14270,
+    att_missed_reward: 0,
+    att_penalty: 0,
+    val_effective_balance: BigNumber.from('32000000000'),
     sync_meta: undefined,
     att_meta: undefined,
   },
@@ -203,8 +204,8 @@ describe('Duties', () => {
       },
     });
 
-    stateSlot = BigInt(process.env['TEST_STATE_SLOT']);
-    epochNumber = BigInt(process.env['TEST_EPOCH_NUMBER']);
+    stateSlot = Number(process.env['TEST_STATE_SLOT']);
+    epochNumber = Number(process.env['TEST_EPOCH_NUMBER']);
 
     await Promise.all([dutyService['prefetch'](epochNumber), dutyService['checkAll'](epochNumber, stateSlot)]);
     summaryToSave = [...dutyService['summary'].values()].map((v) => ({ ...v, att_meta: undefined, sync_meta: undefined }));

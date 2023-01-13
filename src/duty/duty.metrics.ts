@@ -3,6 +3,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { ConsensusProviderService } from 'common/eth-providers';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { ClickhouseService } from '../storage';
@@ -29,7 +30,7 @@ export class DutyMetrics {
   ) {}
 
   @TrackTask('calc-all-duties-metrics')
-  public async calculate(epoch: bigint, possibleHighRewardValidators: string[]): Promise<any> {
+  public async calculate(epoch: Epoch, possibleHighRewardValidators: string[]): Promise<any> {
     this.logger.log('Calculating duties metrics of user validators');
     await Promise.all([this.withPossibleHighReward(epoch, possibleHighRewardValidators), this.stateMetrics.calculate(epoch)]);
     // we must calculate summary metrics after all duties to avoid errors in processing
@@ -37,7 +38,7 @@ export class DutyMetrics {
     await this.storage.updateEpochProcessing({ epoch, is_calculated: true });
   }
 
-  private async withPossibleHighReward(epoch: bigint, possibleHighRewardValidators: string[]): Promise<void> {
+  private async withPossibleHighReward(epoch: Epoch, possibleHighRewardValidators: string[]): Promise<void> {
     await Promise.all([
       this.attestationMetrics.calculate(epoch, possibleHighRewardValidators),
       this.proposeMetrics.calculate(epoch, possibleHighRewardValidators),

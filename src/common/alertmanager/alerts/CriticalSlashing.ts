@@ -1,6 +1,7 @@
 import { join } from 'lodash';
 
 import { ConfigService } from 'common/config';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
@@ -11,10 +12,10 @@ export class CriticalSlashing extends Alert {
     super(CriticalSlashing.name, config, storage, operators);
   }
 
-  async alertRule(epoch: bigint): Promise<AlertRuleResult> {
+  async alertRule(epoch: Epoch): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
     const currOperators = await this.storage.getUserNodeOperatorsStats(epoch);
-    const prevOperators = await this.storage.getUserNodeOperatorsStats(epoch - BigInt(this.config.get('FETCH_INTERVAL_SLOTS'))); // compare with previous epoch
+    const prevOperators = await this.storage.getUserNodeOperatorsStats(epoch - 1); // compare with previous epoch
     for (const currOperator of currOperators) {
       const operator = this.operators.find((o) => +currOperator.val_nos_id == o.index);
       const prevOperator = prevOperators.find((a) => a.val_nos_id == currOperator.val_nos_id);

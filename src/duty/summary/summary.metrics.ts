@@ -3,6 +3,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { ConsensusProviderService } from 'common/eth-providers';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
@@ -15,7 +16,7 @@ enum Duty {
 
 @Injectable()
 export class SummaryMetrics {
-  protected processedEpoch: bigint;
+  protected processedEpoch: number;
   protected operators: RegistrySourceOperator[];
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
@@ -27,7 +28,7 @@ export class SummaryMetrics {
   ) {}
 
   @TrackTask('calc-summary-metrics')
-  public async calculate(epoch: bigint) {
+  public async calculate(epoch: Epoch) {
     this.logger.log('Calculating propose metrics');
     this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();
@@ -35,7 +36,7 @@ export class SummaryMetrics {
   }
 
   private async common() {
-    this.prometheus.epochTime = await this.clClient.getSlotTime(this.processedEpoch * 32n);
+    this.prometheus.epochTime = await this.clClient.getSlotTime(this.processedEpoch * 32);
     this.prometheus.epochNumber.set(Number(this.processedEpoch));
   }
 

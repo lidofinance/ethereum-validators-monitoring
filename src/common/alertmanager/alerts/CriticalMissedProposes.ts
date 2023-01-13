@@ -2,6 +2,7 @@ import { join } from 'lodash';
 
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
@@ -14,7 +15,7 @@ export class CriticalMissedProposes extends Alert {
     super(CriticalMissedProposes.name, config, storage, operators);
   }
 
-  async alertRule(epoch: bigint): Promise<AlertRuleResult> {
+  async alertRule(epoch: Epoch): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
     const nosStats = await this.storage.getUserNodeOperatorsStats(epoch);
     const proposes = await this.storage.getUserNodeOperatorsProposesStats(epoch); // ~12h range

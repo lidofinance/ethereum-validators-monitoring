@@ -1,6 +1,7 @@
 import { ValStatus } from 'common/eth-providers';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 
-export const avgValidatorBalanceDelta = (epoch: bigint): string => `
+export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
   SELECT
     val_nos_id,
     avg(current.val_balance - previous.val_balance) AS delta
@@ -28,7 +29,7 @@ export const avgValidatorBalanceDelta = (epoch: bigint): string => `
   GROUP BY val_nos_id
 `;
 
-export const validatorQuantile0001BalanceDeltasQuery = (epoch: bigint): string => `
+export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string => `
   SELECT
     val_nos_id,
     quantileExact(0.001)(current.val_balance - previous.val_balance) AS delta
@@ -56,7 +57,7 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: bigint): string =
   GROUP BY val_nos_id
 `;
 
-export const validatorsCountWithNegativeDeltaQuery = (epoch: bigint): string => `
+export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
   SELECT
     val_nos_id,
     count(val_id) AS neg_count
@@ -86,7 +87,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: bigint): string => 
 `;
 
 export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
-  epoch: bigint,
+  epoch: Epoch,
   epochInterval: number,
   validatorIndexes: string[] = [],
   condition: string,
@@ -121,7 +122,7 @@ export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
 };
 
 export const validatorCountByConditionAttestationLastNEpochQuery = (
-  epoch: bigint,
+  epoch: Epoch,
   epochInterval: number,
   validatorIndexes: string[] = [],
   condition: string,
@@ -154,7 +155,7 @@ export const validatorCountByConditionAttestationLastNEpochQuery = (
   `;
 };
 
-export const validatorCountHighAvgIncDelayAttestationOfNEpochQuery = (epoch: bigint, epochInterval: number): string => {
+export const validatorCountHighAvgIncDelayAttestationOfNEpochQuery = (epoch: Epoch, epochInterval: number): string => {
   return `
     SELECT
       val_nos_id,
@@ -177,7 +178,7 @@ export const validatorCountHighAvgIncDelayAttestationOfNEpochQuery = (epoch: big
   `;
 };
 
-export const validatorsCountByConditionMissProposeQuery = (epoch: bigint, validatorIndexes: string[] = [], condition: string): string => {
+export const validatorsCountByConditionMissProposeQuery = (epoch: Epoch, validatorIndexes: string[] = [], condition: string): string => {
   let strFilterValIndexes = '';
   if (validatorIndexes.length > 0) {
     strFilterValIndexes = `AND val_id in [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
@@ -200,7 +201,7 @@ export const validatorsCountByConditionMissProposeQuery = (epoch: bigint, valida
   `;
 };
 
-export const userSyncParticipationAvgPercentQuery = (epoch: bigint): string => `
+export const userSyncParticipationAvgPercentQuery = (epoch: Epoch): string => `
   SELECT
     avg(sync_percent) as avg_percent
   FROM (
@@ -212,7 +213,7 @@ export const userSyncParticipationAvgPercentQuery = (epoch: bigint): string => `
   )
 `;
 
-export const otherSyncParticipationAvgPercentQuery = (epoch: bigint): string => `
+export const otherSyncParticipationAvgPercentQuery = (epoch: Epoch): string => `
   SELECT
     avg(sync_percent) as avg_percent
   FROM (
@@ -224,7 +225,7 @@ export const otherSyncParticipationAvgPercentQuery = (epoch: bigint): string => 
   )
 `;
 
-export const chainSyncParticipationAvgPercentQuery = (epoch: bigint): string => `
+export const chainSyncParticipationAvgPercentQuery = (epoch: Epoch): string => `
   SELECT
     avg(sync_percent) as avg_percent
   FROM (
@@ -236,7 +237,7 @@ export const chainSyncParticipationAvgPercentQuery = (epoch: bigint): string => 
   )
 `;
 
-export const operatorsSyncParticipationAvgPercentsQuery = (epoch: bigint): string => `
+export const operatorsSyncParticipationAvgPercentsQuery = (epoch: Epoch): string => `
   SELECT
     val_nos_id,
     avg(sync_percent) as avg_percent
@@ -250,7 +251,7 @@ export const operatorsSyncParticipationAvgPercentsQuery = (epoch: bigint): strin
   GROUP BY val_nos_id
 `;
 
-export const totalBalance24hDifferenceQuery = (epoch: bigint): string => `
+export const totalBalance24hDifferenceQuery = (epoch: Epoch): string => `
   SELECT (
     SELECT SUM(curr.val_balance)
     FROM (
@@ -285,7 +286,7 @@ export const totalBalance24hDifferenceQuery = (epoch: bigint): string => `
   curr_total_balance - prev_total_balance as total_diff
 `;
 
-export const operatorBalance24hDifferenceQuery = (epoch: bigint): string => `
+export const operatorBalance24hDifferenceQuery = (epoch: Epoch): string => `
   SELECT
     curr.val_nos_id as val_nos_id,
     SUM(curr.val_balance - previous.val_balance) as diff
@@ -312,7 +313,7 @@ export const operatorBalance24hDifferenceQuery = (epoch: bigint): string => `
   GROUP BY curr.val_nos_id
 `;
 
-export const userNodeOperatorsStatsQuery = (epoch: bigint): string => `
+export const userNodeOperatorsStatsQuery = (epoch: Epoch): string => `
   SELECT
     val_nos_id,
     SUM(a) as active_ongoing,
@@ -336,7 +337,7 @@ export const userNodeOperatorsStatsQuery = (epoch: bigint): string => `
   GROUP by val_nos_id
 `;
 
-export const userValidatorsSummaryStatsQuery = (epoch: bigint): string => `
+export const userValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
   SELECT
     SUM(a) as active_ongoing,
     SUM(p) as pending,
@@ -358,7 +359,7 @@ export const userValidatorsSummaryStatsQuery = (epoch: bigint): string => `
   )
 `;
 
-export const otherValidatorsSummaryStatsQuery = (epoch: bigint): string => `
+export const otherValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
   SELECT
     SUM(a) as active_ongoing,
     SUM(p) as pending,
@@ -380,7 +381,7 @@ export const otherValidatorsSummaryStatsQuery = (epoch: bigint): string => `
   )
 `;
 
-export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: bigint, epochInterval = 120): string => `
+export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: Epoch, epochInterval = 120): string => `
   SELECT
     val_nos_id,
     SUM(a) as all,
@@ -403,19 +404,19 @@ export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: bigint, epo
   GROUP by val_nos_id
 `;
 
-export const epochMetadata = (epoch: bigint): string => `
+export const epochMetadata = (epoch: Epoch): string => `
   SELECT *
   FROM epochs_metadata
   WHERE epoch = ${epoch}
 `;
 
-export const epochProcessing = (epoch: bigint): string => `
+export const epochProcessing = (epoch: Epoch): string => `
   SELECT *
   FROM epochs_processing
   WHERE epoch = ${epoch}
 `;
 
-export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: bigint): string => `
+export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string => `
   SELECT
     att.val_nos_id as val_nos_id,
     --
@@ -508,7 +509,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: bigint): string
   ) as bal ON att.val_nos_id = bal.val_nos_id
 `;
 
-export const avgChainRewardsAndPenaltiesStats = (epoch: bigint): string => `
+export const avgChainRewardsAndPenaltiesStats = (epoch: Epoch): string => `
   SELECT
     attestation_reward as att_reward,
     ifNull(prop_reward, 0) as prop_reward,

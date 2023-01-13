@@ -2,6 +2,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { AttestationRewards } from './attestation';
@@ -22,7 +23,7 @@ export class DutyRewards {
   ) {}
 
   @TrackTask('calc-all-duties-rewards')
-  public async calculate(epoch: bigint, prevEpochMetadata: EpochMeta) {
+  public async calculate(epoch: Epoch, prevEpochMetadata: EpochMeta) {
     // todo: 'Slashed' case
     // todo: 'Inactivity leak' case
     await Promise.all([this.attestationRewards.calculate(epoch), this.syncRewards.calculate(epoch)]);

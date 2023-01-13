@@ -1,4 +1,5 @@
 import { ConfigService } from 'common/config';
+import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
@@ -33,13 +34,13 @@ export abstract class Alert {
     this.operators = operators;
   }
 
-  abstract alertRule(bySlot: bigint): Promise<AlertRuleResult>;
+  abstract alertRule(bySlot: number): Promise<AlertRuleResult>;
 
   abstract sendRule(ruleResult?: AlertRuleResult): boolean;
 
   abstract alertBody(ruleResult: AlertRuleResult): AlertRequestBody;
 
-  async toSend(epoch: bigint): Promise<PreparedToSendAlert | undefined> {
+  async toSend(epoch: Epoch): Promise<PreparedToSendAlert | undefined> {
     const ruleResult = await this.alertRule(epoch);
     if (this.sendRule(ruleResult)) return { timestamp: this.sendTimestamp, body: this.alertBody(ruleResult), ruleResult };
   }
