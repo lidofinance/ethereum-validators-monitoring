@@ -1,5 +1,4 @@
 import { ClickHouseClient, createClient } from '@clickhouse/client';
-import { BigNumber } from '@ethersproject/bignumber';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 
@@ -534,19 +533,19 @@ export class ClickhouseService implements OnModuleInit {
     if (ret) {
       metadata['state'] = {
         active_validators: Number(ret['active_validators']),
-        active_validators_total_increments: BigNumber.from(ret['active_validators_total_increments']),
+        active_validators_total_increments: BigInt(ret['active_validators_total_increments']),
         base_reward: Number(ret['base_reward']),
       };
       metadata['attestation'] = {
-        blocks_rewards: new Map(ret['att_blocks_rewards'].map(([b, r]) => [Number(b), BigNumber.from(r)])),
+        blocks_rewards: new Map(ret['att_blocks_rewards'].map(([b, r]) => [Number(b), BigInt(r)])),
         participation: {
-          source: BigNumber.from(ret['att_source_participation']),
-          target: BigNumber.from(ret['att_target_participation']),
-          head: BigNumber.from(ret['att_head_participation']),
+          source: BigInt(ret['att_source_participation']),
+          target: BigInt(ret['att_target_participation']),
+          head: BigInt(ret['att_head_participation']),
         },
       };
       metadata['sync'] = {
-        blocks_rewards: new Map(ret['sync_blocks_rewards'].map(([b, r]) => [Number(b), BigNumber.from(r)])),
+        blocks_rewards: new Map(ret['sync_blocks_rewards'].map(([b, r]) => [Number(b), BigInt(r)])),
         blocks_to_sync: ret['sync_blocks_to_sync'].map((b) => Number(b)),
       };
     }
