@@ -45,7 +45,7 @@ export class AttestationRewards {
       Math.trunc(perfect.head * epochMeta.state.base_reward * 32 * headParticipation);
     for (const v of this.summary.values()) {
       if (!v.att_meta) continue;
-      const increments = v.val_effective_balance.div(10 ** 9).toNumber();
+      const increments = Number(v.val_effective_balance / BigInt(10 ** 9));
       let att_earned_reward = 0;
       let att_missed_reward = 0;
       let att_penalty = 0;
