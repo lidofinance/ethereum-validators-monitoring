@@ -64,7 +64,6 @@ export class StateService {
         pipeline.on('end', () => resolve(true));
       });
     await streamTask().finally(() => pipeline.destroy());
-    // todo: change to bigint.sqrt
     const baseReward = Math.trunc(
       BigNumber.from(64 * 10 ** 9)
         .div(bigNumberSqrt(activeValidatorsEffectiveBalance))

@@ -1,6 +1,5 @@
 import * as process from 'process';
 
-import { BigNumber } from '@ethersproject/bignumber';
 import { getNetwork } from '@ethersproject/providers';
 import { createMock } from '@golevelup/ts-jest';
 import { FallbackProviderModule, SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
@@ -65,11 +64,12 @@ const testSyncMember = {
     epoch: Number(process.env['TEST_EPOCH_NUMBER']),
     ///
     val_id: 285113,
+    val_pubkey: '0x82750f01239832e15f0706f38cbbe35bed4cdfa4537391c14af00d8c2ae8dd695f1db09a1fbe81956ade016b245a2343',
     val_nos_id: 0,
     val_nos_name: 'test1',
     val_slashed: false,
     val_status: ValStatus.ActiveOngoing,
-    val_balance: BigNumber.from('33085196809'),
+    val_balance: '33085196809',
     ///
     is_sync: true,
     sync_percent: 78.125,
@@ -83,33 +83,37 @@ const testSyncMember = {
     att_earned_reward: 14270,
     att_missed_reward: 0,
     att_penalty: 0,
-    val_effective_balance: BigNumber.from('32000000000'),
+    val_effective_balance: '32000000000',
     sync_earned_reward: 362525,
     sync_missed_reward: 101507,
     sync_penalty: 101507,
+    propose_earned_reward: undefined,
+    propose_missed_reward: undefined,
+    propose_penalty: undefined,
     sync_meta: undefined,
     att_meta: undefined,
   },
 };
 
 const testProposerMember = {
-  index: 71737,
-  pubkey: '0xad635abd7655116d2b4a59502094f2a6dc82fc436b59f0353798c550ae56d6bbd66a56cc67c29b1c7c82433f3e3742ee',
+  index: 389499,
+  pubkey: '0x88cb7b40e37964130a2c3b1b2a0a37658ca53bd914881244b836257132132f734613f0450fe59528baa0a3e10bd37dd7',
   registry_index: 0,
   operator_index: 1,
   operator_name: 'test2',
   performance_summary: {
     epoch: Number(process.env['TEST_EPOCH_NUMBER']),
     ///
-    val_id: 71737,
+    val_id: 389499,
+    val_pubkey: '0x88cb7b40e37964130a2c3b1b2a0a37658ca53bd914881244b836257132132f734613f0450fe59528baa0a3e10bd37dd7',
     val_nos_id: 1,
     val_nos_name: 'test2',
     val_slashed: false,
     val_status: ValStatus.ActiveOngoing,
-    val_balance: BigNumber.from('35258194732'),
+    val_balance: '32521190450',
     ///
     is_proposer: true,
-    block_to_propose: 4895296,
+    block_to_propose: 4895297,
     block_proposed: true,
     ///
     att_happened: true,
@@ -121,7 +125,10 @@ const testProposerMember = {
     att_earned_reward: 14270,
     att_missed_reward: 0,
     att_penalty: 0,
-    val_effective_balance: BigNumber.from('32000000000'),
+    val_effective_balance: '32000000000',
+    propose_earned_reward: '29021796',
+    propose_missed_reward: '0',
+    propose_penalty: '0',
     sync_meta: undefined,
     att_meta: undefined,
   },
@@ -137,7 +144,6 @@ describe('Duties', () => {
   let clickhouseService: ClickhouseService;
 
   let epochNumber, stateSlot;
-  const indexesToSave = [];
   let summaryToSave = [];
 
   process.env['DB_HOST'] = 'http://localhost'; // stub to avoid lib validator
@@ -154,14 +160,6 @@ describe('Duties', () => {
     return map;
   });
   jest.spyOn(SimpleFallbackJsonRpcBatchProvider.prototype, 'detectNetwork').mockImplementation(async () => getNetwork('mainnet'));
-  jest.spyOn(ClickhouseService.prototype, 'writeIndexes').mockImplementation(
-    async (pipeline): Promise<any> =>
-      await new Promise((resolve, reject) => {
-        pipeline.on('data', (data) => indexesToSave.push(data));
-        pipeline.on('error', (e) => reject(e));
-        pipeline.on('end', () => resolve(true));
-      }).finally(() => pipeline.destroy()),
-  );
   jest.spyOn(ClickhouseService.prototype, 'writeSummary');
 
   beforeAll(async () => {
@@ -208,35 +206,25 @@ describe('Duties', () => {
     epochNumber = Number(process.env['TEST_EPOCH_NUMBER']);
 
     await Promise.all([dutyService['prefetch'](epochNumber), dutyService['checkAll'](epochNumber, stateSlot)]);
-    summaryToSave = [...dutyService['summary'].values()].map((v) => ({ ...v, att_meta: undefined, sync_meta: undefined }));
+    summaryToSave = dutyService['summary'].valuesToWrite();
     await dutyService['writeSummary']();
   });
 
   describe('should be processes validators info', () => {
-    it('saving to indexes table should be performed only once', () => {
-      expect(clickhouseService.writeIndexes).toBeCalledTimes(1);
-    });
-
     it('saving to summary table should be performed only once', () => {
       expect(clickhouseService.writeSummary).toBeCalledTimes(1);
     });
 
-    it('indexes content to save should contains all tested validators', () => {
-      testValidators.forEach((i) => {
-        const toSaveTestedIndex = indexesToSave.find((v) => v.val_id == String(i.index));
-        expect(toSaveTestedIndex).toBeDefined();
-        expect(toSaveTestedIndex).toEqual({ val_id: String(i.index), val_pubkey: i.pubkey });
-      });
-    });
-
     it('summary content to save should contains right tested sync validator performance info', () => {
-      const toSaveTestedSync = summaryToSave.find((v) => v.val_id == testSyncMember.index);
+      const toSaveTestedSync = summaryToSave.find((v) => v.val_id == testSyncMember.index && v.val_pubkey == testSyncMember.pubkey);
       expect(toSaveTestedSync).toBeDefined();
       expect(toSaveTestedSync).toEqual(testSyncMember.performance_summary);
     });
 
     it('summary content to save should contains right tested proposer validator performance info', () => {
-      const toSaveTestedProposer = summaryToSave.find((v) => v.val_id == testProposerMember.index);
+      const toSaveTestedProposer = summaryToSave.find(
+        (v) => v.val_id == testProposerMember.index && v.val_pubkey == testProposerMember.pubkey,
+      );
       expect(toSaveTestedProposer).toBeDefined();
       expect(toSaveTestedProposer).toEqual(testProposerMember.performance_summary);
     });

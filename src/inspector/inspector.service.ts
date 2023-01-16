@@ -101,7 +101,7 @@ export class InspectorService implements OnModuleInit {
 
     return {
       ...chosen,
-      slot: existedHeader.slot,
+      slot: Number(existedHeader.slot),
     };
   }
 
