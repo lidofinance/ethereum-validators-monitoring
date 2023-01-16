@@ -36,7 +36,7 @@ export class StateService {
     const readStream = await this.clClient.getValidatorsState(stateSlot);
     this.logger.log('Processing all validators state');
     let activeValidatorsCount = 0;
-    let activeValidatorsEffectiveBalance = BigNumber.from(0);
+    let activeValidatorsEffectiveBalance = 0n;
     const pipeline = chain([readStream, parser(), pick({ filter: 'data' }), streamArray()]);
     const streamTask = async () =>
       new Promise((resolve, reject) => {
@@ -52,12 +52,12 @@ export class StateService {
             val_nos_name: operator?.operatorName,
             val_slashed: state.validator.slashed,
             val_status: state.status,
-            val_balance: BigNumber.from(state.balance),
-            val_effective_balance: BigNumber.from(state.validator.effective_balance),
+            val_balance: BigInt(state.balance),
+            val_effective_balance: BigInt(state.validator.effective_balance),
           });
           if ([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(state.status)) {
             activeValidatorsCount++;
-            activeValidatorsEffectiveBalance = activeValidatorsEffectiveBalance.add(state.validator.effective_balance);
+            activeValidatorsEffectiveBalance += BigInt(state.validator.effective_balance) / BigInt(10 ** 9);
           }
         });
         pipeline.on('error', (error) => reject(error));
@@ -66,13 +66,13 @@ export class StateService {
     await streamTask().finally(() => pipeline.destroy());
     const baseReward = Math.trunc(
       BigNumber.from(64 * 10 ** 9)
-        .div(bigNumberSqrt(activeValidatorsEffectiveBalance))
+        .div(bigNumberSqrt(BigNumber.from(activeValidatorsEffectiveBalance).mul(10 ** 9)))
         .toNumber(),
     );
     this.summary.setMeta({
       state: {
         active_validators: activeValidatorsCount,
-        active_validators_total_increments: activeValidatorsEffectiveBalance.div(10 ** 9),
+        active_validators_total_increments: activeValidatorsEffectiveBalance,
         base_reward: baseReward,
       },
     });

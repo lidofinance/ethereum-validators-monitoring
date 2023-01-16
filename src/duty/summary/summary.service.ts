@@ -1,4 +1,3 @@
-import { BigNumber } from '@ethersproject/bignumber';
 import { Injectable } from '@nestjs/common';
 import { merge } from 'lodash';
 
@@ -25,8 +24,8 @@ export interface ValidatorDutySummary {
   val_nos_name?: string;
   val_slashed?: boolean;
   val_status?: ValStatus;
-  val_balance?: BigNumber;
-  val_effective_balance?: BigNumber;
+  val_balance?: bigint;
+  val_effective_balance?: bigint;
   ///
   is_proposer?: boolean;
   block_to_propose?: number;
@@ -56,24 +55,24 @@ export interface ValidatorDutySummary {
   sync_earned_reward?: number;
   sync_missed_reward?: number;
   sync_penalty?: number;
-  propose_earned_reward?: BigNumber;
-  propose_missed_reward?: BigNumber;
-  propose_penalty?: BigNumber;
+  propose_earned_reward?: bigint;
+  propose_missed_reward?: bigint;
+  propose_penalty?: bigint;
 }
 
 export interface EpochMeta {
   // will be stored in DB in separate table
   state?: {
     active_validators?: number;
-    active_validators_total_increments?: BigNumber;
+    active_validators_total_increments?: bigint;
     base_reward?: number;
   };
   attestation?: {
-    participation?: { source: BigNumber; target: BigNumber; head: BigNumber };
-    blocks_rewards?: Map<BlockNumber, BigNumber>;
+    participation?: { source: bigint; target: bigint; head: bigint };
+    blocks_rewards?: Map<BlockNumber, bigint>;
   };
   sync?: {
-    blocks_rewards?: Map<BlockNumber, BigNumber>;
+    blocks_rewards?: Map<BlockNumber, bigint>;
     per_block_reward?: number;
     blocks_to_sync?: number[];
   };
