@@ -37,33 +37,33 @@ export class StateService {
     this.logger.log('Processing all validators state');
     let activeValidatorsCount = 0;
     let activeValidatorsEffectiveBalance = BigNumber.from(0);
-    const pipeline = chain([
-      readStream,
-      parser(),
-      pick({ filter: 'data' }),
-      streamArray(),
-      (data) => {
-        const state: StateValidatorResponse = data.value;
-        const index = Number(state.index);
-        const operator = keysIndexed.get(state.validator.pubkey);
-        this.summary.set(index, {
-          epoch,
-          val_id: index,
-          val_nos_id: operator?.operatorIndex,
-          val_nos_name: operator?.operatorName,
-          val_slashed: state.validator.slashed,
-          val_status: state.status,
-          val_balance: BigNumber.from(state.balance),
-          val_effective_balance: BigNumber.from(state.validator.effective_balance),
+    const pipeline = chain([readStream, parser(), pick({ filter: 'data' }), streamArray()]);
+    const streamTask = async () =>
+      new Promise((resolve, reject) => {
+        pipeline.on('data', (data) => {
+          const state: StateValidatorResponse = data.value;
+          const index = Number(state.index);
+          const operator = keysIndexed.get(state.validator.pubkey);
+          this.summary.set(index, {
+            epoch,
+            val_id: index,
+            val_pubkey: state.validator.pubkey,
+            val_nos_id: operator?.operatorIndex,
+            val_nos_name: operator?.operatorName,
+            val_slashed: state.validator.slashed,
+            val_status: state.status,
+            val_balance: BigNumber.from(state.balance),
+            val_effective_balance: BigNumber.from(state.validator.effective_balance),
+          });
+          if ([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(state.status)) {
+            activeValidatorsCount++;
+            activeValidatorsEffectiveBalance = activeValidatorsEffectiveBalance.add(state.validator.effective_balance);
+          }
         });
-        if ([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(state.status)) {
-          activeValidatorsCount++;
-          activeValidatorsEffectiveBalance = activeValidatorsEffectiveBalance.add(state.validator.effective_balance);
-        }
-        return { val_id: state.index, val_pubkey: state.validator.pubkey };
-      },
-    ]);
-    await this.storage.writeIndexes(pipeline);
+        pipeline.on('error', (error) => reject(error));
+        pipeline.on('end', () => resolve(true));
+      });
+    await streamTask().finally(() => pipeline.destroy());
     const baseReward = Math.trunc(
       BigNumber.from(64 * 10 ** 9)
         .div(bigNumberSqrt(activeValidatorsEffectiveBalance))
