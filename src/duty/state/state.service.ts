@@ -44,7 +44,7 @@ export class StateService {
           const state: StateValidatorResponse = data.value;
           const index = Number(state.index);
           const operator = keysIndexed.get(state.validator.pubkey);
-          this.summary.set(index, {
+          this.summary.epoch(epoch).set({
             epoch,
             val_id: index,
             val_pubkey: state.validator.pubkey,
@@ -69,7 +69,7 @@ export class StateService {
         .div(bigNumberSqrt(BigNumber.from(activeValidatorsEffectiveBalance).mul(10 ** 9)))
         .toNumber(),
     );
-    this.summary.setMeta({
+    this.summary.epoch(epoch).setMeta({
       state: {
         active_validators: activeValidatorsCount,
         active_validators_total_increments: activeValidatorsEffectiveBalance,

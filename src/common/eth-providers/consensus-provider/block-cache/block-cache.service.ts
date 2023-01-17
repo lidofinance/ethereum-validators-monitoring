@@ -39,7 +39,7 @@ export class BlockCacheService {
    */
   public purgeOld(epoch: Epoch): void {
     let purged = 0;
-    const firstSlotPrevEpoch = (epoch - 1) * this.config.get('FETCH_INTERVAL_SLOTS');
+    const firstSlotPrevEpoch = (epoch - 2) * this.config.get('FETCH_INTERVAL_SLOTS');
     for (const blockId of this.cache.keys()) {
       // Data can be cached by block's root. Managing the lifetime of such records is not trivial at this moment
       // In order for this to be possible it is necessary

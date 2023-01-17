@@ -7,13 +7,13 @@ import { pick } from 'stream-json/filters/Pick';
 import { streamArray } from 'stream-json/streamers/StreamArray';
 
 import { ConfigService } from 'common/config';
-import { BlockInfoResponse, ConsensusProviderService } from 'common/eth-providers';
+import { ConsensusProviderService } from 'common/eth-providers';
 import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
 import { range } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { SummaryService } from '../summary';
-import { MISSED_ATTESTATION, attestationPenalties, attestationRewards } from './attestation.constants';
+import { MISSED_ATTESTATION, getFlags } from './attestation.constants';
 
 interface SlotAttestation {
   included_in_block: number;
@@ -77,29 +77,40 @@ export class AttestationService {
     const att_valid_target = attestation.target_root == canonTarget;
     const att_valid_source = attestation.source_root == canonSource;
     const att_inc_delay = Number(attestation.included_in_block - attestation.slot);
-    const reward_per_increment = attestationRewards(att_inc_delay, att_valid_source, att_valid_target, att_valid_head);
-    const penalty_per_increment = attestationPenalties(att_inc_delay, att_valid_source, att_valid_target, att_valid_head);
+    const flags = getFlags(att_inc_delay, att_valid_source, att_valid_target, att_valid_head);
     for (const [valCommIndex, validatorIndex] of committee.entries()) {
-      const attHappened = this.summary.get(validatorIndex)?.att_happened;
-      if (attHappened == true) continue; // already processed validator. it was in one of previous attestation
+      const processed = this.summary.epoch(attestation.target_epoch).get(validatorIndex);
       const att_happened = attestation.bits.get(valCommIndex);
       if (!att_happened) {
-        this.summary.set(validatorIndex, { epoch: this.processedEpoch, val_id: validatorIndex, ...MISSED_ATTESTATION });
+        if (processed?.att_happened == undefined) {
+          this.summary
+            .epoch(attestation.target_epoch)
+            .set({ epoch: attestation.target_epoch, val_id: validatorIndex, ...MISSED_ATTESTATION });
+        }
         continue;
       }
-      this.summary.set(validatorIndex, {
+      const processedAttMeta = processed?.att_meta?.size
+        ? processed.att_meta
+        : new Map<number, { timely_source: boolean; timely_target: boolean; timely_head: boolean }>();
+      const blockAttMeta = processedAttMeta.get(attestation.included_in_block) ?? {
+        timely_source: false,
+        timely_target: false,
+        timely_head: false,
+      };
+      processedAttMeta.set(attestation.included_in_block, {
+        timely_source: blockAttMeta.timely_source || flags.source,
+        timely_target: blockAttMeta.timely_target || flags.target,
+        timely_head: blockAttMeta.timely_head || flags.head,
+      });
+      this.summary.epoch(attestation.target_epoch).set({
         val_id: validatorIndex,
-        epoch: this.processedEpoch,
+        epoch: attestation.target_epoch,
         att_happened: true,
-        att_inc_delay,
-        att_valid_head,
-        att_valid_source,
-        att_valid_target,
-        att_meta: {
-          included_in_block: attestation.included_in_block,
-          reward_per_increment,
-          penalty_per_increment,
-        },
+        att_inc_delay: processed?.att_inc_delay || att_inc_delay,
+        att_valid_source: processed?.att_valid_source || flags.source,
+        att_valid_target: processed?.att_valid_target || flags.target,
+        att_valid_head: processed?.att_valid_head || flags.head,
+        att_meta: processedAttMeta,
       });
     }
   }
@@ -115,25 +126,21 @@ export class AttestationService {
   @TrackTask('process-chain-attestations')
   protected async getProcessedAttestations() {
     this.logger.log(`Processing attestations from blocks info`);
-    // todo: Should we check orphaned blocks and how? eg. https://beaconcha.in/slot/5306177
+    // todo: Should we check orphaned blocks and how?
+    //  eg. https://beaconcha.in/slot/5306177 or https://beaconcha.in/slot/5590690
     const bitsMap = new Map<string, BitArray>();
     const attestations: SlotAttestation[] = [];
-    let allMissedSlots: number[] = [];
-    let lastBlockInfo: BlockInfoResponse | undefined;
-    let lastMissedSlots: number[];
-    // Check all slots from epoch start to last epoch slot + 32 (max inclusion delay)
+    const allMissedSlots: number[] = [];
+    // Check all slots from previous epoch start to current epoch last slot
     const firstSlotInEpoch = this.processedEpoch * this.slotsInEpoch;
-    const slotsToCheck: number[] = range(firstSlotInEpoch, firstSlotInEpoch + this.slotsInEpoch * 2);
+    const slotsToCheck: number[] = range(firstSlotInEpoch - this.slotsInEpoch, firstSlotInEpoch + this.slotsInEpoch);
     for (const slotToCheck of slotsToCheck) {
-      if (lastBlockInfo && lastBlockInfo.message.slot > slotToCheck.toString()) {
-        continue; // If we have lastBlockInfo > slotToCheck it means we have already processed this
+      const block = await this.clClient.getBlockInfo(slotToCheck);
+      if (!block) {
+        allMissedSlots.push(slotToCheck);
+        continue;
       }
-      [lastBlockInfo, lastMissedSlots] = await this.clClient.getBlockInfoWithSlotAttestations(slotToCheck);
-      allMissedSlots = allMissedSlots.concat(lastMissedSlots);
-      if (!lastBlockInfo) {
-        continue; // Failed to get info about the nearest existing block
-      }
-      for (const att of lastBlockInfo.message.body.attestations) {
+      for (const att of block.message.body.attestations) {
         let bits = bitsMap.get(att.aggregation_bits);
         if (!bits) {
           const bytesArray = fromHexString(att.aggregation_bits);
@@ -142,7 +149,7 @@ export class AttestationService {
           bitsMap.set(att.aggregation_bits, bits);
         }
         attestations.push({
-          included_in_block: Number(lastBlockInfo.message.slot),
+          included_in_block: Number(block.message.slot),
           bits: bits,
           head: att.data.beacon_block_root,
           target_root: att.data.target.root,
@@ -160,21 +167,36 @@ export class AttestationService {
 
   @TrackTask('get-attestation-committees')
   protected async getAttestationCommittees(stateSlot: Slot): Promise<Map<string, number[]>> {
-    const readStream = await this.clClient.getAttestationCommitteesInfo(stateSlot, this.processedEpoch);
+    const [prevCommitteeStream, currCommitteeStream] = await Promise.all([
+      this.clClient.getAttestationCommitteesInfo(stateSlot, this.processedEpoch - 1),
+      this.clClient.getAttestationCommitteesInfo(stateSlot, this.processedEpoch),
+    ]);
     const committees = new Map<string, number[]>();
-    const pipeline = chain([readStream, parser(), pick({ filter: 'data' }), streamArray(), (data) => data.value]);
-    const streamTask = async () =>
+    const prevPipeline = chain([prevCommitteeStream, parser(), pick({ filter: 'data' }), streamArray(), (data) => data.value]);
+    const currPipeline = chain([currCommitteeStream, parser(), pick({ filter: 'data' }), streamArray(), (data) => data.value]);
+    const prevStreamTask = async () =>
       new Promise((resolve, reject) => {
-        pipeline.on('data', (committee) =>
+        prevPipeline.on('data', (committee) =>
           committees.set(
             `${committee.index}_${committee.slot}`,
             committee.validators.map((v) => Number(v)),
           ),
         );
-        pipeline.on('error', (error) => reject(error));
-        pipeline.on('end', () => resolve(true));
+        prevPipeline.on('error', (error) => reject(error));
+        prevPipeline.on('end', () => resolve(true));
       });
-    await streamTask().finally(() => pipeline.destroy());
+    const currStreamTask = async () =>
+      new Promise((resolve, reject) => {
+        currPipeline.on('data', (committee) =>
+          committees.set(
+            `${committee.index}_${committee.slot}`,
+            committee.validators.map((v) => Number(v)),
+          ),
+        );
+        prevPipeline.on('error', (error) => reject(error));
+        prevPipeline.on('end', () => resolve(true));
+      });
+    await Promise.all([prevStreamTask().finally(() => prevPipeline.destroy()), currStreamTask().finally(() => prevPipeline.destroy())]);
     return committees;
   }
 }

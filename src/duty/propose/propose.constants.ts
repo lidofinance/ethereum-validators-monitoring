@@ -6,5 +6,5 @@ export const WEIGHT_DENOMINATOR = 64n; // W sigma
 export const proposerAttPartReward = (
   r: bigint, // total rewards to the attesters in this block
 ) => {
-  return (r * PROPOSER_WEIGHT) / (WEIGHT_DENOMINATOR - PROPOSER_WEIGHT);
+  return r / (((WEIGHT_DENOMINATOR - PROPOSER_WEIGHT) * WEIGHT_DENOMINATOR) / PROPOSER_WEIGHT);
 };

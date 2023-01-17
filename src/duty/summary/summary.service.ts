@@ -43,11 +43,14 @@ export interface ValidatorDutySummary {
   sync_meta?: {
     synced_blocks?: number[];
   };
-  att_meta?: {
-    included_in_block?: number;
-    reward_per_increment?: ValidatorAttestationReward;
-    penalty_per_increment?: ValidatorAttestationPenalty;
-  };
+  att_meta?: Map<
+    BlockNumber,
+    {
+      timely_source?: boolean;
+      timely_target?: boolean;
+      timely_head?: boolean;
+    }
+  >;
   // Rewards
   att_earned_reward?: number;
   att_missed_reward?: number;
@@ -78,56 +81,60 @@ export interface EpochMeta {
   };
 }
 
+export interface EpochInfo {
+  summary: Map<ValidatorId, ValidatorDutySummary>;
+  meta: EpochMeta;
+}
+
+export type EpochStorage = Map<Epoch, EpochInfo>;
+
 @Injectable()
 export class SummaryService {
-  protected storage: Map<ValidatorId, ValidatorDutySummary>;
-  protected meta: EpochMeta;
+  protected storage: EpochStorage;
 
   constructor() {
-    this.storage = new Map<ValidatorId, ValidatorDutySummary>();
-    this.meta = {};
+    this.storage = new Map<Epoch, EpochInfo>();
   }
 
-  public setMeta(val: EpochMeta) {
-    const curr = this.meta ?? {};
-    this.meta = merge(curr, val);
-  }
-
-  public getMeta() {
-    return this.meta;
-  }
-
-  public get(index: number) {
-    return this.storage.get(index);
-  }
-
-  public set(index: number, summary: ValidatorDutySummary) {
-    const curr = this.get(index) ?? {};
-    this.storage.set(index, merge(curr, summary));
-  }
-
-  public values(): IterableIterator<ValidatorDutySummary> {
-    return this.storage.values();
-  }
-
-  public valuesToWrite(): any[] {
-    return [...this.storage.values()].map((v) => ({
-      ...v,
-      val_balance: v.val_balance.toString(),
-      val_effective_balance: v.val_effective_balance.toString(),
-      propose_earned_reward: v.propose_earned_reward?.toString(),
-      propose_missed_reward: v.propose_missed_reward?.toString(),
-      propose_penalty: v.propose_penalty?.toString(),
-      att_meta: undefined,
-      sync_meta: undefined,
-    }));
+  public epoch(epoch: Epoch) {
+    const epochStorageData = this.storage.get(epoch) ?? { summary: new Map(), meta: {} };
+    return {
+      setMeta: (val: EpochMeta) => {
+        const curr = epochStorageData.meta;
+        epochStorageData.meta = merge(curr, val);
+        this.storage.set(epoch, epochStorageData);
+      },
+      getMeta: (): EpochMeta => {
+        return epochStorageData.meta;
+      },
+      set: (val: ValidatorDutySummary) => {
+        const curr = epochStorageData.summary.get(val.val_id) ?? {};
+        epochStorageData.summary.set(val.val_id, merge(curr, val));
+        this.storage.set(epoch, epochStorageData);
+      },
+      get: (val_id: ValidatorId): ValidatorDutySummary => {
+        return epochStorageData.summary.get(val_id);
+      },
+      values: () => {
+        return epochStorageData.summary.values();
+      },
+      valuesToWrite: () => {
+        // we
+        return [...epochStorageData.summary.values()].map((v) => ({
+          ...v,
+          val_balance: v.val_balance.toString(),
+          val_effective_balance: v.val_effective_balance.toString(),
+          propose_earned_reward: v.propose_earned_reward?.toString(),
+          propose_missed_reward: v.propose_missed_reward?.toString(),
+          propose_penalty: v.propose_penalty?.toString(),
+          att_meta: undefined,
+          sync_meta: undefined,
+        }));
+      },
+    };
   }
 
   public clear() {
     this.storage.clear();
-  }
-
-  public clearMeta() {
-    delete this.meta;
   }
 }

@@ -49,7 +49,7 @@ export class SyncService {
       }
       const index = Number(indexedValidator.validator_index);
       const percent = (synced_blocks.length / epochBlocksBits.length) * 100;
-      this.summary.set(index, {
+      this.summary.epoch(epoch).set({
         epoch,
         val_id: index,
         is_sync: true,
@@ -59,7 +59,7 @@ export class SyncService {
         },
       });
     }
-    this.summary.setMeta({ sync: { blocks_to_sync: epochBlocksBits.map((b) => b.block) } });
+    this.summary.epoch(epoch).setMeta({ sync: { blocks_to_sync: epochBlocksBits.map((b) => b.block) } });
   }
 
   public async getSyncCommitteeIndexedValidators(epoch: Epoch, stateId: StateId): Promise<SyncCommitteeValidator[]> {
