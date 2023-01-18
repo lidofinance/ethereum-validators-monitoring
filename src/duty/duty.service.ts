@@ -100,8 +100,10 @@ export class DutyService {
   protected async fillCurrentEpochMetadata(epoch: Epoch): Promise<any> {
     const meta = this.summary.epoch(epoch).getMeta();
     meta.sync.blocks_rewards = new Map<number, bigint>();
-    // block can be with zero synchronization and no attestations
+    // block can be with zero synchronization
     meta.sync.blocks_to_sync.forEach((b) => meta.sync.blocks_rewards.set(b, 0n));
+    // block can contain zero attestations
+    range(epoch * 32, epoch * 32 + 31).forEach((b) => meta.attestation.blocks_rewards.set(b, 0n));
     meta.sync.per_block_reward = Number(syncReward(meta.state.active_validators_total_increments, meta.state.base_reward));
     const perSyncProposerReward = Math.floor((meta.sync.per_block_reward * PROPOSER_WEIGHT) / (WEIGHT_DENOMINATOR - PROPOSER_WEIGHT));
     for (const v of this.summary.epoch(epoch).values()) {
