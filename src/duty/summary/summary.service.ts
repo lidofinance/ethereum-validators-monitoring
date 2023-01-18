@@ -7,14 +7,6 @@ import { Epoch } from 'common/eth-providers/consensus-provider/types';
 type BlockNumber = number;
 type ValidatorId = number;
 
-interface ValidatorAttestationReward {
-  source: number;
-  target: number;
-  head: number;
-}
-
-interface ValidatorAttestationPenalty extends ValidatorAttestationReward {}
-
 export interface ValidatorDutySummary {
   epoch: Epoch;
   ///
@@ -43,14 +35,6 @@ export interface ValidatorDutySummary {
   sync_meta?: {
     synced_blocks?: number[];
   };
-  att_meta?: Map<
-    BlockNumber,
-    {
-      timely_source?: boolean;
-      timely_target?: boolean;
-      timely_head?: boolean;
-    }
-  >;
   // Rewards
   att_earned_reward?: number;
   att_missed_reward?: number;
@@ -72,6 +56,7 @@ export interface EpochMeta {
   };
   attestation?: {
     participation?: { source: bigint; target: bigint; head: bigint };
+    blocks_attestations?: Map<BlockNumber, { source?: number[]; target?: number[]; head?: number[] }[]>;
     blocks_rewards?: Map<BlockNumber, bigint>;
   };
   sync?: {
@@ -119,7 +104,6 @@ export class SummaryService {
         return epochStorageData.summary.values();
       },
       valuesToWrite: () => {
-        // we
         return [...epochStorageData.summary.values()].map((v) => ({
           ...v,
           val_balance: v.val_balance.toString(),
@@ -127,7 +111,6 @@ export class SummaryService {
           propose_earned_reward: v.propose_earned_reward?.toString(),
           propose_missed_reward: v.propose_missed_reward?.toString(),
           propose_penalty: v.propose_penalty?.toString(),
-          att_meta: undefined,
           sync_meta: undefined,
         }));
       },

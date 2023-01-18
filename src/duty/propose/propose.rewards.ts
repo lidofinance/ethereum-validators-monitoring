@@ -7,7 +7,6 @@ import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { PrometheusService } from 'common/prometheus';
 
 import { SummaryService } from '../summary';
-import { proposerAttPartReward } from './propose.constants';
 
 @Injectable()
 export class ProposeRewards {
@@ -38,9 +37,12 @@ export class ProposeRewards {
       if (v.block_proposed) {
         const attRewardSum = blocksAttRewards.get(v.block_to_propose);
         const syncRewardSum = blocksSyncRewards.get(v.block_to_propose);
-        propose_earned_reward = proposerAttPartReward(attRewardSum) + syncRewardSum;
+        if (attRewardSum == undefined || syncRewardSum == undefined) {
+          throw new Error(`Block ${v.block_to_propose} reward calculation error`);
+        }
+        propose_earned_reward = attRewardSum + syncRewardSum;
       } else {
-        propose_missed_reward = proposerAttPartReward(attestationsAvg) + syncAvg;
+        propose_missed_reward = attestationsAvg + syncAvg;
       }
       this.summary.epoch(epoch).set({
         epoch,

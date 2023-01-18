@@ -45,7 +45,21 @@ export class AttestationRewards {
     for (const v of this.summary.epoch(epoch).values()) {
       // Calculate attestation rewards from previous epoch
       const pv = this.summary.epoch(epoch - 1).get(v.val_id);
-      if (pv?.att_happened == undefined) continue; // we shouldn't calculate rewards for validators who didn't attest
+      if (pv?.att_happened == undefined) {
+        // We don't calculate rewards and penalties for validators who don't have attestation data from previous epoch
+        // This is possible when validator is new or validator is not in the committee (e.g. because it's slashed, exited, etc.)
+        // If validator is new, we will calculate rewards for him in the next epoch, as usual
+        this.summary.epoch(epoch).set({
+          epoch,
+          val_id: v.val_id,
+          att_happened: undefined,
+          att_inc_delay: undefined,
+          att_valid_source: undefined,
+          att_valid_target: undefined,
+          att_valid_head: undefined,
+        });
+        continue;
+      }
       const increments = Number(v.val_effective_balance / BigInt(10 ** 9));
       let att_earned_reward = 0;
       let att_missed_reward = 0;
@@ -65,6 +79,7 @@ export class AttestationRewards {
       this.summary.epoch(epoch).set({
         epoch,
         val_id: v.val_id,
+        att_happened: pv.att_happened,
         att_inc_delay: pv.att_inc_delay,
         att_valid_source: pv.att_valid_source,
         att_valid_target: pv.att_valid_target,

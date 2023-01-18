@@ -87,11 +87,6 @@ const testSyncMember = {
     sync_earned_reward: 362525,
     sync_missed_reward: 101507,
     sync_penalty: 101507,
-    propose_earned_reward: undefined,
-    propose_missed_reward: undefined,
-    propose_penalty: undefined,
-    sync_meta: undefined,
-    att_meta: undefined,
   },
 };
 
@@ -126,11 +121,9 @@ const testProposerMember = {
     att_missed_reward: 3590,
     att_penalty: 0,
     val_effective_balance: '32000000000',
-    propose_earned_reward: '29021796',
+    propose_earned_reward: '29021765',
     propose_missed_reward: '0',
     propose_penalty: '0',
-    sync_meta: undefined,
-    att_meta: undefined,
   },
 };
 

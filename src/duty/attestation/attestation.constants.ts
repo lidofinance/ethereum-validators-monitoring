@@ -3,10 +3,6 @@ export const TIMELY_SOURCE_WEIGHT = 14; // Ws
 export const TIMELY_TARGET_WEIGHT = 26; // Wt
 export const TIMELY_HEAD_WEIGHT = 14; // Wh
 const WEIGHT_DENOMINATOR = 64; // W sigma
-export const MISSED_ATTESTATION = {
-  att_happened: false,
-  att_meta: new Map(),
-};
 
 export const timelySource = (att_inc_delay: number, att_valid_source: boolean): boolean => {
   return att_valid_source && att_inc_delay <= 5;
