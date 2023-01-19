@@ -6,7 +6,7 @@ import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { retrier } from 'common/functions/retrier';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-import { EpochMeta, ValidatorDutySummary } from 'duty/summary';
+import { EpochMeta, ValidatorDutySummaryToWrite } from 'duty/summary';
 
 import {
   avgChainRewardsAndPenaltiesStats,
@@ -119,7 +119,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   @TrackTask('write-summary')
-  public async writeSummary(summary: ValidatorDutySummary[]): Promise<void> {
+  public async writeSummary(summary: ValidatorDutySummaryToWrite[]): Promise<void> {
     while (summary.length > 0) {
       const chunk = summary.splice(0, this.chunkSize);
       await Promise.all([

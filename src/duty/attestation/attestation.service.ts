@@ -1,3 +1,5 @@
+import { Duplex } from 'stream';
+
 import { BitArray, BitVectorType, fromHexString } from '@chainsafe/ssz';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
@@ -12,7 +14,7 @@ import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
 import { range } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
-import { EpochMeta, SummaryService } from '../summary';
+import { SummaryService } from '../summary';
 import { getFlags } from './attestation.constants';
 
 interface SlotAttestation {
@@ -51,17 +53,11 @@ export class AttestationService {
     this.logger.log(`Getting attestation duties info`);
     const committees = await this.getAttestationCommittees(stateSlot);
     this.logger.log(`Processing attestation duty info`);
-    const meta = this.summary.epoch(epoch).getMeta();
-    meta.attestation = {
-      participation: { source: 0n, target: 0n, head: 0n },
-      blocks_attestations: new Map<number, { source: number[]; target: number[]; head: number[] }[]>(),
-      blocks_rewards: new Map<number, bigint>(),
-    };
     for (const attestation of attestations) {
       // Each attestation corresponds to committee. Committee may have several aggregate attestations
       const committee = committees.get(`${attestation.committee_index}_${attestation.slot}`);
       if (!committee) continue;
-      await this.processAttestation(attestation, committee, meta);
+      await this.processAttestation(epoch, attestation, committee);
       await new Promise((resolve) => {
         // Long loop (2048 committees will be checked by ~7k attestations).
         // We need to unblock event loop immediately after each iteration
@@ -73,7 +69,7 @@ export class AttestationService {
     }
   }
 
-  protected async processAttestation(attestation: SlotAttestation, committee: number[], meta: EpochMeta) {
+  protected async processAttestation(epoch: Epoch, attestation: SlotAttestation, committee: number[]) {
     const attestationFlags = { source: [], target: [], head: [] };
     const [canonHead, canonTarget, canonSource] = await Promise.all([
       this.getCanonSlotRoot(attestation.slot),
@@ -113,9 +109,11 @@ export class AttestationService {
         att_valid_head: processed?.att_valid_head || flags.head,
       });
     }
-    const blockMeta = meta.attestation.blocks_attestations.get(attestation.included_in_block) ?? [];
+    const blocksAttestations = this.summary.epoch(epoch).getMeta().attestation.blocks_attestations;
+    const blockMeta = blocksAttestations.get(attestation.included_in_block);
     blockMeta.push(attestationFlags);
-    meta.attestation.blocks_attestations.set(attestation.included_in_block, blockMeta);
+    blocksAttestations.set(attestation.included_in_block, blockMeta);
+    this.summary.epoch(epoch).setMeta({ attestation: { blocks_attestations: blocksAttestations } });
   }
 
   protected async getCanonSlotRoot(slot: Slot) {
@@ -175,29 +173,21 @@ export class AttestationService {
     const committees = new Map<string, number[]>();
     const prevPipeline = chain([prevCommitteeStream, parser(), pick({ filter: 'data' }), streamArray(), (data) => data.value]);
     const currPipeline = chain([currCommitteeStream, parser(), pick({ filter: 'data' }), streamArray(), (data) => data.value]);
-    const prevStreamTask = async () =>
+    const promisify = (stream: Duplex) =>
       new Promise((resolve, reject) => {
-        prevPipeline.on('data', (committee) =>
+        stream.on('data', (committee) =>
           committees.set(
             `${committee.index}_${committee.slot}`,
             committee.validators.map((v) => Number(v)),
           ),
         );
-        prevPipeline.on('error', (error) => reject(error));
-        prevPipeline.on('end', () => resolve(true));
+        stream.on('error', (error) => reject(error));
+        stream.on('end', () => resolve(true));
       });
-    const currStreamTask = async () =>
-      new Promise((resolve, reject) => {
-        currPipeline.on('data', (committee) =>
-          committees.set(
-            `${committee.index}_${committee.slot}`,
-            committee.validators.map((v) => Number(v)),
-          ),
-        );
-        prevPipeline.on('error', (error) => reject(error));
-        prevPipeline.on('end', () => resolve(true));
-      });
-    await Promise.all([prevStreamTask().finally(() => prevPipeline.destroy()), currStreamTask().finally(() => prevPipeline.destroy())]);
+    await Promise.all([
+      promisify(prevPipeline).finally(() => prevPipeline.destroy()),
+      promisify(currPipeline).finally(() => currPipeline.destroy()),
+    ]);
     return committees;
   }
 }

@@ -99,11 +99,6 @@ export class DutyService {
   @TrackTask('fill-epoch-metadata')
   protected async fillCurrentEpochMetadata(epoch: Epoch): Promise<any> {
     const meta = this.summary.epoch(epoch).getMeta();
-    meta.sync.blocks_rewards = new Map<number, bigint>();
-    // block can be with zero synchronization
-    meta.sync.blocks_to_sync.forEach((b) => meta.sync.blocks_rewards.set(b, 0n));
-    // block can contain zero attestations
-    range(epoch * 32, epoch * 32 + 31).forEach((b) => meta.attestation.blocks_rewards.set(b, 0n));
     meta.sync.per_block_reward = Number(syncReward(meta.state.active_validators_total_increments, meta.state.base_reward));
     const perSyncProposerReward = Math.floor((meta.sync.per_block_reward * PROPOSER_WEIGHT) / (WEIGHT_DENOMINATOR - PROPOSER_WEIGHT));
     for (const v of this.summary.epoch(epoch).values()) {
@@ -132,6 +127,7 @@ export class DutyService {
     for (const [block, attestations] of meta.attestation.blocks_attestations.entries()) {
       // There is only one right way to calculate proposal reward - calculate it from each aggregated attestation
       // And attestation flag should be included for the first time. `AttestationService.processAttestation` is responsible for this
+      if (!attestations.length) continue;
       for (const attestation of attestations) {
         let rewards = 0;
         for (const index of attestation.source) {
@@ -153,9 +149,10 @@ export class DutyService {
           rewards += incBaseReward * TIMELY_HEAD_WEIGHT;
         }
         rewards = Math.floor(proposerAttPartReward(rewards));
-        meta.attestation.blocks_rewards.set(block, (meta.attestation.blocks_rewards.get(block) ?? 0n) + BigInt(rewards));
+        meta.attestation.blocks_rewards.set(block, meta.attestation.blocks_rewards.get(block) + BigInt(rewards));
       }
     }
+    this.summary.epoch(epoch).setMeta(meta);
   }
 
   protected async writeSummary(epoch: Epoch): Promise<any> {

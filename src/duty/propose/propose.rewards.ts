@@ -37,12 +37,6 @@ export class ProposeRewards {
       if (v.block_proposed) {
         const attRewardSum = blocksAttRewards.get(v.block_to_propose);
         const syncRewardSum = blocksSyncRewards.get(v.block_to_propose);
-        if (attRewardSum == 0n || syncRewardSum == 0n) {
-          this.logger.warn(`One of parts of reward for block ${v.block_to_propose} is zero: att=${attRewardSum}, sync=${syncRewardSum}`);
-        }
-        if (attRewardSum == undefined || syncRewardSum == undefined) {
-          throw new Error(`Block ${v.block_to_propose} reward calculation error`);
-        }
         propose_earned_reward = attRewardSum + syncRewardSum;
       } else {
         propose_missed_reward = attestationsAvg + syncAvg;
