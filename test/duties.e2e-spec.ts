@@ -80,18 +80,13 @@ const testSyncMember = {
     att_valid_target: true,
     att_valid_source: true,
     // rewards
-    att_earned_reward: 14270,
+    att_earned_reward: 14263,
     att_missed_reward: 0,
     att_penalty: 0,
     val_effective_balance: '32000000000',
     sync_earned_reward: 362525,
     sync_missed_reward: 101507,
     sync_penalty: 101507,
-    propose_earned_reward: undefined,
-    propose_missed_reward: undefined,
-    propose_penalty: undefined,
-    sync_meta: undefined,
-    att_meta: undefined,
   },
 };
 
@@ -118,19 +113,17 @@ const testProposerMember = {
     ///
     att_happened: true,
     att_inc_delay: 1,
-    att_valid_head: true,
+    att_valid_head: false,
     att_valid_target: true,
     att_valid_source: true,
     // rewards
-    att_earned_reward: 14270,
-    att_missed_reward: 0,
+    att_earned_reward: 10673,
+    att_missed_reward: 3590,
     att_penalty: 0,
     val_effective_balance: '32000000000',
-    propose_earned_reward: '29021796',
+    propose_earned_reward: '29021765',
     propose_missed_reward: '0',
     propose_penalty: '0',
-    sync_meta: undefined,
-    att_meta: undefined,
   },
 };
 
@@ -206,8 +199,8 @@ describe('Duties', () => {
     epochNumber = Number(process.env['TEST_EPOCH_NUMBER']);
 
     await Promise.all([dutyService['prefetch'](epochNumber), dutyService['checkAll'](epochNumber, stateSlot)]);
-    summaryToSave = dutyService['summary'].valuesToWrite();
-    await dutyService['writeSummary']();
+    summaryToSave = dutyService['summary'].epoch(epochNumber).valuesToWrite();
+    await dutyService['writeSummary'](epochNumber);
   });
 
   describe('should be processes validators info', () => {

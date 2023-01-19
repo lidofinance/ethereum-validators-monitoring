@@ -6,8 +6,7 @@ import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { PrometheusService } from 'common/prometheus';
 
-import { EpochMeta, SummaryService } from '../summary';
-import { proposerAttPartReward } from './propose.constants';
+import { SummaryService } from '../summary';
 
 @Injectable()
 export class ProposeRewards {
@@ -18,54 +17,31 @@ export class ProposeRewards {
     protected readonly summary: SummaryService,
   ) {}
 
-  public async calculate(epoch: Epoch, prevEpochMetadata: EpochMeta) {
-    let attestationsSumOfSum = BigNumber.from(0);
-    let syncSumOfSum = BigNumber.from(0);
-    // Merge attestations metadata from two epochs
-    // It's needed to calculate rewards of checkpoint block. Because first block of epoch contains attestations from previous
-    // At the first app start it is possible that reward for such block will not be calculated,
-    // because there is no metadata of the previous epoch
-    const blocksAttestationsRewardSum = new Map<number, bigint>();
-    const prevEpoch = prevEpochMetadata.attestation?.blocks_rewards ?? new Map<number, bigint>();
-    if (prevEpoch.size == 0) {
-      this.logger.warn(
-        "Proposal reward will not be calculated accurately because previous epoch's metadata does not exist. " +
-          "Probably, it's the first run of application",
-      );
-    }
-    const currEpoch = this.summary.getMeta().attestation.blocks_rewards;
-    for (const block of new Map([...prevEpoch.entries(), ...currEpoch.entries()]).keys()) {
-      let merged = 0n;
-      const prev = prevEpoch.get(block) ?? 0n;
-      const curr = currEpoch.get(block) ?? 0n;
-      merged += prev + curr;
-      blocksAttestationsRewardSum.set(block, merged);
-    }
-    const blocksSyncRewardSum = this.summary.getMeta().sync.blocks_rewards;
+  public async calculate(epoch: Epoch) {
+    let attRewardsSum = BigNumber.from(0);
+    let syncRewardsSum = BigNumber.from(0);
+    const blocksAttRewards = this.summary.epoch(epoch).getMeta().attestation.blocks_rewards;
+    const blocksSyncRewards = this.summary.epoch(epoch).getMeta().sync.blocks_rewards;
 
-    blocksAttestationsRewardSum.forEach((rewards) => (attestationsSumOfSum = attestationsSumOfSum.add(rewards)));
-    const attestationsAvg = attestationsSumOfSum.div(blocksAttestationsRewardSum.size).toBigInt();
+    blocksAttRewards.forEach((rewards) => (attRewardsSum = attRewardsSum.add(rewards)));
+    const attestationsAvg = attRewardsSum.div(blocksAttRewards.size).toBigInt();
 
-    blocksSyncRewardSum.forEach((rewards) => (syncSumOfSum = syncSumOfSum.add(rewards)));
-    const syncAvg = syncSumOfSum.div(blocksSyncRewardSum.size).toBigInt();
+    blocksSyncRewards.forEach((rewards) => (syncRewardsSum = syncRewardsSum.add(rewards)));
+    const syncAvg = syncRewardsSum.div(blocksSyncRewards.size).toBigInt();
 
-    for (const v of this.summary.values()) {
+    for (const v of this.summary.epoch(epoch).values()) {
       if (!v.is_proposer) continue;
       let propose_earned_reward = 0n;
       let propose_missed_reward = 0n;
       const propose_penalty = 0n;
       if (v.block_proposed) {
-        const attRewardSum = blocksAttestationsRewardSum.get(v.block_to_propose);
-        const syncRewardSum = blocksSyncRewardSum.get(v.block_to_propose);
-        if (attRewardSum == undefined || syncRewardSum == undefined) {
-          this.logger.warn(`Can't calculate reward for block ${v.block_to_propose}. There is no metadata of previous epoch`);
-          continue;
-        }
-        propose_earned_reward = proposerAttPartReward(attRewardSum) + syncRewardSum;
+        const attRewardSum = blocksAttRewards.get(v.block_to_propose);
+        const syncRewardSum = blocksSyncRewards.get(v.block_to_propose);
+        propose_earned_reward = attRewardSum + syncRewardSum;
       } else {
-        propose_missed_reward = proposerAttPartReward(attestationsAvg) + syncAvg;
+        propose_missed_reward = attestationsAvg + syncAvg;
       }
-      this.summary.set(v.val_id, {
+      this.summary.epoch(epoch).set({
         epoch,
         val_id: v.val_id,
         propose_earned_reward,

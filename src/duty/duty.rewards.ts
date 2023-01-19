@@ -7,7 +7,6 @@ import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { AttestationRewards } from './attestation';
 import { ProposeRewards } from './propose';
-import { EpochMeta } from './summary';
 import { SyncRewards } from './sync';
 
 @Injectable()
@@ -23,11 +22,9 @@ export class DutyRewards {
   ) {}
 
   @TrackTask('calc-all-duties-rewards')
-  public async calculate(epoch: Epoch, prevEpochMetadata: EpochMeta) {
+  public async calculate(epoch: Epoch) {
     // todo: 'Slashed' case
     // todo: 'Inactivity leak' case
-    await Promise.all([this.attestationRewards.calculate(epoch), this.syncRewards.calculate(epoch)]);
-    // should be calculated based on attestation and sync rewards
-    await this.proposerRewards.calculate(epoch, prevEpochMetadata);
+    await Promise.all([this.attestationRewards.calculate(epoch), this.syncRewards.calculate(epoch), this.proposerRewards.calculate(epoch)]);
   }
 }

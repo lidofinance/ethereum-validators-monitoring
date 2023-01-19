@@ -29,7 +29,7 @@ export class ProposeService {
       const index = Number(prop.validator_index);
       const slot = Number(prop.slot);
       const blockHeader = await this.clClient.getBlockHeader(prop.slot);
-      this.summary.set(index, {
+      this.summary.epoch(epoch).set({
         epoch,
         val_id: index,
         is_proposer: true,
