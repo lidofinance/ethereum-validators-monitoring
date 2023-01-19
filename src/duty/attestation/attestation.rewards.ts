@@ -7,11 +7,10 @@ import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { PrometheusService } from 'common/prometheus';
 
 import { SummaryService } from '../summary';
-import { attestationRewards } from './attestation.constants';
+import { getPenalties, getRewards } from './attestation.constants';
 
 @Injectable()
 export class AttestationRewards {
-  prevEpoch: any;
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
@@ -20,7 +19,7 @@ export class AttestationRewards {
   ) {}
 
   public async calculate(epoch: Epoch) {
-    const epochMeta = this.summary.getMeta();
+    const epochMeta = this.summary.epoch(epoch).getMeta();
     // Attestation reward multipliers
     const sourceParticipation = Number.parseFloat(
       FixedNumber.from(epochMeta.attestation.participation.source)
@@ -38,30 +37,57 @@ export class AttestationRewards {
         .toString(),
     );
     // Perfect attestation (with multipliers). Need for calculating missed reward
-    const perfect = attestationRewards(1, true, true, true);
+    const perfect = getRewards({ source: true, target: true, head: true });
     const perfectAttestationRewards =
       Math.trunc(perfect.source * epochMeta.state.base_reward * 32 * sourceParticipation) +
       Math.trunc(perfect.target * epochMeta.state.base_reward * 32 * targetParticipation) +
       Math.trunc(perfect.head * epochMeta.state.base_reward * 32 * headParticipation);
-    for (const v of this.summary.values()) {
-      if (!v.att_meta) continue;
+    for (const v of this.summary.epoch(epoch).values()) {
+      // Calculate attestation rewards from previous epoch
+      const pv = this.summary.epoch(epoch - 1).get(v.val_id);
+      if (pv?.att_happened == undefined) {
+        // We don't calculate rewards and penalties for validators who don't have attestation data from previous epoch
+        // This is possible when validator is new or validator is not in the committee (e.g. because it's slashed, exited, etc.)
+        // If validator is new, we will calculate rewards for him in the next epoch, as usual
+        this.summary.epoch(epoch).set({
+          epoch,
+          val_id: v.val_id,
+          att_happened: undefined,
+          att_inc_delay: undefined,
+          att_valid_source: undefined,
+          att_valid_target: undefined,
+          att_valid_head: undefined,
+        });
+        continue;
+      }
       const increments = Number(v.val_effective_balance / BigInt(10 ** 9));
       let att_earned_reward = 0;
       let att_missed_reward = 0;
       let att_penalty = 0;
-      const rewardSource = Math.trunc(v.att_meta.reward_per_increment.source * epochMeta.state.base_reward * increments);
-      const rewardTarget = Math.trunc(v.att_meta.reward_per_increment.target * epochMeta.state.base_reward * increments);
-      const rewardHead = Math.trunc(v.att_meta.reward_per_increment.head * epochMeta.state.base_reward * increments);
-      const penaltySource = Math.trunc(v.att_meta.penalty_per_increment.source * epochMeta.state.base_reward * increments);
-      const penaltyTarget = Math.trunc(v.att_meta.penalty_per_increment.target * epochMeta.state.base_reward * increments);
-      const penaltyHead = Math.trunc(v.att_meta.penalty_per_increment.head * epochMeta.state.base_reward * increments);
-      att_earned_reward =
-        Math.trunc(rewardSource * sourceParticipation) +
-        Math.trunc(rewardTarget * targetParticipation) +
-        Math.trunc(rewardHead * headParticipation);
+      const rewards = getRewards({ source: pv.att_valid_source, target: pv.att_valid_target, head: pv.att_valid_head });
+      const penalties = getPenalties({ source: pv.att_valid_source, target: pv.att_valid_target, head: pv.att_valid_head });
+      const rewardSource = Math.trunc(rewards.source * epochMeta.state.base_reward * increments * sourceParticipation);
+      const rewardTarget = Math.trunc(rewards.target * epochMeta.state.base_reward * increments * targetParticipation);
+      const rewardHead = Math.trunc(rewards.head * epochMeta.state.base_reward * increments * headParticipation);
+      const penaltySource = Math.trunc(penalties.source * epochMeta.state.base_reward * increments);
+      const penaltyTarget = Math.trunc(penalties.target * epochMeta.state.base_reward * increments);
+      const penaltyHead = Math.trunc(penalties.head * epochMeta.state.base_reward * increments);
+      att_earned_reward = rewardSource + rewardTarget + rewardHead;
       att_missed_reward = perfectAttestationRewards - att_earned_reward;
       att_penalty = penaltySource + penaltyTarget + penaltyHead;
-      this.summary.set(v.val_id, { epoch, val_id: v.val_id, att_earned_reward, att_missed_reward, att_penalty });
+      // And save it to summary of current epoch
+      this.summary.epoch(epoch).set({
+        epoch,
+        val_id: v.val_id,
+        att_happened: pv.att_happened,
+        att_inc_delay: pv.att_inc_delay,
+        att_valid_source: pv.att_valid_source,
+        att_valid_target: pv.att_valid_target,
+        att_valid_head: pv.att_valid_head,
+        att_earned_reward,
+        att_missed_reward,
+        att_penalty,
+      });
     }
     return true;
   }

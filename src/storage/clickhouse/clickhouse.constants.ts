@@ -446,7 +446,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     FROM (
       SELECT val_nos_id, att_earned_reward, att_missed_reward, att_penalty
       FROM validators_summary
-      WHERE val_nos_id IS NOT NULL and epoch = ${epoch} - 2
+      WHERE val_nos_id IS NOT NULL and epoch = ${epoch} - 1
       LIMIT 1 BY val_id
     )
     GROUP BY val_nos_id
@@ -529,7 +529,7 @@ export const avgChainRewardsAndPenaltiesStats = (epoch: Epoch): string => `
     FROM (
       SELECT att_earned_reward, att_missed_reward, att_penalty
       FROM validators_summary
-      WHERE epoch = ${epoch} - 2
+      WHERE epoch = ${epoch} - 1
       LIMIT 1 BY val_id
     )
   ) as att,

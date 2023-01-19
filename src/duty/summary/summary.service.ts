@@ -3,17 +3,10 @@ import { merge } from 'lodash';
 
 import { ValStatus } from 'common/eth-providers';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { range } from 'common/functions/range';
 
 type BlockNumber = number;
 type ValidatorId = number;
-
-interface ValidatorAttestationReward {
-  source: number;
-  target: number;
-  head: number;
-}
-
-interface ValidatorAttestationPenalty extends ValidatorAttestationReward {}
 
 export interface ValidatorDutySummary {
   epoch: Epoch;
@@ -43,11 +36,6 @@ export interface ValidatorDutySummary {
   sync_meta?: {
     synced_blocks?: number[];
   };
-  att_meta?: {
-    included_in_block?: number;
-    reward_per_increment?: ValidatorAttestationReward;
-    penalty_per_increment?: ValidatorAttestationPenalty;
-  };
   // Rewards
   att_earned_reward?: number;
   att_missed_reward?: number;
@@ -60,6 +48,19 @@ export interface ValidatorDutySummary {
   propose_penalty?: bigint;
 }
 
+export interface ValidatorDutySummaryToWrite
+  extends Omit<
+    ValidatorDutySummary,
+    'val_balance' | 'val_effective_balance' | 'propose_earned_reward' | 'propose_missed_reward' | 'propose_penalty' | 'sync_meta'
+  > {
+  val_balance: string;
+  val_effective_balance: string;
+  propose_earned_reward: string;
+  propose_missed_reward: string;
+  propose_penalty: string;
+  sync_meta: undefined;
+}
+
 export interface EpochMeta {
   // will be stored in DB in separate table
   state?: {
@@ -69,65 +70,94 @@ export interface EpochMeta {
   };
   attestation?: {
     participation?: { source: bigint; target: bigint; head: bigint };
+    blocks_attestations?: Map<BlockNumber, { source?: number[]; target?: number[]; head?: number[] }[]>;
     blocks_rewards?: Map<BlockNumber, bigint>;
   };
   sync?: {
-    blocks_rewards?: Map<BlockNumber, bigint>;
     per_block_reward?: number;
     blocks_to_sync?: number[];
+    blocks_rewards?: Map<BlockNumber, bigint>;
   };
 }
 
+export interface EpochInfo {
+  summary: Map<ValidatorId, ValidatorDutySummary>;
+  meta: EpochMeta;
+}
+
+export type EpochStorage = Map<Epoch, EpochInfo>;
+
 @Injectable()
 export class SummaryService {
-  protected storage: Map<ValidatorId, ValidatorDutySummary>;
-  protected meta: EpochMeta;
+  protected storage: EpochStorage;
 
   constructor() {
-    this.storage = new Map<ValidatorId, ValidatorDutySummary>();
-    this.meta = {};
+    this.storage = new Map<Epoch, EpochInfo>();
   }
 
-  public setMeta(val: EpochMeta) {
-    const curr = this.meta ?? {};
-    this.meta = merge(curr, val);
-  }
-
-  public getMeta() {
-    return this.meta;
-  }
-
-  public get(index: number) {
-    return this.storage.get(index);
-  }
-
-  public set(index: number, summary: ValidatorDutySummary) {
-    const curr = this.get(index) ?? {};
-    this.storage.set(index, merge(curr, summary));
-  }
-
-  public values(): IterableIterator<ValidatorDutySummary> {
-    return this.storage.values();
-  }
-
-  public valuesToWrite(): any[] {
-    return [...this.storage.values()].map((v) => ({
-      ...v,
-      val_balance: v.val_balance.toString(),
-      val_effective_balance: v.val_effective_balance.toString(),
-      propose_earned_reward: v.propose_earned_reward?.toString(),
-      propose_missed_reward: v.propose_missed_reward?.toString(),
-      propose_penalty: v.propose_penalty?.toString(),
-      att_meta: undefined,
-      sync_meta: undefined,
-    }));
+  public epoch(epoch: Epoch) {
+    if (!this.storage.get(epoch)) this.init(epoch); // Initialize epoch
+    const epochStorageData = this.storage.get(epoch);
+    return {
+      setMeta: (val: EpochMeta) => {
+        const curr = epochStorageData.meta;
+        epochStorageData.meta = merge(curr, val);
+        this.storage.set(epoch, epochStorageData);
+      },
+      getMeta: (): EpochMeta => {
+        return epochStorageData.meta;
+      },
+      set: (val: ValidatorDutySummary) => {
+        const curr = epochStorageData.summary.get(val.val_id) ?? {};
+        epochStorageData.summary.set(val.val_id, merge(curr, val));
+        this.storage.set(epoch, epochStorageData);
+      },
+      get: (val_id: ValidatorId): ValidatorDutySummary => {
+        return epochStorageData.summary.get(val_id);
+      },
+      values: () => {
+        return epochStorageData.summary.values();
+      },
+      valuesToWrite: (): ValidatorDutySummaryToWrite[] => {
+        return [...epochStorageData.summary.values()].map((v) => ({
+          ...v,
+          val_balance: v.val_balance.toString(),
+          val_effective_balance: v.val_effective_balance.toString(),
+          propose_earned_reward: v.propose_earned_reward?.toString(),
+          propose_missed_reward: v.propose_missed_reward?.toString(),
+          propose_penalty: v.propose_penalty?.toString(),
+          sync_meta: undefined,
+        }));
+      },
+    };
   }
 
   public clear() {
     this.storage.clear();
   }
 
-  public clearMeta() {
-    delete this.meta;
+  private init(epoch: Epoch) {
+    this.storage.set(epoch, {
+      summary: new Map(),
+      meta: {
+        state: {
+          active_validators: 0,
+          active_validators_total_increments: 0n,
+          base_reward: 0,
+        },
+        attestation: {
+          participation: { source: 0n, target: 0n, head: 0n },
+          blocks_attestations: new Map<BlockNumber, { source?: number[]; target?: number[]; head?: number[] }[]>(
+            range(epoch * 32 - 32, epoch * 32 + 32).map((b) => [b, []]),
+          ),
+          blocks_rewards: new Map<BlockNumber, bigint>(range(epoch * 32 - 32, epoch * 32 + 32).map((b) => [b, 0n])),
+        },
+        sync: {
+          blocks_rewards: new Map<BlockNumber, bigint>(range(epoch * 32 - 32, epoch * 32 + 32).map((b) => [b, 0n])),
+          per_block_reward: 0,
+          blocks_to_sync: [],
+        },
+      },
+    });
   }
 }
