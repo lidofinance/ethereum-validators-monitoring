@@ -1,5 +1,3 @@
-import { Duplex } from 'stream';
-
 import { BitArray, BitVectorType, fromHexString } from '@chainsafe/ssz';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
@@ -82,14 +80,9 @@ export class AttestationService {
     const att_inc_delay = Number(attestation.included_in_block - attestation.slot);
     const flags = getFlags(att_inc_delay, att_valid_source, att_valid_target, att_valid_head);
     for (const [valCommIndex, validatorIndex] of committee.entries()) {
-      const processed = this.summary.epoch(attestation.target_epoch).get(validatorIndex);
       const att_happened = attestation.bits.get(valCommIndex);
-      if (!att_happened) {
-        if (processed?.att_happened == undefined) {
-          this.summary.epoch(attestation.target_epoch).set({ epoch: attestation.target_epoch, val_id: validatorIndex, att_happened });
-        }
-        continue;
-      }
+      if (!att_happened) continue;
+      const processed = this.summary.epoch(attestation.target_epoch).get(validatorIndex);
       if (!processed?.att_valid_source && flags.source) {
         attestationFlags.source.push(validatorIndex);
       }
@@ -166,28 +159,27 @@ export class AttestationService {
 
   @TrackTask('get-attestation-committees')
   protected async getAttestationCommittees(stateSlot: Slot): Promise<Map<string, number[]>> {
-    const [prevCommitteeStream, currCommitteeStream] = await Promise.all([
-      this.clClient.getAttestationCommitteesInfo(stateSlot, this.processedEpoch - 1),
-      this.clClient.getAttestationCommitteesInfo(stateSlot, this.processedEpoch),
-    ]);
     const committees = new Map<string, number[]>();
-    const prevPipeline = chain([prevCommitteeStream, parser(), pick({ filter: 'data' }), streamArray(), (data) => data.value]);
-    const currPipeline = chain([currCommitteeStream, parser(), pick({ filter: 'data' }), streamArray(), (data) => data.value]);
-    const promisify = (stream: Duplex) =>
-      new Promise((resolve, reject) => {
-        stream.on('data', (committee) =>
+    const processCommittees = async (epoch: Epoch) => {
+      const stream = await this.clClient.getAttestationCommitteesInfo(stateSlot, epoch);
+      const pipeline = chain([stream, parser(), pick({ filter: 'data' }), streamArray(), (data) => data.value]);
+      return new Promise((resolve, reject) => {
+        pipeline.on('data', (committee) => {
+          // validator doesn't attests by default
+          committee.validators.forEach((index) =>
+            this.summary.epoch(epoch).set({ epoch: epoch, val_id: Number(index), att_happened: false }),
+          );
           committees.set(
             `${committee.index}_${committee.slot}`,
             committee.validators.map((v) => Number(v)),
-          ),
-        );
-        stream.on('error', (error) => reject(error));
-        stream.on('end', () => resolve(true));
-      });
-    await Promise.all([
-      promisify(prevPipeline).finally(() => prevPipeline.destroy()),
-      promisify(currPipeline).finally(() => currPipeline.destroy()),
-    ]);
+          );
+        });
+        pipeline.on('error', (error) => reject(error));
+        pipeline.on('end', () => resolve(true));
+      }).finally(() => pipeline.destroy());
+    };
+
+    await Promise.all([processCommittees(this.processedEpoch - 1), processCommittees(this.processedEpoch)]);
     return committees;
   }
 }
