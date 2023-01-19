@@ -25,6 +25,7 @@ export class DutyRewards {
   public async calculate(epoch: Epoch) {
     // todo: 'Slashed' case
     // todo: 'Inactivity leak' case
+    this.logger.log('Calculate rewards for all duties');
     await Promise.all([this.attestationRewards.calculate(epoch), this.syncRewards.calculate(epoch), this.proposerRewards.calculate(epoch)]);
   }
 }
