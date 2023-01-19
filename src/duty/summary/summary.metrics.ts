@@ -36,7 +36,7 @@ export class SummaryMetrics {
   }
 
   private async common() {
-    this.prometheus.epochTime = await this.clClient.getSlotTime(this.processedEpoch * 32);
+    this.prometheus.epochTime = await this.clClient.getSlotTime(this.processedEpoch * 32 + 31);
     this.prometheus.epochNumber.set(Number(this.processedEpoch));
   }
 
