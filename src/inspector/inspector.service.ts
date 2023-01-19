@@ -71,10 +71,15 @@ export class InspectorService implements OnModuleInit {
 
   protected async getEpochDataToProcess(): Promise<EpochProcessingState & { slot: Slot }> {
     const chosen = await this.chooseEpochToProcess();
-    const latestFinalizedBeaconBlock = <BlockHeaderResponse>await this.clClient.getBlockHeader('finalized');
-    const latestFinalizedEpoch = Math.trunc(latestFinalizedBeaconBlock.header.message.slot / this.config.get('FETCH_INTERVAL_SLOTS'));
-    if (latestFinalizedEpoch <= chosen.epoch) {
-      // new finalized epoch hasn't happened, from which we should get information about needed state
+    const latestFinalizedBeaconBlock = Number((<BlockHeaderResponse>await this.clClient.getBlockHeader('finalized')).header.message.slot);
+    let latestFinalizedEpoch = Math.trunc(latestFinalizedBeaconBlock / this.config.get('FETCH_INTERVAL_SLOTS'));
+    if (latestFinalizedEpoch * this.config.get('FETCH_INTERVAL_SLOTS') == latestFinalizedBeaconBlock) {
+      // if it's the first slot of epoch, it finalizes previous epoch
+      latestFinalizedEpoch -= 1;
+    }
+    const existedHeader = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(chosen.slot)).header.message;
+    if (Number(existedHeader.slot) > latestFinalizedBeaconBlock) {
+      // new finalized slot hasn't happened, from which parent we can get information about needed state
       // just wait `CHAIN_SLOT_TIME_SECONDS` until finality happens
       const sleepTime = this.config.get('CHAIN_SLOT_TIME_SECONDS');
       this.logger.log(
@@ -85,9 +90,8 @@ export class InspectorService implements OnModuleInit {
         setTimeout(() => resolve(undefined), sleepTime * 1000);
       });
     }
-    // new finalized epoch has happened, from which we can get information about needed state
+    // new finalized epoch has happened, from which parent we can get information about needed state
     this.logger.log(`Latest finalized epoch [${latestFinalizedEpoch}]. Next epoch to process [${chosen.epoch}]`);
-    const existedHeader = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(chosen.slot)).header.message;
     if (chosen.slot == Number(existedHeader.slot)) {
       this.logger.log(
         `Epoch [${chosen.epoch}] is chosen to process with state slot [${chosen.slot}] with root [${existedHeader.state_root}]`,

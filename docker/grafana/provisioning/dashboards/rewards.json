@@ -24,7 +24,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1672299121451,
+  "id": 19,
+  "iteration": 1673429825910,
   "links": [
     {
       "asDropdown": false,
@@ -315,7 +316,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -407,7 +409,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -499,7 +502,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -592,7 +596,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -685,7 +690,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -778,7 +784,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -871,7 +878,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -964,7 +972,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -1362,6 +1371,7 @@
             "fixedColor": "green",
             "mode": "fixed"
           },
+          "decimals": 3,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1408,7 +1418,11 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
+          "exemplar": false,
           "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_calculated_balance_delta{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+          "instant": true,
+          "range": false,
           "refId": "A"
         }
       ],
@@ -1771,6 +1785,7 @@
             "fixedColor": "green",
             "mode": "fixed"
           },
+          "decimals": 3,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1836,6 +1851,7 @@
             "fixedColor": "red",
             "mode": "fixed"
           },
+          "decimals": 3,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1900,6 +1916,7 @@
             "fixedColor": "light-purple",
             "mode": "fixed"
           },
+          "decimals": 3,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1985,7 +2002,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-green"
+                    "color": "light-green",
+                    "value": null
                   }
                 ]
               }
@@ -2277,7 +2295,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -2359,7 +2378,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-red"
+                    "color": "light-red",
+                    "value": null
                   }
                 ]
               }
@@ -2629,7 +2649,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -2711,7 +2732,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-purple"
+                    "color": "light-purple",
+                    "value": null
                   }
                 ]
               }
@@ -3014,7 +3036,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -3074,8 +3097,8 @@
       {
         "current": {
           "selected": false,
-          "text": "170506",
-          "value": "170506"
+          "text": "173498",
+          "value": "173498"
         },
         "datasource": {
           "type": "prometheus",
@@ -3102,8 +3125,8 @@
       {
         "current": {
           "selected": false,
-          "text": "0",
-          "value": "0"
+          "text": "10",
+          "value": "10"
         },
         "datasource": {
           "type": "prometheus",
@@ -3182,8 +3205,8 @@
       {
         "current": {
           "selected": false,
-          "text": "98.35205078125",
-          "value": "98.35205078125"
+          "text": "98.333740234375",
+          "value": "98.333740234375"
         },
         "datasource": {
           "type": "prometheus",
@@ -3269,14 +3292,14 @@
       {
         "current": {
           "selected": false,
-          "text": "Allnodes|Anyblock Analytics|Attestant (BVI) Limited|Blockdaemon|Blockscape|BridgeTower|Certus One|ChainLayer|ChainSafe|Chorus One|ConsenSys Codefi|CryptoManufaktur|DSRV|Everstake|Figment|HashQuark|InfStones|Kukis Global|Nethermind|P2P.ORG - P2P Validator|Prysmatic Labs|RockLogic GmbH|RockX|Sigma Prime|Simply Staking|SkillZ|Stakely|Stakin|Staking Facilities|stakefish",
-          "value": "Allnodes|Anyblock Analytics|Attestant (BVI) Limited|Blockdaemon|Blockscape|BridgeTower|Certus One|ChainLayer|ChainSafe|Chorus One|ConsenSys Codefi|CryptoManufaktur|DSRV|Everstake|Figment|HashQuark|InfStones|Kukis Global|Nethermind|P2P.ORG - P2P Validator|Prysmatic Labs|RockLogic GmbH|RockX|Sigma Prime|Simply Staking|SkillZ|Stakely|Stakin|Staking Facilities|stakefish"
+          "text": "Allnodes|Anyblock Analytics|Attestant \\(BVI\\) Limited|Blockdaemon|Blockscape|BridgeTower|Certus One|ChainLayer|ChainSafe|Chorus One|ConsenSys Codefi|CryptoManufaktur|DSRV|Everstake|Figment|HashQuark|InfStones|Kukis Global|Nethermind|P2P\\.ORG \\- P2P Validator|Prysmatic Labs|RockLogic GmbH|RockX|Sigma Prime|Simply Staking|SkillZ|Stakely|Stakin|Staking Facilities|stakefish",
+          "value": "Allnodes|Anyblock Analytics|Attestant \\(BVI\\) Limited|Blockdaemon|Blockscape|BridgeTower|Certus One|ChainLayer|ChainSafe|Chorus One|ConsenSys Codefi|CryptoManufaktur|DSRV|Everstake|Figment|HashQuark|InfStones|Kukis Global|Nethermind|P2P\\.ORG \\- P2P Validator|Prysmatic Labs|RockLogic GmbH|RockX|Sigma Prime|Simply Staking|SkillZ|Stakely|Stakin|Staking Facilities|stakefish"
         },
         "datasource": {
           "type": "vertamedia-clickhouse-datasource",
           "uid": "PDEE91DDB90597936"
         },
-        "definition": "SELECT arrayStringConcat(array(${nos_name_var}), '|')",
+        "definition": "SELECT arrayStringConcat(\n arrayMap(x -> regexpQuoteMeta(x),  array(${nos_name_var})\n), '|')",
         "description": "Selected",
         "hide": 2,
         "includeAll": false,
@@ -3284,7 +3307,7 @@
         "multi": false,
         "name": "nos_name_array_var",
         "options": [],
-        "query": "SELECT arrayStringConcat(array(${nos_name_var}), '|')",
+        "query": "SELECT arrayStringConcat(\n arrayMap(x -> regexpQuoteMeta(x),  array(${nos_name_var})\n), '|')",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -3311,6 +3334,6 @@
   "timezone": "",
   "title": "Rewards & Penalties",
   "uid": "poBeaLaRD",
-  "version": 3,
+  "version": 4,
   "weekStart": ""
 }
