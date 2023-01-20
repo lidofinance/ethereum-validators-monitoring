@@ -109,7 +109,7 @@ export class DutyService {
       // Attestation participation calculated by previous epoch data
       // Sync part of proposal reward should be calculated from current epoch
       const attested = this.summary.epoch(epoch - 1).get(v.val_id);
-      if (attested?.att_happened) {
+      if (!v.val_slashed && attested?.att_happened) {
         if (attested.att_valid_source) {
           meta.attestation.participation.source += BigInt(increments);
         }
