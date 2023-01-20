@@ -45,7 +45,9 @@ export class DutyService {
     const [, , possibleHighRewardVals] = await Promise.all([
       this.prefetch(epoch),
       this.checkAll(epoch, stateSlot),
-      this.getPossibleHighRewardValidators(),
+      // optional task to get possible high reward validators for head epoch
+      // it's nice to have but not critical
+      this.getPossibleHighRewardValidators().catch(() => []),
     ]);
     await Promise.all([this.writeEpochMeta(epoch), this.writeSummary(epoch)]);
     this.summary.clear();
