@@ -1,3 +1,22 @@
+# [4.2.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.1.2...4.2.0) (2023-01-23)
+
+
+### Bug Fixes
+
+* att participation rate ([#114](https://github.com/lidofinance/ethereum-validators-monitoring/issues/114)) ([10e928c](https://github.com/lidofinance/ethereum-validators-monitoring/commit/10e928c1b0c5f01412f236c8f643e44cb19a5340))
+* attestation and proposal rewards calculation error ([#110](https://github.com/lidofinance/ethereum-validators-monitoring/issues/110)) ([140a3f2](https://github.com/lidofinance/ethereum-validators-monitoring/commit/140a3f20c8a917059df76cf49d198c0ae0b694c3))
+* event loop lag ([#115](https://github.com/lidofinance/ethereum-validators-monitoring/issues/115)) ([0135d0e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/0135d0edec5e5254fd094b1fb48e2310c860678d))
+* optional `high-reward-validators` task ([#113](https://github.com/lidofinance/ethereum-validators-monitoring/issues/113)) ([b275062](https://github.com/lidofinance/ethereum-validators-monitoring/commit/b275062b67806a206a3e738737121873edb4bfc3))
+* remove unnecessary use of BigNumber ([#111](https://github.com/lidofinance/ethereum-validators-monitoring/issues/111)) ([917c0b4](https://github.com/lidofinance/ethereum-validators-monitoring/commit/917c0b4e6f50c3ff22b8f75fc4f505111161d424))
+
+
+### Features
+
+* speed up writing to DB ([#106](https://github.com/lidofinance/ethereum-validators-monitoring/issues/106)) ([5f46711](https://github.com/lidofinance/ethereum-validators-monitoring/commit/5f46711f2feaaf2978e33d68d47dc81b8163f4b8))
+* use BigNumber ([#108](https://github.com/lidofinance/ethereum-validators-monitoring/issues/108)) ([325ab92](https://github.com/lidofinance/ethereum-validators-monitoring/commit/325ab92cb2cc082f2525280215b2ffbb39615ea5))
+
+
+
 ## [4.1.2](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.1.1...4.1.2) (2023-01-10)
 
 
@@ -88,15 +107,6 @@
 ### Features
 
 * Develop ([#47](https://github.com/lidofinance/ethereum-validators-monitoring/issues/47)) ([32614b1](https://github.com/lidofinance/ethereum-validators-monitoring/commit/32614b186adff3fc8f0d206ede29be5e7fe0f894)), closes [#29](https://github.com/lidofinance/ethereum-validators-monitoring/issues/29) [#28](https://github.com/lidofinance/ethereum-validators-monitoring/issues/28) [#30](https://github.com/lidofinance/ethereum-validators-monitoring/issues/30) [#32](https://github.com/lidofinance/ethereum-validators-monitoring/issues/32) [#33](https://github.com/lidofinance/ethereum-validators-monitoring/issues/33) [#34](https://github.com/lidofinance/ethereum-validators-monitoring/issues/34) [#38](https://github.com/lidofinance/ethereum-validators-monitoring/issues/38) [#36](https://github.com/lidofinance/ethereum-validators-monitoring/issues/36) [#41](https://github.com/lidofinance/ethereum-validators-monitoring/issues/41) [#42](https://github.com/lidofinance/ethereum-validators-monitoring/issues/42) [#43](https://github.com/lidofinance/ethereum-validators-monitoring/issues/43) [#44](https://github.com/lidofinance/ethereum-validators-monitoring/issues/44) [#45](https://github.com/lidofinance/ethereum-validators-monitoring/issues/45) [#46](https://github.com/lidofinance/ethereum-validators-monitoring/issues/46) [#48](https://github.com/lidofinance/ethereum-validators-monitoring/issues/48)
-
-
-
-## [3.2.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/3.2.0...3.2.1) (2022-10-10)
-
-
-### Bug Fixes
-
-* Develop ([#39](https://github.com/lidofinance/ethereum-validators-monitoring/issues/39)) ([aafcc6e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/aafcc6ed9854d1a835fd740a5ffe06a694bdda66)), closes [#38](https://github.com/lidofinance/ethereum-validators-monitoring/issues/38)
 
 
 
