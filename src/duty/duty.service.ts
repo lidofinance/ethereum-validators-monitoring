@@ -6,6 +6,7 @@ import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-provid
 import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
 import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
 import { range } from 'common/functions/range';
+import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { ClickhouseService } from 'storage';
 
@@ -153,13 +154,14 @@ export class DutyService {
         rewards = Math.floor(proposerAttPartReward(rewards));
         meta.attestation.blocks_rewards.set(block, meta.attestation.blocks_rewards.get(block) + BigInt(rewards));
       }
+      await unblock();
     }
     this.summary.epoch(epoch).setMeta(meta);
   }
 
   protected async writeSummary(epoch: Epoch): Promise<any> {
     this.logger.log('Writing summary of duties into DB');
-    await this.storage.writeSummary(this.summary.epoch(epoch).valuesToWrite());
+    await this.storage.writeSummary(this.summary.epoch(epoch).values());
   }
 
   protected async writeEpochMeta(epoch: Epoch): Promise<any> {

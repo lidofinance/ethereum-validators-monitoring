@@ -38,32 +38,30 @@ export class StateService {
     let activeValidatorsCount = 0;
     let activeValidatorsEffectiveBalance = 0n;
     const pipeline = chain([readStream, parser(), pick({ filter: 'data' }), streamArray()]);
-    const streamTask = async () =>
-      new Promise((resolve, reject) => {
-        pipeline.on('data', (data) => {
-          const state: StateValidatorResponse = data.value;
-          const index = Number(state.index);
-          const operator = keysIndexed.get(state.validator.pubkey);
-          this.summary.epoch(epoch).set({
-            epoch,
-            val_id: index,
-            val_pubkey: state.validator.pubkey,
-            val_nos_id: operator?.operatorIndex,
-            val_nos_name: operator?.operatorName,
-            val_slashed: state.validator.slashed,
-            val_status: state.status,
-            val_balance: BigInt(state.balance),
-            val_effective_balance: BigInt(state.validator.effective_balance),
-          });
-          if ([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(state.status)) {
-            activeValidatorsCount++;
-            activeValidatorsEffectiveBalance += BigInt(state.validator.effective_balance) / BigInt(10 ** 9);
-          }
+    await new Promise((resolve, reject) => {
+      pipeline.on('data', async (data) => {
+        const state: StateValidatorResponse = data.value;
+        const index = Number(state.index);
+        const operator = keysIndexed.get(state.validator.pubkey);
+        this.summary.epoch(epoch).set({
+          epoch,
+          val_id: index,
+          val_pubkey: state.validator.pubkey,
+          val_nos_id: operator?.operatorIndex,
+          val_nos_name: operator?.operatorName,
+          val_slashed: state.validator.slashed,
+          val_status: state.status,
+          val_balance: BigInt(state.balance),
+          val_effective_balance: BigInt(state.validator.effective_balance),
         });
-        pipeline.on('error', (error) => reject(error));
-        pipeline.on('end', () => resolve(true));
+        if ([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(state.status)) {
+          activeValidatorsCount++;
+          activeValidatorsEffectiveBalance += BigInt(state.validator.effective_balance) / BigInt(10 ** 9);
+        }
       });
-    await streamTask().finally(() => pipeline.destroy());
+      pipeline.on('error', (error) => reject(error));
+      pipeline.on('end', () => resolve(true));
+    }).finally(() => pipeline.destroy());
     const baseReward = Math.trunc(
       BigNumber.from(64 * 10 ** 9)
         .div(bigNumberSqrt(BigNumber.from(activeValidatorsEffectiveBalance).mul(10 ** 9)))
