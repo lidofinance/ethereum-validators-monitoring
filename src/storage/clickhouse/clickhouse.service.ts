@@ -6,7 +6,7 @@ import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { retrier } from 'common/functions/retrier';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-import { EpochMeta, ValidatorDutySummaryToWrite } from 'duty/summary';
+import { EpochMeta, ValidatorDutySummary } from 'duty/summary';
 
 import {
   avgChainRewardsAndPenaltiesStats,
@@ -119,15 +119,17 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   @TrackTask('write-summary')
-  public async writeSummary(summary: ValidatorDutySummaryToWrite[]): Promise<void> {
-    while (summary.length > 0) {
-      const chunk = summary.splice(0, this.chunkSize);
-      await Promise.all([
+  public async writeSummary(summary: IterableIterator<ValidatorDutySummary>): Promise<void> {
+    let indexesChunk = [];
+    let summaryChunk = [];
+    let chunkSize = 0;
+    const writeChunks = async (indexesChunk, summaryChunk) => {
+      return await Promise.all([
         this.retry(
           async () =>
             await this.db.insert({
               table: 'validators_index',
-              values: chunk.map((v) => ({ val_id: v.val_id, val_pubkey: v.val_pubkey })),
+              values: indexesChunk,
               format: 'JSONEachRow',
             }),
         ),
@@ -135,12 +137,32 @@ export class ClickhouseService implements OnModuleInit {
           async () =>
             await this.db.insert({
               table: 'validators_summary',
-              values: chunk.map((v) => ({ ...v, val_pubkey: undefined })),
+              values: summaryChunk,
               format: 'JSONEachRow',
             }),
         ),
       ]);
+    };
+    for (const v of summary) {
+      indexesChunk.push({ val_id: v.val_id, val_pubkey: v.val_pubkey });
+      summaryChunk.push({
+        ...v,
+        val_balance: v.val_balance.toString(),
+        val_effective_balance: v.val_effective_balance.toString(),
+        propose_earned_reward: v.propose_earned_reward?.toString(),
+        propose_missed_reward: v.propose_missed_reward?.toString(),
+        propose_penalty: v.propose_penalty?.toString(),
+        sync_meta: undefined,
+        val_pubkey: undefined,
+      });
+      chunkSize++;
+      if (chunkSize == this.chunkSize) {
+        await writeChunks(indexesChunk, summaryChunk);
+        [indexesChunk, summaryChunk] = [[], []];
+        chunkSize = 0;
+      }
     }
+    if (chunkSize) await writeChunks(indexesChunk, summaryChunk);
   }
 
   @TrackTask('write-epoch-meta')

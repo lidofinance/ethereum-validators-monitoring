@@ -48,19 +48,6 @@ export interface ValidatorDutySummary {
   propose_penalty?: bigint;
 }
 
-export interface ValidatorDutySummaryToWrite
-  extends Omit<
-    ValidatorDutySummary,
-    'val_balance' | 'val_effective_balance' | 'propose_earned_reward' | 'propose_missed_reward' | 'propose_penalty' | 'sync_meta'
-  > {
-  val_balance: string;
-  val_effective_balance: string;
-  propose_earned_reward: string;
-  propose_missed_reward: string;
-  propose_penalty: string;
-  sync_meta: undefined;
-}
-
 export interface EpochMeta {
   // will be stored in DB in separate table
   state?: {
@@ -117,17 +104,6 @@ export class SummaryService {
       },
       values: () => {
         return epochStorageData.summary.values();
-      },
-      valuesToWrite: (): ValidatorDutySummaryToWrite[] => {
-        return [...epochStorageData.summary.values()].map((v) => ({
-          ...v,
-          val_balance: v.val_balance.toString(),
-          val_effective_balance: v.val_effective_balance.toString(),
-          propose_earned_reward: v.propose_earned_reward?.toString(),
-          propose_missed_reward: v.propose_missed_reward?.toString(),
-          propose_penalty: v.propose_penalty?.toString(),
-          sync_meta: undefined,
-        }));
       },
     };
   }
