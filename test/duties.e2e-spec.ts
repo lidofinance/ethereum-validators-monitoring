@@ -199,7 +199,17 @@ describe('Duties', () => {
     epochNumber = Number(process.env['TEST_EPOCH_NUMBER']);
 
     await Promise.all([dutyService['prefetch'](epochNumber), dutyService['checkAll'](epochNumber, stateSlot)]);
-    summaryToSave = dutyService['summary'].epoch(epochNumber).valuesToWrite();
+    summaryToSave = [...dutyService['summary'].epoch(epochNumber).values()].map((v) => {
+      return {
+        ...v,
+        val_balance: v.val_balance.toString(),
+        val_effective_balance: v.val_effective_balance.toString(),
+        propose_earned_reward: v.propose_earned_reward?.toString(),
+        propose_missed_reward: v.propose_missed_reward?.toString(),
+        propose_penalty: v.propose_penalty?.toString(),
+        sync_meta: undefined,
+      };
+    });
     await dutyService['writeSummary'](epochNumber);
   });
 
