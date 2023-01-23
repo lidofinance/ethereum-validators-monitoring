@@ -6,6 +6,7 @@ import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-provid
 import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
 import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
 import { range } from 'common/functions/range';
+import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { ClickhouseService } from 'storage';
 
@@ -153,14 +154,7 @@ export class DutyService {
         rewards = Math.floor(proposerAttPartReward(rewards));
         meta.attestation.blocks_rewards.set(block, meta.attestation.blocks_rewards.get(block) + BigInt(rewards));
       }
-      await new Promise((resolve) => {
-        // Long loop (2048 committees will be checked by ~7k attestations).
-        // We need to unblock event loop immediately after each iteration
-        // It makes this cycle slower but safer (but since it is executed async, impact will be minimal)
-        // If we don't do this, it can freeze scraping Prometheus metrics and other important operations
-        // Source: https://snyk.io/blog/nodejs-how-even-quick-async-functions-can-block-the-event-loop-starve-io/
-        return setImmediate(() => resolve(true));
-      });
+      await unblock();
     }
     this.summary.epoch(epoch).setMeta(meta);
   }
