@@ -484,19 +484,8 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async getTotalBalance24hDifference(epoch: Epoch): Promise<number | undefined> {
-    const ret = await this.select<{ curr_total_balance; prev_total_balance; total_diff }[]>(totalBalance24hDifferenceQuery(epoch));
-
-    if (ret.length < 1) {
-      return undefined;
-    }
-
-    const { curr_total_balance, prev_total_balance, total_diff } = ret[0];
-
-    if (!curr_total_balance || !prev_total_balance) {
-      return undefined;
-    }
-
-    return Number(total_diff);
+    const ret = await this.select<{ amount }[]>(totalBalance24hDifferenceQuery(epoch));
+    if (ret[0]) return Number(ret[0].amount);
   }
 
   public async getOperatorBalance24hDifference(epoch: Epoch): Promise<{ val_nos_id; diff }[]> {

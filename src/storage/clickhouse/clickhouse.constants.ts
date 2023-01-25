@@ -252,38 +252,28 @@ export const operatorsSyncParticipationAvgPercentsQuery = (epoch: Epoch): string
 `;
 
 export const totalBalance24hDifferenceQuery = (epoch: Epoch): string => `
-  SELECT (
-    SELECT SUM(curr.val_balance)
-    FROM (
-      SELECT val_balance, val_id, val_nos_id
-      FROM validators_summary
-      WHERE
-        epoch = ${epoch}
-        AND val_status != '${ValStatus.PendingQueued}'
-        AND val_nos_id IS NOT NULL
-      LIMIT 1 BY val_id
-    ) AS curr
-    INNER JOIN (
-      SELECT val_balance, val_id, val_nos_id
-      FROM validators_summary
-      WHERE
-        val_status != '${ValStatus.PendingQueued}' AND
-        val_nos_id IS NOT NULL AND
-        epoch = ${epoch} - 225
-    ) AS previous
-    ON
-      previous.val_nos_id = curr.val_nos_id AND
-      previous.val_id = curr.val_id
-  ) as curr_total_balance,
-  (
-    SELECT SUM(prev.val_balance)
-    FROM validators_summary AS prev
+  SELECT
+    SUM(curr.val_balance - previous.val_balance) as amount
+  FROM (
+    SELECT val_balance, val_id, val_nos_id
+    FROM validators_summary
     WHERE
-      prev.epoch = ${epoch} - 225
-      AND prev.val_status != '${ValStatus.PendingQueued}'
-      AND prev.val_nos_id IS NOT NULL
-  ) as prev_total_balance,
-  curr_total_balance - prev_total_balance as total_diff
+      epoch = ${epoch}
+      AND val_status != '${ValStatus.PendingQueued}'
+      AND val_nos_id IS NOT NULL
+    LIMIT 1 BY val_id
+  ) as curr
+  INNER JOIN (
+    SELECT val_balance, val_id, val_nos_id
+    FROM validators_summary
+    WHERE
+      val_status != '${ValStatus.PendingQueued}' AND
+      val_nos_id IS NOT NULL AND
+      epoch = ${epoch} - 225
+  ) AS previous
+  ON
+    previous.val_nos_id = curr.val_nos_id AND
+    previous.val_id = curr.val_id
 `;
 
 export const operatorBalance24hDifferenceQuery = (epoch: Epoch): string => `
