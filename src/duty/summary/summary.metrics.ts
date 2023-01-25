@@ -4,7 +4,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService } from 'common/config';
 import { ConsensusProviderService } from 'common/eth-providers';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
-import { PrometheusService, TrackTask } from 'common/prometheus';
+import { PrometheusService, TrackTask, setUserOperatorsMetric } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
@@ -57,50 +57,36 @@ export class SummaryMetrics {
   }
 
   private async userRewards() {
-    const result = await this.storage.getUserNodeOperatorsRewardsAndPenaltiesStats(this.processedEpoch);
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      // Rewards
-      this.prometheus.operatorReward.set(
-        { nos_name: operator.name, duty: Duty.Attestation },
-        operatorResult ? operatorResult.att_reward : 0,
-      );
-      this.prometheus.operatorReward.set({ nos_name: operator.name, duty: Duty.Proposal }, operatorResult ? operatorResult.prop_reward : 0);
-      this.prometheus.operatorReward.set({ nos_name: operator.name, duty: Duty.Sync }, operatorResult ? operatorResult.sync_reward : 0);
-      // Missed rewards
-      this.prometheus.operatorMissedReward.set(
-        { nos_name: operator.name, duty: Duty.Attestation },
-        operatorResult ? operatorResult.att_missed : 0,
-      );
-      this.prometheus.operatorMissedReward.set(
-        { nos_name: operator.name, duty: Duty.Proposal },
-        operatorResult ? operatorResult.prop_missed : 0,
-      );
-      this.prometheus.operatorMissedReward.set(
-        { nos_name: operator.name, duty: Duty.Sync },
-        operatorResult ? operatorResult.sync_missed : 0,
-      );
-      // Penalty
-      this.prometheus.operatorPenalty.set(
-        { nos_name: operator.name, duty: Duty.Attestation },
-        operatorResult ? operatorResult.att_penalty : 0,
-      );
-      this.prometheus.operatorPenalty.set(
-        { nos_name: operator.name, duty: Duty.Proposal },
-        operatorResult ? operatorResult.prop_penalty : 0,
-      );
-      this.prometheus.operatorPenalty.set({ nos_name: operator.name, duty: Duty.Sync }, operatorResult ? operatorResult.sync_penalty : 0);
-      // Balance deltas (calculated and real)
-      this.prometheus.operatorRealBalanceDelta.set({ nos_name: operator.name }, operatorResult ? operatorResult.real_balance_change : 0);
-      this.prometheus.operatorCalculatedBalanceDelta.set(
-        { nos_name: operator.name },
-        operatorResult ? operatorResult.calculated_balance_change : 0,
-      );
-      // Calculation error
-      this.prometheus.operatorCalculatedBalanceCalculationError.set(
-        { nos_name: operator.name },
-        operatorResult ? operatorResult.calculation_error : 0,
-      );
-    });
+    const data = await this.storage.getUserNodeOperatorsRewardsAndPenaltiesStats(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.operatorReward, data, this.operators, { duty: Duty.Attestation }, (item) => item.att_reward);
+    setUserOperatorsMetric(this.prometheus.operatorReward, data, this.operators, { duty: Duty.Proposal }, (item) => item.prop_reward);
+    setUserOperatorsMetric(this.prometheus.operatorReward, data, this.operators, { duty: Duty.Sync }, (item) => item.sync_reward);
+    setUserOperatorsMetric(
+      this.prometheus.operatorMissedReward,
+      data,
+      this.operators,
+      { duty: Duty.Attestation },
+      (item) => item.att_missed,
+    );
+    setUserOperatorsMetric(this.prometheus.operatorMissedReward, data, this.operators, { duty: Duty.Proposal }, (item) => item.prop_missed);
+    setUserOperatorsMetric(this.prometheus.operatorMissedReward, data, this.operators, { duty: Duty.Sync }, (item) => item.sync_missed);
+    setUserOperatorsMetric(this.prometheus.operatorPenalty, data, this.operators, { duty: Duty.Attestation }, (item) => item.att_penalty);
+    setUserOperatorsMetric(this.prometheus.operatorPenalty, data, this.operators, { duty: Duty.Proposal }, (item) => item.prop_penalty);
+    setUserOperatorsMetric(this.prometheus.operatorPenalty, data, this.operators, { duty: Duty.Sync }, (item) => item.sync_penalty);
+    setUserOperatorsMetric(this.prometheus.operatorRealBalanceDelta, data, this.operators, {}, (item) => item.real_balance_change);
+    setUserOperatorsMetric(
+      this.prometheus.operatorCalculatedBalanceDelta,
+      data,
+      this.operators,
+      {},
+      (item) => item.calculated_balance_change,
+    );
+    setUserOperatorsMetric(
+      this.prometheus.operatorCalculatedBalanceCalculationError,
+      data,
+      this.operators,
+      {},
+      (item) => item.calculation_error,
+    );
   }
 }

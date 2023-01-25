@@ -23,8 +23,8 @@ export class CriticalNegativeDelta extends Alert {
       const operator = this.operators.find((o) => +noStats.val_nos_id == o.index);
       const negDelta = negativeValidatorsCount.find((a) => +a.val_nos_id == operator.index);
       if (!negDelta) continue;
-      if (negDelta.neg_count > noStats.active_ongoing * VALIDATORS_WITH_NEGATIVE_DELTA_COUNT_THRESHOLD) {
-        result[operator.name] = { ongoing: noStats.active_ongoing, negDelta: negDelta.neg_count };
+      if (negDelta.amount > noStats.active_ongoing * VALIDATORS_WITH_NEGATIVE_DELTA_COUNT_THRESHOLD) {
+        result[operator.name] = { ongoing: noStats.active_ongoing, negDelta: negDelta.amount };
       }
     }
     return result;

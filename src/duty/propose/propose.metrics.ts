@@ -3,7 +3,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
-import { PrometheusService, TrackTask } from 'common/prometheus';
+import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
@@ -28,32 +28,21 @@ export class ProposeMetrics {
   }
 
   private async goodProposes() {
-    const result = await this.storage.getValidatorsCountWithGoodProposes(this.processedEpoch);
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.validatorsCountGoodPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
-    });
-    const other = result.find((p) => p.val_nos_id == null);
-    this.prometheus.otherValidatorsCountGoodPropose.set(other ? other.amount : 0);
+    const data = await this.storage.getValidatorsCountWithGoodProposes(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.validatorsCountGoodPropose, data, this.operators);
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsCountGoodPropose, data);
   }
 
   private async missProposes() {
-    const result = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch);
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.validatorsCountMissPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
-    });
-    const other = result.find((p) => p.val_nos_id == null);
-    this.prometheus.otherValidatorsCountMissPropose.set(other ? other.amount : 0);
+    const data = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.validatorsCountMissPropose, data, this.operators);
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsCountMissPropose, data);
   }
 
   private async highRewardMissProposes(possibleHighRewardValidators: string[]) {
-    let result = [];
-    if (possibleHighRewardValidators.length > 0)
-      result = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch, possibleHighRewardValidators);
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.highRewardValidatorsCountMissPropose.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
-    });
+    if (possibleHighRewardValidators.length > 0) {
+      const data = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch, possibleHighRewardValidators);
+      setUserOperatorsMetric(this.prometheus.highRewardValidatorsCountMissPropose, data, this.operators);
+    }
   }
 }
