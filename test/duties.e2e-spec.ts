@@ -151,7 +151,7 @@ describe('Duties', () => {
       }),
     );
   });
-  const getOperatorKeyMock = jest.fn().mockImplementation(async (key: string) => {
+  const getOperatorKeyMock = jest.fn().mockImplementation((key: string) => {
     return keysMap.get(key);
   });
   jest.spyOn(SimpleFallbackJsonRpcBatchProvider.prototype, 'detectNetwork').mockImplementation(async () => getNetwork('mainnet'));
