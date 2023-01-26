@@ -8,17 +8,17 @@ export interface ValidatorsStatusStats {
 
 export interface NOsDelta {
   val_nos_id: string;
-  delta: number;
+  amount: number;
 }
 
 export interface NOsValidatorsNegDeltaCount {
   val_nos_id: string;
-  neg_count: number;
+  amount: number;
 }
 
 export interface NOsValidatorsSyncAvgPercent {
   val_nos_id: string;
-  avg_percent: number;
+  amount: number;
 }
 
 export interface NOsValidatorsSyncByConditionCount {
@@ -78,7 +78,7 @@ export interface NOsProposesStats {
 }
 
 export interface SyncCommitteeParticipationAvgPercents {
-  avg_percent: number;
+  amount: number;
 }
 
 export interface EpochProcessingState {

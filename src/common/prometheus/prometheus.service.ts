@@ -2,9 +2,11 @@ import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { Metrics, getOrCreateMetric } from '@willsoto/nestjs-prometheus';
 import { join } from 'lodash';
+import { LabelValues } from 'prom-client';
 
 import { ConfigService } from 'common/config';
 
+import { RegistrySourceOperator } from '../validators-registry';
 import { Metric, Options } from './interfaces';
 import {
   METRICS_PREFIX,
@@ -482,6 +484,32 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: [],
   });
 }
+
+export const setUserOperatorsMetric = (
+  metric: Metric<'Gauge', any>,
+  data: any[],
+  operators: RegistrySourceOperator[],
+  labels: ((o: RegistrySourceOperator) => LabelValues<string>) | LabelValues<string> = {},
+  value: (dataItem: any) => number = (dataItem) => dataItem.amount,
+) => {
+  operators.forEach((operator) => {
+    const _labels = typeof labels == 'function' ? labels(operator) : { nos_name: operator.name, ...labels };
+    const operatorResult = data.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
+    if (operatorResult) metric.set(_labels, value(operatorResult));
+    else metric.set(_labels, 0);
+  });
+  // we should remove 'outdated' metrics (operator renaming or deleting case, for example)
+  const registry = Object.values(metric['hashMap']).map((m: any) => m.labels);
+  registry.forEach((labels) => {
+    if (!operators.find((o) => o.name == labels.nos_name)) metric.remove(labels);
+  });
+};
+
+export const setOtherOperatorsMetric = (metric: Metric<'Gauge', any>, data: any[], labels: LabelValues<string> = {}) => {
+  const other = data.find((p) => p.val_nos_id == null);
+  if (other) metric.set(labels, other.amount);
+  else metric.set(labels, 0);
+};
 
 export function TrackCLRequest(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
   const originalValue = descriptor.value;

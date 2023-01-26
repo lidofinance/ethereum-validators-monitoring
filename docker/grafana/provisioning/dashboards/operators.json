@@ -24,7 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1672296019449,
+  "iteration": 1674659010539,
   "links": [
     {
       "asDropdown": false,
@@ -1696,8 +1696,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               },
@@ -1803,8 +1802,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "transparent",
@@ -1898,8 +1896,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "transparent",
@@ -1967,8 +1964,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2045,7 +2041,7 @@
           "pluginVersion": "8.5.15",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -2112,8 +2108,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-red",
-                    "value": null
+                    "color": "dark-red"
                   }
                 ]
               },
@@ -2198,8 +2193,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2278,7 +2272,7 @@
           "pluginVersion": "8.5.15",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -2342,8 +2336,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -2478,7 +2471,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "User (other)"
+                  "options": "Rest of User's"
                 },
                 "properties": [
                   {
@@ -2575,7 +2568,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": true,
-              "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name!='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name!='${nos_name_var}'} AND ON(nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_name!='${nos_name_var}'} + ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_name!='${nos_name_var}'} > 0) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0) ",
               "hide": false,
               "interval": "",
               "legendFormat": "Rest of User's",
@@ -2732,7 +2725,7 @@
           "pluginVersion": "8.5.15",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -2933,8 +2926,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3011,7 +3003,7 @@
           "pluginVersion": "8.5.15",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -3075,8 +3067,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3179,8 +3170,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3257,7 +3247,7 @@
           "pluginVersion": "8.5.15",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -3321,8 +3311,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3425,8 +3414,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3515,7 +3503,7 @@
           "pluginVersion": "8.5.15",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -3579,8 +3567,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3683,8 +3670,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3761,7 +3747,7 @@
           "pluginVersion": "8.5.15",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -3825,8 +3811,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3929,8 +3914,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4007,7 +3991,7 @@
           "pluginVersion": "8.5.15",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -4071,8 +4055,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4131,7 +4114,7 @@
     "list": [
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "Allnodes",
           "value": "Allnodes"
         },
@@ -4160,8 +4143,8 @@
       {
         "current": {
           "selected": false,
-          "text": "170501",
-          "value": "170501"
+          "text": "176430",
+          "value": "176430"
         },
         "datasource": {
           "type": "prometheus",
@@ -4288,8 +4271,8 @@
       {
         "current": {
           "selected": false,
-          "text": "95.4833984375",
-          "value": "95.4833984375"
+          "text": "97.845458984375",
+          "value": "97.845458984375"
         },
         "datasource": {
           "type": "prometheus",
@@ -4316,8 +4299,8 @@
       {
         "current": {
           "selected": false,
-          "text": "10",
-          "value": "10"
+          "text": "2",
+          "value": "2"
         },
         "datasource": {
           "type": "prometheus",
@@ -4353,6 +4336,6 @@
   "timezone": "",
   "title": "NodeOperators",
   "uid": "3wimU2H7h",
-  "version": 3,
+  "version": 4,
   "weekStart": ""
 }

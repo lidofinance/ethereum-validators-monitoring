@@ -4,7 +4,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
-import { Owner, PrometheusService, PrometheusValStatus, TrackTask } from 'common/prometheus';
+import { Owner, PrometheusService, PrometheusValStatus, TrackTask, setUserOperatorsMetric } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { LidoSourceService } from 'common/validators-registry/lido-source';
 import { ClickhouseService } from 'storage/clickhouse';
@@ -44,35 +44,43 @@ export class StateMetrics {
   }
 
   private async operatorsIdentifies() {
-    this.operators.forEach((operator) => this.prometheus.operatorsIdentifies.set({ nos_id: operator.index, nos_name: operator.name }, 1));
+    setUserOperatorsMetric(
+      this.prometheus.operatorsIdentifies,
+      this.operators.map((operator) => ({ val_nos_id: operator.index, amount: 1 })),
+      this.operators,
+      (o) => ({ nos_id: o.index, nos_name: o.name }),
+    );
   }
 
   private async nosStats() {
-    const result = await this.storage.getUserNodeOperatorsStats(this.processedEpoch);
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.userValidators.set(
-        {
-          nos_name: operator.name,
-          status: PrometheusValStatus.Slashed,
-        },
-        operatorResult ? operatorResult.slashed : 0,
-      );
-      this.prometheus.userValidators.set(
-        {
-          nos_name: operator.name,
-          status: PrometheusValStatus.Ongoing,
-        },
-        operatorResult ? operatorResult.active_ongoing : 0,
-      );
-      this.prometheus.userValidators.set(
-        {
-          nos_name: operator.name,
-          status: PrometheusValStatus.Pending,
-        },
-        operatorResult ? operatorResult.pending : 0,
-      );
-    });
+    const data = await this.storage.getUserNodeOperatorsStats(this.processedEpoch);
+    setUserOperatorsMetric(
+      this.prometheus.userValidators,
+      data,
+      this.operators,
+      {
+        status: PrometheusValStatus.Slashed,
+      },
+      (item) => item.slashed,
+    );
+    setUserOperatorsMetric(
+      this.prometheus.userValidators,
+      data,
+      this.operators,
+      {
+        status: PrometheusValStatus.Ongoing,
+      },
+      (item) => item.active_ongoing,
+    );
+    setUserOperatorsMetric(
+      this.prometheus.userValidators,
+      data,
+      this.operators,
+      {
+        status: PrometheusValStatus.Pending,
+      },
+      (item) => item.pending,
+    );
   }
 
   private async userValidatorsStats() {
@@ -128,45 +136,28 @@ export class StateMetrics {
   }
 
   private async avgDeltas() {
-    const result = await this.storage.getAvgValidatorBalanceDelta(this.processedEpoch);
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.avgValidatorBalanceDelta.set({ nos_name: operator.name }, operatorResult ? operatorResult.delta : 0);
-    });
+    const data = await this.storage.getAvgValidatorBalanceDelta(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.avgValidatorBalanceDelta, data, this.operators);
   }
 
   private async minDeltas() {
-    const result = await this.storage.getValidatorQuantile0001BalanceDeltas(this.processedEpoch);
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.validatorQuantile001BalanceDelta.set({ nos_name: operator.name }, operatorResult ? operatorResult.delta : 0);
-    });
+    const data = await this.storage.getValidatorQuantile0001BalanceDeltas(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.validatorQuantile001BalanceDelta, data, this.operators);
   }
 
   private async negativeValidatorsCount() {
-    const result = await this.storage.getValidatorsCountWithNegativeDelta(this.processedEpoch);
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.validatorsCountWithNegativeBalanceDelta.set(
-        { nos_name: operator.name },
-        operatorResult ? operatorResult.neg_count : 0,
-      );
-    });
+    const data = await this.storage.getValidatorsCountWithNegativeDelta(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.validatorsCountWithNegativeBalanceDelta, data, this.operators);
   }
 
   private async totalBalance24hDifference() {
     const result = await this.storage.getTotalBalance24hDifference(this.processedEpoch);
-    if (result != undefined) {
-      this.prometheus.totalBalance24hDifference.set(result);
-    }
+    if (result) this.prometheus.totalBalance24hDifference.set(result);
   }
 
   private async operatorBalance24hDifference() {
-    const result = await this.storage.getOperatorBalance24hDifference(this.processedEpoch);
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.operatorBalance24hDifference.set({ nos_name: operator.name }, operatorResult ? operatorResult.diff : 0);
-    });
+    const data = await this.storage.getOperatorBalance24hDifference(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.operatorBalance24hDifference, data, this.operators);
   }
 
   private async contract() {
@@ -179,13 +170,6 @@ export class StateMetrics {
       { type: 'used' },
       this.operators.reduce((sum, o: RegistryOperator) => sum + o.usedSigningKeys, 0),
     );
-    // only for operators with 0 used keys
-    this.operators.forEach((operator: RegistryOperator) => {
-      if (operator.usedSigningKeys == 0) {
-        this.prometheus.userValidators.set({ nos_name: operator.name, status: PrometheusValStatus.Ongoing }, 0);
-      }
-    });
-
     const bufferedEther = (await this.registryService.source.contract.getBufferedEther()).div(GWEI_WEI_RATIO).div(ETH_GWEI_RATIO);
     this.prometheus.bufferedEther.set(bufferedEther.toNumber());
   }
