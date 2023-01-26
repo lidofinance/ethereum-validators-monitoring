@@ -3,7 +3,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
-import { PrometheusService, TrackTask } from 'common/prometheus';
+import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
@@ -38,20 +38,19 @@ export class SyncMetrics {
 
   private async userAvgSyncPercent() {
     const result = await this.storage.getUserSyncParticipationAvgPercent(this.processedEpoch);
-    this.prometheus.userSyncParticipationAvgPercent.set(result.avg_percent ?? 0);
+    if (result) this.prometheus.userSyncParticipationAvgPercent.set(result.amount);
+    else this.prometheus.userSyncParticipationAvgPercent.remove();
   }
 
   private async otherAvgSyncPercent() {
     const result = await this.storage.getOtherSyncParticipationAvgPercent(this.processedEpoch);
-    this.prometheus.otherSyncParticipationAvgPercent.set(result.avg_percent);
+    if (result) this.prometheus.otherSyncParticipationAvgPercent.set(result.amount);
+    else this.prometheus.otherSyncParticipationAvgPercent.remove();
   }
 
   private async operatorAvgSyncPercents() {
-    const result = await this.storage.getOperatorSyncParticipationAvgPercents(this.processedEpoch);
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.operatorSyncParticipationAvgPercent.set({ nos_name: operator.name }, operatorResult ? operatorResult.avg_percent : 0);
-    });
+    const data = await this.storage.getOperatorSyncParticipationAvgPercents(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.operatorSyncParticipationAvgPercent, data, this.operators);
   }
 
   private async syncParticipation(possibleHighRewardValidators: string[]) {
@@ -66,63 +65,44 @@ export class SyncMetrics {
 
   private async chainAvgSyncPercent() {
     const result = await this.storage.getChainSyncParticipationAvgPercent(this.processedEpoch);
-    this.prometheus.chainSyncParticipationAvgPercent.set(result.avg_percent);
-    return result.avg_percent;
+    this.prometheus.chainSyncParticipationAvgPercent.set(result.amount);
+    return result.amount;
   }
 
   private async goodSyncParticipationLastEpoch(chainAvgSyncPercent: number) {
-    const result = await this.storage.getValidatorsCountWithGoodSyncParticipationLastNEpoch(this.processedEpoch, 1, chainAvgSyncPercent);
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.validatorsCountWithGoodSyncParticipation.set({ nos_name: operator.name }, operatorResult ? operatorResult.amount : 0);
-    });
-    const other = result.find((p) => p.val_nos_id == null);
-    this.prometheus.otherValidatorsCountWithGoodSyncParticipation.set(other ? other.amount : 0);
+    const data = await this.storage.getValidatorsCountWithGoodSyncParticipationLastNEpoch(this.processedEpoch, 1, chainAvgSyncPercent);
+    setUserOperatorsMetric(this.prometheus.validatorsCountWithGoodSyncParticipation, data, this.operators);
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsCountWithGoodSyncParticipation, data);
   }
 
   private async badSyncParticipationLastEpoch(chainAvgSyncPercent: number) {
-    const result = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(this.processedEpoch, 1, chainAvgSyncPercent);
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.validatorsCountWithSyncParticipationLessAvg.set(
-        { nos_name: operator.name },
-        operatorResult ? operatorResult.amount : 0,
-      );
-    });
-    const other = result.find((p) => p.val_nos_id == null);
-    this.prometheus.otherValidatorsCountWithSyncParticipationLessAvg.set(other ? other.amount : 0);
+    const data = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(this.processedEpoch, 1, chainAvgSyncPercent);
+    setUserOperatorsMetric(this.prometheus.validatorsCountWithSyncParticipationLessAvg, data, this.operators);
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsCountWithSyncParticipationLessAvg, data);
   }
 
   private async badSyncParticipationLastNEpoch(chainAvgSyncPercent: number) {
-    const result = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(
+    const data = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(
       this.processedEpoch,
       this.epochInterval,
       chainAvgSyncPercent,
     );
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.validatorsCountWithSyncParticipationLessAvgLastNEpoch.set(
-        { nos_name: operator.name, epoch_interval: this.epochInterval },
-        operatorResult ? operatorResult.amount : 0,
-      );
+    setUserOperatorsMetric(this.prometheus.validatorsCountWithSyncParticipationLessAvgLastNEpoch, data, this.operators, {
+      epoch_interval: this.epochInterval,
     });
   }
 
   private async highRewardSyncParticipationLastNEpoch(chainAvgSyncPercent: number, possibleHighRewardValidators: string[]) {
-    let result = [];
-    if (possibleHighRewardValidators.length > 0)
-      result = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(
+    if (possibleHighRewardValidators.length > 0) {
+      const data = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(
         this.processedEpoch,
         this.epochInterval,
         chainAvgSyncPercent,
         possibleHighRewardValidators,
       );
-    this.operators.forEach((operator) => {
-      const operatorResult = result.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
-      this.prometheus.highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch.set(
-        { nos_name: operator.name, epoch_interval: this.epochInterval },
-        operatorResult ? operatorResult.amount : 0,
-      );
-    });
+      setUserOperatorsMetric(this.prometheus.highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch, data, this.operators, {
+        epoch_interval: this.epochInterval,
+      });
+    }
   }
 }

@@ -24,7 +24,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1672295458681,
+  "id": 3,
+  "iteration": 1674667656902,
   "links": [
     {
       "asDropdown": false,
@@ -4071,7 +4072,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 59
+            "y": 78
           },
           "id": 63,
           "options": {
@@ -4169,7 +4170,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 59
+            "y": 78
           },
           "id": 67,
           "options": {
@@ -4293,30 +4294,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "User"
-                },
-                "properties": [
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "green",
-                      "mode": "thresholds"
-                    }
-                  },
-                  {
-                    "id": "custom.fillOpacity",
-                    "value": 30
-                  },
-                  {
-                    "id": "custom.lineWidth",
-                    "value": 3
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Other"
+                  "options": "Rest of User's"
                 },
                 "properties": [
                   {
@@ -4331,6 +4309,39 @@
                     "value": 3
                   }
                 ]
+              },
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "C"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "thresholds"
+                    }
+                  },
+                  {
+                    "id": "custom.lineWidth",
+                    "value": 3
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "A"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "blue",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
               }
             ]
           },
@@ -4338,9 +4349,9 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 60
+            "y": 87
           },
-          "id": 92,
+          "id": 117,
           "options": {
             "legend": {
               "calcs": [
@@ -4363,10 +4374,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_user_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "hide": false,
               "interval": "",
-              "legendFormat": "User",
+              "legendFormat": "Other",
+              "range": true,
               "refId": "A"
             },
             {
@@ -4374,15 +4388,18 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_user_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
-              "legendFormat": "Other",
-              "refId": "B"
+              "legendFormat": "User",
+              "range": true,
+              "refId": "C"
             }
           ],
           "title": "User vs Other",
+          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -4512,7 +4529,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 66
+            "y": 93
           },
           "id": 72,
           "options": {
@@ -4610,7 +4627,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 66
+            "y": 93
           },
           "id": 73,
           "options": {
@@ -4720,8 +4737,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4877,8 +4893,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -4982,8 +4997,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -5139,8 +5153,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -5243,8 +5256,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -5400,8 +5412,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -5504,8 +5515,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -5661,8 +5671,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -5765,8 +5774,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -5922,8 +5930,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -6008,8 +6015,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -6327,8 +6333,8 @@
       {
         "current": {
           "selected": false,
-          "text": "170497",
-          "value": "170497"
+          "text": "176775",
+          "value": "176775"
         },
         "datasource": {
           "type": "prometheus",
@@ -6383,8 +6389,8 @@
       {
         "current": {
           "selected": false,
-          "text": "97.8271484375",
-          "value": "97.8271484375"
+          "text": "99.072265625",
+          "value": "99.072265625"
         },
         "datasource": {
           "type": "prometheus",
@@ -6455,6 +6461,6 @@
   "timezone": "",
   "title": "Validators",
   "uid": "HRgPmpNnz",
-  "version": 3,
+  "version": 4,
   "weekStart": ""
 }

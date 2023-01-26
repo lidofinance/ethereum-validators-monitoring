@@ -225,21 +225,21 @@ export class ClickhouseService implements OnModuleInit {
   public async getAvgValidatorBalanceDelta(epoch: Epoch): Promise<NOsDelta[]> {
     return (await this.select<NOsDelta[]>(avgValidatorBalanceDelta(epoch))).map((v) => ({
       ...v,
-      delta: Number(v.delta),
+      amount: Number(v.amount),
     }));
   }
 
   public async getValidatorQuantile0001BalanceDeltas(epoch: Epoch): Promise<NOsDelta[]> {
     return (await this.select<NOsDelta[]>(validatorQuantile0001BalanceDeltasQuery(epoch))).map((v) => ({
       ...v,
-      delta: Number(v.delta),
+      amount: Number(v.amount),
     }));
   }
 
   public async getValidatorsCountWithNegativeDelta(epoch: Epoch): Promise<NOsValidatorsNegDeltaCount[]> {
     return (await this.select<NOsValidatorsNegDeltaCount[]>(validatorsCountWithNegativeDeltaQuery(epoch))).map((v) => ({
       ...v,
-      neg_count: Number(v.neg_count),
+      amount: Number(v.amount),
     }));
   }
 
@@ -248,7 +248,7 @@ export class ClickhouseService implements OnModuleInit {
    */
   public async getUserSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
     const ret = await this.select(userSyncParticipationAvgPercentQuery(epoch));
-    return { avg_percent: Number(ret[0].avg_percent) };
+    return { amount: Number(ret[0].amount) };
   }
 
   /**
@@ -256,7 +256,7 @@ export class ClickhouseService implements OnModuleInit {
    */
   public async getOtherSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
     const ret = await this.select(otherSyncParticipationAvgPercentQuery(epoch));
-    return { avg_percent: Number(ret[0].avg_percent) };
+    return { amount: Number(ret[0].amount) };
   }
 
   /**
@@ -264,7 +264,7 @@ export class ClickhouseService implements OnModuleInit {
    */
   public async getChainSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
     const ret = await this.select(chainSyncParticipationAvgPercentQuery(epoch));
-    return { avg_percent: Number(ret[0].avg_percent) };
+    return { amount: Number(ret[0].amount) };
   }
 
   /**
@@ -273,7 +273,7 @@ export class ClickhouseService implements OnModuleInit {
   public async getOperatorSyncParticipationAvgPercents(epoch: Epoch): Promise<NOsValidatorsSyncAvgPercent[]> {
     return (await this.select<NOsValidatorsSyncAvgPercent[]>(operatorsSyncParticipationAvgPercentsQuery(epoch))).map((v) => ({
       ...v,
-      avg_percent: Number(v.avg_percent),
+      amount: Number(v.amount),
     }));
   }
 
@@ -484,25 +484,14 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async getTotalBalance24hDifference(epoch: Epoch): Promise<number | undefined> {
-    const ret = await this.select<{ curr_total_balance; prev_total_balance; total_diff }[]>(totalBalance24hDifferenceQuery(epoch));
-
-    if (ret.length < 1) {
-      return undefined;
-    }
-
-    const { curr_total_balance, prev_total_balance, total_diff } = ret[0];
-
-    if (!curr_total_balance || !prev_total_balance) {
-      return undefined;
-    }
-
-    return Number(total_diff);
+    const ret = await this.select<{ amount }[]>(totalBalance24hDifferenceQuery(epoch));
+    if (ret[0]) return Number(ret[0].amount);
   }
 
-  public async getOperatorBalance24hDifference(epoch: Epoch): Promise<{ val_nos_id; diff }[]> {
-    return (await this.select<{ val_nos_id; diff }[]>(operatorBalance24hDifferenceQuery(epoch))).map((v) => ({
+  public async getOperatorBalance24hDifference(epoch: Epoch): Promise<{ val_nos_id; amount }[]> {
+    return (await this.select<{ val_nos_id; amount }[]>(operatorBalance24hDifferenceQuery(epoch))).map((v) => ({
       ...v,
-      diff: Number(v.diff),
+      amount: Number(v.amount),
     }));
   }
 

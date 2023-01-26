@@ -4,7 +4,7 @@ import { Epoch } from 'common/eth-providers/consensus-provider/types';
 export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
   SELECT
     val_nos_id,
-    avg(current.val_balance - previous.val_balance) AS delta
+    avg(current.val_balance - previous.val_balance) AS amount
   FROM
     (
       SELECT val_balance, val_id, val_nos_id
@@ -32,7 +32,7 @@ export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
 export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string => `
   SELECT
     val_nos_id,
-    quantileExact(0.001)(current.val_balance - previous.val_balance) AS delta
+    quantileExact(0.001)(current.val_balance - previous.val_balance) AS amount
   FROM
     (
       SELECT val_balance, val_id, val_nos_id
@@ -60,7 +60,7 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string =>
 export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
   SELECT
     val_nos_id,
-    count(val_id) AS neg_count
+    count(val_id) AS amount
   FROM
     (
       SELECT val_balance, val_id, val_nos_id
@@ -203,7 +203,7 @@ export const validatorsCountByConditionMissProposeQuery = (epoch: Epoch, validat
 
 export const userSyncParticipationAvgPercentQuery = (epoch: Epoch): string => `
   SELECT
-    avg(sync_percent) as avg_percent
+    avg(sync_percent) as amount
   FROM (
     SELECT sync_percent
     FROM validators_summary
@@ -215,7 +215,7 @@ export const userSyncParticipationAvgPercentQuery = (epoch: Epoch): string => `
 
 export const otherSyncParticipationAvgPercentQuery = (epoch: Epoch): string => `
   SELECT
-    avg(sync_percent) as avg_percent
+    avg(sync_percent) as amount
   FROM (
     SELECT sync_percent
     FROM validators_summary
@@ -227,7 +227,7 @@ export const otherSyncParticipationAvgPercentQuery = (epoch: Epoch): string => `
 
 export const chainSyncParticipationAvgPercentQuery = (epoch: Epoch): string => `
   SELECT
-    avg(sync_percent) as avg_percent
+    avg(sync_percent) as amount
   FROM (
     SELECT sync_percent
     FROM validators_summary
@@ -240,7 +240,7 @@ export const chainSyncParticipationAvgPercentQuery = (epoch: Epoch): string => `
 export const operatorsSyncParticipationAvgPercentsQuery = (epoch: Epoch): string => `
   SELECT
     val_nos_id,
-    avg(sync_percent) as avg_percent
+    avg(sync_percent) as amount
   FROM (
     SELECT val_nos_id, sync_percent
     FROM validators_summary
@@ -252,44 +252,34 @@ export const operatorsSyncParticipationAvgPercentsQuery = (epoch: Epoch): string
 `;
 
 export const totalBalance24hDifferenceQuery = (epoch: Epoch): string => `
-  SELECT (
-    SELECT SUM(curr.val_balance)
-    FROM (
-      SELECT val_balance, val_id, val_nos_id
-      FROM validators_summary
-      WHERE
-        epoch = ${epoch}
-        AND val_status != '${ValStatus.PendingQueued}'
-        AND val_nos_id IS NOT NULL
-      LIMIT 1 BY val_id
-    ) AS curr
-    INNER JOIN (
-      SELECT val_balance, val_id, val_nos_id
-      FROM validators_summary
-      WHERE
-        val_status != '${ValStatus.PendingQueued}' AND
-        val_nos_id IS NOT NULL AND
-        epoch = ${epoch} - 225
-    ) AS previous
-    ON
-      previous.val_nos_id = curr.val_nos_id AND
-      previous.val_id = curr.val_id
-  ) as curr_total_balance,
-  (
-    SELECT SUM(prev.val_balance)
-    FROM validators_summary AS prev
+  SELECT
+    SUM(curr.val_balance - previous.val_balance) as amount
+  FROM (
+    SELECT val_balance, val_id, val_nos_id
+    FROM validators_summary
     WHERE
-      prev.epoch = ${epoch} - 225
-      AND prev.val_status != '${ValStatus.PendingQueued}'
-      AND prev.val_nos_id IS NOT NULL
-  ) as prev_total_balance,
-  curr_total_balance - prev_total_balance as total_diff
+      epoch = ${epoch}
+      AND val_status != '${ValStatus.PendingQueued}'
+      AND val_nos_id IS NOT NULL
+    LIMIT 1 BY val_id
+  ) as curr
+  INNER JOIN (
+    SELECT val_balance, val_id, val_nos_id
+    FROM validators_summary
+    WHERE
+      val_status != '${ValStatus.PendingQueued}' AND
+      val_nos_id IS NOT NULL AND
+      epoch = ${epoch} - 225
+  ) AS previous
+  ON
+    previous.val_nos_id = curr.val_nos_id AND
+    previous.val_id = curr.val_id
 `;
 
 export const operatorBalance24hDifferenceQuery = (epoch: Epoch): string => `
   SELECT
     curr.val_nos_id as val_nos_id,
-    SUM(curr.val_balance - previous.val_balance) as diff
+    SUM(curr.val_balance - previous.val_balance) as amount
   FROM (
     SELECT val_balance, val_id, val_nos_id
     FROM validators_summary
