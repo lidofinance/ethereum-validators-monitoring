@@ -3,7 +3,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
-import { REGISTRY_SOURCE, RegistrySource, RegistrySourceKeysIndexed } from './registry-source.interface';
+import { REGISTRY_SOURCE, RegistrySource, RegistrySourceKeyWithOperatorName } from './registry-source.interface';
 
 @Injectable()
 export class RegistryService {
@@ -13,41 +13,30 @@ export class RegistryService {
     protected readonly prometheus: PrometheusService,
   ) {}
 
-  public async getActualKeysIndexed(timestamp: number): Promise<RegistrySourceKeysIndexed | undefined> {
-    await this.updateValidators();
+  protected lastTimestamp = 0;
+
+  protected operators = [];
+
+  @TrackTask('update-validators')
+  public async updateKeysRegistry(timestamp: number): Promise<void> {
+    await this.source.update();
+    await this.updateTimestamp();
     if (timestamp > this.lastTimestamp) {
       const lastUpdateTime = new Date(this.lastTimestamp * 1000).toISOString();
       throw Error(`Validators registry data is too old. Last update - ${lastUpdateTime}`);
     }
-    return await this.source.getIndexedKeys();
+    this.operators = [...this.source.getOperatorsMap().values()];
   }
 
-  public async getOperators() {
-    return await this.source.getOperators();
+  public getOperatorKey(pubKey: string): RegistrySourceKeyWithOperatorName {
+    const key = this.source.getOperatorKey(pubKey);
+    if (!key) return null;
+    const operator = this.source.getOperatorsMap().get(key.operatorIndex);
+    return { ...key, operatorName: operator.name };
   }
 
-  protected lastTimestamp = 0;
-
-  /**
-   * Collects updates from source validators registry contract and saves the changes to the database
-   */
-  @TrackTask('update-validators')
-  protected async updateValidators(): Promise<void> {
-    try {
-      await this.source.update();
-      await this.updateTimestamp();
-    } catch (error) {
-      // Here we can get a timeout error or something else
-      this.logger.warn('Failed to update validators');
-      const curr = await this.source.getKeys();
-      if (curr?.length == 0) {
-        // throw error and run main cycle again
-        throw error;
-      } else {
-        // print error and continue to use current keys from storage
-        this.logger.error(error.error?.reason ?? error);
-      }
-    }
+  public getOperators() {
+    return this.operators;
   }
 
   /**

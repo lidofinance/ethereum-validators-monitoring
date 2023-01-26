@@ -2,13 +2,12 @@ import { LIDO_CONTRACT_TOKEN, Lido } from '@lido-nestjs/contracts';
 import {
   RegistryKeyStorageService,
   RegistryMetaStorageService,
-  RegistryOperator,
   RegistryOperatorStorageService,
   ValidatorRegistryService,
 } from '@lido-nestjs/registry';
 import { Inject, Injectable } from '@nestjs/common';
 
-import { RegistrySource, RegistrySourceKeyWithOperatorName, RegistrySourceKeysIndexed } from '../registry-source.interface';
+import { RegistrySource, RegistrySourceKey, RegistrySourceOperator } from '../registry-source.interface';
 
 @Injectable()
 export class LidoSourceService implements RegistrySource {
@@ -21,22 +20,26 @@ export class LidoSourceService implements RegistrySource {
     protected readonly operatorStorageService: RegistryOperatorStorageService,
   ) {}
 
+  protected operatorsMap = new Map<number, RegistrySourceOperator>();
+  protected keysMap = new Map<string, RegistrySourceKey>();
+  protected keysOpIndex = 0;
+
   public async update() {
     await this.validatorService.update('latest');
-  }
-
-  public async getIndexedKeys() {
-    const indexedKeys: any = new Map<string, RegistrySourceKeyWithOperatorName>();
-    await this.updateOperatorsMap(); // Update cached data to quick access
-    const allKeys = await this.getKeys();
-    for (const k of allKeys ?? []) {
-      indexedKeys.set(k.key, { ...k, operatorName: this.operatorsMap[k.operatorIndex].name });
+    await this.updateOperatorsMap();
+    const storageKeysOpIndex = (await this.metaStorageService.get())?.keysOpIndex;
+    if (this.keysOpIndex == 0 || storageKeysOpIndex > this.keysOpIndex) {
+      await this.updateKeysMap();
+      this.keysOpIndex = storageKeysOpIndex;
     }
-    return indexedKeys as RegistrySourceKeysIndexed;
   }
 
-  public async getKeys() {
-    return await this.keyStorageService.findUsed();
+  public getOperatorsMap() {
+    return this.operatorsMap;
+  }
+
+  public getOperatorKey(pubKey: string) {
+    return this.keysMap.get(pubKey);
   }
 
   public async sourceTimestamp() {
@@ -44,21 +47,13 @@ export class LidoSourceService implements RegistrySource {
     return meta?.timestamp;
   }
 
-  public async getOperators() {
-    return await this.operatorStorageService.findAll();
+  protected async updateOperatorsMap() {
+    const operators = await this.operatorStorageService.findAll();
+    this.operatorsMap = new Map(operators.map((o) => [o.index, o]));
   }
 
-  protected operatorsMap: Record<number, RegistryOperator> = {};
-
-  /**
-   * Updates cached operators map
-   */
-  protected async updateOperatorsMap(): Promise<void> {
-    const operators = await this.getOperators();
-
-    this.operatorsMap = operators?.reduce((operatorsMap, operator) => {
-      operatorsMap[operator.index] = operator;
-      return operatorsMap;
-    }, {});
+  protected async updateKeysMap() {
+    const allKeys = await this.keyStorageService.findUsed();
+    this.keysMap = new Map(allKeys.map((k) => [k.key, k]));
   }
 }

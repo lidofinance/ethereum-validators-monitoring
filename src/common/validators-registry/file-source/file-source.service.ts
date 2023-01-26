@@ -6,12 +6,7 @@ import { load } from 'js-yaml';
 
 import { ConfigService } from 'common/config';
 
-import {
-  RegistrySource,
-  RegistrySourceKeyWithOperatorName,
-  RegistrySourceKeysIndexed,
-  RegistrySourceOperator,
-} from '../registry-source.interface';
+import { RegistrySource, RegistrySourceKey, RegistrySourceOperator } from '../registry-source.interface';
 
 interface FileContent {
   operators: {
@@ -35,6 +30,10 @@ export class FileSourceService implements RegistrySource {
   protected data: FileContent;
   protected lastSuccessDataReadTimestamp: number;
 
+  protected operatorsMap = new Map<number, RegistrySourceOperator>();
+
+  protected keysMap = new Map<string, RegistrySourceKey>();
+
   public async update() {
     const fileContent = await readFile(this.configService.get('VALIDATOR_REGISTRY_FILE_SOURCE_PATH'), 'utf-8');
     const data = <FileContent>load(fileContent);
@@ -46,43 +45,34 @@ export class FileSourceService implements RegistrySource {
     );
     this.lastSuccessDataReadTimestamp = Date.now();
     this.data = data;
+    this.updateOperatorsMap();
+    this.updateKeysMap();
   }
 
-  public async getIndexedKeys() {
-    const indexedKeys: any = new Map<string, RegistrySourceKeyWithOperatorName>();
-    const allKeys = await this.getKeys();
-    for (const k of allKeys ?? []) {
-      indexedKeys.set(k.key, k);
-    }
-    return indexedKeys as RegistrySourceKeysIndexed;
+  public getOperatorsMap() {
+    return this.operatorsMap;
   }
 
-  public async getKeys() {
-    const keys: RegistrySourceKeyWithOperatorName[] = [];
-    this.data?.operators?.forEach((o, operatorIndex) => {
-      if (o.keys) {
-        keys.push(
-          ...o.keys.map((key, index) => {
-            return { index, operatorIndex, key, operatorName: this.data.operators[operatorIndex].name };
-          }),
-        );
-      }
-    });
-    return keys;
+  public getOperatorKey(pubKey: string) {
+    return this.keysMap.get(pubKey);
   }
 
   public async sourceTimestamp() {
     return this.lastSuccessDataReadTimestamp;
   }
 
-  public async getOperators(): Promise<RegistrySourceOperator[]> {
-    const operators: RegistrySourceOperator[] = [];
-    this.data?.operators?.map((o, index) =>
-      operators.push({
-        index,
-        name: o.name,
-      }),
-    );
-    return operators;
+  protected updateOperatorsMap() {
+    this.operatorsMap = new Map(this.data?.operators?.map((o, index) => [index, { index, name: o.name }]));
+  }
+
+  protected updateKeysMap() {
+    this.keysMap = new Map<string, RegistrySourceKey>();
+    this.data?.operators?.forEach((o, operatorIndex) => {
+      if (o.keys) {
+        o.keys.forEach((key, index) => {
+          this.keysMap.set(key, { index, operatorIndex, key });
+        });
+      }
+    });
   }
 }

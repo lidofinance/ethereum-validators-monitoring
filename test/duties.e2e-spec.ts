@@ -140,17 +140,19 @@ describe('Duties', () => {
   let summaryToSave = [];
 
   process.env['DB_HOST'] = 'http://localhost'; // stub to avoid lib validator
-  const getActualKeysIndexedMock = jest.fn().mockImplementation(async () => {
-    const map = new Map();
+  const keysMap = new Map();
+  const updateKeysRegistryMock = jest.fn().mockImplementation(async () => {
     testValidators.forEach((v) =>
-      map.set(v.pubkey, {
+      keysMap.set(v.pubkey, {
         index: v.registry_index,
         operatorIndex: v.operator_index,
         operatorName: v.operator_name,
         key: v.pubkey,
       }),
     );
-    return map;
+  });
+  const getOperatorKeyMock = jest.fn().mockImplementation(async (key: string) => {
+    return keysMap.get(key);
   });
   jest.spyOn(SimpleFallbackJsonRpcBatchProvider.prototype, 'detectNetwork').mockImplementation(async () => getNetwork('mainnet'));
   jest.spyOn(ClickhouseService.prototype, 'writeSummary');
@@ -181,8 +183,8 @@ describe('Duties', () => {
     dutyService = moduleRef.get<DutyService>(DutyService);
     validatorsRegistryService = moduleRef.get<RegistryService>(RegistryService);
     clickhouseService = moduleRef.get<ClickhouseService>(ClickhouseService);
-
-    validatorsRegistryService.getActualKeysIndexed = getActualKeysIndexedMock;
+    validatorsRegistryService.updateKeysRegistry = updateKeysRegistryMock;
+    validatorsRegistryService.getOperatorKey = getOperatorKeyMock;
     // stub writing to db
     Object.defineProperty(clickhouseService, 'db', {
       value: {
