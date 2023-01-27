@@ -4,7 +4,6 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
-import { unblock } from 'common/functions/unblock';
 import { PrometheusService } from 'common/prometheus';
 
 import { SummaryService } from '../summary';
@@ -43,14 +42,7 @@ export class AttestationRewards {
       Math.trunc(perfect.source * epochMeta.state.base_reward * 32 * sourceParticipation) +
       Math.trunc(perfect.target * epochMeta.state.base_reward * 32 * targetParticipation) +
       Math.trunc(perfect.head * epochMeta.state.base_reward * 32 * headParticipation);
-    const maxBatchSize = 100;
-    let currentBatchSize = 0;
     for (const v of this.summary.epoch(epoch).values()) {
-      currentBatchSize++;
-      if (currentBatchSize >= maxBatchSize) {
-        await unblock();
-        currentBatchSize = 0;
-      }
       // Calculate attestation rewards from previous epoch
       const pv = this.summary.epoch(epoch - 1).get(v.val_id);
       if (pv?.att_happened == undefined) {
