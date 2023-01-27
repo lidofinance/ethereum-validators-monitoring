@@ -31,9 +31,11 @@ export class StateService {
   @TrackTask('check-state-duties')
   public async check(epoch: Epoch, stateSlot: Slot): Promise<void> {
     const slotTime = await this.clClient.getSlotTime(epoch * this.config.get('FETCH_INTERVAL_SLOTS'));
-    await this.registry.updateKeysRegistry(Number(slotTime));
     this.logger.log('Getting all validators state');
-    const readStream = await this.clClient.getValidatorsState(stateSlot);
+    const [readStream] = await Promise.all([
+      this.clClient.getValidatorsState(stateSlot),
+      this.registry.updateKeysRegistry(Number(slotTime)),
+    ]);
     this.logger.log('Processing all validators state');
     let activeValidatorsCount = 0;
     let activeValidatorsEffectiveBalance = 0n;
