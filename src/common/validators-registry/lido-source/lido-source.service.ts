@@ -54,9 +54,12 @@ export class LidoSourceService implements RegistrySource {
   }
 
   protected async updateKeysMap() {
+    this.keysMap = new Map();
     for (const index of this.operatorsMap.keys()) {
       const operatorKeys = await this.keyStorageService.findByOperatorIndex(index);
-      this.keysMap = new Map(operatorKeys.map((k) => [k.key, k]));
+      for (const key of operatorKeys) {
+        this.keysMap.set(key.key, key);
+      }
       await unblock();
     }
   }
