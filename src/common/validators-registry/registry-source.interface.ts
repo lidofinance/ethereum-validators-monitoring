@@ -15,12 +15,9 @@ export interface RegistrySourceOperator {
   name: string;
 }
 
-export type RegistrySourceKeysIndexed = Map<string, RegistrySourceKeyWithOperatorName>;
-
 export interface RegistrySource {
   update(...args): Promise<void>;
-  getIndexedKeys(): Promise<RegistrySourceKeysIndexed | undefined>;
-  getKeys(): Promise<RegistrySourceKey[]>;
-  getOperators(): Promise<RegistrySourceOperator[]>;
+  getOperatorsMap(): Map<number, RegistrySourceOperator>;
+  getOperatorKey(pubKey: string): RegistrySourceKey | null;
   sourceTimestamp(): Promise<number>;
 }

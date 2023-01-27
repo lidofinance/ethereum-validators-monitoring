@@ -31,7 +31,7 @@ export class StateService {
   @TrackTask('check-state-duties')
   public async check(epoch: Epoch, stateSlot: Slot): Promise<void> {
     const slotTime = await this.clClient.getSlotTime(epoch * this.config.get('FETCH_INTERVAL_SLOTS'));
-    const keysIndexed = await this.registry.getActualKeysIndexed(Number(slotTime));
+    await this.registry.updateKeysRegistry(Number(slotTime));
     this.logger.log('Getting all validators state');
     const readStream = await this.clClient.getValidatorsState(stateSlot);
     this.logger.log('Processing all validators state');
@@ -42,7 +42,7 @@ export class StateService {
       pipeline.on('data', async (data) => {
         const state: StateValidatorResponse = data.value;
         const index = Number(state.index);
-        const operator = keysIndexed.get(state.validator.pubkey);
+        const operator = this.registry.getOperatorKey(state.validator.pubkey);
         this.summary.epoch(epoch).set({
           epoch,
           val_id: index,
