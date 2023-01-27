@@ -7,6 +7,7 @@ import {
 } from '@lido-nestjs/registry';
 import { Inject, Injectable } from '@nestjs/common';
 
+import { unblock } from '../../functions/unblock';
 import { RegistrySource, RegistrySourceKey, RegistrySourceOperator } from '../registry-source.interface';
 
 @Injectable()
@@ -53,7 +54,10 @@ export class LidoSourceService implements RegistrySource {
   }
 
   protected async updateKeysMap() {
-    const allKeys = await this.keyStorageService.findUsed();
-    this.keysMap = new Map(allKeys.map((k) => [k.key, k]));
+    for (const index of this.operatorsMap.keys()) {
+      const operatorKeys = await this.keyStorageService.findByOperatorIndex(index);
+      this.keysMap = new Map(operatorKeys.map((k) => [k.key, k]));
+      await unblock();
+    }
   }
 }
