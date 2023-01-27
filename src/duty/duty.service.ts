@@ -104,71 +104,58 @@ export class DutyService {
     const meta = this.summary.epoch(epoch).getMeta();
     meta.sync.per_block_reward = Number(syncReward(meta.state.active_validators_total_increments, meta.state.base_reward));
     const perSyncProposerReward = Math.floor((meta.sync.per_block_reward * PROPOSER_WEIGHT) / (WEIGHT_DENOMINATOR - PROPOSER_WEIGHT));
-    const participation = async () => {
-      const maxBatchSize = 100;
-      let currentBatchSize = 0;
-      for (const v of this.summary.epoch(epoch).values()) {
-        currentBatchSize++;
-        if (currentBatchSize >= maxBatchSize) {
-          await unblock();
-          currentBatchSize = 0;
+    for (const v of this.summary.epoch(epoch).values()) {
+      const effectiveBalance = v.val_effective_balance;
+      const increments = Number(effectiveBalance / BigInt(10 ** 9));
+      // Attestation participation calculated by previous epoch data
+      // Sync part of proposal reward should be calculated from current epoch
+      const attested = this.summary.epoch(epoch - 1).get(v.val_id);
+      if (!v.val_slashed && attested?.att_happened) {
+        if (attested.att_valid_source) {
+          meta.attestation.participation.source += BigInt(increments);
         }
-        const effectiveBalance = v.val_effective_balance;
-        const increments = Number(effectiveBalance / BigInt(10 ** 9));
-        // Attestation participation calculated by previous epoch data
-        // Sync part of proposal reward should be calculated from current epoch
-        const attested = this.summary.epoch(epoch - 1).get(v.val_id);
-        if (!v.val_slashed && attested?.att_happened) {
-          if (attested.att_valid_source) {
-            meta.attestation.participation.source += BigInt(increments);
-          }
-          if (attested.att_valid_target) {
-            meta.attestation.participation.target += BigInt(increments);
-          }
-          if (attested.att_valid_head) {
-            meta.attestation.participation.head += BigInt(increments);
-          }
+        if (attested.att_valid_target) {
+          meta.attestation.participation.target += BigInt(increments);
         }
-        if (v.is_sync) {
-          for (const block of v.sync_meta.synced_blocks) {
-            meta.sync.blocks_rewards.set(block, meta.sync.blocks_rewards.get(block) + BigInt(perSyncProposerReward));
-          }
+        if (attested.att_valid_head) {
+          meta.attestation.participation.head += BigInt(increments);
         }
       }
-    };
-    const attRewards = async () => {
-      for (const [block, attestations] of meta.attestation.blocks_attestations.entries()) {
-        // There is only one right way to calculate proposal reward - calculate it from each aggregated attestation
-        // And attestation flag should be included for the first time. `AttestationService.processAttestation` is responsible for this
-        if (!attestations.length) continue;
-        for (const attestation of attestations) {
-          let rewards = 0;
-          for (const index of attestation.source) {
-            const effectiveBalance = this.summary.epoch(epoch).get(index)?.val_effective_balance;
-            const increments = Number(effectiveBalance / BigInt(10 ** 9));
-            const incBaseReward = increments * meta.state.base_reward;
-            rewards += incBaseReward * TIMELY_SOURCE_WEIGHT;
-          }
-          for (const index of attestation.target) {
-            const effectiveBalance = this.summary.epoch(epoch).get(index)?.val_effective_balance;
-            const increments = Number(effectiveBalance / BigInt(10 ** 9));
-            const incBaseReward = increments * meta.state.base_reward;
-            rewards += incBaseReward * TIMELY_TARGET_WEIGHT;
-          }
-          for (const index of attestation.head) {
-            const effectiveBalance = this.summary.epoch(epoch).get(index)?.val_effective_balance;
-            const increments = Number(effectiveBalance / BigInt(10 ** 9));
-            const incBaseReward = increments * meta.state.base_reward;
-            rewards += incBaseReward * TIMELY_HEAD_WEIGHT;
-          }
-          rewards = Math.floor(proposerAttPartReward(rewards));
-          meta.attestation.blocks_rewards.set(block, meta.attestation.blocks_rewards.get(block) + BigInt(rewards));
+      if (v.is_sync) {
+        for (const block of v.sync_meta.synced_blocks) {
+          meta.sync.blocks_rewards.set(block, meta.sync.blocks_rewards.get(block) + BigInt(perSyncProposerReward));
         }
-        await unblock();
       }
-    };
-
-    await Promise.all([participation(), attRewards()]);
+    }
+    for (const [block, attestations] of meta.attestation.blocks_attestations.entries()) {
+      // There is only one right way to calculate proposal reward - calculate it from each aggregated attestation
+      // And attestation flag should be included for the first time. `AttestationService.processAttestation` is responsible for this
+      if (!attestations.length) continue;
+      for (const attestation of attestations) {
+        let rewards = 0;
+        for (const index of attestation.source) {
+          const effectiveBalance = this.summary.epoch(epoch).get(index)?.val_effective_balance;
+          const increments = Number(effectiveBalance / BigInt(10 ** 9));
+          const incBaseReward = increments * meta.state.base_reward;
+          rewards += incBaseReward * TIMELY_SOURCE_WEIGHT;
+        }
+        for (const index of attestation.target) {
+          const effectiveBalance = this.summary.epoch(epoch).get(index)?.val_effective_balance;
+          const increments = Number(effectiveBalance / BigInt(10 ** 9));
+          const incBaseReward = increments * meta.state.base_reward;
+          rewards += incBaseReward * TIMELY_TARGET_WEIGHT;
+        }
+        for (const index of attestation.head) {
+          const effectiveBalance = this.summary.epoch(epoch).get(index)?.val_effective_balance;
+          const increments = Number(effectiveBalance / BigInt(10 ** 9));
+          const incBaseReward = increments * meta.state.base_reward;
+          rewards += incBaseReward * TIMELY_HEAD_WEIGHT;
+        }
+        rewards = Math.floor(proposerAttPartReward(rewards));
+        meta.attestation.blocks_rewards.set(block, meta.attestation.blocks_rewards.get(block) + BigInt(rewards));
+      }
+      await unblock();
+    }
     this.summary.epoch(epoch).setMeta(meta);
   }
 
