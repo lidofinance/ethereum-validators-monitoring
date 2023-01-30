@@ -480,7 +480,6 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
       SELECT val_balance, val_id, val_nos_id
       FROM validators_summary as curr
       WHERE
-        val_status != '${ValStatus.PendingQueued}' AND
         val_nos_id IS NOT NULL AND
         epoch = ${epoch}
       LIMIT 1 BY val_id
@@ -490,7 +489,6 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
       SELECT val_balance, val_id, val_nos_id
       FROM validators_summary
       WHERE
-        val_status != '${ValStatus.PendingQueued}' AND
         val_nos_id IS NOT NULL AND
         epoch = (${epoch} - 1)
       LIMIT 1 BY val_id
