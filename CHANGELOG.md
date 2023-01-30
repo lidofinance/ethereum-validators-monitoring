@@ -1,3 +1,12 @@
+## [4.2.2](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.2.1...4.2.2) (2023-01-30)
+
+
+### Bug Fixes
+
+* get balance diff in rewards query ([#125](https://github.com/lidofinance/ethereum-validators-monitoring/issues/125)) ([222ff20](https://github.com/lidofinance/ethereum-validators-monitoring/commit/222ff2065ccaf31e39a107f4c383318f02c27261))
+
+
+
 ## [4.2.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.2.0...4.2.1) (2023-01-30)
 
 
@@ -106,15 +115,6 @@
 * add footer to discord alerts ([#59](https://github.com/lidofinance/ethereum-validators-monitoring/issues/59)) ([4ae8f64](https://github.com/lidofinance/ethereum-validators-monitoring/commit/4ae8f640e49114effe5eef23fb122c045db5e971))
 * metrics, change panels source ([#61](https://github.com/lidofinance/ethereum-validators-monitoring/issues/61)) ([064fb45](https://github.com/lidofinance/ethereum-validators-monitoring/commit/064fb451b1e627b6f1a46c5b0aaf28fc3b37cabe))
 * support telegram alerts ([#57](https://github.com/lidofinance/ethereum-validators-monitoring/issues/57)) ([383adfb](https://github.com/lidofinance/ethereum-validators-monitoring/commit/383adfbc56ca0c171bf8c01acb539c2e26975a78))
-
-
-
-## [3.3.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/3.3.0...3.3.1) (2022-11-01)
-
-
-### Bug Fixes
-
-* Develop ([#51](https://github.com/lidofinance/ethereum-validators-monitoring/issues/51)) ([b064005](https://github.com/lidofinance/ethereum-validators-monitoring/commit/b0640059bee5152f29c70db465542ce41e94ea65)), closes [#50](https://github.com/lidofinance/ethereum-validators-monitoring/issues/50)
 
 
 
