@@ -1,3 +1,20 @@
+## [4.2.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.2.0...4.2.1) (2023-01-30)
+
+
+### Bug Fixes
+
+* average chain rewards metric ([#123](https://github.com/lidofinance/ethereum-validators-monitoring/issues/123)) ([c8035ae](https://github.com/lidofinance/ethereum-validators-monitoring/commit/c8035ae93aecbf7828bb8d75265d636b2c37ce71))
+* keys registry processing ([#119](https://github.com/lidofinance/ethereum-validators-monitoring/issues/119)) ([257ef29](https://github.com/lidofinance/ethereum-validators-monitoring/commit/257ef2935f7c25642545a53aaa1a7a46cd7d6b37))
+* long loops ([#120](https://github.com/lidofinance/ethereum-validators-monitoring/issues/120)) ([8f11298](https://github.com/lidofinance/ethereum-validators-monitoring/commit/8f112983e7955f14c2f8bec46c5ce4001edfb7bb))
+* remove outdated metrics ([#118](https://github.com/lidofinance/ethereum-validators-monitoring/issues/118)) ([398cf16](https://github.com/lidofinance/ethereum-validators-monitoring/commit/398cf16ea4fa4f65764dd530b6ac417680254f71))
+
+
+### Reverts
+
+* Revert "fix: long loops" (#121) ([4f8fbaf](https://github.com/lidofinance/ethereum-validators-monitoring/commit/4f8fbaf37a465c4fba8947e424fc041d85f2710e)), closes [#121](https://github.com/lidofinance/ethereum-validators-monitoring/issues/121)
+
+
+
 # [4.2.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.1.2...4.2.0) (2023-01-23)
 
 
@@ -98,15 +115,6 @@
 ### Bug Fixes
 
 * Develop ([#51](https://github.com/lidofinance/ethereum-validators-monitoring/issues/51)) ([b064005](https://github.com/lidofinance/ethereum-validators-monitoring/commit/b0640059bee5152f29c70db465542ce41e94ea65)), closes [#50](https://github.com/lidofinance/ethereum-validators-monitoring/issues/50)
-
-
-
-# [3.3.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/3.2.1...3.3.0) (2022-10-26)
-
-
-### Features
-
-* Develop ([#47](https://github.com/lidofinance/ethereum-validators-monitoring/issues/47)) ([32614b1](https://github.com/lidofinance/ethereum-validators-monitoring/commit/32614b186adff3fc8f0d206ede29be5e7fe0f894)), closes [#29](https://github.com/lidofinance/ethereum-validators-monitoring/issues/29) [#28](https://github.com/lidofinance/ethereum-validators-monitoring/issues/28) [#30](https://github.com/lidofinance/ethereum-validators-monitoring/issues/30) [#32](https://github.com/lidofinance/ethereum-validators-monitoring/issues/32) [#33](https://github.com/lidofinance/ethereum-validators-monitoring/issues/33) [#34](https://github.com/lidofinance/ethereum-validators-monitoring/issues/34) [#38](https://github.com/lidofinance/ethereum-validators-monitoring/issues/38) [#36](https://github.com/lidofinance/ethereum-validators-monitoring/issues/36) [#41](https://github.com/lidofinance/ethereum-validators-monitoring/issues/41) [#42](https://github.com/lidofinance/ethereum-validators-monitoring/issues/42) [#43](https://github.com/lidofinance/ethereum-validators-monitoring/issues/43) [#44](https://github.com/lidofinance/ethereum-validators-monitoring/issues/44) [#45](https://github.com/lidofinance/ethereum-validators-monitoring/issues/45) [#46](https://github.com/lidofinance/ethereum-validators-monitoring/issues/46) [#48](https://github.com/lidofinance/ethereum-validators-monitoring/issues/48)
 
 
 
