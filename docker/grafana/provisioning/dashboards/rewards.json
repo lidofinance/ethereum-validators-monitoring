@@ -25,7 +25,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 19,
-  "iteration": 1673429825910,
+  "iteration": 1675056856592,
   "links": [
     {
       "asDropdown": false,
@@ -320,7 +320,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "unit": "GWei"
             },
             "overrides": []
           },
@@ -355,7 +356,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_avg_chain_reward{duty=\"attestation\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "ethereum_validators_monitoring_avg_chain_reward{duty=\"attestation\"} and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "avg",
               "range": true,
@@ -413,7 +414,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "unit": "ETH"
             },
             "overrides": []
           },
@@ -506,7 +508,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "unit": "GWei"
             },
             "overrides": []
           },
@@ -541,7 +544,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_avg_chain_reward{duty=\"sync\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "ethereum_validators_monitoring_avg_chain_reward{duty=\"sync\"} and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "avg",
               "range": true,
@@ -600,7 +603,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "unit": "GWei"
             },
             "overrides": []
           },
@@ -635,7 +639,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_avg_chain_penalty{duty=\"attestation\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "ethereum_validators_monitoring_avg_chain_penalty{duty=\"attestation\"} and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "avg",
               "range": true,
@@ -694,7 +698,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "unit": "GWei"
             },
             "overrides": []
           },
@@ -729,7 +734,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_avg_chain_penalty{duty=\"sync\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "ethereum_validators_monitoring_avg_chain_penalty{duty=\"sync\"} and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "avg",
               "range": true,
@@ -788,7 +793,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "unit": "GWei"
             },
             "overrides": []
           },
@@ -823,7 +829,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_avg_chain_missed_reward{duty=\"attestation\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "ethereum_validators_monitoring_avg_chain_missed_reward{duty=\"attestation\"} and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "avg",
               "range": true,
@@ -882,7 +888,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "unit": "ETH"
             },
             "overrides": []
           },
@@ -976,7 +983,8 @@
                     "value": null
                   }
                 ]
-              }
+              },
+              "unit": "GWei"
             },
             "overrides": []
           },
@@ -1011,7 +1019,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "ethereum_validators_monitoring_avg_chain_missed_reward{duty=\"sync\"} / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "ethereum_validators_monitoring_avg_chain_missed_reward{duty=\"sync\"} and on() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "interval": "",
               "legendFormat": "avg",
               "range": true,
@@ -2378,8 +2386,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-red",
-                    "value": null
+                    "color": "light-red"
                   }
                 ]
               }
@@ -2649,8 +2656,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -2732,8 +2738,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-purple",
-                    "value": null
+                    "color": "light-purple"
                   }
                 ]
               }
@@ -3036,8 +3041,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -3097,8 +3101,8 @@
       {
         "current": {
           "selected": false,
-          "text": "173498",
-          "value": "173498"
+          "text": "177689",
+          "value": "177689"
         },
         "datasource": {
           "type": "prometheus",
@@ -3205,8 +3209,8 @@
       {
         "current": {
           "selected": false,
-          "text": "98.333740234375",
-          "value": "98.333740234375"
+          "text": "95.404052734375",
+          "value": "95.404052734375"
         },
         "datasource": {
           "type": "prometheus",
@@ -3233,8 +3237,8 @@
       {
         "current": {
           "selected": false,
-          "text": "9",
-          "value": "9"
+          "text": "10",
+          "value": "10"
         },
         "datasource": {
           "type": "prometheus",
@@ -3260,7 +3264,7 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "All"
           ],
@@ -3334,6 +3338,6 @@
   "timezone": "",
   "title": "Rewards & Penalties",
   "uid": "poBeaLaRD",
-  "version": 4,
+  "version": 5,
   "weekStart": ""
 }

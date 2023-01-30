@@ -513,9 +513,9 @@ export const avgChainRewardsAndPenaltiesStats = (epoch: Epoch): string => `
   FROM
   (
     SELECT
-      avg(att_earned_reward) as attestation_reward,
-      avg(att_missed_reward) as attestation_missed,
-      avg(att_penalty) as attestation_penalty
+      avgIf(att_earned_reward, att_earned_reward > 0) as attestation_reward,
+      avgIf(att_missed_reward, att_missed_reward > 0) as attestation_missed,
+      avgIf(att_penalty, att_penalty > 0) as attestation_penalty
     FROM (
       SELECT att_earned_reward, att_missed_reward, att_penalty
       FROM validators_summary
@@ -525,8 +525,8 @@ export const avgChainRewardsAndPenaltiesStats = (epoch: Epoch): string => `
   ) as att,
 	(
     SELECT
-      avg(propose_earned_reward) as prop_reward,
-      avg(propose_missed_reward) as prop_missed,
+      avgIf(propose_earned_reward, propose_earned_reward > 0) as prop_reward,
+      avgIf(propose_missed_reward, propose_missed_reward > 0) as prop_missed,
       avg(propose_penalty) as prop_penalty
     FROM (
       SELECT propose_earned_reward, propose_missed_reward, propose_penalty
@@ -537,9 +537,9 @@ export const avgChainRewardsAndPenaltiesStats = (epoch: Epoch): string => `
 	) as prop,
   (
     SELECT
-      avg(sync_earned_reward) as sync_reward,
-      avg(sync_missed_reward) as sync_missed,
-      avg(sync_penalty) as sync_penalty
+      avgIf(sync_earned_reward, sync_earned_reward > 0) as sync_reward,
+      avgIf(sync_missed_reward, sync_missed_reward > 0) as sync_missed,
+      avgIf(sync_penalty, sync_penalty > 0) as sync_penalty
     FROM (
       SELECT sync_earned_reward, sync_missed_reward, sync_penalty
       FROM validators_summary
