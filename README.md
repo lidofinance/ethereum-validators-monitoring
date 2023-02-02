@@ -1,4 +1,4 @@
-# ethereum-validators-monitoring (aka balval)
+# 🐢 ethereum-validators-monitoring (aka balval)
 
 Consensus layer validators monitoring bot, that fetches Lido or Custom Users Node Operators keys
 from Execution layer and checks their performance in Consensus
@@ -8,6 +8,37 @@ Bot uses finalized state (2 epochs back from HEAD) for fetching validator info,
 writes data to **Clickhouse**, displays aggregates by **Grafana**
 dashboard, alerts about bad performance by **Prometheus + Alertmanger** and
 routes notifications to Discord channel via **alertmanager-discord**.
+
+## Dashboards
+
+There are three dashboards in Grafana:
+* **Validators** - shows aggregated data about performance for all monitored validators
+![Validators](.images/validators-dashboard.png)
+* **NodeOperator** - shows aggregated data about performance for each monitored node operator
+![NodeOperators](.images/nodeoperators-dashboard.png)
+* **Rewards & Penalties** - shows aggregated data about rewards, penalties, and missed rewards for each monitored node operator
+![Rewards & Penalties](.images/rewards-penalties-dashboard.png)
+
+## Alerts
+
+There are several default alerts which are triggered by Prometheus rules:
+
+* General:
+  * 🔪 Slashed validators
+  * 💸 Operators with negative balance delta
+* Proposals:
+  * 📥 Operators with missed block propose
+  * 📈📥 Operators with missed block propose (on possible high reward validators)
+* Sync:
+  * 🔄 Operators with bad sync participation
+  * 📈🔄 Operators with bad sync participation (on possible high reward validators)
+* Attestations:
+  * 📝❌ Operators with missed attestation
+  * 📝🐢 Operators with high inc. delay attestation
+  * 📝🏷️ Operators with two invalid attestation property (head/target/source)
+  * 📈📝❌ Operators with missed attestation (on possible high reward validators)
+
+
 
 ## First run
 
