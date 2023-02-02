@@ -25,7 +25,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 19,
-  "iteration": 1675056856592,
+  "iteration": 1675098681978,
   "links": [
     {
       "asDropdown": false,
@@ -1060,7 +1060,7 @@
           "custom": {
             "axisGridShow": false,
             "axisLabel": "ETH",
-            "axisPlacement": "left",
+            "axisPlacement": "right",
             "barAlignment": 0,
             "drawStyle": "bars",
             "fillOpacity": 50,
@@ -1280,7 +1280,7 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "right"
+          "placement": "bottom"
         },
         "tooltip": {
           "mode": "single",
@@ -1372,44 +1372,159 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
-      "description": "total_rewards - total_penalties",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "fixedColor": "green",
-            "mode": "fixed"
+            "mode": "palette-classic"
           },
-          "decimals": 3,
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "right",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 21,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "decimals": 2,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
               },
               {
-                "color": "red",
+                "color": "yellow",
                 "value": 80
+              },
+              {
+                "color": "super-light-green",
+                "value": 95
+              },
+              {
+                "color": "light-green",
+                "value": 99
+              },
+              {
+                "color": "green",
+                "value": 99.5
               }
             ]
           },
-          "unit": "ETH ⛏️"
+          "unit": "percent"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 6,
-        "w": 10,
+        "w": 24,
         "x": 0,
         "y": 13
       },
-      "id": 1732,
+      "id": 1776,
       "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "((sum by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)) / (((sum by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)) + ((sum by () (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)) + (sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)) * 100",
+          "legendFormat": "Percent",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total reward effectiveness",
+      "transparent": true,
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 90
+              },
+              {
+                "color": "light-green",
+                "value": 95
+              },
+              {
+                "color": "light-green",
+                "value": 99
+              },
+              {
+                "color": "green",
+                "value": 99.5
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 10,
+        "x": 0,
+        "y": 19
+      },
+      "id": 1778,
+      "options": {
+        "displayMode": "basic",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -1417,7 +1532,7 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showUnfilled": true
       },
       "pluginVersion": "8.5.15",
       "targets": [
@@ -1426,16 +1541,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_calculated_balance_delta{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
-          "instant": true,
-          "range": false,
+          "expr": "((sum by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)) / (((sum by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)) + ((sum by () (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)) + (sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)) * 100",
           "refId": "A"
         }
       ],
-      "title": "Total earned",
-      "type": "stat"
+      "title": "Rew. eff.",
+      "type": "bargauge"
     },
     {
       "datasource": {
@@ -1459,8 +1570,24 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "light-green",
+                "color": "red",
                 "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 90
+              },
+              {
+                "color": "super-light-green",
+                "value": 95
+              },
+              {
+                "color": "light-green",
+                "value": 99
+              },
+              {
+                "color": "green",
+                "value": 99.5
               }
             ]
           }
@@ -1475,6 +1602,13 @@
               {
                 "id": "custom.width",
                 "value": 125
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
               }
             ]
           },
@@ -1540,6 +1674,13 @@
               {
                 "id": "custom.width",
                 "value": 125
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
               }
             ]
           },
@@ -1560,6 +1701,36 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Rew. eff."
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 80
+              },
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "decimals",
+                "value": 2
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-background-solid"
+              }
+            ]
           }
         ]
       },
@@ -1567,13 +1738,19 @@
         "h": 13,
         "w": 14,
         "x": 10,
-        "y": 13
+        "y": 19
       },
       "id": 1758,
       "options": {
         "footer": {
           "enablePagination": true,
-          "fields": [],
+          "fields": [
+            "Value #reward (sum)",
+            "Value #penalty (sum)",
+            "Value #missed (sum)",
+            "Value #earned (sum)",
+            "Value #error (sum)"
+          ],
           "reducer": [
             "sum"
           ],
@@ -1584,7 +1761,7 @@
         "sortBy": [
           {
             "desc": true,
-            "displayName": "Earned"
+            "displayName": "Rew. eff."
           }
         ]
       },
@@ -1661,6 +1838,21 @@
           "legendFormat": "{{nos_name}}",
           "range": false,
           "refId": "error"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "(sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) / ((sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) + (sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) + sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) * 100",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "{{nos_name}}",
+          "range": false,
+          "refId": "effectiveness"
         }
       ],
       "title": "Total summary (${epochs_range} epochs range)",
@@ -1688,6 +1880,12 @@
                 "operation": "aggregate"
               },
               "Value #earned": {
+                "aggregations": [
+                  "sum"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #effectiveness": {
                 "aggregations": [
                   "sum"
                 ],
@@ -1757,9 +1955,12 @@
           "options": {
             "excludeByName": {},
             "indexByName": {
-              "Value #all (sum)": 3,
-              "Value #bad (sum)": 1,
-              "Value #good (sum)": 2,
+              "Value #earned (sum)": 5,
+              "Value #effectiveness (sum)": 1,
+              "Value #error (sum)": 6,
+              "Value #missed (sum)": 4,
+              "Value #penalty (sum)": 3,
+              "Value #reward (sum)": 2,
               "nos_name": 0
             },
             "renameByName": {
@@ -1767,6 +1968,7 @@
               "Value #att (sum)": "Attestation",
               "Value #bad (sum)": "Bad",
               "Value #earned (sum)": "Earned",
+              "Value #effectiveness (sum)": "Rew. eff.",
               "Value #error (sum)": "Calc error",
               "Value #good (sum)": "Good",
               "Value #missed (sum)": "Missed rewards",
@@ -1813,10 +2015,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
-        "w": 5,
+        "h": 3,
+        "w": 3,
         "x": 0,
-        "y": 19
+        "y": 23
       },
       "id": 1727,
       "options": {
@@ -1853,6 +2055,77 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "total_rewards - total_penalties",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "fixed"
+          },
+          "decimals": 3,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ETH ⛏️"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 7,
+        "x": 3,
+        "y": 23
+      },
+      "id": 1732,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.15",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_calculated_balance_delta{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+          "instant": true,
+          "legendFormat": "Total sum",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Total earned",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1879,10 +2152,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
-        "w": 5,
-        "x": 5,
-        "y": 19
+        "h": 3,
+        "w": 3,
+        "x": 0,
+        "y": 26
       },
       "id": 1730,
       "options": {
@@ -1945,9 +2218,9 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 10,
+        "w": 3,
         "x": 0,
-        "y": 23
+        "y": 29
       },
       "id": 1731,
       "options": {
@@ -1984,7 +2257,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 32
       },
       "id": 1735,
       "panels": [
@@ -2010,8 +2283,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-green",
-                    "value": null
+                    "color": "light-green"
                   }
                 ]
               }
@@ -2303,8 +2575,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -2360,7 +2631,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 33
       },
       "id": 1737,
       "panels": [
@@ -2712,7 +2983,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 34
       },
       "id": 1739,
       "panels": [
@@ -3092,7 +3363,7 @@
       "type": "row"
     }
   ],
-  "refresh": "1m",
+  "refresh": "5m",
   "schemaVersion": 36,
   "style": "dark",
   "tags": [],
@@ -3101,8 +3372,8 @@
       {
         "current": {
           "selected": false,
-          "text": "177689",
-          "value": "177689"
+          "text": "178167",
+          "value": "178167"
         },
         "datasource": {
           "type": "prometheus",
@@ -3209,8 +3480,8 @@
       {
         "current": {
           "selected": false,
-          "text": "95.404052734375",
-          "value": "95.404052734375"
+          "text": "97.314453125",
+          "value": "97.314453125"
         },
         "datasource": {
           "type": "prometheus",
@@ -3264,7 +3535,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "All"
           ],
@@ -3338,6 +3609,6 @@
   "timezone": "",
   "title": "Rewards & Penalties",
   "uid": "poBeaLaRD",
-  "version": 5,
+  "version": 6,
   "weekStart": ""
 }
