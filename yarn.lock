@@ -1106,10 +1106,10 @@
   resolved "https://registry.yarnpkg.com/@lido-nestjs/decorators/-/decorators-1.0.0.tgz#def4d0192b032c0d522de1b9bf38d1bec3c63077"
   integrity sha512-6k2eeLV7tFjKiqk26LWZHWfLowVuUbKC6+NunHHZIqEtO4xRWeOwMg6ntm0AEMdZ0WL0F6KDrFV+g7bhWB4cWA==
 
-"@lido-nestjs/execution@^1.8.1":
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/@lido-nestjs/execution/-/execution-1.8.2.tgz#2fbd7dbf9019f140edfa17f628519c5f75208799"
-  integrity sha512-/uW+0Ho1adxuC7l2eg81e65717SPBykzW2weArHv2yY2izq9kmJ4qAnj75m/pJYSmIImNuSjnr8s8ZwIKPQ0xw==
+"@lido-nestjs/execution@^1.9.0":
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/@lido-nestjs/execution/-/execution-1.9.0.tgz#73dd0454227e74f2421c7e39b180b5730c1c19b7"
+  integrity sha512-Tm0rca67miBFMoTu6dUg/kDbjK1z8VKcBBMEWTEjEYnXM7KsmaLZljCRW6KVYK372CsVuDNYajx1z2xBparb/Q==
   dependencies:
     "@ethersproject/bignumber" "^5.5.0"
     "@ethersproject/bytes" "^5.5.0"
@@ -1118,8 +1118,8 @@
     "@ethersproject/properties" "^5.5.0"
     "@ethersproject/providers" "^5.5.3"
     "@ethersproject/web" "^5.5.1"
-    "@lido-nestjs/logger" "1.2.1"
-    "@lido-nestjs/middleware" "1.1.1"
+    "@lido-nestjs/logger" "1.3.0"
+    "@lido-nestjs/middleware" "1.2.0"
 
 "@lido-nestjs/logger@1.2.1":
   version "1.2.1"
@@ -1127,6 +1127,15 @@
   integrity sha512-IMCLMhjOw5v37XqYIu6hV71MHas3KFT2+zh7qFJD2Y4+IHBOAcV7xkctyRSsk2NeA8m4ly8B/lA8ox7BWu8BiA==
   dependencies:
     nest-winston "^1.6.2"
+    winston "^3.4.0"
+
+"@lido-nestjs/logger@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@lido-nestjs/logger/-/logger-1.3.0.tgz#ac7607cc4f42acf41794f0c6677e518dce076430"
+  integrity sha512-vU43NfeR2aT1vQznF34SbfObB+pLY9XmIIEYC8NmvHpnvcklv8bcwbc1QpYOgOT3vHoEL8CDhTP6gwI0yYna9w==
+  dependencies:
+    nest-winston "^1.6.2"
+    traverse "^0.6.7"
     winston "^3.4.0"
 
 "@lido-nestjs/logger@^1.2.0":
@@ -1137,10 +1146,10 @@
     nest-winston "^1.6.2"
     winston "^3.4.0"
 
-"@lido-nestjs/middleware@1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@lido-nestjs/middleware/-/middleware-1.1.1.tgz#ffe6cb343f5e81282b70f8746879f3cf506ac3d5"
-  integrity sha512-0y9e7ydM3NkAhoiiv/tSsBu8KLbvPJ19QPRiAYBy33y8Fv5PPjypA3qAG03ImBQ3qFXAp29ZUrSs18vkACf8Ng==
+"@lido-nestjs/middleware@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@lido-nestjs/middleware/-/middleware-1.2.0.tgz#0e64b69149ef1f7e4594896fd08d6e0bd9ef5382"
+  integrity sha512-0rkXWKXEKJPRbq1W6cN+yelhc+CruqhUqmdkNKwl4vTk631fpG9yfSfxxQFDAs3LhsTORqqgKUBpdK+epRYjIQ==
 
 "@lido-nestjs/registry@^1.4.1":
   version "1.4.1"
@@ -6823,6 +6832,11 @@ tr46@~0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
   integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
+
+traverse@^0.6.7:
+  version "0.6.7"
+  resolved "https://registry.yarnpkg.com/traverse/-/traverse-0.6.7.tgz#46961cd2d57dd8706c36664acde06a248f1173fe"
+  integrity sha512-/y956gpUo9ZNCb99YjxG7OaslxZWHfCHAUUfshwqOXmxUIvqLjVO581BT+gM59+QV9tFe6/CGG53tsA1Y7RSdg==
 
 tree-kill@1.2.2:
   version "1.2.2"
