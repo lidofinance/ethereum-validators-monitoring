@@ -16,25 +16,26 @@ import { ExecutionProviderService } from './execution-provider.service';
           urls: configService.get('EL_RPC_URLS') as NonEmptyArray<string>,
           network: configService.get('ETH_NETWORK'),
           fetchMiddlewares: [
-            // todo: metrics middleware with request name and rpc url
-            async (next) => {
+            async (next, ctx) => {
+              const targetName = new URL(ctx.provider.connection.url).hostname;
+              const reqName = 'batch';
               const stop = prometheusService.outgoingELRequestsDuration.startTimer({
-                name: next.name,
-                target: next.name,
+                name: reqName,
+                target: targetName,
               });
               return await next()
                 .then((r: any) => {
                   prometheusService.outgoingELRequestsCount.inc({
-                    name: next.name,
-                    target: next.name,
+                    name: reqName,
+                    target: targetName,
                     status: RequestStatus.COMPLETE,
                   });
                   return r;
                 })
                 .catch((e: any) => {
                   prometheusService.outgoingELRequestsCount.inc({
-                    name: next.name,
-                    target: next.name,
+                    name: reqName,
+                    target: targetName,
                     status: RequestStatus.ERROR,
                   });
                   throw e;
