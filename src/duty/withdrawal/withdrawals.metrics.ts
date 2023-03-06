@@ -60,7 +60,7 @@ export class WithdrawalsMetrics {
       data,
       this.operators,
       { type: WithdrawalType.Full },
-      (item) => item.partial_withdrawn_count,
+      (item) => item.full_withdrawn_count,
     );
   }
 
