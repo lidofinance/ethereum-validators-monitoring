@@ -13,6 +13,7 @@ import { ProposeModule } from './propose';
 import { StateModule } from './state';
 import { SummaryModule } from './summary';
 import { SyncModule } from './sync';
+import { WithdrawalsModule } from './withdrawal';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { SyncModule } from './sync';
     ProposeModule,
     StateModule,
     SyncModule,
+    WithdrawalsModule,
     SummaryModule,
     ConsensusProviderModule,
     BlockCacheModule,

@@ -30,6 +30,10 @@ import {
   METRIC_OPERATOR_REAL_BALANCE_DELTA,
   METRIC_OPERATOR_REWARD,
   METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_OPERATOR_WITHDRAWALS_COUNT,
+  METRIC_OPERATOR_WITHDRAWALS_SUM,
+  METRIC_OTHER_CHAIN_WITHDRAWALS_COUNT,
+  METRIC_OTHER_CHAIN_WITHDRAWALS_SUM,
   METRIC_OTHER_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_OTHER_VALIDATOR_COUNT_GOOD_PROPOSE,
   METRIC_OTHER_VALIDATOR_COUNT_INVALID_ATTESTATION,
@@ -83,6 +87,8 @@ export enum PrometheusValStatus {
   Ongoing = 'ongoing',
   Pending = 'pending',
   Slashed = 'slashed',
+  WithdrawalPending = 'withdrawal_pending',
+  WithdrawalDone = 'withdrawal_done',
 }
 
 enum TaskStatus {
@@ -470,6 +476,30 @@ export class PrometheusService implements OnApplicationBootstrap {
     name: METRIC_OPERATOR_PENALTY,
     help: 'operator penalty for each duty',
     labelNames: ['nos_name', 'duty'],
+  });
+
+  public operatorWithdrawalsSum = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_WITHDRAWALS_SUM,
+    help: 'operator withdrawals sum',
+    labelNames: ['nos_name', 'type'],
+  });
+
+  public otherChainWithdrawalsSum = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_CHAIN_WITHDRAWALS_SUM,
+    help: 'other chain withdrawals sum',
+    labelNames: ['type'],
+  });
+
+  public operatorWithdrawalsCount = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OPERATOR_WITHDRAWALS_COUNT,
+    help: 'operator withdrawals count',
+    labelNames: ['nos_name', 'type'],
+  });
+
+  public otherChainWithdrawalsCount = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_CHAIN_WITHDRAWALS_COUNT,
+    help: 'other chain withdrawals count',
+    labelNames: ['type'],
   });
 
   public contractKeysTotal = this.getOrCreateMetric('Gauge', {

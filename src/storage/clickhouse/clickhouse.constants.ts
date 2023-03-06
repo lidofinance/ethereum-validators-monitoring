@@ -3,66 +3,93 @@ import { Epoch } from 'common/eth-providers/consensus-provider/types';
 
 export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
   SELECT
-    val_nos_id,
-    avg(current.val_balance - previous.val_balance) AS amount
-  FROM
-    (
-      SELECT val_balance, val_id, val_nos_id
-      FROM validators_summary
-      WHERE
-        val_status != '${ValStatus.PendingQueued}' AND
-        val_nos_id IS NOT NULL AND
-        epoch = ${epoch}
-      LIMIT 1 BY val_id
-    ) AS current
-  INNER JOIN
-    (
-      SELECT val_balance, val_id, val_nos_id
-      FROM validators_summary
-      WHERE
-        val_status != '${ValStatus.PendingQueued}' AND
-        val_nos_id IS NOT NULL AND
-        epoch = (${epoch} - 6)
-    ) AS previous
+    current.val_nos_id as val_nos_id,
+    avg(current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) AS amount
+  FROM (
+    SELECT val_balance, val_id, val_nos_id
+    FROM validators_summary
+    WHERE
+      val_status != '${ValStatus.PendingQueued}' AND
+      val_nos_id IS NOT NULL AND
+      epoch = ${epoch}
+    LIMIT 1 BY val_id
+  ) AS current
+  INNER JOIN (
+    SELECT val_balance, val_id, val_nos_id
+    FROM validators_summary
+    WHERE
+      val_status != '${ValStatus.PendingQueued}' AND
+      val_nos_id IS NOT NULL AND
+      epoch = (${epoch} - 6)
+    LIMIT 1 BY val_id
+  ) AS previous
   ON
     previous.val_id = current.val_id
-  GROUP BY val_nos_id
+  LEFT JOIN (
+    SELECT
+      sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id
+    FROM (
+      SELECT val_balance_withdrawn, val_id, val_nos_id
+      FROM validators_summary
+      WHERE
+        val_nos_id IS NOT NULL AND
+        epoch >= (${epoch} - 6) AND epoch <= ${epoch}
+      LIMIT 1 BY epoch, val_id
+    )
+    GROUP BY val_id, val_nos_id
+  ) AS withdrawals
+  ON
+    withdrawals.val_id = current.val_id
+  GROUP BY current.val_nos_id
 `;
 
 export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string => `
   SELECT
-    val_nos_id,
-    quantileExact(0.001)(current.val_balance - previous.val_balance) AS amount
-  FROM
-    (
-      SELECT val_balance, val_id, val_nos_id
-      FROM validators_summary
-      WHERE
-        val_status != '${ValStatus.PendingQueued}' AND
-        val_nos_id IS NOT NULL AND
-        epoch = ${epoch}
-      LIMIT 1 BY val_id
-    ) AS current
-  INNER JOIN
-    (
-      SELECT val_balance, val_id, val_nos_id
-      FROM validators_summary
-      WHERE
-        val_status != '${ValStatus.PendingQueued}' AND
-        val_nos_id IS NOT NULL AND
-        epoch = (${epoch} - 6)
-    ) AS previous
+    current.val_nos_id as val_nos_id,
+    quantileExact(0.001)(current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) AS amount
+  FROM (
+    SELECT val_balance, val_id, val_nos_id
+    FROM validators_summary
+    WHERE
+      val_status != '${ValStatus.PendingQueued}' AND
+      val_nos_id IS NOT NULL AND
+      epoch = ${epoch}
+    LIMIT 1 BY val_id
+  ) AS current
+  INNER JOIN (
+    SELECT val_balance, val_id, val_nos_id
+    FROM validators_summary
+    WHERE
+      val_status != '${ValStatus.PendingQueued}' AND
+      val_nos_id IS NOT NULL AND
+      epoch = (${epoch} - 6)
+    LIMIT 1 BY val_id
+  ) AS previous
   ON
     previous.val_id = current.val_id
-  GROUP BY val_nos_id
+  LEFT JOIN (
+    SELECT
+      sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id
+    FROM (
+      SELECT val_balance_withdrawn, val_id, val_nos_id
+      FROM validators_summary
+      WHERE
+        val_nos_id IS NOT NULL AND
+        epoch >= (${epoch} - 6) AND epoch <= ${epoch}
+      LIMIT 1 BY epoch, val_id
+    )
+    GROUP BY val_id, val_nos_id
+  ) AS withdrawals
+  ON
+    withdrawals.val_id = current.val_id
+  GROUP BY current.val_nos_id
 `;
 
 export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
   SELECT
-    val_nos_id,
-    count(val_id) AS amount
-  FROM
-    (
+    current.val_nos_id as val_nos_id,
+    count(current.val_id) AS amount
+  FROM (
       SELECT val_balance, val_id, val_nos_id
       FROM validators_summary
       WHERE
@@ -70,20 +97,35 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
         val_nos_id IS NOT NULL AND
         epoch = ${epoch}
       LIMIT 1 BY val_id
-    ) AS current
-  INNER JOIN
-    (
-      SELECT val_balance, val_id, val_nos_id
-      FROM validators_summary
-      WHERE
-        val_status != '${ValStatus.PendingQueued}' AND
-        val_nos_id IS NOT NULL AND
-        epoch = (${epoch} - 6)
-    ) AS previous
+  ) AS current
+  INNER JOIN (
+    SELECT val_balance, val_id, val_nos_id
+    FROM validators_summary
+    WHERE
+      val_status != '${ValStatus.PendingQueued}' AND
+      val_nos_id IS NOT NULL AND
+      epoch = (${epoch} - 6)
+    LIMIT 1 BY val_id
+  ) AS previous
   ON
     previous.val_id = current.val_id
-  GROUP BY val_nos_id
-  HAVING (current.val_balance - previous.val_balance) < 0
+  LEFT JOIN (
+    SELECT
+      sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id
+    FROM (
+      SELECT val_balance_withdrawn, val_id, val_nos_id
+      FROM validators_summary
+      WHERE
+        val_nos_id IS NOT NULL AND
+        epoch >= (${epoch} - 6) AND epoch <= ${epoch}
+      LIMIT 1 BY epoch, val_id
+    )
+    GROUP BY val_id, val_nos_id
+  ) AS withdrawals
+  ON
+    withdrawals.val_id = current.val_id
+  GROUP BY current.val_nos_id
+  HAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0
 `;
 
 export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
@@ -253,7 +295,7 @@ export const operatorsSyncParticipationAvgPercentsQuery = (epoch: Epoch): string
 
 export const totalBalance24hDifferenceQuery = (epoch: Epoch): string => `
   SELECT
-    SUM(curr.val_balance - previous.val_balance) as amount
+    SUM(curr.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) as amount
   FROM (
     SELECT val_balance, val_id, val_nos_id
     FROM validators_summary
@@ -270,16 +312,33 @@ export const totalBalance24hDifferenceQuery = (epoch: Epoch): string => `
       val_status != '${ValStatus.PendingQueued}' AND
       val_nos_id IS NOT NULL AND
       epoch = ${epoch} - 225
+    LIMIT 1 BY val_id
   ) AS previous
   ON
     previous.val_nos_id = curr.val_nos_id AND
     previous.val_id = curr.val_id
+  LEFT JOIN (
+    SELECT
+      sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id
+    FROM (
+      SELECT val_balance_withdrawn, val_id, val_nos_id
+      FROM validators_summary
+      WHERE
+        val_nos_id IS NOT NULL AND
+        epoch >= (${epoch} - 225) AND epoch <= ${epoch}
+      LIMIT 1 BY epoch, val_id
+    )
+    GROUP BY val_id, val_nos_id
+  ) AS withdrawals
+  ON
+    withdrawals.val_nos_id = curr.val_nos_id AND
+    withdrawals.val_id = curr.val_id
 `;
 
 export const operatorBalance24hDifferenceQuery = (epoch: Epoch): string => `
   SELECT
     curr.val_nos_id as val_nos_id,
-    SUM(curr.val_balance - previous.val_balance) as amount
+    SUM(curr.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) as amount
   FROM (
     SELECT val_balance, val_id, val_nos_id
     FROM validators_summary
@@ -296,10 +355,27 @@ export const operatorBalance24hDifferenceQuery = (epoch: Epoch): string => `
       val_status != '${ValStatus.PendingQueued}' AND
       val_nos_id IS NOT NULL AND
       epoch = ${epoch} - 225
+    LIMIT 1 BY val_id
   ) AS previous
   ON
     previous.val_nos_id = curr.val_nos_id AND
     previous.val_id = curr.val_id
+  LEFT JOIN (
+    SELECT
+      sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id
+    FROM (
+      SELECT val_balance_withdrawn, val_id, val_nos_id
+      FROM validators_summary
+      WHERE
+        val_nos_id IS NOT NULL AND
+        epoch >= (${epoch} - 225) AND epoch <= ${epoch}
+      LIMIT 1 BY epoch, val_id
+    )
+    GROUP BY val_id, val_nos_id
+  ) AS withdrawals
+  ON
+    withdrawals.val_nos_id = curr.val_nos_id AND
+    withdrawals.val_id = curr.val_id
   GROUP BY curr.val_nos_id
 `;
 
@@ -308,13 +384,17 @@ export const userNodeOperatorsStatsQuery = (epoch: Epoch): string => `
     val_nos_id,
     SUM(a) as active_ongoing,
     SUM(p) as pending,
-    SUM(s) as slashed
+    SUM(s) as slashed,
+    ifNull(SUM(wp), 0) as withdraw_pending,
+    ifNull(SUM(w), 0) as withdrawn
   FROM (
     SELECT
       val_nos_id,
       IF(val_status = '${ValStatus.ActiveOngoing}', count(val_status), 0) as a,
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) as p,
-      IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) as s
+      IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) as s,
+      IF(val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'], count(val_status), 0) as wp,
+      IF(val_status in ['${ValStatus.WithdrawalPossible}', '${ValStatus.WithdrawalDone}'], count(val_status), 0) as w
     FROM (
       SELECT val_nos_id, val_status, val_slashed
       FROM validators_summary
@@ -331,13 +411,16 @@ export const userValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
   SELECT
     SUM(a) as active_ongoing,
     SUM(p) as pending,
-    SUM(s) as slashed
-  FROM
-  (
+    SUM(s) as slashed,
+    ifNull(SUM(wp), 0) as withdraw_pending,
+    ifNull(SUM(w), 0) as withdrawn
+  FROM (
     SELECT
       IF(val_status = '${ValStatus.ActiveOngoing}', count(val_status), 0) as a,
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) as p,
-      IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) as s
+      IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) as s,
+      IF(val_status in ['${ValStatus.ActiveExiting}', '${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'], count(val_status), 0) as wp,
+      IF(val_status in ['${ValStatus.WithdrawalPossible}', '${ValStatus.WithdrawalDone}'], count(val_status), 0) as w
     FROM (
       SELECT val_status, val_slashed
       FROM validators_summary
@@ -353,13 +436,16 @@ export const otherValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
   SELECT
     SUM(a) as active_ongoing,
     SUM(p) as pending,
-    SUM(s) as slashed
-  FROM
-  (
+    SUM(s) as slashed,
+    ifNull(SUM(wp), 0) as withdraw_pending,
+    ifNull(SUM(w), 0) as withdrawn
+  FROM (
     SELECT
       IF(val_status = '${ValStatus.ActiveOngoing}', count(val_status), 0) as a,
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) as p,
-      IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) as s
+      IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) as s,
+      IF(val_status in ['${ValStatus.ActiveExiting}', '${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'], count(val_status), 0) as wp,
+      IF(val_status in ['${ValStatus.WithdrawalPossible}', '${ValStatus.WithdrawalDone}'], count(val_status), 0) as w
     FROM (
       SELECT val_status, val_slashed
       FROM validators_summary
@@ -376,8 +462,7 @@ export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: Epoch, epoc
     val_nos_id,
     SUM(a) as all,
     SUM(m) as missed
-  FROM
-  (
+  FROM (
     SELECT
       val_nos_id,
       count(block_proposed) as a,
@@ -426,8 +511,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     total_reward - total_penalty as calculated_balance_change,
     real_balance_change,
     calculated_balance_change - real_balance_change as calculation_error
-  FROM
-  (
+  FROM (
     SELECT
       val_nos_id,
       sum(att_earned_reward) as attestation_reward,
@@ -441,8 +525,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     )
     GROUP BY val_nos_id
   ) as att
-  LEFT JOIN
-	(
+  LEFT JOIN (
     SELECT
       val_nos_id,
       sum(propose_earned_reward) as prop_reward,
@@ -456,8 +539,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     )
     GROUP BY val_nos_id
 	) as prop ON att.val_nos_id = prop.val_nos_id
-  LEFT JOIN
-  (
+  LEFT JOIN (
     SELECT
       val_nos_id,
       sum(sync_earned_reward) as sync_reward,
@@ -471,11 +553,10 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     )
     GROUP BY val_nos_id
   ) as sync ON att.val_nos_id = sync.val_nos_id
-  LEFT JOIN
-  (
+  LEFT JOIN (
     SELECT
-      val_nos_id,
-      sum(current.val_balance - previous.val_balance) AS real_balance_change
+      current.val_nos_id as val_nos_id,
+      sum(current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) AS real_balance_change
     FROM (
       SELECT val_balance, val_id, val_nos_id
       FROM validators_summary as curr
@@ -484,8 +565,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
         epoch = ${epoch}
       LIMIT 1 BY val_id
     ) AS current
-    INNER JOIN
-    (
+    INNER JOIN (
       SELECT val_balance, val_id, val_nos_id
       FROM validators_summary
       WHERE
@@ -493,7 +573,22 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
         epoch = (${epoch} - 1)
       LIMIT 1 BY val_id
     ) AS previous ON previous.val_id = current.val_id
-    GROUP BY val_nos_id
+    LEFT JOIN (
+      SELECT
+        sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id
+      FROM (
+        SELECT val_balance_withdrawn, val_id, val_nos_id
+        FROM validators_summary
+        WHERE
+          val_nos_id IS NOT NULL AND
+          epoch = ${epoch}
+        LIMIT 1 BY val_id
+      )
+      GROUP BY val_id, val_nos_id
+    ) AS withdrawals
+    ON
+      withdrawals.val_id = current.val_id
+    GROUP BY current.val_nos_id
   ) as bal ON att.val_nos_id = bal.val_nos_id
 `;
 
@@ -508,8 +603,7 @@ export const avgChainRewardsAndPenaltiesStats = (epoch: Epoch): string => `
     attestation_penalty as att_penalty,
     ifNull(prop_penalty, 0) as prop_penalty,
     ifNull(sync_penalty, 0) as sync_penalty
-  FROM
-  (
+  FROM (
     SELECT
       avgIf(att_earned_reward, att_earned_reward > 0) as attestation_reward,
       avgIf(att_missed_reward, att_missed_reward > 0) as attestation_missed,
@@ -545,4 +639,86 @@ export const avgChainRewardsAndPenaltiesStats = (epoch: Epoch): string => `
       LIMIT 1 BY val_id
     )
   ) as sync
+`;
+
+export const userNodeOperatorsWithdrawalsStats = (epoch: Epoch): string => `
+  SELECT
+    val_nos_id,
+    ifNull(
+      sumIf(
+        val_balance_withdrawn,
+        val_balance_withdrawn > 0 AND val_balance = 0
+      ),
+      0
+    ) as full_withdrawn_sum,
+    ifNull(
+      sumIf(
+        val_balance_withdrawn,
+        val_balance_withdrawn > 0 AND val_balance >= 32000000000 AND val_effective_balance = 32000000000
+      ),
+      0
+    ) as partial_withdrawn_sum,
+    ifNull(
+      countIf(
+        val_balance_withdrawn,
+        val_balance_withdrawn > 0 AND val_balance = 0
+      ),
+      0
+    ) as full_withdrawn_count,
+    ifNull(
+      countIf(
+        val_balance_withdrawn,
+        val_balance_withdrawn > 0 AND val_balance >= 32000000000 AND val_effective_balance = 32000000000
+      ),
+      0
+    ) as partial_withdrawn_count
+  FROM (
+    SELECT val_balance_withdrawn, val_effective_balance, val_balance, val_id, val_nos_id
+    FROM validators_summary
+    WHERE
+      val_nos_id IS NOT NULL AND
+      epoch = ${epoch}
+    LIMIT 1 BY val_id
+  )
+  GROUP BY val_id, val_nos_id
+`;
+
+export const otherChainWithdrawalsStats = (epoch: Epoch): string => `
+  SELECT
+    ifNull(
+      sumIf(
+        val_balance_withdrawn,
+        val_balance_withdrawn > 0 AND val_balance = 0
+      ),
+      0
+    ) as full_withdrawn_sum,
+    ifNull(
+      sumIf(
+        val_balance_withdrawn,
+        val_balance_withdrawn > 0 AND val_balance >= 32000000000 AND val_effective_balance = 32000000000
+      ),
+      0
+    ) as partial_withdrawn_sum,
+    ifNull(
+      countIf(
+        val_balance_withdrawn,
+        val_balance_withdrawn > 0 AND val_balance = 0
+      ),
+      0
+    ) as full_withdrawn_count,
+    ifNull(
+      countIf(
+        val_balance_withdrawn,
+        val_balance_withdrawn > 0 AND val_balance >= 32000000000 AND val_effective_balance = 32000000000
+      ),
+      0
+    ) as partial_withdrawn_count
+  FROM (
+    SELECT val_balance_withdrawn, val_effective_balance, val_balance, val_id, val_nos_id
+    FROM validators_summary
+    WHERE
+      val_nos_id IS NULL AND
+      epoch = ${epoch}
+    LIMIT 1 BY val_id
+  )
 `;

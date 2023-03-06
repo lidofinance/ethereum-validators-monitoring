@@ -16,12 +16,14 @@ import {
   epochProcessing,
   operatorBalance24hDifferenceQuery,
   operatorsSyncParticipationAvgPercentsQuery,
+  otherChainWithdrawalsStats,
   otherSyncParticipationAvgPercentQuery,
   otherValidatorsSummaryStatsQuery,
   totalBalance24hDifferenceQuery,
   userNodeOperatorsProposesStatsLastNEpochQuery,
   userNodeOperatorsRewardsAndPenaltiesStats,
   userNodeOperatorsStatsQuery,
+  userNodeOperatorsWithdrawalsStats,
   userSyncParticipationAvgPercentQuery,
   userValidatorsSummaryStatsQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
@@ -43,14 +45,17 @@ import {
   NOsValidatorsStatusStats,
   NOsValidatorsSyncAvgPercent,
   NOsValidatorsSyncByConditionCount,
+  NOsWithdrawalsStats,
   SyncCommitteeParticipationAvgPercents,
   ValidatorsStatusStats,
+  WithdrawalsStats,
 } from './clickhouse.types';
 import migration_000000_summary from './migrations/migration_000000_summary';
 import migration_000001_indexes from './migrations/migration_000001_indexes';
 import migration_000002_rewards from './migrations/migration_000002_rewards';
 import migration_000003_epoch_meta from './migrations/migration_000003_epoch_meta';
 import migration_000004_epoch_processing from './migrations/migration_000004_epoch_processing';
+import migration_000005_withdrawals from './migrations/migration_000005_withdrawals';
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -149,6 +154,7 @@ export class ClickhouseService implements OnModuleInit {
         ...v,
         val_balance: v.val_balance.toString(),
         val_effective_balance: v.val_effective_balance.toString(),
+        val_balance_withdrawn: v.val_balance_withdrawn?.toString(),
         propose_earned_reward: v.propose_earned_reward?.toString(),
         propose_missed_reward: v.propose_missed_reward?.toString(),
         propose_penalty: v.propose_penalty?.toString(),
@@ -216,6 +222,7 @@ export class ClickhouseService implements OnModuleInit {
       migration_000002_rewards,
       migration_000003_epoch_meta,
       migration_000004_epoch_processing,
+      migration_000005_withdrawals,
     ];
     for (const query of migrations) {
       await this.db.exec({ query });
@@ -505,6 +512,8 @@ export class ClickhouseService implements OnModuleInit {
       active_ongoing: Number(v.active_ongoing),
       pending: Number(v.pending),
       slashed: Number(v.slashed),
+      withdraw_pending: Number(v.withdraw_pending),
+      withdrawn: Number(v.withdrawn),
     }));
   }
 
@@ -514,7 +523,13 @@ export class ClickhouseService implements OnModuleInit {
    */
   public async getUserValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats> {
     const ret = await this.select(userValidatorsSummaryStatsQuery(epoch));
-    return { active_ongoing: Number(ret[0].active_ongoing), pending: Number(ret[0].pending), slashed: Number(ret[0].slashed) };
+    return {
+      active_ongoing: Number(ret[0].active_ongoing),
+      pending: Number(ret[0].pending),
+      slashed: Number(ret[0].slashed),
+      withdraw_pending: Number(ret[0].withdraw_pending),
+      withdrawn: Number(ret[0].withdrawn),
+    };
   }
 
   /**
@@ -523,7 +538,13 @@ export class ClickhouseService implements OnModuleInit {
    */
   public async getOtherValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats> {
     const ret = await this.select(otherValidatorsSummaryStatsQuery(epoch));
-    return { active_ongoing: Number(ret[0].active_ongoing), pending: Number(ret[0].pending), slashed: Number(ret[0].slashed) };
+    return {
+      active_ongoing: Number(ret[0].active_ongoing),
+      pending: Number(ret[0].pending),
+      slashed: Number(ret[0].slashed),
+      withdraw_pending: Number(ret[0].withdraw_pending),
+      withdrawn: Number(ret[0].withdrawn),
+    };
   }
 
   /**
@@ -618,6 +639,25 @@ export class ClickhouseService implements OnModuleInit {
       att_reward: +v.att_reward,
       att_missed: +v.att_missed,
       att_penalty: +v.att_penalty,
+    }))[0];
+  }
+
+  public async getUserNodeOperatorsWithdrawalsStats(epoch: Epoch): Promise<NOsWithdrawalsStats[]> {
+    return (await this.select<NOsWithdrawalsStats[]>(userNodeOperatorsWithdrawalsStats(epoch))).map((v) => ({
+      ...v,
+      full_withdrawn_sum: +v.full_withdrawn_sum,
+      full_withdrawn_count: +v.full_withdrawn_count,
+      partial_withdrawn_sum: +v.partial_withdrawn_sum,
+      partial_withdrawn_count: +v.partial_withdrawn_count,
+    }));
+  }
+
+  public async getOtherChainWithdrawalsStats(epoch: Epoch): Promise<WithdrawalsStats> {
+    return (await this.select<WithdrawalsStats[]>(otherChainWithdrawalsStats(epoch))).map((v) => ({
+      full_withdrawn_sum: +v.full_withdrawn_sum,
+      full_withdrawn_count: +v.full_withdrawn_count,
+      partial_withdrawn_sum: +v.partial_withdrawn_sum,
+      partial_withdrawn_count: +v.partial_withdrawn_count,
     }))[0];
   }
 }
