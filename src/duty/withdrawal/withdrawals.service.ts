@@ -32,7 +32,8 @@ export class WithdrawalsService {
     const toFetch = slots.map((s) => this.clClient.getBlockInfo(s));
     const blocks = (await Promise.all(toFetch)).filter((b) => b != undefined) as BlockInfoResponse[];
     for (const block of blocks) {
-      for (const withdrawal of block.message.body.execution_payload.withdrawals) {
+      const withdrawals = block.message.body.execution_payload.withdrawals ?? [];
+      for (const withdrawal of withdrawals) {
         this.summary.epoch(epoch).set({
           epoch,
           val_id: Number(withdrawal.validator_index),
