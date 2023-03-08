@@ -12,7 +12,7 @@ import { ProposeMetrics } from './propose';
 import { StateMetrics } from './state';
 import { SummaryMetrics } from './summary';
 import { SyncMetrics } from './sync';
-import { WithdrawalsMetrics } from './withdrawal/withdrawals.metrics';
+import { WithdrawalsMetrics } from './withdrawal';
 
 @Injectable()
 export class DutyMetrics {
