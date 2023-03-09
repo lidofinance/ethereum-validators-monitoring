@@ -19,6 +19,7 @@ import { StateService } from './state';
 import { SummaryService } from './summary';
 import { SyncService } from './sync';
 import { syncReward } from './sync/sync.constants';
+import { WithdrawalsService } from './withdrawal';
 
 @Injectable()
 export class DutyService {
@@ -36,6 +37,7 @@ export class DutyService {
     protected readonly summary: SummaryService,
     protected readonly storage: ClickhouseService,
     protected readonly rewards: DutyRewards,
+    protected readonly withdrawals: WithdrawalsService,
   ) {}
 
   public async checkAndWrite({ epoch, stateSlot }: { epoch: Epoch; stateSlot: Slot }): Promise<string[]> {
@@ -65,6 +67,7 @@ export class DutyService {
       this.attestation.check(epoch, stateSlot),
       this.sync.check(epoch, stateSlot),
       this.propose.check(epoch),
+      this.withdrawals.check(epoch),
     ]);
     // must be done after all duties check
     await this.fillCurrentEpochMetadata(epoch);

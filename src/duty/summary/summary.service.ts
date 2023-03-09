@@ -18,6 +18,7 @@ export interface ValidatorDutySummary {
   val_slashed?: boolean;
   val_status?: ValStatus;
   val_balance?: bigint;
+  val_balance_withdrawn?: bigint;
   val_effective_balance?: bigint;
   ///
   is_proposer?: boolean;
