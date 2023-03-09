@@ -12,6 +12,7 @@ import { ProposeMetrics } from './propose';
 import { StateMetrics } from './state';
 import { SummaryMetrics } from './summary';
 import { SyncMetrics } from './sync';
+import { WithdrawalsMetrics } from './withdrawal';
 
 @Injectable()
 export class DutyMetrics {
@@ -25,6 +26,7 @@ export class DutyMetrics {
     protected readonly attestationMetrics: AttestationMetrics,
     protected readonly proposeMetrics: ProposeMetrics,
     protected readonly syncMetrics: SyncMetrics,
+    protected readonly withdrawalsMetrics: WithdrawalsMetrics,
     protected readonly summaryMetrics: SummaryMetrics,
     protected readonly storage: ClickhouseService,
   ) {}
@@ -32,7 +34,11 @@ export class DutyMetrics {
   @TrackTask('calc-all-duties-metrics')
   public async calculate(epoch: Epoch, possibleHighRewardValidators: string[]): Promise<any> {
     this.logger.log('Calculating duties metrics of user validators');
-    await Promise.all([this.withPossibleHighReward(epoch, possibleHighRewardValidators), this.stateMetrics.calculate(epoch)]);
+    await Promise.all([
+      this.withPossibleHighReward(epoch, possibleHighRewardValidators),
+      this.stateMetrics.calculate(epoch),
+      this.withdrawalsMetrics.calculate(epoch),
+    ]);
     // we must calculate summary metrics after all duties to avoid errors in processing
     await this.summaryMetrics.calculate(epoch);
     await this.storage.updateEpochProcessing({ epoch, is_calculated: true });

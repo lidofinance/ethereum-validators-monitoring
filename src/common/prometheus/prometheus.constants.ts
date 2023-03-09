@@ -60,5 +60,10 @@ export const METRIC_AVG_CHAIN_MISSED_REWARD = `avg_chain_missed_reward`;
 export const METRIC_OPERATOR_MISSED_REWARD = `operator_missed_reward`;
 export const METRIC_AVG_CHAIN_PENALTY = `avg_chain_penalty`;
 export const METRIC_OPERATOR_PENALTY = `operator_penalty`;
+export const METRIC_OPERATOR_WITHDRAWALS_SUM = `operator_withdrawals_sum`;
+export const METRIC_OTHER_CHAIN_WITHDRAWALS_SUM = `other_chain_withdrawals_sum`;
+export const METRIC_OPERATOR_WITHDRAWALS_COUNT = `operator_withdrawals_count`;
+export const METRIC_OTHER_CHAIN_WITHDRAWALS_COUNT = `other_chain_withdrawals_count`;
+
 export const METRIC_CONTRACT_KEYS_TOTAL = `contract_keys_total`;
 export const METRIC_STETH_BUFFERED_ETHER_TOTAL = `steth_buffered_ether_total`;

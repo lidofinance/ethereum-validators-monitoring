@@ -55,8 +55,18 @@ export interface BlockInfoResponse {
       sync_aggregate: {
         sync_committee_bits: string;
       };
+      execution_payload: {
+        withdrawals: Withdrawal[];
+      };
     };
   };
+}
+
+export interface Withdrawal {
+  index: string;
+  validator_index: ValidatorIndex;
+  address: string;
+  amount: string;
 }
 
 export interface FinalityCheckpointsResponse {

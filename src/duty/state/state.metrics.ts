@@ -81,6 +81,24 @@ export class StateMetrics {
       },
       (item) => item.pending,
     );
+    setUserOperatorsMetric(
+      this.prometheus.userValidators,
+      data,
+      this.operators,
+      {
+        status: PrometheusValStatus.WithdrawalPending,
+      },
+      (item) => item.withdraw_pending,
+    );
+    setUserOperatorsMetric(
+      this.prometheus.userValidators,
+      data,
+      this.operators,
+      {
+        status: PrometheusValStatus.WithdrawalDone,
+      },
+      (item) => item.withdrawn,
+    );
   }
 
   private async userValidatorsStats() {
@@ -107,6 +125,20 @@ export class StateMetrics {
       },
       result.pending,
     );
+    this.prometheus.validators.set(
+      {
+        owner: Owner.USER,
+        status: PrometheusValStatus.WithdrawalPending,
+      },
+      result.withdraw_pending,
+    );
+    this.prometheus.validators.set(
+      {
+        owner: Owner.USER,
+        status: PrometheusValStatus.WithdrawalDone,
+      },
+      result.withdrawn,
+    );
   }
 
   private async otherValidatorsStats() {
@@ -132,6 +164,20 @@ export class StateMetrics {
         status: PrometheusValStatus.Slashed,
       },
       result.slashed,
+    );
+    this.prometheus.validators.set(
+      {
+        owner: Owner.OTHER,
+        status: PrometheusValStatus.WithdrawalPending,
+      },
+      result.withdraw_pending,
+    );
+    this.prometheus.validators.set(
+      {
+        owner: Owner.OTHER,
+        status: PrometheusValStatus.WithdrawalDone,
+      },
+      result.withdrawn,
     );
   }
 

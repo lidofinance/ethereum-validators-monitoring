@@ -4,6 +4,8 @@ export interface ValidatorsStatusStats {
   active_ongoing: number;
   pending: number;
   slashed: number;
+  withdraw_pending: number;
+  withdrawn: number;
 }
 
 export interface NOsDelta {
@@ -85,4 +87,14 @@ export interface EpochProcessingState {
   epoch: Epoch;
   is_stored?: boolean;
   is_calculated?: boolean;
+}
+
+export interface WithdrawalsStats {
+  full_withdrawn_sum: number;
+  full_withdrawn_count: number;
+  partial_withdrawn_sum: number;
+  partial_withdrawn_count: number;
+}
+export interface NOsWithdrawalsStats extends WithdrawalsStats {
+  val_nos_id: string;
 }
