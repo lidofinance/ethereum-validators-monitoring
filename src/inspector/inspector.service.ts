@@ -71,7 +71,9 @@ export class InspectorService implements OnModuleInit {
 
   protected async getEpochDataToProcess(): Promise<EpochProcessingState & { slot: Slot }> {
     const chosen = await this.chooseEpochToProcess();
-    const latestFinalizedBeaconBlock = Number((<BlockHeaderResponse>await this.clClient.getBlockHeader('finalized')).header.message.slot);
+    const latestFinalizedBeaconBlock = Number(
+      (<BlockHeaderResponse>await this.clClient.getFinalizedBlockHeader(chosen)).header.message.slot,
+    );
     let latestFinalizedEpoch = Math.trunc(latestFinalizedBeaconBlock / this.config.get('FETCH_INTERVAL_SLOTS'));
     if (latestFinalizedEpoch * this.config.get('FETCH_INTERVAL_SLOTS') == latestFinalizedBeaconBlock) {
       // if it's the first slot of epoch, it finalizes previous epoch

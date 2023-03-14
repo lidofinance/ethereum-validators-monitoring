@@ -9,6 +9,7 @@ import { rejectDelay } from 'common/functions/rejectDelay';
 import { retrier } from 'common/functions/retrier';
 import { urljoin } from 'common/functions/urljoin';
 import { PrometheusService, TrackCLRequest } from 'common/prometheus';
+import { EpochProcessingState } from 'storage/clickhouse';
 
 import { BlockCache, BlockCacheService } from './block-cache';
 import { MaxDeepError, ResponseError, errCommon, errRequest } from './errors';
@@ -115,6 +116,34 @@ export class ConsensusProviderService {
     );
   }
 
+  public async getFinalizedBlockHeader(processingState: EpochProcessingState = undefined): Promise<BlockHeaderResponse | void> {
+    return await this.retryRequest<BlockHeaderResponse>(
+      async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders('finalized')),
+      {
+        maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
+        useFallbackOnResolved: (r) => {
+          if (Number(r.data.header.message.slot) > this.lastFinalizedSlot.slot) {
+            this.lastFinalizedSlot = { slot: Number(r.data.header.message.slot), fetchTime: Number(Date.now()) };
+          } else if (processingState.epoch <= Math.trunc(this.lastFinalizedSlot.slot / this.config.get('FETCH_INTERVAL_SLOTS'))) {
+            // if our last processed epoch is less than last finalized, we shouldn't use fallback
+            return false;
+          } else if (Number(Date.now()) - this.lastFinalizedSlot.fetchTime > 420 * 1000) {
+            // if 'finalized' slot doesn't change ~7m we must switch to fallback
+            this.logger.error("Finalized slot hasn't changed in ~7m");
+            return true;
+          }
+          // for other states don't use fallback on resolved
+          return false;
+        },
+      },
+    ).catch((e) => {
+      if (404 != e.$httpCode) {
+        this.logger.error('Unexpected status code while fetching block header');
+        throw e;
+      }
+    });
+  }
+
   public async getBlockHeader(blockId: BlockId): Promise<BlockHeaderResponse | void> {
     const cached: BlockCache = this.cache.get(String(blockId));
     if (cached && (cached.missed || cached.header)) {
@@ -124,18 +153,7 @@ export class ConsensusProviderService {
 
     const blockHeader = await this.retryRequest<BlockHeaderResponse>(
       async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(blockId)),
-      {
-        maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
-        useFallbackOnResolved: (r) => {
-          if (blockId == 'finalized') {
-            if (Number(r.data.header.message.slot) > this.lastFinalizedSlot.slot) {
-              this.lastFinalizedSlot = { slot: Number(r.data.header.message.slot), fetchTime: Number(Date.now()) };
-            }
-          }
-          // for other states don't use fallback on resolved
-          return false;
-        },
-      },
+      { maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES') },
     ).catch((e) => {
       if (404 != e.$httpCode) {
         this.logger.error('Unexpected status code while fetching block header');
