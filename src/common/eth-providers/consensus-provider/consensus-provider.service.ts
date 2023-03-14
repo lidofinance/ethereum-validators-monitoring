@@ -130,10 +130,6 @@ export class ConsensusProviderService {
           if (blockId == 'finalized') {
             if (Number(r.data.header.message.slot) > this.lastFinalizedSlot.slot) {
               this.lastFinalizedSlot = { slot: Number(r.data.header.message.slot), fetchTime: Number(Date.now()) };
-            } else if (Number(Date.now()) - this.lastFinalizedSlot.fetchTime > 420 * 1000) {
-              // if 'finalized' slot doesn't change ~7m we must switch to fallback
-              this.logger.error("Finalized slot hasn't changed in ~7m");
-              return true;
             }
           }
           // for other states don't use fallback on resolved
