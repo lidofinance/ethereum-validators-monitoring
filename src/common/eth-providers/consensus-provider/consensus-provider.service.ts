@@ -116,7 +116,7 @@ export class ConsensusProviderService {
     );
   }
 
-  public async getFinalizedBlockHeader(processingState: EpochProcessingState = undefined): Promise<BlockHeaderResponse | void> {
+  public async getFinalizedBlockHeader(processingState: EpochProcessingState): Promise<BlockHeaderResponse | void> {
     return await this.retryRequest<BlockHeaderResponse>(
       async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders('finalized')),
       {
@@ -124,7 +124,8 @@ export class ConsensusProviderService {
         useFallbackOnResolved: (r) => {
           if (Number(r.data.header.message.slot) > this.lastFinalizedSlot.slot) {
             this.lastFinalizedSlot = { slot: Number(r.data.header.message.slot), fetchTime: Number(Date.now()) };
-          } else if (processingState.epoch <= Math.trunc(this.lastFinalizedSlot.slot / this.config.get('FETCH_INTERVAL_SLOTS'))) {
+          }
+          if (processingState.epoch <= Math.trunc(this.lastFinalizedSlot.slot / this.config.get('FETCH_INTERVAL_SLOTS'))) {
             // if our last processed epoch is less than last finalized, we shouldn't use fallback
             return false;
           } else if (Number(Date.now()) - this.lastFinalizedSlot.fetchTime > 420 * 1000) {
