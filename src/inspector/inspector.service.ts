@@ -71,14 +71,15 @@ export class InspectorService implements OnModuleInit {
 
   protected async getEpochDataToProcess(): Promise<EpochProcessingState & { slot: Slot }> {
     const chosen = await this.chooseEpochToProcess();
-    const latestFinalizedBeaconBlock = Number((<BlockHeaderResponse>await this.clClient.getBlockHeader('finalized')).header.message.slot);
+    const latestFinalizedBeaconBlock = Number(
+      (<BlockHeaderResponse>await this.clClient.getFinalizedBlockHeader(chosen)).header.message.slot,
+    );
     let latestFinalizedEpoch = Math.trunc(latestFinalizedBeaconBlock / this.config.get('FETCH_INTERVAL_SLOTS'));
     if (latestFinalizedEpoch * this.config.get('FETCH_INTERVAL_SLOTS') == latestFinalizedBeaconBlock) {
       // if it's the first slot of epoch, it finalizes previous epoch
       latestFinalizedEpoch -= 1;
     }
-    const existedHeader = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(chosen.slot)).header.message;
-    if (Number(existedHeader.slot) > latestFinalizedBeaconBlock) {
+    if (chosen.slot > latestFinalizedBeaconBlock) {
       // new finalized slot hasn't happened, from which parent we can get information about needed state
       // just wait `CHAIN_SLOT_TIME_SECONDS` until finality happens
       const sleepTime = this.config.get('CHAIN_SLOT_TIME_SECONDS');
@@ -91,6 +92,7 @@ export class InspectorService implements OnModuleInit {
       });
     }
     // new finalized epoch has happened, from which parent we can get information about needed state
+    const existedHeader = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(chosen.slot)).header.message;
     this.logger.log(`Latest finalized epoch [${latestFinalizedEpoch}]. Next epoch to process [${chosen.epoch}]`);
     if (chosen.slot == Number(existedHeader.slot)) {
       this.logger.log(
