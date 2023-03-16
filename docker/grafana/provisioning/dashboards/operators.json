@@ -24,8 +24,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 14,
-  "iteration": 1675248006214,
+  "iteration": 1680503579227,
   "links": [
     {
       "asDropdown": false,
@@ -64,6 +63,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "Difference between `Now` and timestamp of last slot of processed epoch ",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -202,6 +202,68 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 14,
+        "x": 10,
+        "y": 1
+      },
+      "id": 1725,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "name"
+      },
+      "pluginVersion": "8.5.15",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name=\"${nos_name_var}\"})",
+          "interval": "",
+          "legendFormat": "🏖️  ${nos_name_var}",
+          "refId": "A"
+        }
+      ],
+      "title": "Node operator",
+      "type": "stat"
+    },
+    {
       "collapsed": false,
       "datasource": {
         "type": "prometheus",
@@ -287,6 +349,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "Alias for `pending_queued` and `pending_initialized` statuses",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -351,6 +414,137 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "Alias for `active_exiting`, `exited_unslashed`, `exited_slashed` and `withdrawal_possible` statuses",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "yellow",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "super-light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 10,
+        "y": 6
+      },
+      "id": 1776,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.15",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name=\"${nos_name_var}\",status=\"withdrawal_pending\"})",
+          "interval": "",
+          "legendFormat": "{{owner}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Full withdrawal pending",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Alias for `withdrawal_done`, and `withdrawal_possible` statuses. `withdrawal_possible` is considered fully withdrawn when the validator balance is `0`.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "super-light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 15,
+        "y": 6
+      },
+      "id": 1780,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.5.15",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "exemplar": true,
+          "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name=\"${nos_name_var}\",status=\"withdrawal_done\"})",
+          "interval": "",
+          "legendFormat": "{{owner}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Full withdrawn",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Alias for `active_slashed`, `exited_slashed` or any validator status with `slashed = true` in state",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -380,8 +574,8 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 5,
-        "x": 10,
+        "w": 4,
+        "x": 20,
         "y": 6
       },
       "id": 1721,
@@ -415,68 +609,6 @@
         }
       ],
       "title": "Slashed validators",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "text",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 9,
-        "x": 15,
-        "y": 6
-      },
-      "id": 1725,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "name"
-      },
-      "pluginVersion": "8.5.15",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name=\"${nos_name_var}\"})",
-          "interval": "",
-          "legendFormat": "🏖️  ${nos_name_var}",
-          "refId": "A"
-        }
-      ],
-      "title": "Node operator",
       "type": "stat"
     },
     {
@@ -595,6 +727,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "Alias for `pending_queued` and `pending_initialized` statuses",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -706,6 +839,241 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "Alias for `active_exiting`, `exited_unslashed`, `exited_slashed` and `withdrawal_possible` statuses",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 10,
+        "y": 9
+      },
+      "id": 1778,
+      "options": {
+        "displayLabels": [],
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "asc"
+        }
+      },
+      "pluginVersion": "8.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"withdrawal_pending\",nos_name=\"${nos_name_var}\"})",
+          "interval": "",
+          "legendFormat": "Selected",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"withdrawal_pending\",nos_name!=\"${nos_name_var}\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "User (other)",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Full withdrawal pending",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Alias for `withdrawal_done`, and `withdrawal_possible` statuses. `withdrawal_possible` is considered fully withdrawn when the validator balance is `0`.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "text",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#ffffff",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 15,
+        "y": 9
+      },
+      "id": 1782,
+      "options": {
+        "displayLabels": [],
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "asc"
+        }
+      },
+      "pluginVersion": "8.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name=\"${nos_name_var}\",status=\"withdrawal_done\"})",
+          "interval": "",
+          "legendFormat": "Selected",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name!=\"${nos_name_var}\",status=\"withdrawal_done\"})",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "User (other)",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Full withdrawn",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Alias for `active_slashed`, `exited_slashed` or any validator status with `slashed = true` in state",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -756,8 +1124,8 @@
       },
       "gridPos": {
         "h": 7,
-        "w": 5,
-        "x": 10,
+        "w": 4,
+        "x": 20,
         "y": 9
       },
       "id": 1723,
@@ -812,6 +1180,418 @@
       "type": "piechart"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ongoing"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pending"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "withdrawal_pending"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "withdrawal_done"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "text",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 13,
+        "x": 0,
+        "y": 16
+      },
+      "id": 1784,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.5.15",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\",nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{status}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Status progress",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "vertamedia-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "displayMode": "auto",
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Validator"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "blockcha.in",
+                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "json-view"
+              },
+              {
+                "id": "custom.filterable",
+                "value": true
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Balance"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "ETH"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 11,
+        "x": 13,
+        "y": 16
+      },
+      "id": 1788,
+      "options": {
+        "footer": {
+          "enablePagination": true,
+          "fields": [
+            "Balance"
+          ],
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "8.5.15",
+      "targets": [
+        {
+          "datasource": {
+            "type": "vertamedia-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "dateTimeType": "DATETIME",
+          "extrapolate": true,
+          "format": "table",
+          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "intervalFactor": 1,
+          "query": "SELECT\n    val_id as Validator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    validators_summary\nWHERE val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var} AND (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
+          "rawQuery": "SELECT\n    val_id as Validator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    validators_summary\nWHERE val_nos_name = 'cryptomanufaktur.io' AND epoch = 166657 AND (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
+          "refId": "A",
+          "round": "0s",
+          "skip_comments": true
+        }
+      ],
+      "title": "On exit validators",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "full"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "partial"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "full"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 13,
+        "x": 0,
+        "y": 21
+      },
+      "id": 1786,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.5.15",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "(ethereum_validators_monitoring_operator_withdrawals_count{nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{type}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total withdrawals count by type",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
       "collapsed": false,
       "datasource": {
         "type": "prometheus",
@@ -821,7 +1601,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 26
       },
       "id": 1753,
       "panels": [],
@@ -870,7 +1650,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -913,7 +1693,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 17
+        "y": 27
       },
       "id": 1759,
       "options": {
@@ -996,7 +1776,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -1022,7 +1802,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/slot/${__value.raw}"
+                    "url": "https://goerli.beaconcha.in/slot/${__value.raw}"
                   }
                 ]
               }
@@ -1034,7 +1814,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 17
+        "y": 27
       },
       "id": 1761,
       "options": {
@@ -1151,7 +1931,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -1167,7 +1947,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 17
+        "y": 27
       },
       "id": 1762,
       "options": {
@@ -1252,7 +2032,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -1268,7 +2048,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 25
+        "y": 35
       },
       "id": 1760,
       "options": {
@@ -1352,7 +2132,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -1380,7 +2160,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 25
+        "y": 35
       },
       "id": 1773,
       "options": {
@@ -1465,7 +2245,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -1493,7 +2273,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 25
+        "y": 35
       },
       "id": 1774,
       "options": {
@@ -1577,7 +2357,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -1593,7 +2373,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 33
+        "y": 43
       },
       "id": 1758,
       "options": {
@@ -1645,7 +2425,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 51
       },
       "id": 1727,
       "panels": [
@@ -1723,7 +2503,7 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 42
+            "y": 53
           },
           "id": 1729,
           "options": {
@@ -1821,7 +2601,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 47
+            "y": 58
           },
           "id": 2,
           "options": {
@@ -1916,7 +2696,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 47
+            "y": 58
           },
           "id": 6,
           "options": {
@@ -2007,7 +2787,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -2023,7 +2803,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 53
+            "y": 64
           },
           "id": 1733,
           "options": {
@@ -2055,8 +2835,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} - 6 AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT 100",
-              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 178184 AND\n      val_nos_name = 'Anyblock Analytics'\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 178184 - 6 AND\n      val_nos_name = 'Anyblock Analytics'\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT 100",
+              "query": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} - 6 AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var} AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT 100",
+              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 5040 AND\n      val_nos_name = 'Operator1'\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 5040 - 6 AND\n      val_nos_name = 'Operator1'\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      epoch > (5040 - 6) AND epoch <= 5040 AND\n      val_nos_name = 'Operator1'\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -2126,7 +2906,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 53
+            "y": 64
           },
           "id": 5,
           "options": {
@@ -2173,7 +2953,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 52
       },
       "id": 1735,
       "panels": [
@@ -2199,8 +2979,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2218,7 +2997,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -2244,7 +3023,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/slot/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/slot/${__value.raw}"
                       }
                     ]
                   }
@@ -2256,7 +3035,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 43
+            "y": 69
           },
           "id": 1737,
           "options": {
@@ -2343,8 +3122,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -2355,7 +3133,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 43
+            "y": 69
           },
           "id": 1739,
           "options": {
@@ -2404,7 +3182,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 53
       },
       "id": 1711,
       "panels": [
@@ -2538,7 +3316,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 44
+            "y": 54
           },
           "id": 1745,
           "options": {
@@ -2604,7 +3382,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "AVG",
+          "description": "AVG.\n`Bad` is considered when validator's sync is less than chain avg value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -2674,7 +3452,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -2710,7 +3488,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 50
+            "y": 60
           },
           "id": 1747,
           "options": {
@@ -2743,7 +3521,7 @@
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
               "query": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent, val_id\nLIMIT 1 by val_id",
-              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_name = 'Anyblock Analytics' AND epoch = 178184 AND sync_percent < (95.67792267072946 - 10)\nORDER BY sync_percent, val_id\nLIMIT 1 by val_id",
+              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_name = 'cryptomanufaktur.io' AND epoch = 166650 AND sync_percent < (78.81673216633499 - 10)\nORDER BY sync_percent, val_id\nLIMIT 1 by val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -2824,7 +3602,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 50
+            "y": 60
           },
           "id": 1749,
           "options": {
@@ -2873,7 +3651,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 54
       },
       "id": 1751,
       "panels": [
@@ -2973,7 +3751,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -2989,7 +3767,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 59
+            "y": 56
           },
           "id": 1755,
           "options": {
@@ -3088,7 +3866,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 59
+            "y": 56
           },
           "id": 1757,
           "options": {
@@ -3219,7 +3997,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -3235,7 +4013,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 67
+            "y": 64
           },
           "id": 1764,
           "options": {
@@ -3334,7 +4112,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 67
+            "y": 64
           },
           "id": 1765,
           "options": {
@@ -3465,7 +4243,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -3493,7 +4271,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 75
+            "y": 72
           },
           "id": 1770,
           "options": {
@@ -3592,7 +4370,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 75
+            "y": 72
           },
           "id": 1766,
           "options": {
@@ -3723,7 +4501,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -3739,7 +4517,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 83
+            "y": 80
           },
           "id": 1771,
           "options": {
@@ -3838,7 +4616,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 83
+            "y": 80
           },
           "id": 1767,
           "options": {
@@ -3930,8 +4708,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3969,7 +4746,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -3985,7 +4762,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 91
+            "y": 88
           },
           "id": 1772,
           "options": {
@@ -4072,8 +4849,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4084,7 +4860,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 91
+            "y": 88
           },
           "id": 1768,
           "options": {
@@ -4133,8 +4909,8 @@
       {
         "current": {
           "selected": true,
-          "text": "Allnodes",
-          "value": "Allnodes"
+          "text": "cryptomanufaktur.io",
+          "value": "cryptomanufaktur.io"
         },
         "datasource": {
           "type": "prometheus",
@@ -4161,8 +4937,8 @@
       {
         "current": {
           "selected": false,
-          "text": "178184",
-          "value": "178184"
+          "text": "166657",
+          "value": "166657"
         },
         "datasource": {
           "type": "prometheus",
@@ -4289,8 +5065,8 @@
       {
         "current": {
           "selected": false,
-          "text": "95.67792267072946",
-          "value": "95.67792267072946"
+          "text": "69.30803390266374",
+          "value": "69.30803390266374"
         },
         "datasource": {
           "type": "prometheus",
@@ -4317,8 +5093,8 @@
       {
         "current": {
           "selected": false,
-          "text": "9",
-          "value": "9"
+          "text": "12",
+          "value": "12"
         },
         "datasource": {
           "type": "prometheus",
@@ -4354,6 +5130,6 @@
   "timezone": "",
   "title": "NodeOperators",
   "uid": "3wimU2H7h",
-  "version": 5,
+  "version": 23,
   "weekStart": ""
 }
