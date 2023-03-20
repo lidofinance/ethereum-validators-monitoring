@@ -16,7 +16,7 @@ export class SyncRewards {
     protected readonly summary: SummaryService,
   ) {}
 
-  public calculate(epoch: Epoch) {
+  public async calculate(epoch: Epoch) {
     const epochMeta = this.summary.epoch(epoch).getMeta();
     let sync_earned_reward = 0;
     let sync_missed_reward = 0;
@@ -30,6 +30,5 @@ export class SyncRewards {
 
       this.summary.epoch(epoch).set({ epoch, val_id: v.val_id, sync_earned_reward, sync_penalty, sync_missed_reward });
     }
-    return true;
   }
 }

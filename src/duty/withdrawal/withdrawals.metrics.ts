@@ -3,6 +3,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { allSettled } from 'common/functions/allSettled';
 import { PrometheusService, TrackTask, setUserOperatorsMetric } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage/clickhouse';
@@ -29,7 +30,7 @@ export class WithdrawalsMetrics {
     this.logger.log('Calculating withdrawals metrics');
     this.processedEpoch = epoch;
     this.operators = this.registryService.getOperators();
-    await Promise.all([this.userNodeOperatorsWithdrawalsStats(), this.otherChainWithdrawalsStats()]);
+    await allSettled([this.userNodeOperatorsWithdrawalsStats(), this.otherChainWithdrawalsStats()]);
   }
 
   private async userNodeOperatorsWithdrawalsStats() {

@@ -89,6 +89,5 @@ export class AttestationRewards {
         att_penalty,
       });
     }
-    return true;
   }
 }
