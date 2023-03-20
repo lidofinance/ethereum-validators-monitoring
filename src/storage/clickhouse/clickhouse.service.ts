@@ -6,6 +6,7 @@ import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { retrier } from 'common/functions/retrier';
+import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { EpochMeta, ValidatorDutySummary } from 'duty/summary';
 
@@ -167,6 +168,7 @@ export class ClickhouseService implements OnModuleInit {
         await writeChunks(indexesChunk, summaryChunk);
         [indexesChunk, summaryChunk] = [[], []];
         chunkSize = 0;
+        await unblock();
       }
     }
     if (chunkSize) await writeChunks(indexesChunk, summaryChunk);
