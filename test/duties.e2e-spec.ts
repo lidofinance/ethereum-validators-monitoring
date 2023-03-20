@@ -17,6 +17,7 @@ import { RegistryService } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
 
 import { ValStatus } from '../src/common/eth-providers';
+import { allSettled } from '../src/common/functions/allSettled';
 import { DutyModule, DutyService } from '../src/duty';
 
 const MikroORMMockProvider = {
@@ -200,7 +201,7 @@ describe('Duties', () => {
     stateSlot = Number(process.env['TEST_STATE_SLOT']);
     epochNumber = Number(process.env['TEST_EPOCH_NUMBER']);
 
-    await Promise.all([dutyService['prefetch'](epochNumber), dutyService['checkAll'](epochNumber, stateSlot)]);
+    await allSettled([dutyService['prefetch'](epochNumber), dutyService['checkAll'](epochNumber, stateSlot)]);
     summaryToSave = [...dutyService['summary'].epoch(epochNumber).values()].map((v) => {
       return {
         ...v,

@@ -68,7 +68,7 @@ export class AttestationService {
 
   protected async processAttestation(epoch: Epoch, attestation: SlotAttestation, committee: number[]) {
     const attestationFlags = { source: [], target: [], head: [] };
-    const [canonHead, canonTarget, canonSource] = await Promise.all([
+    const [canonHead, canonTarget, canonSource] = await allSettled([
       this.getCanonSlotRoot(attestation.slot),
       this.getCanonSlotRoot(attestation.target_epoch * this.slotsInEpoch),
       this.getCanonSlotRoot(attestation.source_epoch * this.slotsInEpoch),
