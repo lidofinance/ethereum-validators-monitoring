@@ -4,6 +4,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { allSettled } from 'common/functions/allSettled';
 import { Owner, PrometheusService, PrometheusValStatus, TrackTask, setUserOperatorsMetric } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { LidoSourceService } from 'common/validators-registry/lido-source';
@@ -29,7 +30,7 @@ export class StateMetrics {
     this.logger.log('Calculating state metrics');
     this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();
-    await Promise.all([
+    await allSettled([
       this.operatorsIdentifies(),
       this.nosStats(),
       this.userValidatorsStats(),

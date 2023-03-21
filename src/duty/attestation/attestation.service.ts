@@ -9,6 +9,7 @@ import { streamArray } from 'stream-json/streamers/StreamArray';
 import { ConfigService } from 'common/config';
 import { ConsensusProviderService } from 'common/eth-providers';
 import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
+import { allSettled } from 'common/functions/allSettled';
 import { range } from 'common/functions/range';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
@@ -67,7 +68,7 @@ export class AttestationService {
 
   protected async processAttestation(epoch: Epoch, attestation: SlotAttestation, committee: number[]) {
     const attestationFlags = { source: [], target: [], head: [] };
-    const [canonHead, canonTarget, canonSource] = await Promise.all([
+    const [canonHead, canonTarget, canonSource] = await allSettled([
       this.getCanonSlotRoot(attestation.slot),
       this.getCanonSlotRoot(attestation.target_epoch * this.slotsInEpoch),
       this.getCanonSlotRoot(attestation.source_epoch * this.slotsInEpoch),
@@ -177,7 +178,7 @@ export class AttestationService {
       }).finally(() => pipeline.destroy());
     };
 
-    await Promise.all([processCommittees(this.processedEpoch - 1), processCommittees(this.processedEpoch)]);
+    await allSettled([processCommittees(this.processedEpoch - 1), processCommittees(this.processedEpoch)]);
     return committees;
   }
 }

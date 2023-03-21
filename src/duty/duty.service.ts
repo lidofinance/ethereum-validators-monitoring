@@ -5,6 +5,7 @@ import { ConfigService } from 'common/config';
 import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
 import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
 import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
+import { allSettled } from 'common/functions/allSettled';
 import { range } from 'common/functions/range';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
@@ -41,18 +42,19 @@ export class DutyService {
   ) {}
 
   public async checkAndWrite({ epoch, stateSlot }: { epoch: Epoch; stateSlot: Slot }): Promise<string[]> {
-    // Prefetch will be done before main checks because duty by state requests are heavy
-    // and while we wait for their responses we fetch blocks and headers.
-    // If for some reason prefetch task will be slower than duty by state requests,
-    // blocks and headers will be fetched inside tasks of checks
-    const [, , possibleHighRewardVals] = await Promise.all([
-      this.prefetch(epoch),
+    const [, , possibleHighRewardVals] = await allSettled([
+      // Prefetch will be done before main checks because duty by state requests are heavy
+      // and while we wait for their responses we fetch blocks and headers.
+      // If for some reason prefetch task will be slower than duty by state requests,
+      // blocks and headers will be fetched inside tasks of checks
+      // so, it can be optional when failed
+      this.prefetch(epoch).catch(() => undefined),
       this.checkAll(epoch, stateSlot),
-      // optional task to get possible high reward validators for head epoch
+      // Optional task to get possible high reward validators for head epoch
       // it's nice to have but not critical
       this.getPossibleHighRewardValidators().catch(() => []),
     ]);
-    await Promise.all([this.writeEpochMeta(epoch), this.writeSummary(epoch)]);
+    await allSettled([this.writeEpochMeta(epoch), this.writeSummary(epoch)]);
     this.summary.clear();
     await this.storage.updateEpochProcessing({ epoch, is_stored: true });
     return possibleHighRewardVals;
@@ -62,7 +64,7 @@ export class DutyService {
   protected async checkAll(epoch: Epoch, stateSlot: Slot): Promise<any> {
     this.summary.clear();
     this.logger.log('Checking duties of validators');
-    await Promise.all([
+    await allSettled([
       this.state.check(epoch, stateSlot),
       this.attestation.check(epoch, stateSlot),
       this.sync.check(epoch, stateSlot),
@@ -85,7 +87,7 @@ export class DutyService {
     const toFetch = slots.map((s) => [this.clClient.getBlockHeader(s), this.clClient.getBlockInfo(s)]).flat();
     while (toFetch.length > 0) {
       const chunk = toFetch.splice(0, 32);
-      await Promise.all(chunk);
+      await allSettled(chunk);
     }
   }
 
@@ -95,7 +97,7 @@ export class DutyService {
     const headEpoch = Math.trunc(actualSlotHeader.header.message.slot / this.config.get('FETCH_INTERVAL_SLOTS'));
     this.logger.log('Getting possible high reward validator indexes');
     const propDependentRoot = await this.clClient.getDutyDependentRoot(headEpoch);
-    const [sync, prop] = await Promise.all([
+    const [sync, prop] = await allSettled([
       this.clClient.getSyncCommitteeInfo('finalized', headEpoch),
       this.clClient.getCanonicalProposerDuties(headEpoch, propDependentRoot),
     ]);
