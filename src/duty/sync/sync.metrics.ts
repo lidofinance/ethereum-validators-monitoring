@@ -3,6 +3,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { allSettled } from 'common/functions/allSettled';
 import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric } from 'common/prometheus';
 import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
@@ -28,7 +29,7 @@ export class SyncMetrics {
     this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();
 
-    await Promise.all([
+    await allSettled([
       this.userAvgSyncPercent(),
       this.otherAvgSyncPercent(),
       this.operatorAvgSyncPercents(),
@@ -55,7 +56,7 @@ export class SyncMetrics {
 
   private async syncParticipation(possibleHighRewardValidators: string[]) {
     const chainAvgSyncPercent = await this.chainAvgSyncPercent();
-    await Promise.all([
+    await allSettled([
       this.goodSyncParticipationLastEpoch(chainAvgSyncPercent),
       this.badSyncParticipationLastEpoch(chainAvgSyncPercent),
       this.badSyncParticipationLastNEpoch(chainAvgSyncPercent),

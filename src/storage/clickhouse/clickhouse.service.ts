@@ -4,7 +4,9 @@ import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common'
 
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { allSettled } from 'common/functions/allSettled';
 import { retrier } from 'common/functions/retrier';
+import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { EpochMeta, ValidatorDutySummary } from 'duty/summary';
 
@@ -129,7 +131,7 @@ export class ClickhouseService implements OnModuleInit {
     let summaryChunk = [];
     let chunkSize = 0;
     const writeChunks = async (indexesChunk, summaryChunk) => {
-      return await Promise.all([
+      return await allSettled([
         this.retry(
           async () =>
             await this.db.insert({
@@ -166,6 +168,7 @@ export class ClickhouseService implements OnModuleInit {
         await writeChunks(indexesChunk, summaryChunk);
         [indexesChunk, summaryChunk] = [[], []];
         chunkSize = 0;
+        await unblock();
       }
     }
     if (chunkSize) await writeChunks(indexesChunk, summaryChunk);

@@ -4,6 +4,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService } from 'common/config';
 import { ConsensusProviderService } from 'common/eth-providers';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { allSettled } from 'common/functions/allSettled';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { ClickhouseService } from '../storage';
@@ -34,7 +35,7 @@ export class DutyMetrics {
   @TrackTask('calc-all-duties-metrics')
   public async calculate(epoch: Epoch, possibleHighRewardValidators: string[]): Promise<any> {
     this.logger.log('Calculating duties metrics of user validators');
-    await Promise.all([
+    await allSettled([
       this.withPossibleHighReward(epoch, possibleHighRewardValidators),
       this.stateMetrics.calculate(epoch),
       this.withdrawalsMetrics.calculate(epoch),
@@ -45,7 +46,7 @@ export class DutyMetrics {
   }
 
   private async withPossibleHighReward(epoch: Epoch, possibleHighRewardValidators: string[]): Promise<void> {
-    await Promise.all([
+    await allSettled([
       this.attestationMetrics.calculate(epoch, possibleHighRewardValidators),
       this.proposeMetrics.calculate(epoch, possibleHighRewardValidators),
       this.syncMetrics.calculate(epoch, possibleHighRewardValidators),

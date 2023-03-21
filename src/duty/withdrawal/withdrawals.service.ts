@@ -4,11 +4,12 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService } from 'common/config';
 import { BlockInfoResponse, ConsensusProviderService } from 'common/eth-providers';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { allSettled } from 'common/functions/allSettled';
+import { range } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { RegistryService } from 'common/validators-registry';
 import { ClickhouseService } from 'storage/clickhouse';
 
-import { range } from '../../common/functions/range';
 import { SummaryService } from '../summary';
 
 @Injectable()
@@ -30,7 +31,7 @@ export class WithdrawalsService {
     const firstSlotInEpoch = epoch * slotsInEpoch;
     const slots: number[] = range(firstSlotInEpoch, firstSlotInEpoch + slotsInEpoch);
     const toFetch = slots.map((s) => this.clClient.getBlockInfo(s));
-    const blocks = (await Promise.all(toFetch)).filter((b) => b != undefined) as BlockInfoResponse[];
+    const blocks = (await allSettled(toFetch)).filter((b) => b != undefined) as BlockInfoResponse[];
     for (const block of blocks) {
       const withdrawals = block.message.body.execution_payload.withdrawals ?? [];
       for (const withdrawal of withdrawals) {

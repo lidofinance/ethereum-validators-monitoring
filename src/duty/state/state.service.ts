@@ -5,15 +5,17 @@ import { chain } from 'stream-chain';
 import { parser } from 'stream-json';
 import { pick } from 'stream-json/filters/Pick';
 import { streamArray } from 'stream-json/streamers/StreamArray';
+import { batch } from 'stream-json/utils/Batch';
 
 import { ConfigService } from 'common/config';
 import { ConsensusProviderService, StateValidatorResponse, ValStatus } from 'common/eth-providers';
 import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
+import { bigNumberSqrt } from 'common/functions/bigNumberSqrt';
+import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { RegistryService } from 'common/validators-registry';
 import { ClickhouseService } from 'storage/clickhouse';
 
-import { bigNumberSqrt } from '../../common/functions/bigNumberSqrt';
 import { SummaryService } from '../summary';
 
 @Injectable()
@@ -37,27 +39,30 @@ export class StateService {
     this.logger.log('Processing all validators state');
     let activeValidatorsCount = 0;
     let activeValidatorsEffectiveBalance = 0n;
-    const pipeline = chain([readStream, parser(), pick({ filter: 'data' }), streamArray()]);
+    const pipeline = chain([readStream, parser(), pick({ filter: 'data' }), streamArray(), batch({ batchSize: 10000 })]);
     await new Promise((resolve, reject) => {
-      pipeline.on('data', async (data) => {
-        const state: StateValidatorResponse = data.value;
-        const index = Number(state.index);
-        const operator = this.registry.getOperatorKey(state.validator.pubkey);
-        this.summary.epoch(epoch).set({
-          epoch,
-          val_id: index,
-          val_pubkey: state.validator.pubkey,
-          val_nos_id: operator?.operatorIndex,
-          val_nos_name: operator?.operatorName,
-          val_slashed: state.validator.slashed,
-          val_status: state.status,
-          val_balance: BigInt(state.balance),
-          val_effective_balance: BigInt(state.validator.effective_balance),
-        });
-        if ([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(state.status)) {
-          activeValidatorsCount++;
-          activeValidatorsEffectiveBalance += BigInt(state.validator.effective_balance) / BigInt(10 ** 9);
+      pipeline.on('data', async (batch) => {
+        for (const data of batch) {
+          const state: StateValidatorResponse = data.value;
+          const index = Number(state.index);
+          const operator = this.registry.getOperatorKey(state.validator.pubkey);
+          this.summary.epoch(epoch).set({
+            epoch,
+            val_id: index,
+            val_pubkey: state.validator.pubkey,
+            val_nos_id: operator?.operatorIndex,
+            val_nos_name: operator?.operatorName,
+            val_slashed: state.validator.slashed,
+            val_status: state.status,
+            val_balance: BigInt(state.balance),
+            val_effective_balance: BigInt(state.validator.effective_balance),
+          });
+          if ([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(state.status)) {
+            activeValidatorsCount++;
+            activeValidatorsEffectiveBalance += BigInt(state.validator.effective_balance) / BigInt(10 ** 9);
+          }
         }
+        await unblock();
       });
       pipeline.on('error', (error) => reject(error));
       pipeline.on('end', () => resolve(true));
