@@ -39,31 +39,31 @@ export class StateService {
     this.logger.log('Processing all validators state');
     let activeValidatorsCount = 0;
     let activeValidatorsEffectiveBalance = 0n;
-    const pipeline = chain([readStream, parser(), pick({ filter: 'data' }), streamArray(), batch({ batchSize: 10000 })]);
-    await new Promise((resolve, reject) => {
-      pipeline.on('data', async (batch) => {
-        for (const data of batch) {
-          const state: StateValidatorResponse = data.value;
-          const index = Number(state.index);
-          const operator = this.registry.getOperatorKey(state.validator.pubkey);
-          this.summary.epoch(epoch).set({
-            epoch,
-            val_id: index,
-            val_pubkey: state.validator.pubkey,
-            val_nos_id: operator?.operatorIndex,
-            val_nos_name: operator?.operatorName,
-            val_slashed: state.validator.slashed,
-            val_status: state.status,
-            val_balance: BigInt(state.balance),
-            val_effective_balance: BigInt(state.validator.effective_balance),
-          });
-          if ([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(state.status)) {
-            activeValidatorsCount++;
-            activeValidatorsEffectiveBalance += BigInt(state.validator.effective_balance) / BigInt(10 ** 9);
-          }
+    const pipeline = chain([readStream, parser(), pick({ filter: 'data' }), streamArray(), batch({ batchSize: 1000 })]);
+    pipeline.on('data', async (batch) => {
+      for (const data of batch) {
+        const state: StateValidatorResponse = data.value;
+        const index = Number(state.index);
+        const operator = this.registry.getOperatorKey(state.validator.pubkey);
+        this.summary.epoch(epoch).set({
+          epoch,
+          val_id: index,
+          val_pubkey: state.validator.pubkey,
+          val_nos_id: operator?.operatorIndex,
+          val_nos_name: operator?.operatorName,
+          val_slashed: state.validator.slashed,
+          val_status: state.status,
+          val_balance: BigInt(state.balance),
+          val_effective_balance: BigInt(state.validator.effective_balance),
+        });
+        if ([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(state.status)) {
+          activeValidatorsCount++;
+          activeValidatorsEffectiveBalance += BigInt(state.validator.effective_balance) / BigInt(10 ** 9);
         }
-        await unblock();
-      });
+      }
+      await unblock();
+    });
+    await new Promise((resolve, reject) => {
       pipeline.on('error', (error) => reject(error));
       pipeline.on('end', () => resolve(true));
     }).finally(() => pipeline.destroy());

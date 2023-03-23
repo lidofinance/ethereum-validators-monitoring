@@ -106,9 +106,17 @@ export class DutyService {
 
   @TrackTask('fill-epoch-metadata')
   protected async fillCurrentEpochMetadata(epoch: Epoch): Promise<any> {
+    await this.fillAttestationAndSyncMetadata(epoch);
+    await this.fillProposalRewardsMetadata(epoch);
+  }
+
+  @TrackTask('fill-att-sync-epoch-metadata')
+  protected async fillAttestationAndSyncMetadata(epoch: Epoch): Promise<any> {
     const meta = this.summary.epoch(epoch).getMeta();
     meta.sync.per_block_reward = Number(syncReward(meta.state.active_validators_total_increments, meta.state.base_reward));
     const perSyncProposerReward = Math.floor((meta.sync.per_block_reward * PROPOSER_WEIGHT) / (WEIGHT_DENOMINATOR - PROPOSER_WEIGHT));
+    const maxBatchSize = 1000;
+    let index = 0;
     for (const v of this.summary.epoch(epoch).values()) {
       const effectiveBalance = v.val_effective_balance;
       const increments = Number(effectiveBalance / BigInt(10 ** 9));
@@ -131,7 +139,19 @@ export class DutyService {
           meta.sync.blocks_rewards.set(block, meta.sync.blocks_rewards.get(block) + BigInt(perSyncProposerReward));
         }
       }
+      index++;
+      if (index % maxBatchSize == 0) {
+        await unblock();
+      }
     }
+    this.summary.epoch(epoch).setMeta(meta);
+  }
+
+  @TrackTask('fill-prop-reward-epoch-metadata')
+  protected async fillProposalRewardsMetadata(epoch: Epoch): Promise<any> {
+    const meta = this.summary.epoch(epoch).getMeta();
+    const maxBatchSize = 1000;
+    let index = 0;
     for (const [block, attestations] of meta.attestation.blocks_attestations.entries()) {
       // There is only one right way to calculate proposal reward - calculate it from each aggregated attestation
       // And attestation flag should be included for the first time. `AttestationService.processAttestation` is responsible for this
@@ -158,8 +178,11 @@ export class DutyService {
         }
         rewards = Math.floor(proposerAttPartReward(rewards));
         meta.attestation.blocks_rewards.set(block, meta.attestation.blocks_rewards.get(block) + BigInt(rewards));
+        index++;
+        if (index % maxBatchSize == 0) {
+          await unblock();
+        }
       }
-      await unblock();
     }
     this.summary.epoch(epoch).setMeta(meta);
   }

@@ -53,6 +53,8 @@ export class AttestationService {
     this.logger.log(`Getting attestation duties info`);
     const committees = await this.getAttestationCommittees(stateSlot);
     this.logger.log(`Processing attestation duty info`);
+    const maxBatchSize = 1000;
+    let index = 0;
     for (const attestation of attestations) {
       // Each attestation corresponds to committee. Committee may have several aggregate attestations
       const committee = committees.get(`${attestation.committee_index}_${attestation.slot}`);
@@ -62,7 +64,10 @@ export class AttestationService {
       // We need to unblock event loop immediately after each iteration
       // It makes this cycle slower but safer (but since it is executed async, impact will be minimal)
       // If we don't do this, it can freeze scraping Prometheus metrics and other important operations
-      await unblock();
+      index++;
+      if (index % maxBatchSize == 0) {
+        await unblock();
+      }
     }
   }
 
