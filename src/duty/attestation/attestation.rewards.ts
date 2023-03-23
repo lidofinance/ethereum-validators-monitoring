@@ -43,7 +43,7 @@ export class AttestationRewards {
       Math.trunc(perfect.source * epochMeta.state.base_reward * 32 * sourceParticipation) +
       Math.trunc(perfect.target * epochMeta.state.base_reward * 32 * targetParticipation) +
       Math.trunc(perfect.head * epochMeta.state.base_reward * 32 * headParticipation);
-    const maxBatchSize = 10000;
+    const maxBatchSize = 1000;
     let index = 0;
     for (const v of this.summary.epoch(epoch).values()) {
       // Calculate attestation rewards from previous epoch
