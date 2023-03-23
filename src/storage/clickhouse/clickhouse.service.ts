@@ -1,3 +1,5 @@
+import * as Stream from 'stream';
+
 import { ClickHouseClient, createClient } from '@clickhouse/client';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
@@ -136,7 +138,7 @@ export class ClickhouseService implements OnModuleInit {
           async () =>
             await this.db.insert({
               table: 'validators_index',
-              values: indexesChunk,
+              values: Stream.Readable.from(indexesChunk, { objectMode: true }),
               format: 'JSONEachRow',
             }),
         ),
@@ -144,7 +146,7 @@ export class ClickhouseService implements OnModuleInit {
           async () =>
             await this.db.insert({
               table: 'validators_summary',
-              values: summaryChunk,
+              values: Stream.Readable.from(summaryChunk, { objectMode: true }),
               format: 'JSONEachRow',
             }),
         ),
