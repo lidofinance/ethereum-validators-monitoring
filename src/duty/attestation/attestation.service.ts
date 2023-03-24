@@ -5,9 +5,10 @@ import { chain } from 'stream-chain';
 import { parser } from 'stream-json';
 import { pick } from 'stream-json/filters/Pick';
 import { streamArray } from 'stream-json/streamers/StreamArray';
+import { batch } from 'stream-json/utils/Batch';
 
 import { ConfigService } from 'common/config';
-import { ConsensusProviderService } from 'common/eth-providers';
+import { AttestationCommitteeInfo, ConsensusProviderService } from 'common/eth-providers';
 import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { range } from 'common/functions/range';
@@ -53,7 +54,7 @@ export class AttestationService {
     this.logger.log(`Getting attestation duties info`);
     const committees = await this.getAttestationCommittees(stateSlot);
     this.logger.log(`Processing attestation duty info`);
-    const maxBatchSize = 1000;
+    const maxBatchSize = 5;
     let index = 0;
     for (const attestation of attestations) {
       // Each attestation corresponds to committee. Committee may have several aggregate attestations
@@ -163,25 +164,23 @@ export class AttestationService {
 
   @TrackTask('get-attestation-committees')
   protected async getAttestationCommittees(stateSlot: Slot): Promise<Map<string, number[]>> {
-    const maxBatchSize = 1000;
-    let index = 0;
     const committees = new Map<string, number[]>();
     const processCommittees = async (epoch: Epoch) => {
       const stream = await this.clClient.getAttestationCommitteesInfo(stateSlot, epoch);
-      const pipeline = chain([stream, parser(), pick({ filter: 'data' }), streamArray(), (data) => data.value]);
-      pipeline.on('data', async (committee) => {
-        // validator doesn't attests by default
-        committee.validators.forEach((index) =>
-          this.summary.epoch(epoch).set({ epoch: epoch, val_id: Number(index), att_happened: false }),
-        );
-        committees.set(
-          `${committee.index}_${committee.slot}`,
-          committee.validators.map((v) => Number(v)),
-        );
-        index++;
-        if (index % maxBatchSize == 0) {
-          await unblock();
+      const pipeline = chain([stream, parser(), pick({ filter: 'data' }), streamArray(), batch({ batchSize: 5 })]);
+      pipeline.on('data', async (batch) => {
+        for (const data of batch) {
+          const committee: AttestationCommitteeInfo = data.value;
+          // validator doesn't attests by default
+          committee.validators.forEach((index) =>
+            this.summary.epoch(epoch).set({ epoch: epoch, val_id: Number(index), att_happened: false }),
+          );
+          committees.set(
+            `${committee.index}_${committee.slot}`,
+            committee.validators.map((v) => Number(v)),
+          );
         }
+        await unblock();
       });
       return new Promise((resolve, reject) => {
         pipeline.on('error', (error) => reject(error));
