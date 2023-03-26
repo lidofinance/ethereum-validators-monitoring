@@ -11,7 +11,6 @@ import { ConfigService } from 'common/config';
 import { ConsensusProviderService, StateValidatorResponse, ValStatus } from 'common/eth-providers';
 import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
 import { bigNumberSqrt } from 'common/functions/bigNumberSqrt';
-import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { RegistryService } from 'common/validators-registry';
 import { ClickhouseService } from 'storage/clickhouse';
@@ -40,7 +39,7 @@ export class StateService {
     let activeValidatorsCount = 0;
     let activeValidatorsEffectiveBalance = 0n;
     const pipeline = chain([readStream, parser(), pick({ filter: 'data' }), streamArray(), batch({ batchSize: 1000 })]);
-    pipeline.on('data', async (batch) => {
+    pipeline.on('data', (batch) => {
       for (const data of batch) {
         const state: StateValidatorResponse = data.value;
         const index = Number(state.index);
@@ -61,7 +60,6 @@ export class StateService {
           activeValidatorsEffectiveBalance += BigInt(state.validator.effective_balance) / BigInt(10 ** 9);
         }
       }
-      await unblock();
     });
     await new Promise((resolve, reject) => {
       pipeline.on('error', (error) => reject(error));

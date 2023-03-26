@@ -403,21 +403,20 @@ export class ConsensusProviderService {
     const readStream = got.stream.get(urljoin(apiURL, subUrl), {
       timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') },
     });
-    const promisedStream = async () =>
-      new Promise((resolve, reject) => {
-        readStream.on('response', (r: Response) => {
-          if (r.statusCode != 200) reject(new HTTPError(r));
-          resolve(readStream);
-        });
-        readStream.on('error', (e) => reject(e));
-      })
-        .then((r: Request) => r)
-        .catch((e) => {
-          if (e instanceof HTTPError) {
-            throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
-          }
-          throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-        });
-    return await promisedStream();
+
+    return new Promise((resolve, reject) => {
+      readStream.on('response', (r: Response) => {
+        if (r.statusCode != 200) reject(new HTTPError(r));
+        resolve(readStream);
+      });
+      readStream.on('error', (e) => reject(e));
+    })
+      .then((r: Request) => r)
+      .catch((e) => {
+        if (e instanceof HTTPError) {
+          throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
+        }
+        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
+      });
   }
 }
