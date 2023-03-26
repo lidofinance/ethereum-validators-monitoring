@@ -1,6 +1,6 @@
 import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
 import { Inject, Injectable } from '@nestjs/common';
-import got from 'got';
+import { got } from 'got-cjs';
 
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';

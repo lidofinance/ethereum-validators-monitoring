@@ -1,7 +1,7 @@
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
-import got, { HTTPError, Response } from 'got';
+import { HTTPError, Response, got } from 'got-cjs';
 
 import { ConfigService } from 'common/config';
 import { range } from 'common/functions/range';
