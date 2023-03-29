@@ -27,7 +27,7 @@ import { BlockId, Epoch, RootHex, Slot, StateId } from './types';
 interface RequestRetryOptions {
   maxRetries?: number;
   dataOnly?: boolean;
-  useFallbackOnRejected?: (e: any) => boolean;
+  useFallbackOnRejected?: (last_error: any, current_error: any) => boolean;
   useFallbackOnResolved?: (r: any) => boolean;
 }
 
@@ -154,7 +154,16 @@ export class ConsensusProviderService {
 
     const blockHeader = await this.retryRequest<BlockHeaderResponse>(
       async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(blockId)),
-      { maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES') },
+      {
+        maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
+        useFallbackOnRejected: (last_fallback_err, curr_fallback_error) => {
+          if (last_fallback_err && last_fallback_err.$httpCode == 404 && curr_fallback_error.$httpCode != 404) {
+            this.logger.debug('Request error from last fallback was 404, but current is not. Will be used previous error');
+            throw last_fallback_err;
+          }
+          return true;
+        },
+      },
     ).catch((e) => {
       if (404 != e.$httpCode) {
         this.logger.error('Unexpected status code while fetching block header');
@@ -279,6 +288,13 @@ export class ConsensusProviderService {
       async (apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(blockId)),
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
+        useFallbackOnRejected: (last_fallback_err, curr_fallback_error) => {
+          if (last_fallback_err && last_fallback_err.$httpCode == 404 && curr_fallback_error.$httpCode != 404) {
+            this.logger.debug('Request error from last fallback was 404, but current is not. Will be used previous error');
+            throw last_fallback_err;
+          }
+          return true;
+        },
       },
     ).catch((e) => {
       if (404 != e.$httpCode) {
@@ -358,12 +374,12 @@ export class ConsensusProviderService {
           }
           return r;
         })
-        .catch((e: any) => {
-          if (options.useFallbackOnRejected(e)) {
-            err = e;
+        .catch((current_error: any) => {
+          if (options.useFallbackOnRejected(err, current_error)) {
+            err = current_error;
             return undefined;
           }
-          throw e;
+          throw current_error;
         });
       if (i == this.apiUrls.length - 1 && !res) {
         err.message = `Error while doing CL API request on all passed URLs. ${err.message}`;
