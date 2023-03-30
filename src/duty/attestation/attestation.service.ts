@@ -175,7 +175,7 @@ export class AttestationService {
       pick({ filter: 'data' }),
       streamArray(),
       batch({ batchSize: 5 }),
-      (batch) => processBatch(this.processedEpoch - 1, batch),
+      async (batch) => processBatch(this.processedEpoch - 1, batch),
     ]);
     const currPipeline = chain([
       currStream,
@@ -183,10 +183,11 @@ export class AttestationService {
       pick({ filter: 'data' }),
       streamArray(),
       batch({ batchSize: 5 }),
-      (batch) => processBatch(this.processedEpoch, batch),
+      async (batch) => processBatch(this.processedEpoch, batch),
     ]);
 
-    const processBatch = (epoch: Epoch, batch) => {
+    const processBatch = async (epoch: Epoch, batch) => {
+      await unblock();
       for (const data of batch) {
         const committee: AttestationCommitteeInfo = data.value;
         // validator doesn't attests by default
@@ -198,7 +199,6 @@ export class AttestationService {
           committee.validators.map((v) => Number(v)),
         );
       }
-      return batch;
     };
 
     const pipelineFinish = async (pipeline) => {
