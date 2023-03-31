@@ -393,10 +393,20 @@ export const userNodeOperatorsStatsQuery = (epoch: Epoch): string => `
       IF(val_status = '${ValStatus.ActiveOngoing}', count(val_status), 0) as a,
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) as p,
       IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) as s,
-      IF(val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'], count(val_status), 0) as wp,
-      IF(val_status in ['${ValStatus.WithdrawalPossible}', '${ValStatus.WithdrawalDone}'], count(val_status), 0) as w
+      IF(
+        (val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
+        OR
+        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
+        count(val_status), 0
+      ) as wp,
+      IF(
+        (val_status == '${ValStatus.WithdrawalDone}')
+        OR
+        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance == 0),
+        count(val_status), 0
+      ) as w
     FROM (
-      SELECT val_nos_id, val_status, val_slashed
+      SELECT val_nos_id, val_status, val_slashed, val_balance
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL and epoch = ${epoch}
@@ -419,10 +429,20 @@ export const userValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
       IF(val_status = '${ValStatus.ActiveOngoing}', count(val_status), 0) as a,
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) as p,
       IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) as s,
-      IF(val_status in ['${ValStatus.ActiveExiting}', '${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'], count(val_status), 0) as wp,
-      IF(val_status in ['${ValStatus.WithdrawalPossible}', '${ValStatus.WithdrawalDone}'], count(val_status), 0) as w
+      IF(
+        (val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
+        OR
+        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
+        count(val_status), 0
+      ) as wp,
+      IF(
+        (val_status == '${ValStatus.WithdrawalDone}')
+        OR
+        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance == 0),
+        count(val_status), 0
+      ) as w
     FROM (
-      SELECT val_status, val_slashed
+      SELECT val_status, val_slashed, val_balance
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL and epoch = ${epoch}
@@ -444,10 +464,20 @@ export const otherValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
       IF(val_status = '${ValStatus.ActiveOngoing}', count(val_status), 0) as a,
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) as p,
       IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) as s,
-      IF(val_status in ['${ValStatus.ActiveExiting}', '${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'], count(val_status), 0) as wp,
-      IF(val_status in ['${ValStatus.WithdrawalPossible}', '${ValStatus.WithdrawalDone}'], count(val_status), 0) as w
+      IF(
+        (val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
+        OR
+        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
+        count(val_status), 0
+      ) as wp,
+      IF(
+        (val_status == '${ValStatus.WithdrawalDone}')
+        OR
+        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance == 0),
+        count(val_status), 0
+      ) as w
     FROM (
-      SELECT val_status, val_slashed
+      SELECT val_status, val_slashed, val_balance
       FROM validators_summary
       WHERE
         val_nos_id IS NULL and epoch = ${epoch}
@@ -647,33 +677,33 @@ export const userNodeOperatorsWithdrawalsStats = (epoch: Epoch): string => `
     ifNull(
       sumIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance = 0
+        val_balance_withdrawn > 0 AND val_balance == 0
       ),
       0
     ) as full_withdrawn_sum,
     ifNull(
       sumIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance >= 32000000000 AND val_effective_balance = 32000000000
+        val_balance_withdrawn > 0 AND val_balance != 0
       ),
       0
     ) as partial_withdrawn_sum,
     ifNull(
       countIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance = 0
+        val_balance_withdrawn > 0 AND val_balance == 0
       ),
       0
     ) as full_withdrawn_count,
     ifNull(
       countIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance >= 32000000000 AND val_effective_balance = 32000000000
+        val_balance_withdrawn > 0 AND val_balance != 0
       ),
       0
     ) as partial_withdrawn_count
   FROM (
-    SELECT val_balance_withdrawn, val_effective_balance, val_balance, val_id, val_nos_id
+    SELECT val_balance_withdrawn, val_balance, val_id, val_nos_id
     FROM validators_summary
     WHERE
       val_nos_id IS NOT NULL AND
@@ -688,33 +718,33 @@ export const otherChainWithdrawalsStats = (epoch: Epoch): string => `
     ifNull(
       sumIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance = 0
+        val_balance_withdrawn > 0 AND val_balance == 0
       ),
       0
     ) as full_withdrawn_sum,
     ifNull(
       sumIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance >= 32000000000 AND val_effective_balance = 32000000000
+        val_balance_withdrawn > 0 AND val_balance != 0
       ),
       0
     ) as partial_withdrawn_sum,
     ifNull(
       countIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance = 0
+        val_balance_withdrawn > 0 AND val_balance == 0
       ),
       0
     ) as full_withdrawn_count,
     ifNull(
       countIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance >= 32000000000 AND val_effective_balance = 32000000000
+        val_balance_withdrawn > 0 AND val_balance != 0
       ),
       0
     ) as partial_withdrawn_count
   FROM (
-    SELECT val_balance_withdrawn, val_effective_balance, val_balance, val_id, val_nos_id
+    SELECT val_balance_withdrawn, val_balance, val_id, val_nos_id
     FROM validators_summary
     WHERE
       val_nos_id IS NULL AND
