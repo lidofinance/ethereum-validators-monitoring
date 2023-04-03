@@ -412,7 +412,7 @@ export const userNodeOperatorsStatsQuery = (epoch: Epoch): string => `
         val_nos_id IS NOT NULL and epoch = ${epoch}
       LIMIT 1 BY val_id
     )
-    GROUP BY val_nos_id, val_status, val_slashed
+    GROUP BY val_nos_id, val_status, val_slashed, val_balance
   )
   GROUP by val_nos_id
 `;
@@ -448,7 +448,7 @@ export const userValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
         val_nos_id IS NOT NULL and epoch = ${epoch}
       LIMIT 1 BY val_id
     )
-    GROUP BY val_status, val_slashed
+    GROUP BY val_status, val_slashed, val_balance
   )
 `;
 
@@ -483,7 +483,7 @@ export const otherValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
         val_nos_id IS NULL and epoch = ${epoch}
       LIMIT 1 BY val_id
     )
-    GROUP BY val_status, val_slashed
+    GROUP BY val_status, val_slashed, val_balance
   )
 `;
 
