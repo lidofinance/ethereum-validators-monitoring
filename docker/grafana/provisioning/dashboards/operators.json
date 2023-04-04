@@ -1373,7 +1373,7 @@
                   {
                     "targetBlank": true,
                     "title": "blockcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               }
@@ -1650,7 +1650,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -1776,7 +1776,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -1802,7 +1802,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/slot/${__value.raw}"
+                    "url": "https://beaconcha.in/slot/${__value.raw}"
                   }
                 ]
               }
@@ -1931,7 +1931,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -2032,7 +2032,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -2132,7 +2132,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -2245,7 +2245,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -2357,7 +2357,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -2787,7 +2787,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -2997,7 +2997,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -3023,7 +3023,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/slot/${__value.raw}"
+                        "url": "https://beaconcha.in/slot/${__value.raw}"
                       }
                     ]
                   }
@@ -3452,7 +3452,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -3751,7 +3751,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -3997,7 +3997,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -4243,7 +4243,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -4501,7 +4501,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -4746,7 +4746,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
