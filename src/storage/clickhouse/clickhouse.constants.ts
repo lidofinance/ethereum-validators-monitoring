@@ -710,7 +710,7 @@ export const userNodeOperatorsWithdrawalsStats = (epoch: Epoch): string => `
       epoch = ${epoch}
     LIMIT 1 BY val_id
   )
-  GROUP BY val_id, val_nos_id
+  GROUP BY val_nos_id
 `;
 
 export const otherChainWithdrawalsStats = (epoch: Epoch): string => `
