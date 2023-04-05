@@ -33,6 +33,7 @@ export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL AND
+        val_balance_withdrawn > 0 AND
         epoch > (${epoch} - 6) AND epoch <= ${epoch}
       LIMIT 1 BY epoch, val_id
     )
@@ -75,6 +76,7 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string =>
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL AND
+        val_balance_withdrawn > 0 AND
         epoch > (${epoch} - 6) AND epoch <= ${epoch}
       LIMIT 1 BY epoch, val_id
     )
@@ -117,6 +119,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL AND
+        val_balance_withdrawn > 0 AND
         epoch > (${epoch} - 6) AND epoch <= ${epoch}
       LIMIT 1 BY epoch, val_id
     )
@@ -325,6 +328,7 @@ export const totalBalance24hDifferenceQuery = (epoch: Epoch): string => `
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL AND
+        val_balance_withdrawn > 0 AND
         epoch > (${epoch} - 225) AND epoch <= ${epoch}
       LIMIT 1 BY epoch, val_id
     )
@@ -368,6 +372,7 @@ export const operatorBalance24hDifferenceQuery = (epoch: Epoch): string => `
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL AND
+        val_balance_withdrawn > 0 AND
         epoch > (${epoch} - 225) AND epoch <= ${epoch}
       LIMIT 1 BY epoch, val_id
     )
@@ -611,6 +616,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
         FROM validators_summary
         WHERE
           val_nos_id IS NOT NULL AND
+          val_balance_withdrawn > 0 AND
           epoch = ${epoch}
         LIMIT 1 BY val_id
       )
@@ -707,6 +713,7 @@ export const userNodeOperatorsWithdrawalsStats = (epoch: Epoch): string => `
     FROM validators_summary
     WHERE
       val_nos_id IS NOT NULL AND
+      val_balance_withdrawn > 0 AND
       epoch = ${epoch}
     LIMIT 1 BY val_id
   )
@@ -748,6 +755,7 @@ export const otherChainWithdrawalsStats = (epoch: Epoch): string => `
     FROM validators_summary
     WHERE
       val_nos_id IS NULL AND
+      val_balance_withdrawn > 0 AND
       epoch = ${epoch}
     LIMIT 1 BY val_id
   )
