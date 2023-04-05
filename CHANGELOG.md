@@ -1,3 +1,12 @@
+## [4.3.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.3.0...4.3.1) (2023-04-05)
+
+
+### Bug Fixes
+
+* too wide queries with withdrawals ([#150](https://github.com/lidofinance/ethereum-validators-monitoring/issues/150)) ([d674e03](https://github.com/lidofinance/ethereum-validators-monitoring/commit/d674e03ae201618c6ad970fb2e8c166eb624e3aa))
+
+
+
 # [4.3.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.2.2...4.3.0) (2023-04-05)
 
 
@@ -111,15 +120,6 @@
 * DB_NAME and other DB env vars now make sense ([ca44ece](https://github.com/lidofinance/ethereum-validators-monitoring/commit/ca44ece380730b73e9168054afe1867549e925aa))
 * fantom alert ([b6bb128](https://github.com/lidofinance/ethereum-validators-monitoring/commit/b6bb128d75459ee891264f7d8e0cd46c0d902b54))
 * health check ([a456793](https://github.com/lidofinance/ethereum-validators-monitoring/commit/a456793faab1d67ed7221524553249dea8bc44a6))
-
-
-
-## [4.0.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.0.0...4.0.1) (2022-11-22)
-
-
-### Bug Fixes
-
-* clear cache ([#71](https://github.com/lidofinance/ethereum-validators-monitoring/issues/71)) ([8d38ef3](https://github.com/lidofinance/ethereum-validators-monitoring/commit/8d38ef3ed60f81ee162509bf0a455b4b6e9e903e))
 
 
 
