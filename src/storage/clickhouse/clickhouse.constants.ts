@@ -713,6 +713,7 @@ export const userNodeOperatorsWithdrawalsStats = (epoch: Epoch): string => `
     FROM validators_summary
     WHERE
       val_nos_id IS NOT NULL AND
+      val_balance_withdrawn > 0 AND
       epoch = ${epoch}
     LIMIT 1 BY val_id
   )
@@ -754,6 +755,7 @@ export const otherChainWithdrawalsStats = (epoch: Epoch): string => `
     FROM validators_summary
     WHERE
       val_nos_id IS NULL AND
+      val_balance_withdrawn > 0 AND
       epoch = ${epoch}
     LIMIT 1 BY val_id
   )
