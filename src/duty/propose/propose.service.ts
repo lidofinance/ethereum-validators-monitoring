@@ -20,10 +20,8 @@ export class ProposeService {
 
   @TrackTask('check-proposer-duties')
   public async check(epoch: Epoch): Promise<void> {
-    const propDutyDependentRoot = await this.clClient.getDutyDependentRoot(epoch);
-    this.logger.log(`Proposer Duty root: ${propDutyDependentRoot}`);
     this.logger.log(`Start getting proposers duties info`);
-    const proposersDutyInfo = await this.clClient.getCanonicalProposerDuties(epoch, propDutyDependentRoot);
+    const proposersDutyInfo = await this.clClient.getCanonicalProposerDuties(epoch);
     this.logger.log(`Processing proposers duties info`);
     for (const prop of proposersDutyInfo) {
       const index = Number(prop.validator_index);
