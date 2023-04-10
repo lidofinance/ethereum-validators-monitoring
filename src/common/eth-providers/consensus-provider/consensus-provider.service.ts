@@ -22,7 +22,7 @@ import {
   SyncCommitteeInfo,
   VersionResponse,
 } from './intefaces';
-import { BlockId, Epoch, RootHex, Slot, StateId } from './types';
+import { BlockId, Epoch, Slot, StateId } from './types';
 
 interface RequestRetryOptions {
   maxRetries?: number;
@@ -145,9 +145,9 @@ export class ConsensusProviderService {
     });
   }
 
-  public async getBlockHeader(blockId: BlockId): Promise<BlockHeaderResponse | void> {
+  public async getBlockHeader(blockId: BlockId, ignoreCache = false): Promise<BlockHeaderResponse | void> {
     const cached: BlockCache = this.cache.get(String(blockId));
-    if (cached && (cached.missed || cached.header)) {
+    if (!ignoreCache && cached && (cached.missed || cached.header)) {
       this.logger.debug(`Get ${blockId} header from blocks cache`);
       return cached.missed ? undefined : cached.header;
     }
@@ -171,7 +171,9 @@ export class ConsensusProviderService {
       }
     });
 
-    this.cache.set(String(blockId), { missed: !blockHeader, header: blockHeader });
+    if (!ignoreCache) {
+      this.cache.set(String(blockId), { missed: !blockHeader, header: blockHeader });
+    }
 
     return blockHeader;
   }
@@ -210,8 +212,12 @@ export class ConsensusProviderService {
     return header;
   }
 
-  public async getPreviousNotMissedBlockHeader(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
-    const header = await this.getBlockHeader(slot);
+  public async getPreviousNotMissedBlockHeader(
+    slot: Slot,
+    maxDeep = this.defaultMaxSlotDeepCount,
+    ignoreCache = false,
+  ): Promise<BlockHeaderResponse> {
+    const header = await this.getBlockHeader(slot, ignoreCache);
     if (!header) {
       if (maxDeep < 1) {
         throw new MaxDeepError(`Error when trying to get previous not missed block header. From ${slot} to ${slot - maxDeep}`);
@@ -225,10 +231,10 @@ export class ConsensusProviderService {
   /**
    * Trying to get attester or proposer duty dependent block root
    */
-  public async getDutyDependentRoot(epoch: Epoch): Promise<string> {
+  public async getDutyDependentRoot(epoch: Epoch, ignoreCache = false): Promise<string> {
     this.logger.log(`Getting duty dependent root for epoch ${epoch}`);
     const dutyRootSlot = epoch * this.config.get('FETCH_INTERVAL_SLOTS') - 1;
-    return (await this.getPreviousNotMissedBlockHeader(dutyRootSlot)).root;
+    return (await this.getPreviousNotMissedBlockHeader(dutyRootSlot, this.defaultMaxSlotDeepCount, ignoreCache)).root;
   }
 
   /**
@@ -321,13 +327,11 @@ export class ConsensusProviderService {
     return await this.retryRequest(async (apiURL: string) => this.apiGet(apiURL, this.endpoints.syncCommittee(stateId, epoch)));
   }
 
-  public async getCanonicalProposerDuties(
-    epoch: Epoch,
-    dependentRoot: RootHex,
-    maxRetriesForGetCanonical = 3,
-  ): Promise<ProposerDutyInfo[]> {
+  public async getCanonicalProposerDuties(epoch: Epoch, maxRetriesForGetCanonical = 3, ignoreCache = false): Promise<ProposerDutyInfo[]> {
     const retry = retrier(this.logger, maxRetriesForGetCanonical, 100, 10000, true);
     const request = async () => {
+      const dependentRoot = await this.getDutyDependentRoot(epoch, ignoreCache);
+      this.logger.log(`Proposer Duty root: ${dependentRoot}`);
       const res = <{ dependent_root: string; data: ProposerDutyInfo[] }>await this.retryRequest(
         async (apiURL: string) => this.apiGet(apiURL, this.endpoints.proposerDutes(epoch)),
         { dataOnly: false },
