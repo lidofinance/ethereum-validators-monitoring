@@ -96,10 +96,9 @@ export class DutyService {
     const actualSlotHeader = <BlockHeaderResponse>await this.clClient.getBlockHeader('head');
     const headEpoch = Math.trunc(actualSlotHeader.header.message.slot / this.config.get('FETCH_INTERVAL_SLOTS'));
     this.logger.log('Getting possible high reward validator indexes');
-    const propDependentRoot = await this.clClient.getDutyDependentRoot(headEpoch);
     const [sync, prop] = await allSettled([
       this.clClient.getSyncCommitteeInfo('finalized', headEpoch),
-      this.clClient.getCanonicalProposerDuties(headEpoch, propDependentRoot),
+      this.clClient.getCanonicalProposerDuties(headEpoch, 3, true),
     ]);
     return [...new Set([...prop.map((v) => v.validator_index), ...sync.validators])];
   }
