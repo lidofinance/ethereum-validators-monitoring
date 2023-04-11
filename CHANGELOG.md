@@ -1,3 +1,12 @@
+## [4.3.2](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.3.1...4.3.2) (2023-04-11)
+
+
+### Bug Fixes
+
+* ignore cache while fetching data from head ([#155](https://github.com/lidofinance/ethereum-validators-monitoring/issues/155)) ([bddfdef](https://github.com/lidofinance/ethereum-validators-monitoring/commit/bddfdefcbb84171ba648f421bc03a7130289b397))
+
+
+
 ## [4.3.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.3.0...4.3.1) (2023-04-05)
 
 
@@ -108,18 +117,6 @@
 ### Bug Fixes
 
 * 'operator_balance_24h_difference' metric ([#82](https://github.com/lidofinance/ethereum-validators-monitoring/issues/82)) ([9619376](https://github.com/lidofinance/ethereum-validators-monitoring/commit/961937621ebbd287bec0b4a2ad463522f4392b93))
-
-
-
-## [4.0.2](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.0.1...4.0.2) (2022-11-29)
-
-
-### Bug Fixes
-
-* compose, readme ([1bcfddd](https://github.com/lidofinance/ethereum-validators-monitoring/commit/1bcfddd62b1a52e80d41191064b300b9ac00027c))
-* DB_NAME and other DB env vars now make sense ([ca44ece](https://github.com/lidofinance/ethereum-validators-monitoring/commit/ca44ece380730b73e9168054afe1867549e925aa))
-* fantom alert ([b6bb128](https://github.com/lidofinance/ethereum-validators-monitoring/commit/b6bb128d75459ee891264f7d8e0cd46c0d902b54))
-* health check ([a456793](https://github.com/lidofinance/ethereum-validators-monitoring/commit/a456793faab1d67ed7221524553249dea8bc44a6))
 
 
 
