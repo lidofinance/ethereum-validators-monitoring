@@ -3,7 +3,7 @@ groups:
     rules:
 
       - alert: UserSlashedValidators
-        expr: (ethereum_validators_monitoring_user_validators{status="slashed"} - ethereum_validators_monitoring_user_validators{status="slashed"} offset 1m) AND ON (nos_name) delta(ethereum_validators_monitoring_user_validators{status="slashed"}[1m]) > 0
+        expr: (ethereum_validators_monitoring_user_validators{status="slashed"} - ethereum_validators_monitoring_user_validators{status="slashed"} offset 1m) > 0
         labels:
           severity: critical
         annotations:
