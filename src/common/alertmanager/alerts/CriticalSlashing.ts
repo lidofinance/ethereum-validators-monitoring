@@ -29,13 +29,14 @@ export class CriticalSlashing extends Alert {
   }
 
   sendRule(ruleResult: AlertRuleResult): boolean {
+    this.sendTimestamp = Date.now();
     return !!Object.values(ruleResult).length;
   }
 
   alertBody(ruleResult: AlertRuleResult): AlertRequestBody {
     return {
       startsAt: new Date(this.sendTimestamp).toISOString(),
-      endsAt: new Date(new Date(this.sendTimestamp).setMinutes(new Date(this.sendTimestamp).getMinutes() + 1)).toISOString(),
+      endsAt: new Date(new Date(this.sendTimestamp).setMinutes(new Date(this.sendTimestamp).getMinutes() + 2)).toISOString(),
       labels: { alertname: this.alertname, severity: 'critical', ...this.config.get('CRITICAL_ALERTS_ALERTMANAGER_LABELS') },
       annotations: {
         summary: `${Object.values(ruleResult).length} Node Operators with SLASHED validators`,
