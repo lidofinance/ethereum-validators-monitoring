@@ -52,7 +52,7 @@ export class CriticalMissedAttestations extends Alert {
   alertBody(ruleResult: AlertRuleResult): AlertRequestBody {
     return {
       startsAt: new Date(this.sendTimestamp).toISOString(),
-      endsAt: new Date(new Date(this.sendTimestamp).setMinutes(new Date(this.sendTimestamp).getMinutes() + 1)).toISOString(),
+      endsAt: new Date(new Date(this.sendTimestamp).setMinutes(new Date(this.sendTimestamp).getMinutes() + 2)).toISOString(),
       labels: {
         alertname: this.alertname,
         severity: 'critical',

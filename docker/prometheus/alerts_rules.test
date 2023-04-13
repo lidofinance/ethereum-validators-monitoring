@@ -2,7 +2,6 @@
 evaluation_interval: 1m
 rule_files:
   - alerts_rules.yml
-  - fires.yml
 tests:
   - interval: 10s
     input_series:
@@ -143,9 +142,7 @@ tests:
               field_name: "Operator 1"
               field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-              footer_text: |-
-                Operator 1 • 1 fires in last 1h
-                Epoch • 1
+              footer_text: "Epoch • 1"
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
       - alertname: NumValidatorsWithNegativeDelta
         eval_time: 17m
@@ -162,9 +159,7 @@ tests:
               field_name: "Operator 1"
               field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-              footer_text: |-
-                Operator 1 • 2 fires in last 1h
-                Epoch • 2
+              footer_text: "Epoch • 2"
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
       - alertname: NumValidatorsWithNegativeDelta
         eval_time: 25m
