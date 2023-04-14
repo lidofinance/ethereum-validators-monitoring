@@ -92,7 +92,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
     current.val_nos_id as val_nos_id,
     count(current.val_id) AS amount
   FROM (
-      SELECT val_balance, val_id, val_nos_id
+      SELECT val_balance, val_id, val_nos_id, val_slashed
       FROM validators_summary
       WHERE
         val_status != '${ValStatus.PendingQueued}' AND
@@ -128,7 +128,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
   ON
     withdrawals.val_id = current.val_id
   GROUP BY current.val_nos_id
-  HAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0
+  HAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0
 `;
 
 export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (

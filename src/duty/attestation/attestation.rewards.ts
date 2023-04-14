@@ -67,6 +67,14 @@ export class AttestationRewards {
       let att_earned_reward = 0;
       let att_missed_reward = 0;
       let att_penalty = 0;
+      if (v.val_slashed) {
+        // If validator is slashed, we calculate it as if it missed attestation
+        // And set their attestation data to undefined, because there is no sense to consider attestation from slashed validator
+        pv.att_happened = undefined;
+        pv.att_valid_source = undefined;
+        pv.att_valid_target = undefined;
+        pv.att_valid_head = undefined;
+      }
       const rewards = getRewards({ source: pv.att_valid_source, target: pv.att_valid_target, head: pv.att_valid_head });
       const penalties = getPenalties({ source: pv.att_valid_source, target: pv.att_valid_target, head: pv.att_valid_head });
       const rewardSource = Math.trunc(rewards.source * epochMeta.state.base_reward * increments * sourceParticipation);
