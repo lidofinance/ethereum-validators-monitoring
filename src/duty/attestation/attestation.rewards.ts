@@ -71,6 +71,7 @@ export class AttestationRewards {
         // If validator is slashed, we calculate it as if it missed attestation
         // And set their attestation data to undefined, because there is no sense to consider attestation from slashed validator
         pv.att_happened = undefined;
+        pv.att_inc_delay = undefined;
         pv.att_valid_source = undefined;
         pv.att_valid_target = undefined;
         pv.att_valid_head = undefined;
