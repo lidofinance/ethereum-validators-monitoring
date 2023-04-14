@@ -40,7 +40,7 @@
     "@mikro-orm/sqlite": "^5.3.1",
     "@nestjs/common": "^8.2.5",
     "@nestjs/config": "^2.2.0",
-    "@nestjs/core": "^8.2.5",
+    "@nestjs/core": "^9.0.5",
     "@nestjs/platform-fastify": "^9.0.8",
     "@nestjs/terminus": "^8.0.4",
     "@types/js-yaml": "^4.0.5",
