@@ -1,3 +1,13 @@
+## [4.3.3](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.3.2...4.3.3) (2023-04-14)
+
+
+### Bug Fixes
+
+* critical slashing alert ([#159](https://github.com/lidofinance/ethereum-validators-monitoring/issues/159)) ([006ec38](https://github.com/lidofinance/ethereum-validators-monitoring/commit/006ec380f56446e1c7e1f0770078a89e65bec27b))
+* penalty calculation for `active_slashed` ([#160](https://github.com/lidofinance/ethereum-validators-monitoring/issues/160)) ([46be064](https://github.com/lidofinance/ethereum-validators-monitoring/commit/46be064c612debd845337e47ca2be74818497999))
+
+
+
 ## [4.3.2](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.3.1...4.3.2) (2023-04-11)
 
 
@@ -108,15 +118,6 @@
 ### Features
 
 * Develop ([#96](https://github.com/lidofinance/ethereum-validators-monitoring/issues/96)) ([0981e34](https://github.com/lidofinance/ethereum-validators-monitoring/commit/0981e345109ffe69a823396906b618fc5582f10b)), closes [#86](https://github.com/lidofinance/ethereum-validators-monitoring/issues/86) [#87](https://github.com/lidofinance/ethereum-validators-monitoring/issues/87) [#85](https://github.com/lidofinance/ethereum-validators-monitoring/issues/85) [#89](https://github.com/lidofinance/ethereum-validators-monitoring/issues/89) [#91](https://github.com/lidofinance/ethereum-validators-monitoring/issues/91) [#93](https://github.com/lidofinance/ethereum-validators-monitoring/issues/93) [#95](https://github.com/lidofinance/ethereum-validators-monitoring/issues/95) [#90](https://github.com/lidofinance/ethereum-validators-monitoring/issues/90)
-
-
-
-## [4.0.3](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.0.2...4.0.3) (2022-12-08)
-
-
-### Bug Fixes
-
-* 'operator_balance_24h_difference' metric ([#82](https://github.com/lidofinance/ethereum-validators-monitoring/issues/82)) ([9619376](https://github.com/lidofinance/ethereum-validators-monitoring/commit/961937621ebbd287bec0b4a2ad463522f4392b93))
 
 
 
