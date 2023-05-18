@@ -1,9 +1,17 @@
+import { readFile } from 'fs/promises';
+
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { load } from 'js-yaml';
 
+import { ConfigService } from 'common/config';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
 import { REGISTRY_SOURCE, RegistrySource, RegistrySourceKeyWithOperatorName } from './registry-source.interface';
+
+interface StuckValidatorsFileContent {
+  keys: string[];
+}
 
 @Injectable()
 export class RegistryService {
@@ -11,15 +19,18 @@ export class RegistryService {
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     @Inject(REGISTRY_SOURCE) public readonly source: RegistrySource,
     protected readonly prometheus: PrometheusService,
+    protected readonly config: ConfigService,
   ) {}
 
   protected lastTimestamp = 0;
 
   protected operators = [];
+  protected stuckKeys = [];
 
   @TrackTask('update-validators')
   public async updateKeysRegistry(timestamp: number): Promise<void> {
-    await this.source.update();
+    const tasks = await Promise.all([this.source.update(), this.readStuckKeysFile()]);
+    this.stuckKeys = tasks[1];
     await this.updateTimestamp();
     if (timestamp > this.lastTimestamp) {
       const lastUpdateTime = new Date(this.lastTimestamp * 1000).toISOString();
@@ -37,6 +48,24 @@ export class RegistryService {
 
   public getOperators() {
     return this.operators;
+  }
+
+  public getStuckKeys() {
+    return this.stuckKeys;
+  }
+
+  /**
+   * Returns keys of validators that are stuck and will not be monitored
+   * */
+  protected async readStuckKeysFile(): Promise<string[]> {
+    try {
+      const fileContent = await readFile(this.config.get('VALIDATOR_STUCK_KEYS_FILE_PATH'), 'utf-8');
+      const data = <StuckValidatorsFileContent>load(fileContent);
+      return data.keys;
+    } catch (e) {
+      this.logger.error(`Error while reading stuck validators file: ${e.message}`);
+      return [];
+    }
   }
 
   /**
