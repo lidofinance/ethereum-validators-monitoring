@@ -65,10 +65,10 @@
     "typechain": "^5.2.0"
   },
   "devDependencies": {
-    "@golevelup/ts-jest": "^0.3.3",
+    "@golevelup/ts-jest": "^0.3.7",
     "@nestjs/cli": "^8.2.5",
     "@nestjs/schematics": "^8.0.5",
-    "@nestjs/testing": "^8.2.5",
+    "@nestjs/testing": "^9.0.5",
     "@typechain/ethers-v5": "^7.0.1",
     "@types/app-root-path": "^1.2.4",
     "@types/cache-manager": "^3.4.2",
