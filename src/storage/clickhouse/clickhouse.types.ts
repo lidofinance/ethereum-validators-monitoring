@@ -6,6 +6,7 @@ export interface ValidatorsStatusStats {
   slashed: number;
   withdraw_pending: number;
   withdrawn: number;
+  stuck?: number;
 }
 
 export interface NOsDelta {

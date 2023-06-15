@@ -2,7 +2,6 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { ConsensusProviderService } from 'common/eth-providers';
 import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { PrometheusService, TrackTask } from 'common/prometheus';
@@ -21,7 +20,6 @@ export class DutyMetrics {
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
-    protected readonly clClient: ConsensusProviderService,
 
     protected readonly stateMetrics: StateMetrics,
     protected readonly attestationMetrics: AttestationMetrics,

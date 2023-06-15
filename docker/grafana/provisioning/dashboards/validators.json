@@ -1973,8 +1973,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    val_id as Validator,\n    val_nos_name as Operator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    validators_summary\nWHERE val_nos_name is not NULL AND epoch = ${epoch_number_var} AND (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
-          "rawQuery": "SELECT\n    val_id as Validator,\n    val_nos_name as Operator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    validators_summary\nWHERE val_nos_name is not NULL AND epoch = 166657 AND (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
+          "query": "SELECT\n    val_id as Validator,\n    val_nos_name as Operator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    stats.validators_summary\nWHERE val_nos_name is not NULL AND epoch = ${epoch_number_var} AND (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
+          "rawQuery": "SELECT\n    val_id as Validator,\n    val_nos_name as Operator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    stats.validators_summary\nWHERE val_nos_name is not NULL AND epoch = 166657 AND (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -4892,8 +4892,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
-              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 166657\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      epoch = 166657 - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      epoch > (166657 - 6) AND epoch <= 166657\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
+              "query": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM stats.validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
+              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 166137\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 166137 - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM stats.validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch > (166137 - 6) AND epoch <= 166137\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5170,8 +5170,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, Operator, Validator\nLIMIT 1 by epoch, val_id",
-              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND block_proposed = 0 AND (epoch <= 166658 AND epoch >= (166658 - 226))\nORDER BY block_to_propose DESC, Operator, Validator\nLIMIT 1 by epoch, val_id",
+              "query": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, Operator, Validator\nLIMIT 1 by epoch, val_id",
+              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND block_proposed = 0 AND (epoch <= 166137 AND epoch >= (166137 - 3))\nORDER BY block_to_propose DESC, Operator, Validator\nLIMIT 1 by epoch, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5621,8 +5621,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent, Operator, Validator\nLIMIT 1 by epoch, val_id",
-              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND epoch = 166658 AND sync_percent < (70.671875 - 10)\nORDER BY sync_percent, Operator, Validator\nLIMIT 1 by epoch, val_id",
+              "query": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent, Operator, Validator\nLIMIT 1 by epoch, val_id",
+              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = 166137 AND sync_percent < (81.2011719206348 - 0)\nORDER BY sync_percent, Operator, Validator\nLIMIT 1 by epoch, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5910,8 +5910,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_happened = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_happened = 0 AND val_nos_id IS NOT NULL AND epoch = 166658\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_happened = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_happened = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = 166137\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -6182,8 +6182,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_id IS NOT NULL AND epoch = 166658\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_happened = 1 AND att_inc_delay > 1 AND val_stuck = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_happened = 1 AND att_inc_delay > 1 AND val_stuck = 0 AND val_nos_id IS NOT NULL AND epoch = 166137\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -6453,8 +6453,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND epoch = 166658\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = 166137\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -6724,8 +6724,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND epoch = 166572\nORDER BY val_id\nLIMIT 100",
+              "query": "\nSELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = 166137\nORDER BY val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -6995,8 +6995,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\nSELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND epoch = 166572\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "query": "\nSELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = 166137\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -7199,7 +7199,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 79
+            "y": 39
           },
           "id": 51,
           "options": {
@@ -7225,8 +7225,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = ${epoch_number_var}\nORDER by val_id\nLIMIT 1 by val_id",
-              "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = 166572\nORDER by val_id\nLIMIT 1 by val_id",
+              "query": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = ${epoch_number_var}\nORDER by val_id\nLIMIT 1 by val_id",
+              "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = 166572\nORDER by val_id\nLIMIT 1 by val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -7592,6 +7592,6 @@
   "timezone": "",
   "title": "Validators",
   "uid": "HRgPmpNnz",
-  "version": 18,
+  "version": 19,
   "weekStart": ""
 }
