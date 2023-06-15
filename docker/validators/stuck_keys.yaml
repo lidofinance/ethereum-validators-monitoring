@@ -1,0 +1,4 @@
+# this list of stuck validators keys is used to ignore some validators
+# in metrics calculation
+keys:
+  - "0x000000000000"

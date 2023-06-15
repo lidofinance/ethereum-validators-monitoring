@@ -181,6 +181,12 @@ export class EnvironmentVariables {
   public VALIDATOR_REGISTRY_LIDO_SOURCE_SQLITE_CACHE_PATH = './docker/validators/lido_mainnet.db';
 
   /**
+   * Path to file with list of validators that are stuck and should be excluded from the monitoring metrics
+   */
+  @IsString()
+  public VALIDATOR_STUCK_KEYS_FILE_PATH = './docker/validators/stuck_keys.yaml';
+
+  /**
    * Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad
    * For example:
    *  Blockchain Sync participation = 99%

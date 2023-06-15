@@ -71,6 +71,7 @@ const testSyncMember = {
     val_slashed: false,
     val_status: ValStatus.ActiveOngoing,
     val_balance: '33085196809',
+    val_stuck: false,
     ///
     is_sync: true,
     sync_percent: 78.125,
@@ -107,6 +108,7 @@ const testProposerMember = {
     val_slashed: false,
     val_status: ValStatus.ActiveOngoing,
     val_balance: '32521190450',
+    val_stuck: false,
     ///
     is_proposer: true,
     block_to_propose: 4895297,

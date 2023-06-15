@@ -100,6 +100,15 @@ export class StateMetrics {
       },
       (item) => item.withdrawn,
     );
+    setUserOperatorsMetric(
+      this.prometheus.userValidators,
+      data,
+      this.operators,
+      {
+        status: PrometheusValStatus.Stuck,
+      },
+      (item) => item.stuck,
+    );
   }
 
   private async userValidatorsStats() {
@@ -139,6 +148,13 @@ export class StateMetrics {
         status: PrometheusValStatus.WithdrawalDone,
       },
       result.withdrawn,
+    );
+    this.prometheus.validators.set(
+      {
+        owner: Owner.USER,
+        status: PrometheusValStatus.Stuck,
+      },
+      result.stuck,
     );
   }
 

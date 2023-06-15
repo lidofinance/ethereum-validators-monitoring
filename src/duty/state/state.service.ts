@@ -39,6 +39,7 @@ export class StateService {
     this.logger.log('Processing all validators state');
     let activeValidatorsCount = 0;
     let activeValidatorsEffectiveBalance = 0n;
+    const stuckKeys = this.registry.getStuckKeys();
     const pipeline = chain([
       readStream,
       parser(),
@@ -61,6 +62,7 @@ export class StateService {
             val_status: state.status,
             val_balance: BigInt(state.balance),
             val_effective_balance: BigInt(state.validator.effective_balance),
+            val_stuck: stuckKeys.includes(state.validator.pubkey),
           });
           if ([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(state.status)) {
             activeValidatorsCount++;

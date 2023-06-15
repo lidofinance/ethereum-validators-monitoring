@@ -60,6 +60,7 @@ import migration_000002_rewards from './migrations/migration_000002_rewards';
 import migration_000003_epoch_meta from './migrations/migration_000003_epoch_meta';
 import migration_000004_epoch_processing from './migrations/migration_000004_epoch_processing';
 import migration_000005_withdrawals from './migrations/migration_000005_withdrawals';
+import migration_000006_stuck_validators from './migrations/migration_000006_stuck_validators';
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -69,6 +70,10 @@ export class ClickhouseService implements OnModuleInit {
   private readonly maxBackoff: number;
   private readonly chunkSize: number;
   private readonly retry: ReturnType<typeof retrier>;
+
+  private async select<T>(query: string): Promise<T> {
+    return await (await this.retry(async () => await this.db.query({ query, format: 'JSONEachRow' }))).json<T>();
+  }
 
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
@@ -95,10 +100,6 @@ export class ClickhouseService implements OnModuleInit {
         request: true,
       },
     });
-  }
-
-  private async select<T>(query: string): Promise<T> {
-    return await (await this.retry(async () => await this.db.query({ query, format: 'JSONEachRow' }))).json<T>();
   }
 
   public async onModuleInit(): Promise<void> {
@@ -228,6 +229,7 @@ export class ClickhouseService implements OnModuleInit {
       migration_000003_epoch_meta,
       migration_000004_epoch_processing,
       migration_000005_withdrawals,
+      migration_000006_stuck_validators,
     ];
     for (const query of migrations) {
       await this.db.exec({ query });
@@ -519,6 +521,7 @@ export class ClickhouseService implements OnModuleInit {
       slashed: Number(v.slashed),
       withdraw_pending: Number(v.withdraw_pending),
       withdrawn: Number(v.withdrawn),
+      stuck: Number(v.stuck),
     }));
   }
 
@@ -534,6 +537,7 @@ export class ClickhouseService implements OnModuleInit {
       slashed: Number(ret[0].slashed),
       withdraw_pending: Number(ret[0].withdraw_pending),
       withdrawn: Number(ret[0].withdrawn),
+      stuck: Number(ret[0].stuck),
     };
   }
 

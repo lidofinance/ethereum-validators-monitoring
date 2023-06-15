@@ -89,6 +89,7 @@ export enum PrometheusValStatus {
   Slashed = 'slashed',
   WithdrawalPending = 'withdrawal_pending',
   WithdrawalDone = 'withdrawal_done',
+  Stuck = 'stuck',
 }
 
 enum TaskStatus {
