@@ -181,6 +181,13 @@ export class EnvironmentVariables {
   public VALIDATOR_REGISTRY_LIDO_SOURCE_SQLITE_CACHE_PATH = './docker/validators/lido_mainnet.db';
 
   /**
+   * Use a file with list of validators that are stuck and should be excluded from the monitoring metrics
+   */
+  @IsBoolean()
+  @Transform(({ value }) => toBoolean(value), { toClassOnly: true })
+  public VALIDATOR_USE_STUCK_KEYS_FILE = false;
+
+  /**
    * Path to file with list of validators that are stuck and should be excluded from the monitoring metrics
    */
   @IsString()
