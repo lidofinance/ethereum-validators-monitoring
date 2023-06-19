@@ -198,6 +198,7 @@ If you want to implement your own source, it must match [RegistrySource interfac
 `VALIDATOR_STUCK_KEYS_FILE_PATH` - Path to file with list of validators that are stuck and should be excluded from the monitoring metrics
 * **Required:** false
 * **Default:** ./docker/validators/stuck_keys.yaml
+* **Note:** will be used only if `VALIDATOR_USE_STUCK_KEYS_FILE` is true
 ---
 `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG` - Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad
 * **Required:** false
