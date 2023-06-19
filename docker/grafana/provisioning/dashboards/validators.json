@@ -24,7 +24,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1680500392773,
   "links": [
     {
       "asDropdown": false,
@@ -118,7 +117,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -184,7 +183,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -248,7 +247,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -312,7 +311,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -327,6 +326,65 @@
         }
       ],
       "title": "Buffered ether",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Number of unmonitored (stuck) keys that are defined manually. Such keys will not be taken into account when calculating validator metrics and alerts",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "id": 125,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.0.9",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"stuck\"})",
+          "refId": "A"
+        }
+      ],
+      "title": "Unmonitored keys",
       "type": "stat"
     },
     {
@@ -376,7 +434,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -457,7 +515,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -522,7 +580,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -587,7 +645,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -652,7 +710,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -724,7 +782,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -1470,7 +1528,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -1961,7 +2019,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -2289,8 +2347,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -2323,8 +2380,7 @@
                       "mode": "absolute",
                       "steps": [
                         {
-                          "color": "light-green",
-                          "value": null
+                          "color": "light-green"
                         },
                         {
                           "color": "light-red",
@@ -2968,8 +3024,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -3002,8 +3057,7 @@
                       "mode": "absolute",
                       "steps": [
                         {
-                          "color": "light-green",
-                          "value": null
+                          "color": "light-green"
                         },
                         {
                           "color": "light-red",
@@ -3753,8 +3807,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -4505,8 +4558,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               },
@@ -4584,8 +4636,7 @@
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "yellow",
@@ -4702,8 +4753,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -4779,8 +4829,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4946,8 +4995,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -5047,8 +5095,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -5224,8 +5271,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -5337,8 +5383,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -5508,8 +5553,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -5675,8 +5719,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -5797,8 +5840,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -5964,8 +6006,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -6069,8 +6110,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -6236,8 +6276,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -6340,8 +6379,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -6507,8 +6545,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -6611,8 +6648,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -6778,8 +6814,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -6882,8 +6917,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -7049,8 +7083,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green",
-                    "value": null
+                    "color": "semi-dark-green"
                   }
                 ]
               }
@@ -7135,8 +7168,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -7592,6 +7624,6 @@
   "timezone": "",
   "title": "Validators",
   "uid": "HRgPmpNnz",
-  "version": 19,
+  "version": 20,
   "weekStart": ""
 }

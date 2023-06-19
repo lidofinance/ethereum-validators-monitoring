@@ -24,7 +24,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1680503579227,
   "links": [
     {
       "asDropdown": false,
@@ -118,7 +117,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -184,7 +183,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -226,7 +225,7 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 14,
+        "w": 10,
         "x": 10,
         "y": 1
       },
@@ -246,7 +245,7 @@
         "text": {},
         "textMode": "name"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -261,6 +260,65 @@
         }
       ],
       "title": "Node operator",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Number of unmonitored (stuck) keys that are defined manually. Such keys will not be taken into account when calculating validator metrics and alerts",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "id": 1790,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.0.9",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"stuck\",nos_name=\"${nos_name_var}\"})",
+          "refId": "A"
+        }
+      ],
+      "title": "Unmonitored keys",
       "type": "stat"
     },
     {
@@ -327,7 +385,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -392,7 +450,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -457,7 +515,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -522,7 +580,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -594,7 +652,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -1429,7 +1487,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "8.5.15",
+      "pluginVersion": "9.0.9",
       "targets": [
         {
           "datasource": {
@@ -1497,8 +1555,7 @@
             "mode": "percentage",
             "steps": [
               {
-                "color": "text",
-                "value": null
+                "color": "text"
               }
             ]
           },
@@ -1631,8 +1688,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               }
             ]
           }
@@ -1757,8 +1813,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               }
             ]
           }
@@ -1912,8 +1967,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               }
             ]
           }
@@ -2013,8 +2067,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               }
             ]
           }
@@ -2113,8 +2166,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               }
             ]
           }
@@ -2226,8 +2278,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               }
             ]
           }
@@ -2338,8 +2389,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               }
             ]
           }
@@ -2477,8 +2527,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               },
@@ -2584,8 +2633,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "transparent",
@@ -2679,8 +2727,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "transparent",
@@ -2748,8 +2795,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -2893,8 +2939,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "dark-red",
-                    "value": null
+                    "color": "dark-red"
                   }
                 ]
               },
@@ -3234,8 +3279,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   },
                   {
                     "color": "red",
@@ -3433,8 +3477,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3574,8 +3617,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3712,8 +3754,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3854,8 +3895,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -3958,8 +3998,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4100,8 +4139,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4204,8 +4242,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4358,8 +4395,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4462,8 +4498,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -4604,8 +4639,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red",
-                    "value": null
+                    "color": "red"
                   }
                 ]
               }
@@ -5130,6 +5164,6 @@
   "timezone": "",
   "title": "NodeOperators",
   "uid": "3wimU2H7h",
-  "version": 24,
+  "version": 25,
   "weekStart": ""
 }
