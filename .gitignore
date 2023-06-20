@@ -11,6 +11,11 @@
 # Docker volumes
 .volumes
 
+# Config
+config/operators.yml
+config/prometheus.yml
+docker/validators/lido_mainnet.db
+
 # Logs
 logs
 *.log

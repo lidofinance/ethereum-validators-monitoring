@@ -1,0 +1,6 @@
+version: "3.4"
+
+networks:
+  default:
+    name: traefik_default
+    external: true

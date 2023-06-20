@@ -1,0 +1,105 @@
+version: '3.7'
+services:
+  clickhouse:
+    image: yandex/clickhouse-server
+    container_name: clickhouse
+    restart: unless-stopped
+    environment:
+      - CLICKHOUSE_USER=${DB_USER}
+      - CLICKHOUSE_PASSWORD=${DB_PASSWORD}
+      - CLICKHOUSE_DB=${DB_NAME}
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 12g
+        reservations:
+          cpus: '0.25'
+          memory: 4g
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    hostname: clickhouse
+    ports:
+      - "8123:8123"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${CLICKHOUSE_HOST:-clickhouse}.service=${CLICKHOUSE_HOST:-clickhouse}
+      - traefik.http.routers.${CLICKHOUSE_HOST:-clickhouse}.entrypoints=websecure
+      - traefik.http.routers.${CLICKHOUSE_HOST:-clickhouse}.rule=Host(`${CLICKHOUSE_HOST:-clickhouse}.${DOMAIN}`)
+      - traefik.http.routers.${CLICKHOUSE_HOST:-clickhouse}.tls.certresolver=letsencrypt
+      - traefik.http.services.${CLICKHOUSE_HOST:-clickhouse}.loadbalancer.server.port=8123
+    volumes:
+      - ./.volumes/clickhouse:/var/lib/clickhouse
+
+  client:
+    image: yandex/clickhouse-client
+    container_name: clickhouse-client
+    restart: always
+    entrypoint:
+      - /bin/sleep
+    command:
+      - infinity
+
+  tabix:
+    image: spoonest/clickhouse-tabix-web-client
+    container_name: clickhouse-tabix-web-client
+    restart: always
+    ports:
+      - "8081:80"
+    environment:
+      - CH_HOST=clickhouse:8123
+
+  prometheus:
+    image: prom/prometheus:latest
+    sysctls:
+      - net.ipv6.conf.lo.disable_ipv6=0
+      - net.ipv6.conf.all.disable_ipv6=0
+    container_name: prometheus
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+    volumes:
+      - ./.volumes/prometheus/:/prometheus
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+    expose:
+      - 9090
+    ports:
+      - "0.0.0.0:9090:9090/tcp"
+
+  app:
+    build: ./
+    container_name: ethereum-validators-monitoring
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 3g
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    environment:
+      - LOG_FORMAT=${LOG_FORMAT}
+      - HTTP_PORT=${HTTP_PORT}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - START_EPOCH=${START_EPOCH}
+      - ETH_NETWORK=${ETH_NETWORK}
+      - VALIDATOR_REGISTRY_SOURCE=${VALIDATOR_REGISTRY_SOURCE}
+      - EL_RPC_URLS=${EL_RPC_URLS}
+      - CL_API_URLS=${CL_API_URLS}
+    ports:
+      - "${HTTP_PORT}:${HTTP_PORT}"
+    volumes:
+      - ./docker/validators/:/app/docker/validators
+      - ./config/operators.yml:/app/operators.yml
+    depends_on:
+      - clickhouse
+      - prometheus

@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 10s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: validators-monitor
+    environment: validators-monitor
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'ethereum_validators_monitoring'
+    static_configs:
+      - targets: ['ethereum-validators-monitoring:8080']
+
+remote_write:
+  - url: https://mimir.example.net/api/v1/push
+    headers:
+      "CF-Access-Client-Id": "client-id"
+      "CF-Access-Client-Secret": "client-secret"
+      "X-Scope-OrgID": "primary"
