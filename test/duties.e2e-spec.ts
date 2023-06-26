@@ -66,6 +66,7 @@ const testSyncMember = {
     ///
     val_id: 285113,
     val_pubkey: '0x82750f01239832e15f0706f38cbbe35bed4cdfa4537391c14af00d8c2ae8dd695f1db09a1fbe81956ade016b245a2343',
+    val_nos_module_id: 1,
     val_nos_id: 0,
     val_nos_name: 'test1',
     val_slashed: false,
@@ -103,6 +104,7 @@ const testProposerMember = {
     ///
     val_id: 389499,
     val_pubkey: '0x88cb7b40e37964130a2c3b1b2a0a37658ca53bd914881244b836257132132f734613f0450fe59528baa0a3e10bd37dd7',
+    val_nos_module_id: 1,
     val_nos_id: 1,
     val_nos_name: 'test2',
     val_slashed: false,
@@ -148,6 +150,7 @@ describe('Duties', () => {
     testValidators.forEach((v) =>
       keysMap.set(v.pubkey, {
         index: v.registry_index,
+        moduleIndex: 1,
         operatorIndex: v.operator_index,
         operatorName: v.operator_name,
         key: v.pubkey,
