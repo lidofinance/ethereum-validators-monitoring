@@ -449,7 +449,7 @@ export class PrometheusService implements OnApplicationBootstrap {
   public totalBalance24hDifference = this.getOrCreateMetric('Gauge', {
     name: METRIC_TOTAL_BALANCE_24H_DIFFERENCE,
     help: 'Total balance difference (24 hours)',
-    labelNames: [],
+    labelNames: ['nos_module_id'],
   });
 
   public operatorBalance24hDifference = this.getOrCreateMetric('Gauge', {
