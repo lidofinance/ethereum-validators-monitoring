@@ -21,15 +21,16 @@ export class LidoSourceService implements RegistrySource {
     protected readonly operatorStorageService: RegistryOperatorStorageService,
   ) {}
 
-  protected operatorsMap = new Map<number, RegistrySourceOperator>();
+  protected registryModuleId = 1; // stub for now
+  protected operatorsMap = new Map<string, RegistrySourceOperator>();
   protected keysMap = new Map<string, RegistrySourceKey>();
   protected keysOpIndex = 0;
 
   public async update() {
     await this.validatorService.update('latest');
-    await this.updateOperatorsMap();
     const storageKeysOpIndex = (await this.metaStorageService.get())?.keysOpIndex;
     if (this.keysOpIndex == 0 || storageKeysOpIndex > this.keysOpIndex) {
+      await this.updateOperatorsMap();
       await this.updateKeysMap();
       this.keysOpIndex = storageKeysOpIndex;
     }
@@ -50,15 +51,15 @@ export class LidoSourceService implements RegistrySource {
 
   protected async updateOperatorsMap() {
     const operators = await this.operatorStorageService.findAll();
-    this.operatorsMap = new Map(operators.map((o) => [o.index, o]));
+    this.operatorsMap = new Map(operators.map((o) => [`${this.registryModuleId}_${o.index}`, { ...o, module: this.registryModuleId }]));
   }
 
   protected async updateKeysMap() {
     this.keysMap = new Map();
-    for (const index of this.operatorsMap.keys()) {
-      const operatorKeys = await this.keyStorageService.findByOperatorIndex(index);
+    for (const operator of this.operatorsMap.values()) {
+      const operatorKeys = await this.keyStorageService.findByOperatorIndex(operator.index);
       for (const key of operatorKeys) {
-        if (key.used) this.keysMap.set(key.key, key);
+        if (key.used) this.keysMap.set(key.key, { key: key.key, operatorIndex: key.operatorIndex, moduleIndex: this.registryModuleId });
       }
       await unblock();
     }

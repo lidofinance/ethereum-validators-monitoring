@@ -27,7 +27,7 @@ export class SyncMetrics {
   public async calculate(epoch: Epoch, possibleHighRewardValidators: string[]) {
     this.logger.log('Calculating sync committee metrics');
     this.processedEpoch = epoch;
-    this.operators = await this.registryService.getOperators();
+    this.operators = this.registryService.getOperators();
 
     await allSettled([
       this.userAvgSyncPercent(),
@@ -39,7 +39,8 @@ export class SyncMetrics {
 
   private async userAvgSyncPercent() {
     const result = await this.storage.getUserSyncParticipationAvgPercent(this.processedEpoch);
-    if (result) this.prometheus.userSyncParticipationAvgPercent.set(result.amount);
+    if (result)
+      result.forEach((r) => this.prometheus.userSyncParticipationAvgPercent.set({ nos_module_id: r.val_nos_module_id }, r.amount));
     else this.prometheus.userSyncParticipationAvgPercent.remove();
   }
 

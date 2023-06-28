@@ -28,6 +28,7 @@ export enum Network {
 export enum ValidatorRegistrySource {
   Lido = 'lido',
   File = 'file',
+  KeysAPI = 'keysapi',
 }
 
 const toBoolean = (value: any): boolean => {
@@ -179,6 +180,25 @@ export class EnvironmentVariables {
 
   @IsString()
   public VALIDATOR_REGISTRY_LIDO_SOURCE_SQLITE_CACHE_PATH = './docker/validators/lido_mainnet.db';
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @Transform(({ value }) => value.split(','))
+  @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.KeysAPI && vars.NODE_ENV != Environment.test)
+  public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_URLS = [];
+
+  @IsInt()
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RETRY_DELAY_MS = 500;
+
+  @IsNumber()
+  @Min(5000)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RESPONSE_TIMEOUT = 30000;
+
+  @IsNumber()
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_MAX_RETRIES = 2;
 
   /**
    * Use a file with list of validators that are stuck and should be excluded from the monitoring metrics

@@ -40,6 +40,7 @@ import {
 import {
   AvgChainRewardsStats,
   EpochProcessingState,
+  NOsBalance24hDiff,
   NOsDelta,
   NOsProposesStats,
   NOsValidatorsByConditionAttestationCount,
@@ -61,6 +62,7 @@ import migration_000003_epoch_meta from './migrations/migration_000003_epoch_met
 import migration_000004_epoch_processing from './migrations/migration_000004_epoch_processing';
 import migration_000005_withdrawals from './migrations/migration_000005_withdrawals';
 import migration_000006_stuck_validators from './migrations/migration_000006_stuck_validators';
+import migration_000007_module_id from './migrations/migration_000007_module_id';
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -230,6 +232,7 @@ export class ClickhouseService implements OnModuleInit {
       migration_000004_epoch_processing,
       migration_000005_withdrawals,
       migration_000006_stuck_validators,
+      migration_000007_module_id,
     ];
     for (const query of migrations) {
       await this.db.exec({ query });
@@ -260,9 +263,11 @@ export class ClickhouseService implements OnModuleInit {
   /**
    * Send query to Clickhouse and receives information about User Sync Committee participants
    */
-  public async getUserSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
-    const ret = await this.select(userSyncParticipationAvgPercentQuery(epoch));
-    return { amount: Number(ret[0].amount) };
+  public async getUserSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents[]> {
+    return (await this.select<SyncCommitteeParticipationAvgPercents[]>(userSyncParticipationAvgPercentQuery(epoch))).map((v) => ({
+      ...v,
+      amount: Number(v.amount),
+    }));
   }
 
   /**
@@ -497,13 +502,15 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  public async getTotalBalance24hDifference(epoch: Epoch): Promise<number | undefined> {
-    const ret = await this.select<{ amount }[]>(totalBalance24hDifferenceQuery(epoch));
-    if (ret[0]) return Number(ret[0].amount);
+  public async getTotalBalance24hDifference(epoch: Epoch): Promise<{ val_nos_module_id; amount }[]> {
+    return (await this.select<{ val_nos_module_id; amount }[]>(totalBalance24hDifferenceQuery(epoch))).map((v) => ({
+      ...v,
+      amount: Number(v.amount),
+    }));
   }
 
-  public async getOperatorBalance24hDifference(epoch: Epoch): Promise<{ val_nos_id; amount }[]> {
-    return (await this.select<{ val_nos_id; amount }[]>(operatorBalance24hDifferenceQuery(epoch))).map((v) => ({
+  public async getOperatorBalance24hDifference(epoch: Epoch): Promise<NOsBalance24hDiff[]> {
+    return (await this.select<NOsBalance24hDiff[]>(operatorBalance24hDifferenceQuery(epoch))).map((v) => ({
       ...v,
       amount: Number(v.amount),
     }));
@@ -529,16 +536,16 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about summary
    * how many User Node Operator validators have active, slashed, pending status
    */
-  public async getUserValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats> {
-    const ret = await this.select(userValidatorsSummaryStatsQuery(epoch));
-    return {
-      active_ongoing: Number(ret[0].active_ongoing),
-      pending: Number(ret[0].pending),
-      slashed: Number(ret[0].slashed),
-      withdraw_pending: Number(ret[0].withdraw_pending),
-      withdrawn: Number(ret[0].withdrawn),
-      stuck: Number(ret[0].stuck),
-    };
+  public async getUserValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats[]> {
+    return (await this.select<ValidatorsStatusStats[]>(userValidatorsSummaryStatsQuery(epoch))).map((v) => ({
+      ...v,
+      active_ongoing: Number(v.active_ongoing),
+      pending: Number(v.pending),
+      slashed: Number(v.slashed),
+      withdraw_pending: Number(v.withdraw_pending),
+      withdrawn: Number(v.withdrawn),
+      stuck: Number(v.stuck),
+    }));
   }
 
   /**
@@ -548,6 +555,7 @@ export class ClickhouseService implements OnModuleInit {
   public async getOtherValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats> {
     const ret = await this.select(otherValidatorsSummaryStatsQuery(epoch));
     return {
+      ...ret[0],
       active_ongoing: Number(ret[0].active_ongoing),
       pending: Number(ret[0].pending),
       slashed: Number(ret[0].slashed),
@@ -663,6 +671,7 @@ export class ClickhouseService implements OnModuleInit {
 
   public async getOtherChainWithdrawalsStats(epoch: Epoch): Promise<WithdrawalsStats> {
     return (await this.select<WithdrawalsStats[]>(otherChainWithdrawalsStats(epoch))).map((v) => ({
+      ...v,
       full_withdrawn_sum: +v.full_withdrawn_sum,
       full_withdrawn_count: +v.full_withdrawn_count,
       partial_withdrawn_sum: +v.partial_withdrawn_sum,
