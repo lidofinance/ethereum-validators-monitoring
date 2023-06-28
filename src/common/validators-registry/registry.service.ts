@@ -45,7 +45,7 @@ export class RegistryService {
   public getOperatorKey(pubKey: string): RegistrySourceKeyWithOperatorName {
     const key = this.source.getOperatorKey(pubKey);
     if (!key) return null;
-    const operator = this.source.getOperatorsMap().get(key.operatorIndex);
+    const operator = this.source.getOperatorsMap().get(`${key.moduleIndex}_${key.operatorIndex}`);
     return { ...key, operatorName: operator.name };
   }
 

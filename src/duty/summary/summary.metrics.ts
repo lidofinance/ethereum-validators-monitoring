@@ -32,7 +32,7 @@ export class SummaryMetrics {
   public async calculate(epoch: Epoch) {
     this.logger.log('Calculating propose metrics');
     this.processedEpoch = epoch;
-    this.operators = await this.registryService.getOperators();
+    this.operators = this.registryService.getOperators();
     await allSettled([this.userRewards(), this.avgChainRewards(), this.common()]);
   }
 

@@ -13,6 +13,7 @@ export interface ValidatorDutySummary {
   ///
   val_id: number;
   val_pubkey?: string;
+  val_nos_module_id?: number;
   val_nos_id?: number;
   val_nos_name?: string;
   val_slashed?: boolean;

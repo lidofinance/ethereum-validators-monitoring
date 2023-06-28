@@ -30,7 +30,7 @@ export class FileSourceService implements RegistrySource {
   protected data: FileContent;
   protected lastSuccessDataReadTimestamp: number;
 
-  protected operatorsMap = new Map<number, RegistrySourceOperator>();
+  protected operatorsMap = new Map<string, RegistrySourceOperator>();
 
   protected keysMap = new Map<string, RegistrySourceKey>();
 
@@ -39,9 +39,9 @@ export class FileSourceService implements RegistrySource {
     const data = <FileContent>load(fileContent);
     if (!isValid(data)) throw new Error('Error when parsing validators registry file source');
     this.logger.log(
-      `Successful reading validators registry file source. Keys count per operator - ${data.operators
-        .map((o) => `${o.name}: [${o.keys.length}]`)
-        .join(', ')}`,
+      `Successful reading validators registry file source.\n${Object.values(data)
+        .map((m, index) => `Module: ${index} | ` + m.map((o) => `${o.name}: [${o.keys.length}]`))
+        .join('\n')}`,
     );
     this.lastSuccessDataReadTimestamp = Date.now();
     this.data = data;
@@ -62,17 +62,24 @@ export class FileSourceService implements RegistrySource {
   }
 
   protected updateOperatorsMap() {
-    this.operatorsMap = new Map(this.data?.operators?.map((o, index) => [index, { index, name: o.name }]));
+    this.operatorsMap = new Map<string, RegistrySourceOperator>();
+    Object.values(this.data).forEach((m, moduleIndex) => {
+      m.forEach((o, operatorIndex) => {
+        this.operatorsMap.set(`${moduleIndex + 1}_${operatorIndex}`, { index: operatorIndex, module: moduleIndex + 1, name: o.name });
+      });
+    });
   }
 
   protected updateKeysMap() {
     this.keysMap = new Map<string, RegistrySourceKey>();
-    this.data?.operators?.forEach((o, operatorIndex) => {
-      if (o.keys) {
-        o.keys.forEach((key, index) => {
-          this.keysMap.set(key, { index, operatorIndex, key });
-        });
-      }
+    Object.values(this.data).forEach((m, moduleIndex) => {
+      m.forEach((o, operatorIndex) => {
+        if (o.keys) {
+          o.keys.forEach((key) => {
+            this.keysMap.set(key, { moduleIndex: moduleIndex + 1, operatorIndex, key });
+          });
+        }
+      });
     });
   }
 }
