@@ -1,9 +1,9 @@
 import { join } from 'lodash';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
-import { RegistrySourceOperator } from 'common/validators-registry';
+import { Epoch } from 'common/consensus-provider/types';
 import { ClickhouseService } from 'storage';
+import { RegistrySourceOperator } from 'validators-registry';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 

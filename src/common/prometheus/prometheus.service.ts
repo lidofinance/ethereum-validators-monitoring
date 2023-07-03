@@ -5,8 +5,8 @@ import { join } from 'lodash';
 import { LabelValues } from 'prom-client';
 
 import { ConfigService } from 'common/config';
+import { RegistrySourceOperator } from 'validators-registry';
 
-import { RegistrySourceOperator } from '../validators-registry';
 import { Metric, Options } from './interfaces';
 import {
   METRICS_PREFIX,

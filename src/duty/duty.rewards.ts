@@ -2,10 +2,10 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 
+import { Epoch } from '../common/consensus-provider/types';
 import { AttestationRewards } from './attestation';
 import { ProposeRewards } from './propose';
 import { SyncRewards } from './sync';

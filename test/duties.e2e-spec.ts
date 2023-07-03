@@ -13,10 +13,10 @@ import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
 
 import { ConfigModule, ConfigService } from 'common/config';
 import { PrometheusModule } from 'common/prometheus/prometheus.module';
-import { RegistryService } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
+import { RegistryService } from 'validators-registry';
 
-import { ValStatus } from '../src/common/eth-providers';
+import { ValStatus } from '../src/common/consensus-provider';
 import { allSettled } from '../src/common/functions/allSettled';
 import { DutyModule, DutyService } from '../src/duty';
 

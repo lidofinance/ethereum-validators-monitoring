@@ -8,15 +8,14 @@ import { streamArray } from 'stream-json/streamers/StreamArray';
 import { batch } from 'stream-json/utils/Batch';
 
 import { ConfigService } from 'common/config';
-import { ConsensusProviderService, StateValidatorResponse, ValStatus } from 'common/eth-providers';
-import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
+import { ConsensusProviderService, StateValidatorResponse, ValStatus } from 'common/consensus-provider';
+import { Epoch, Slot } from 'common/consensus-provider/types';
 import { bigNumberSqrt } from 'common/functions/bigNumberSqrt';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-import { RegistryService } from 'common/validators-registry';
+import { SummaryService } from 'duty/summary';
 import { ClickhouseService } from 'storage/clickhouse';
-
-import { SummaryService } from '../summary';
+import { RegistryService } from 'validators-registry';
 
 @Injectable()
 export class StateService {

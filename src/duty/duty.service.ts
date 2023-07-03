@@ -2,9 +2,9 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
-import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
-import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
+import { BlockHeaderResponse, ConsensusProviderService } from 'common/consensus-provider';
+import { BlockCacheService } from 'common/consensus-provider/block-cache';
+import { Epoch, Slot } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { range } from 'common/functions/range';
 import { unblock } from 'common/functions/unblock';
