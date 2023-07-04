@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
 
 import { CriticalAlertsModule } from 'common/alertmanager/critical-alerts.module';
-import { EthProvidersModule } from 'common/eth-providers';
-import { BlockCacheModule } from 'common/eth-providers/consensus-provider/block-cache';
-import { RegistryModule } from 'common/validators-registry';
+import { ConsensusProviderModule } from 'common/consensus-provider';
+import { BlockCacheModule } from 'common/consensus-provider/block-cache';
 import { DutyModule } from 'duty';
 import { ClickhouseModule } from 'storage/clickhouse';
+import { RegistryModule } from 'validators-registry';
 
 import { InspectorService } from './inspector.service';
 
 @Module({
-  imports: [EthProvidersModule, BlockCacheModule, CriticalAlertsModule, ClickhouseModule, RegistryModule, DutyModule],
+  imports: [BlockCacheModule, CriticalAlertsModule, ClickhouseModule, RegistryModule, DutyModule, ConsensusProviderModule],
   providers: [InspectorService],
   exports: [InspectorService],
 })

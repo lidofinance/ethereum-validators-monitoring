@@ -2,11 +2,10 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { ConsensusProviderService } from 'common/eth-providers';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { ConsensusProviderService } from 'common/consensus-provider';
+import { Epoch } from 'common/consensus-provider/types';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-
-import { SummaryService } from '../summary';
+import { SummaryService } from 'duty/summary';
 
 @Injectable()
 export class ProposeService {

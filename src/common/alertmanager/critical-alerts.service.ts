@@ -3,10 +3,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { got } from 'got-cjs';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { Epoch } from 'common/consensus-provider/types';
 import { PrometheusService } from 'common/prometheus';
-import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
+import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
 import { AlertRequestBody, PreparedToSendAlert } from './alerts/BasicAlert';
 import { CriticalMissedAttestations } from './alerts/CriticalMissedAttestations';

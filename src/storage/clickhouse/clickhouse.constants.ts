@@ -1,5 +1,5 @@
-import { ValStatus } from 'common/eth-providers';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { ValStatus } from 'common/consensus-provider';
+import { Epoch } from 'common/consensus-provider/types';
 
 export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
   SELECT

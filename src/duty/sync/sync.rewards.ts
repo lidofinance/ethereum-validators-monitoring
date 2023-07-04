@@ -2,10 +2,9 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { Epoch } from 'common/consensus-provider/types';
 import { PrometheusService } from 'common/prometheus';
-
-import { SummaryService } from '../summary';
+import { SummaryService } from 'duty/summary';
 
 @Injectable()
 export class SyncRewards {

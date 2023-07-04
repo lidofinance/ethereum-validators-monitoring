@@ -2,15 +2,14 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { BlockInfoResponse, ConsensusProviderService } from 'common/eth-providers';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { BlockInfoResponse, ConsensusProviderService } from 'common/consensus-provider';
+import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { range } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-import { RegistryService } from 'common/validators-registry';
+import { SummaryService } from 'duty/summary';
 import { ClickhouseService } from 'storage/clickhouse';
-
-import { SummaryService } from '../summary';
+import { RegistryService } from 'validators-registry';
 
 @Injectable()
 export class WithdrawalsService {

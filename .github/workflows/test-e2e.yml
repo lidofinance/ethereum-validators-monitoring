@@ -33,5 +33,4 @@ jobs:
           TEST_EPOCH_NUMBER: 152978
           TEST_STATE_SLOT: 4895327
           # stub
-          ETH_NETWORK: 1
-          EL_RPC_URLS: localhost
+          VALIDATOR_REGISTRY_SOURCE: file

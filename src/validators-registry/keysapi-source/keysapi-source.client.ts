@@ -3,7 +3,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { HTTPError, Response, got } from 'got-cjs';
 
 import { ConfigService } from 'common/config';
-import { ResponseError, errCommon, errRequest } from 'common/eth-providers';
+import { ResponseError, errCommon, errRequest } from 'common/consensus-provider';
 import { rejectDelay } from 'common/functions/rejectDelay';
 import { retrier } from 'common/functions/retrier';
 import { urljoin } from 'common/functions/urljoin';

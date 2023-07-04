@@ -5,7 +5,8 @@ import { pick } from 'stream-json/filters/Pick';
 import { streamArray } from 'stream-json/streamers/StreamArray';
 import { batch } from 'stream-json/utils/Batch';
 
-import { unblock } from '../../functions/unblock';
+import { unblock } from 'common/functions/unblock';
+
 import { RegistrySource, RegistrySourceKey, RegistrySourceOperator } from '../registry-source.interface';
 import { KeysapiSourceClient } from './keysapi-source.client';
 
