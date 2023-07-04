@@ -119,8 +119,6 @@ describe('Duties', () => {
   });
   jest.spyOn(ClickhouseService.prototype, 'writeSummary');
 
-  process.env['VALIDATOR_REGISTRY_SOURCE'] = 'test';
-
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
