@@ -1,59 +1,16 @@
 import * as process from 'process';
 
-import { getNetwork } from '@ethersproject/providers';
-import { createMock } from '@golevelup/ts-jest';
-import { FallbackProviderModule, SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
 import { LoggerModule, nullTransport } from '@lido-nestjs/logger';
-import { RegistryKeyRepository } from '@lido-nestjs/registry';
-import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { SqlEntityManager } from '@mikro-orm/knex';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Test } from '@nestjs/testing';
-import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
 
-import { ConfigModule, ConfigService } from 'common/config';
+import { ConfigModule } from 'common/config';
 import { PrometheusModule } from 'common/prometheus/prometheus.module';
 import { ClickhouseService } from 'storage';
-import { RegistryService } from 'validators-registry';
+import { RegistryModule, RegistryService } from 'validators-registry';
 
 import { ValStatus } from '../src/common/consensus-provider';
 import { allSettled } from '../src/common/functions/allSettled';
 import { DutyModule, DutyService } from '../src/duty';
-
-const MikroORMMockProvider = {
-  provide: MikroORM,
-  useValue: createMock<MikroORM>(),
-};
-
-const EntityManagerMockProvider = {
-  provide: EntityManager,
-  useFactory: jest.fn(() => ({
-    flush: jest.fn(),
-    getRepository: jest.fn(),
-  })),
-};
-
-const SqlEntityManagerMockProvider = {
-  provide: SqlEntityManager,
-  useFactory: jest.fn(() => ({
-    flush: jest.fn(),
-    getRepository: jest.fn(),
-  })),
-};
-
-const RegistryKeyRepositoryStub = {
-  global: true, // crucial for DI to work
-  module: RegistryKeyRepository,
-  providers: [EntityManagerMockProvider, SqlEntityManagerMockProvider],
-  exports: [EntityManagerMockProvider, SqlEntityManagerMockProvider],
-};
-
-const MikroORMStub = {
-  global: true, // crucial for DI to work
-  module: MikroOrmModule,
-  providers: [MikroORMMockProvider],
-  exports: [MikroORMMockProvider],
-};
 
 const testSyncMember = {
   index: 285113,
@@ -160,7 +117,6 @@ describe('Duties', () => {
   const getOperatorKeyMock = jest.fn().mockImplementation((key: string) => {
     return keysMap.get(key);
   });
-  jest.spyOn(SimpleFallbackJsonRpcBatchProvider.prototype, 'detectNetwork').mockImplementation(async () => getNetwork('mainnet'));
   jest.spyOn(ClickhouseService.prototype, 'writeSummary');
 
   beforeAll(async () => {
@@ -169,20 +125,10 @@ describe('Duties', () => {
         LoggerModule.forRoot({
           transports: [nullTransport()],
         }),
-        FallbackProviderModule.forRootAsync({
-          async useFactory(configService: ConfigService) {
-            return {
-              urls: configService.get('EL_RPC_URLS') as NonEmptyArray<string>,
-              network: configService.get('ETH_NETWORK'),
-            };
-          },
-          inject: [ConfigService],
-        }),
         ConfigModule,
         PrometheusModule,
-        MikroORMStub,
-        RegistryKeyRepositoryStub,
         DutyModule,
+        RegistryModule,
       ],
     }).compile();
 
