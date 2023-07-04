@@ -1,6 +1,10 @@
 import { ValStatus } from 'common/consensus-provider';
 import { Epoch } from 'common/consensus-provider/types';
 
+const perfStatuses = [ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed, ValStatus.PendingInitialized]
+  .map((s) => `'${s}'`)
+  .join(',');
+
 export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
   SELECT
     current.val_nos_module_id as val_nos_module_id,
@@ -10,7 +14,7 @@ export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
     SELECT val_balance, val_id, val_nos_module_id, val_nos_id
     FROM validators_summary
     WHERE
-      val_status != '${ValStatus.PendingQueued}' AND
+      val_status in [${perfStatuses}] AND
       val_nos_id IS NOT NULL AND
       val_stuck = 0 AND
       epoch = ${epoch}
@@ -20,7 +24,7 @@ export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
     SELECT val_balance, val_id, val_nos_id
     FROM validators_summary
     WHERE
-      val_status != '${ValStatus.PendingQueued}' AND
+      val_status in [${perfStatuses}] AND
       val_nos_id IS NOT NULL AND
       val_stuck = 0 AND
       epoch = (${epoch} - 6)
@@ -36,6 +40,7 @@ export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL AND
+        val_status in [${perfStatuses}] AND
         val_balance_withdrawn > 0 AND
         val_stuck = 0 AND
         epoch > (${epoch} - 6) AND epoch <= ${epoch}
@@ -57,7 +62,7 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string =>
     SELECT val_balance, val_id, val_nos_id, val_nos_module_id
     FROM validators_summary
     WHERE
-      val_status != '${ValStatus.PendingQueued}' AND
+      val_status in [${perfStatuses}] AND
       val_nos_id IS NOT NULL AND
       val_stuck = 0 AND
       epoch = ${epoch}
@@ -67,7 +72,7 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string =>
     SELECT val_balance, val_id, val_nos_id
     FROM validators_summary
     WHERE
-      val_status != '${ValStatus.PendingQueued}' AND
+      val_status in [${perfStatuses}] AND
       val_nos_id IS NOT NULL AND
       val_stuck = 0 AND
       epoch = (${epoch} - 6)
@@ -83,6 +88,7 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string =>
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL AND
+        val_status in [${perfStatuses}] AND
         val_balance_withdrawn > 0 AND
         val_stuck = 0 AND
         epoch > (${epoch} - 6) AND epoch <= ${epoch}
@@ -104,7 +110,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
       SELECT val_balance, val_id, val_nos_module_id, val_nos_id, val_slashed
       FROM validators_summary
       WHERE
-        val_status != '${ValStatus.PendingQueued}' AND
+        val_status in [${perfStatuses}] AND
         val_nos_id IS NOT NULL AND
         val_stuck = 0 AND
         epoch = ${epoch}
@@ -114,7 +120,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
     SELECT val_balance, val_id, val_nos_id
     FROM validators_summary
     WHERE
-      val_status != '${ValStatus.PendingQueued}' AND
+      val_status in [${perfStatuses}] AND
       val_nos_id IS NOT NULL AND
       val_stuck = 0 AND
       epoch = (${epoch} - 6)
@@ -130,6 +136,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL AND
+        val_status in [${perfStatuses}] AND
         val_balance_withdrawn > 0 AND
         val_stuck = 0 AND
         epoch > (${epoch} - 6) AND epoch <= ${epoch}
@@ -233,13 +240,15 @@ export const validatorCountHighAvgIncDelayAttestationOfNEpochQuery = (epoch: Epo
         SELECT val_id, val_nos_module_id, val_nos_id, att_inc_delay
         FROM validators_summary
         WHERE
+          att_happened = 1 AND
+          val_status in [${perfStatuses}] AND
           val_stuck = 0 AND
           (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
         LIMIT 1 BY epoch, val_id
       )
       GROUP BY val_id, val_nos_module_id, val_nos_id
-      HAVING avg_inclusion_delay > 2
     )
+    WHERE avg_inclusion_delay > 2
     GROUP BY val_nos_id, val_nos_module_id
   `;
 };
@@ -356,6 +365,7 @@ export const totalBalance24hDifferenceQuery = (epoch: Epoch): string => `
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL AND
+        val_status != '${ValStatus.WithdrawalDone}' AND
         val_balance_withdrawn > 0 AND
         val_stuck = 0 AND
         epoch > (${epoch} - 225) AND epoch <= ${epoch}
@@ -673,6 +683,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
         FROM validators_summary
         WHERE
           val_nos_id IS NOT NULL AND
+          val_status != '${ValStatus.WithdrawalDone}' AND
           val_balance_withdrawn > 0 AND
           val_stuck = 0 AND
           epoch = ${epoch}
