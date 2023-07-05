@@ -93,7 +93,7 @@ By default, monitoring bot fetches validator keys from Lido contract, but you ca
 2. Create file with keys by example [here](docker/validators/custom_mainnet.yaml)
 3. Set `VALIDATOR_REGISTRY_FILE_SOURCE_PATH` env var to `<path to your file>`
 
-If you want to implement your own source, it must match [RegistrySource interface](src/common/validators-registry/registry-source.interface.ts) and be included in [RegistryModule providers](src/common/validators-registry/registry.module.ts)
+If you want to implement your own source, it must match [RegistrySource interface](src/validators-registry/registry-source.interface.ts) and be included in [RegistryModule providers](src/validators-registry/registry.module.ts)
 
 ## Application Env variables
 

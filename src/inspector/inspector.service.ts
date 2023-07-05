@@ -3,9 +3,9 @@ import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common'
 
 import { CriticalAlertsService } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
-import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
-import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
-import { Slot } from 'common/eth-providers/consensus-provider/types';
+import { BlockHeaderResponse, ConsensusProviderService } from 'common/consensus-provider';
+import { BlockCacheService } from 'common/consensus-provider/block-cache';
+import { Slot } from 'common/consensus-provider/types';
 import { sleep } from 'common/functions/sleep';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { DutyMetrics, DutyService } from 'duty';

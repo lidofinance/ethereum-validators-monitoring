@@ -3,12 +3,12 @@ import { RegistryOperator } from '@lido-nestjs/registry';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { Owner, PrometheusService, PrometheusValStatus, TrackTask, setUserOperatorsMetric } from 'common/prometheus';
-import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
-import { LidoSourceService } from 'common/validators-registry/lido-source';
 import { ClickhouseService } from 'storage/clickhouse';
+import { RegistryService, RegistrySourceOperator } from 'validators-registry';
+import { LidoSourceService } from 'validators-registry/lido-source';
 
 const GWEI_WEI_RATIO = 1e9;
 const ETH_GWEI_RATIO = 1e9;

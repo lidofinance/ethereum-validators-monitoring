@@ -7,7 +7,8 @@ import {
 } from '@lido-nestjs/registry';
 import { Inject, Injectable } from '@nestjs/common';
 
-import { unblock } from '../../functions/unblock';
+import { unblock } from 'common/functions/unblock';
+
 import { RegistrySource, RegistrySourceKey, RegistrySourceOperator } from '../registry-source.interface';
 
 @Injectable()

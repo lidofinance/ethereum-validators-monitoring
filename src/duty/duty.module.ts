@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 
-import { ConsensusProviderModule } from 'common/eth-providers';
-import { BlockCacheModule } from 'common/eth-providers/consensus-provider/block-cache';
-import { RegistryModule } from 'common/validators-registry';
+import { ConsensusProviderModule } from 'common/consensus-provider';
+import { BlockCacheModule } from 'common/consensus-provider/block-cache';
 import { ClickhouseModule } from 'storage/clickhouse';
 
 import { AttestationModule } from './attestation';
@@ -26,7 +25,6 @@ import { WithdrawalsModule } from './withdrawal';
     ConsensusProviderModule,
     BlockCacheModule,
     ClickhouseModule,
-    RegistryModule,
   ],
   providers: [DutyService, DutyMetrics, DutyRewards],
   exports: [DutyService, DutyMetrics],

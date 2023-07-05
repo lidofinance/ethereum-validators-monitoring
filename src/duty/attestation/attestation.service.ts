@@ -8,14 +8,14 @@ import { streamArray } from 'stream-json/streamers/StreamArray';
 import { batch } from 'stream-json/utils/Batch';
 
 import { ConfigService } from 'common/config';
-import { AttestationCommitteeInfo, ConsensusProviderService } from 'common/eth-providers';
-import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
+import { AttestationCommitteeInfo, ConsensusProviderService } from 'common/consensus-provider';
+import { Epoch, Slot } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { range } from 'common/functions/range';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { SummaryService } from 'duty/summary';
 
-import { SummaryService } from '../summary';
 import { getFlags } from './attestation.constants';
 
 interface SlotAttestation {
