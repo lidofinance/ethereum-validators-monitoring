@@ -120,6 +120,11 @@ export class EnvironmentVariables {
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public DB_INSERT_CHUNK_SIZE = 50000;
 
+  @IsNumber()
+  @Min(2)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public DB_INSERT_MAX_WORKERS_COUNT = 20;
+
   @IsNotEmpty()
   @IsInt()
   @Min(1)

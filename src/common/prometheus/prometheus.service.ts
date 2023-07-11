@@ -59,7 +59,6 @@ import {
   METRIC_VALIDATORS,
   METRIC_VALIDATOR_BALANCES_DELTA,
   METRIC_VALIDATOR_COUNT_GOOD_PROPOSE,
-  METRIC_VALIDATOR_COUNT_HIGH_AVG_INC_DELAY_ATTESTATION_OF_N_EPOCH,
   METRIC_VALIDATOR_COUNT_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
   METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_LAST_N_EPOCH,
@@ -348,12 +347,6 @@ export class PrometheusService implements OnApplicationBootstrap {
     name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_LAST_N_EPOCH,
     help: 'number of validators with invalid properties or high inc. delay in attestation last N epoch',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'reason', 'epoch_interval'],
-  });
-
-  public validatorsCountHighAvgIncDelayAttestationOfNEpoch = this.getOrCreateMetric('Gauge', {
-    name: METRIC_VALIDATOR_COUNT_HIGH_AVG_INC_DELAY_ATTESTATION_OF_N_EPOCH,
-    help: 'number of validators with high avg inc. delay of N epochs',
-    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
   public validatorsCountHighIncDelayAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
