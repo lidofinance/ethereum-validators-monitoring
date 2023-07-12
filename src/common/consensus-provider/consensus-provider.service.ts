@@ -116,9 +116,10 @@ export class ConsensusProviderService {
     );
   }
 
-  public async getFinalizedBlockHeader(processingState: EpochProcessingState): Promise<BlockHeaderResponse | void> {
+  public async getLatestBlockHeader(processingState: EpochProcessingState): Promise<BlockHeaderResponse | void> {
+    const latestFrom = this.config.get('WORKING_MODE');
     return await this.retryRequest<BlockHeaderResponse>(
-      async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders('finalized')),
+      async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(latestFrom)),
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
