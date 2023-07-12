@@ -89,7 +89,7 @@ export class InspectorService implements OnModuleInit {
         setTimeout(() => resolve(undefined), sleepTime * 1000);
       });
     }
-    // new finalized epoch has happened, from which parent we can get information about needed state
+    // new epoch has happened, from which parent we can get information about needed state
     const existedHeader = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(chosen.slot)).header.message;
     this.logger.log(`Latest epoch [${latestEpoch}]. Next epoch to process [${chosen.epoch}]`);
     if (chosen.slot == Number(existedHeader.slot)) {
