@@ -31,6 +31,11 @@ export enum ValidatorRegistrySource {
   KeysAPI = 'keysapi',
 }
 
+export enum WorkingMode {
+  Finalized = 'finalized',
+  Head = 'head',
+}
+
 const toBoolean = (value: any): boolean => {
   if (typeof value === 'boolean') {
     return value;
@@ -277,6 +282,9 @@ export class EnvironmentVariables {
   @IsObject()
   @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
   public CRITICAL_ALERTS_ALERTMANAGER_LABELS = {};
+
+  @IsEnum(WorkingMode)
+  public WORKING_MODE = WorkingMode.Finalized;
 }
 
 export function validate(config: Record<string, unknown>) {

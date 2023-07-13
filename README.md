@@ -4,10 +4,40 @@ Consensus layer validators monitoring bot, that fetches Lido or Custom Users Nod
 from Execution layer and checks their performance in Consensus
 layer by: balance delta, attestations, proposes, sync committee participation.
 
-Bot uses finalized state (2 epochs back from HEAD) for fetching validator info,
+Bot has two separate working modes: `head` and `finalized` for fetching validator info,
 writes data to **Clickhouse**, displays aggregates by **Grafana**
 dashboard, alerts about bad performance by **Prometheus + Alertmanger** and
 routes notifications to Discord channel via **alertmanager-discord**.
+
+## Working modes
+
+You can switch working mode by providing `WORKING_MODE` environment variable with one of the following values:
+
+### `finalized`
+Default working mode. Fetches validator info from `finalized` epoch (2 epochs back from `head`).
+It is more stable and reliable because of all data is already finalized.
+
+**Pros**:
+* No errors due to reorgs
+* Less rewards calculation errors
+* Accurate data in alerts and dashboard
+
+**Cons**:
+* 2 epochs delay in processing and critical alerts will be given with 2 epochs delay
+* In case of long finality the app will not monitor and will wait for the finality
+
+### `head`
+Alternative working mode. Fetches validator info from `head` (non-finalized) epoch.
+It is less stable and reliable because of data is not finalized yet. There can be some calculation errors because of reorgs.
+
+**Pros**:
+* Less delay in processing and critical alerts will be given with less delay
+* In case of long finality the app will monitor and will not wait for the finality
+
+**Cons**:
+* Errors due to reorgs
+* More rewards calculation errors
+* Possible inaccurate data in alerts and dashboard
 
 ## Dashboards
 
@@ -105,6 +135,10 @@ If you want to implement your own source, it must match [RegistrySource interfac
 `LOG_FORMAT` - Application log format (simple or json)
 * **Required:** false
 * **Default:** json
+---
+`WORKING_MODE` - Application working mode (finalized or head)
+* **Required:** false
+* **Default:** finalized
 ---
 `DB_HOST` - Clickhouse server host
 * **Required:** true
