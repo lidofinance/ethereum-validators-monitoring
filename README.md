@@ -14,8 +14,8 @@ routes notifications to Discord channel via **alertmanager-discord**.
 You can switch working mode by providing `WORKING_MODE` environment variable with one of the following values:
 
 ### `finalized`
-Default working mode. Fetches validator info from `finalized` epoch (2 epochs back from `head`).
-It is more stable and reliable because of all data is already finalized.
+Default working mode. The service will fetch validators info from finalized states (the latest finalized epoch is 2 epochs back from `head`).
+It is more stable and reliable because all data is already finalized.
 
 **Pros**:
 * No errors due to reorgs
@@ -27,7 +27,7 @@ It is more stable and reliable because of all data is already finalized.
 * In case of long finality the app will not monitor and will wait for the finality
 
 ### `head`
-Alternative working mode. Fetches validator info from `head` (non-finalized) epoch.
+Alternative working mode. The service will fetch validators info from non-finalized states.
 It is less stable and reliable because of data is not finalized yet. There can be some calculation errors because of reorgs.
 
 **Pros**:
@@ -67,8 +67,6 @@ There are several default alerts which are triggered by Prometheus rules:
   * 📝🐢 Operators with high inc. delay attestation
   * 📝🏷️ Operators with two invalid attestation property (head/target/source)
   * 📈📝❌ Operators with missed attestation (on possible high reward validators)
-
-
 
 ## First run
 
