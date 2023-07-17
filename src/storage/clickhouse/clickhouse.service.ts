@@ -1,8 +1,10 @@
-import * as Stream from 'stream';
+import { Readable, Transform } from 'stream';
 
 import { ClickHouseClient, createClient } from '@clickhouse/client';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
+import { chain } from 'stream-chain';
+import { batch } from 'stream-json/utils/Batch';
 
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/consensus-provider/types';
@@ -70,8 +72,6 @@ export class ClickhouseService implements OnModuleInit {
   private readonly maxRetries: number;
   private readonly minBackoff: number;
   private readonly maxBackoff: number;
-  private readonly chunkSize: number;
-  private readonly maxWorkers: number;
   private readonly retry: ReturnType<typeof retrier>;
 
   private async select<T>(query: string): Promise<T> {
@@ -86,8 +86,6 @@ export class ClickhouseService implements OnModuleInit {
     this.maxRetries = this.config.get('DB_MAX_RETRIES');
     this.minBackoff = this.config.get('DB_MIN_BACKOFF_SEC');
     this.maxBackoff = this.config.get('DB_MAX_BACKOFF_SEC');
-    this.chunkSize = this.config.get('DB_INSERT_CHUNK_SIZE');
-    this.maxWorkers = this.config.get('DB_INSERT_MAX_WORKERS_COUNT');
 
     this.logger.log(`DB backoff set to (min=[${this.minBackoff}], max=[${this.maxBackoff}] seconds`);
     this.logger.log(`DB max retries set to [${this.maxRetries}]`);
@@ -100,7 +98,7 @@ export class ClickhouseService implements OnModuleInit {
       password: this.config.get('DB_PASSWORD'),
       database: this.config.get('DB_NAME'),
       compression: {
-        response: true,
+        response: false,
         request: false,
       },
     });
@@ -134,12 +132,12 @@ export class ClickhouseService implements OnModuleInit {
 
   @TrackTask('write-summary')
   public async writeSummary(summary: IterableIterator<ValidatorDutySummary>): Promise<void> {
-    const runWriteTasks = (stream: Stream.Readable): Promise<any>[] => {
+    const runWriteTasks = (stream: Readable): Promise<any>[] => {
       const indexes = this.retry(async () =>
         this.db.insert({
           table: 'validators_index',
           values: stream.pipe(
-            new Stream.Transform({
+            new Transform({
               transform(chunk, encoding, callback) {
                 callback(null, { val_id: chunk.val_id, val_pubkey: chunk.val_pubkey });
               },
@@ -153,7 +151,7 @@ export class ClickhouseService implements OnModuleInit {
         this.db.insert({
           table: 'validators_summary',
           values: stream.pipe(
-            new Stream.Transform({
+            new Transform({
               transform(chunk, encoding, callback) {
                 callback(null, {
                   ...chunk,
@@ -177,42 +175,18 @@ export class ClickhouseService implements OnModuleInit {
       return [indexes, summaries];
     };
 
-    const initWrite = () => {
-      const stream = new Stream.Readable({
-        objectMode: true,
-        read() {
-          //
-        },
-      });
-      writeTasks.push(...runWriteTasks(stream));
-      streams.push(stream);
-      return stream;
-    };
-
-    const waitWrite = async () => {
-      streams.forEach((stream) => (stream.readable ? stream.push(null) : null));
-      await allSettled(writeTasks);
-      streams.forEach((stream) => (stream.destroyed ? null : stream.destroy()));
-    };
-
-    const writeTasks = [];
-    const streams = [];
-
-    let stream = initWrite();
-
-    let index = 0;
-    for (const data of summary) {
-      if (Number(index) % this.chunkSize == 0) {
-        await unblock();
-        if (writeTasks.length % this.maxWorkers == 0) {
-          await waitWrite();
-        }
-        stream = initWrite();
-      }
-      stream.push(data);
-      index++;
-    }
-    await waitWrite();
+    await allSettled(
+      runWriteTasks(
+        chain([
+          Readable.from(summary, { objectMode: true, autoDestroy: true }),
+          batch({ batchSize: 100 }),
+          async (batch) => {
+            await unblock();
+            return batch;
+          },
+        ]),
+      ),
+    );
   }
 
   @TrackTask('write-epoch-meta')
