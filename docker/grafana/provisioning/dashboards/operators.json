@@ -24,20 +24,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "links": [
-    {
-      "asDropdown": false,
-      "icon": "external link",
-      "includeVars": false,
-      "keepTime": false,
-      "tags": [],
-      "targetBlank": false,
-      "title": "Dashboard",
-      "tooltip": "",
-      "type": "dashboards",
-      "url": ""
-    }
-  ],
+  "id": 91,
+  "links": [],
   "liveNow": false,
   "panels": [
     {
@@ -60,7 +48,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Difference between `Now` and timestamp of last slot of processed epoch ",
       "fieldConfig": {
@@ -117,17 +105,19 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_data_actuality)",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -137,7 +127,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Last processed for a specified time period",
       "fieldConfig": {
@@ -183,17 +173,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_epoch_number)",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -203,7 +195,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "fieldConfig": {
         "defaults": {
@@ -245,17 +237,19 @@
         "text": {},
         "textMode": "name"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "🏖️  ${nos_name_var}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -265,7 +259,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Number of unmonitored (stuck) keys that are defined manually. Such keys will not be taken into account when calculating validator metrics and alerts",
       "fieldConfig": {
@@ -307,14 +301,16 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"stuck\",nos_name=\"${nos_name_var}\"})",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -341,7 +337,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "fieldConfig": {
         "defaults": {
@@ -385,17 +381,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"ongoing\",nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -405,7 +403,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Alias for `pending_queued` and `pending_initialized` statuses",
       "fieldConfig": {
@@ -450,17 +448,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"pending\",nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -470,7 +470,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Alias for `active_exiting`, `exited_unslashed`, `exited_slashed` and `withdrawal_possible` statuses",
       "fieldConfig": {
@@ -515,17 +515,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name=\"${nos_name_var}\",status=\"withdrawal_pending\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -535,7 +537,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Alias for `withdrawal_done`, and `withdrawal_possible` statuses. `withdrawal_possible` is considered fully withdrawn when the validator balance is `0`.",
       "fieldConfig": {
@@ -580,17 +582,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{nos_name=\"${nos_name_var}\",status=\"withdrawal_done\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -600,7 +604,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Alias for `active_slashed`, `exited_slashed` or any validator status with `slashed = true` in state",
       "fieldConfig": {
@@ -652,17 +656,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"slashed\",nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -672,7 +678,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "fieldConfig": {
         "defaults": {
@@ -733,6 +739,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value",
             "percent"
@@ -758,10 +765,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"ongoing\",nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "Selected",
+          "range": true,
           "refId": "A"
         },
         {
@@ -769,11 +778,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"ongoing\",nos_name!=\"${nos_name_var}\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "User (other)",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -783,7 +794,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Alias for `pending_queued` and `pending_initialized` statuses",
       "fieldConfig": {
@@ -845,6 +856,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value",
             "percent"
@@ -870,10 +882,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"pending\",nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "Selected",
+          "range": true,
           "refId": "A"
         },
         {
@@ -881,11 +895,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"pending\",nos_name!=\"${nos_name_var}\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "User (other)",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -895,7 +911,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Alias for `active_exiting`, `exited_unslashed`, `exited_slashed` and `withdrawal_possible` statuses",
       "fieldConfig": {
@@ -958,6 +974,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value",
             "percent"
@@ -1012,7 +1029,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Alias for `withdrawal_done`, and `withdrawal_possible` statuses. `withdrawal_possible` is considered fully withdrawn when the validator balance is `0`.",
       "fieldConfig": {
@@ -1075,6 +1092,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value",
             "percent"
@@ -1129,7 +1147,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Alias for `active_slashed`, `exited_slashed` or any validator status with `slashed = true` in state",
       "fieldConfig": {
@@ -1191,6 +1209,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value"
           ]
@@ -1215,10 +1234,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"slashed\",nos_name=\"${nos_name_var}\"})",
           "interval": "",
           "legendFormat": "Selected",
+          "range": true,
           "refId": "A"
         },
         {
@@ -1226,11 +1247,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status=\"slashed\",nos_name!=\"${nos_name_var}\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "User (other)",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -1240,7 +1263,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "",
       "fieldConfig": {
@@ -1250,6 +1273,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1364,7 +1389,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -1380,7 +1406,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\",nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\",nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
           "instant": false,
           "interval": "",
           "legendFormat": "{{status}}",
@@ -1394,8 +1420,8 @@
     },
     {
       "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
+        "type": "prometheus",
+        "uid": "-6MUIj77k"
       },
       "fieldConfig": {
         "defaults": {
@@ -1404,7 +1430,9 @@
           },
           "custom": {
             "align": "center",
-            "displayMode": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
             "inspect": false
           },
           "mappings": [],
@@ -1444,8 +1472,10 @@
             },
             "properties": [
               {
-                "id": "custom.displayMode",
-                "value": "json-view"
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "json-view"
+                }
               },
               {
                 "id": "custom.filterable",
@@ -1475,7 +1505,9 @@
       },
       "id": 1788,
       "options": {
+        "cellHeight": "sm",
         "footer": {
+          "countRows": false,
           "enablePagination": true,
           "fields": [
             "Balance"
@@ -1487,7 +1519,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
@@ -1495,11 +1527,15 @@
             "uid": "PDEE91DDB90597936"
           },
           "dateTimeType": "DATETIME",
+          "editorMode": "code",
+          "expr": "",
           "extrapolate": true,
           "format": "table",
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
+          "legendFormat": "__auto",
           "query": "SELECT\n    val_id as Validator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    validators_summary\nWHERE val_nos_name = '${nos_name_var}' AND epoch = ${epoch_number_var} AND (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
+          "range": true,
           "rawQuery": "SELECT\n    val_id as Validator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    validators_summary\nWHERE val_nos_name = 'cryptomanufaktur.io' AND epoch = 166657 AND (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
           "refId": "A",
           "round": "0s",
@@ -1512,7 +1548,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "",
       "fieldConfig": {
@@ -1522,6 +1558,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1555,7 +1593,8 @@
             "mode": "percentage",
             "steps": [
               {
-                "color": "text"
+                "color": "text",
+                "value": null
               }
             ]
           },
@@ -1620,7 +1659,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -1636,7 +1676,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(ethereum_validators_monitoring_operator_withdrawals_count{nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+          "expr": "(ethereum_validators_monitoring_operator_withdrawals_count{nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
           "instant": false,
           "interval": "",
           "legendFormat": "{{type}}",
@@ -1649,7 +1689,7 @@
       "type": "timeseries"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
@@ -1661,809 +1701,839 @@
         "y": 26
       },
       "id": 1753,
-      "panels": [],
-      "title": "💔 Alerting only (at incident time range)",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "Delta: current slot - 192 slot",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
+      "panels": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
-          "custom": {
-            "align": "center",
-            "displayMode": "auto",
-            "filterable": false,
-            "inspect": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red"
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Validator"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
+          "description": "Delta: current slot - 192 slot",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": false,
+                "inspect": false
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
                   {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Validator"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "beaconcha.in",
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "unit",
+                    "value": "string"
                   }
                 ]
               },
               {
-                "id": "unit",
-                "value": "string"
+                "matcher": {
+                  "id": "byName",
+                  "options": "GWei"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 100
+                  },
+                  {
+                    "id": "unit",
+                    "value": "locale"
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  }
+                ]
               }
             ]
           },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "GWei"
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 27
+          },
+          "id": 1759,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
             },
-            "properties": [
+            "showHeader": true,
+            "sortBy": [
               {
-                "id": "custom.width",
-                "value": 100
+                "desc": false,
+                "displayName": "delta"
+              }
+            ]
+          },
+          "pluginVersion": "9.5.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              {
-                "id": "unit",
-                "value": "locale"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "red",
-                  "mode": "fixed"
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
                 }
               },
-              {
-                "id": "custom.displayMode",
-                "value": "color-text"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 0,
-        "y": 27
-      },
-      "id": 1759,
-      "options": {
-        "footer": {
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.5.15",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_slashed\n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = '${nos_name_var}' AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = '${nos_name_var}' AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_name = '${nos_name_var}' AND\n      val_stuck = 0 AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 and current.val_slashed = 0\nORDER BY GWei ASC, Validator\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_slashed\n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = 'Allnodes' AND\n      val_stuck = 0 AND\n      epoch = 166139\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = 'Allnodes' AND\n      val_stuck = 0 AND\n      epoch = 166139 - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_name = 'Allnodes' AND\n      val_stuck = 0 AND\n      epoch > (166139 - 6) AND epoch <= 166139\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 and current.val_slashed = 0\nORDER BY GWei ASC, Validator\nLIMIT 100",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Negative balance delta",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "center",
-            "displayMode": "auto",
-            "inspect": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red"
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Validator"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
-                  }
-                ]
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Block"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 80
-              },
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/slot/${__value.raw}"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 27
-      },
-      "id": 1761,
-      "options": {
-        "footer": {
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.5.15",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND block_proposed = 0 AND val_stuck = 0 AND (epoch = ${epoch_number_var}) AND val_nos_name = '${nos_name_var}'\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by val_id",
-          "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND block_proposed = 0 AND val_stuck = 0 AND (epoch = 166139) AND val_nos_name = 'Allnodes'\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by val_id",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Missed proposals",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "center",
-            "displayMode": "auto",
-            "inspect": false
-          },
-          "links": [],
-          "mappings": [
-            {
-              "options": {
-                "from": 0,
-                "result": {
-                  "color": "red",
-                  "index": 0
-                },
-                "to": 60
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 60,
-                "result": {
-                  "color": "yellow",
-                  "index": 1
-                },
-                "to": 90
-              },
-              "type": "range"
-            },
-            {
-              "options": {
-                "from": 90,
-                "result": {
-                  "color": "green",
-                  "index": 2
-                },
-                "to": 100
-              },
-              "type": "range"
+              "queryType": "sql",
+              "rawSql": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_slashed\n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = '${nos_name_var}' AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_name = '${nos_name_var}' AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_name = '${nos_name_var}' AND\n      val_stuck = 0 AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 and current.val_slashed = 0\nORDER BY GWei ASC, Validator\nLIMIT 30",
+              "refId": "A"
             }
           ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red"
-              }
-            ]
-          }
+          "title": "Negative balance delta",
+          "type": "table"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Validator"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
                   {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Validator"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "beaconcha.in",
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "unit",
+                    "value": "string"
                   }
                 ]
               },
               {
-                "id": "unit",
-                "value": "string"
+                "matcher": {
+                  "id": "byName",
+                  "options": "Block"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 80
+                  },
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "beaconcha.in",
+                        "url": "https://beaconcha.in/slot/${__value.raw}"
+                      }
+                    ]
+                  }
+                ]
               }
             ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 27
-      },
-      "id": 1762,
-      "options": {
-        "footer": {
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 27
+          },
+          "id": 1761,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": false,
+                "displayName": "delta"
+              }
+            ]
+          },
+          "pluginVersion": "9.5.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
+              },
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND block_proposed = 0 AND val_stuck = 0 AND (epoch = ${epoch_number_var}) AND val_nos_name = '${nos_name_var}'\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by val_id",
+              "refId": "A"
+            }
           ],
-          "show": false
+          "title": "Missed proposals",
+          "type": "table"
         },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.5.15",
-      "targets": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "hide": false,
-          "intervalFactor": 1,
-          "query": "SELECT\n  val_id as Validator\nFROM (\n  SELECT\n    val_id,\n    count() AS count_fail\n  FROM (\n    SELECT val_id\n    FROM validators_summary\n    WHERE\n      is_sync = 1 AND val_stuck = 0 AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n      (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${sync_epochs_var})) AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 by epoch, val_id  \n  )\n  GROUP BY val_id\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, val_id",
-          "rawQuery": "SELECT\n  val_id as Validator\nFROM (\n  SELECT\n    val_id,\n    count() AS count_fail\n  FROM (\n    SELECT val_id\n    FROM validators_summary\n    WHERE\n      is_sync = 1 AND val_stuck = 0 AND sync_percent < (76.66713145608082 - 0) AND\n      (epoch <= 166139 AND epoch > (166139 - 3)) AND\n      val_nos_name = 'Allnodes'\n    LIMIT 1 by epoch, val_id  \n  )\n  GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id",
-          "refId": "B",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Bad Sync participation (${sync_epochs_var} epochs in a row)",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "center",
-            "displayMode": "auto",
-            "filterable": false,
-            "inspect": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "links": [],
+              "mappings": [
+                {
+                  "options": {
+                    "from": 0,
+                    "result": {
+                      "color": "red",
+                      "index": 0
+                    },
+                    "to": 60
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 60,
+                    "result": {
+                      "color": "yellow",
+                      "index": 1
+                    },
+                    "to": 90
+                  },
+                  "type": "range"
+                },
+                {
+                  "options": {
+                    "from": 90,
+                    "result": {
+                      "color": "green",
+                      "index": 2
+                    },
+                    "to": 100
+                  },
+                  "type": "range"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "overrides": [
               {
-                "color": "red"
+                "matcher": {
+                  "id": "byName",
+                  "options": "Validator"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "beaconcha.in",
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "unit",
+                    "value": "string"
+                  }
+                ]
               }
             ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Validator"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 27
+          },
+          "id": 1762,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
             },
-            "properties": [
+            "showHeader": true,
+            "sortBy": [
               {
-                "id": "links",
-                "value": [
+                "desc": false,
+                "displayName": "delta"
+              }
+            ]
+          },
+          "pluginVersion": "9.5.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
+              },
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n  val_id as Validator\nFROM (\n  SELECT\n    val_id,\n    count() AS count_fail\n  FROM (\n    SELECT val_id\n    FROM validators_summary\n    WHERE\n      is_sync = 1 AND val_stuck = 0 AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n      (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${sync_epochs_var})) AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 by epoch, val_id  \n  )\n  GROUP BY val_id\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, val_id",
+              "refId": "A"
+            }
+          ],
+          "title": "Bad Sync participation (${sync_epochs_var} epochs in a row)",
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": false,
+                "inspect": false
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
                   {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Validator"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "beaconcha.in",
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "unit",
+                    "value": "string"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 35
+          },
+          "id": 1760,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": false,
+                "displayName": "delta"
+              }
+            ]
+          },
+          "pluginVersion": "9.5.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
+              },
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "\nSELECT\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM (\n      SELECT val_id\n      FROM validators_summary\n      WHERE \n        att_happened = 0 AND val_stuck = 0 AND val_nos_name = '${nos_name_var}' AND\n        (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\n      LIMIT 1 by epoch, val_id\n    )\n    GROUP BY val_id\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT 30",
+              "refId": "A"
+            }
+          ],
+          "title": "Missed attestation (${att_epochs_var} epochs in a row)",
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
+          },
+          "description": "inc. delay > 1",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": false,
+                "inspect": false
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Validator"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "beaconcha.in",
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "unit",
+                    "value": "string"
                   }
                 ]
               },
               {
-                "id": "unit",
-                "value": "string"
+                "matcher": {
+                  "id": "byName",
+                  "options": "count_fail"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
               }
             ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 0,
-        "y": 35
-      },
-      "id": 1760,
-      "options": {
-        "footer": {
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 35
+          },
+          "id": 1773,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": false,
+                "displayName": "delta"
+              }
+            ]
+          },
+          "pluginVersion": "9.5.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
+              },
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM (\n  SELECT val_id\n  FROM validators_summary\n  WHERE\n    val_nos_name = '${nos_name_var}' AND\n    att_happened = 1 AND\n    att_inc_delay > 1 AND\n    val_stuck = 0 AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT 30",
+              "refId": "A"
+            }
           ],
-          "show": false
+          "title": "High inclusion delay (${att_epochs_var} epochs in a row)",
+          "transformations": [],
+          "type": "table"
         },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.5.15",
-      "targets": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "\nSELECT\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM (\n      SELECT val_id\n      FROM validators_summary\n      WHERE \n        att_happened = 0 AND val_stuck = 0 AND val_nos_name = '${nos_name_var}' AND\n        (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\n      LIMIT 1 by epoch, val_id\n    )\n    GROUP BY val_id\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  val_id as Validator\nFROM (\n    SELECT\n      val_id,\n      count() as count_fail\n    FROM (\n      SELECT val_id\n      FROM validators_summary\n      WHERE \n        att_happened = 0 AND val_stuck = 0 AND val_nos_name = 'Allnodes' AND\n        (epoch <= 166139 AND epoch > (166139 - 3))\n      LIMIT 1 by epoch, val_id\n    )\n    GROUP BY val_id\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Missed attestation (${att_epochs_var} epochs in a row)",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "inc. delay > 1",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "center",
-            "displayMode": "auto",
-            "filterable": false,
-            "inspect": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red"
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Validator"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
+          "description": "head or target or source",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": false,
+                "inspect": false
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
                   {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Validator"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "beaconcha.in",
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "unit",
+                    "value": "string"
                   }
                 ]
               },
               {
-                "id": "unit",
-                "value": "string"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "count_fail"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 35
-      },
-      "id": 1773,
-      "options": {
-        "footer": {
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.5.15",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM (\n  SELECT val_id\n  FROM validators_summary\n  WHERE\n    val_nos_name = '${nos_name_var}' AND\n    att_happened = 1 AND\n    att_inc_delay > 1 AND\n    val_stuck = 0 AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM (\n  SELECT val_id\n  FROM validators_summary\n  WHERE\n    val_nos_name = 'Allnodes' AND\n    att_happened = 1 AND\n    att_inc_delay > 1 AND\n    val_stuck = 0 AND\n    (epoch <= 166139 AND epoch > (166139 - 3))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "High inclusion delay (${att_epochs_var} epochs in a row)",
-      "transformations": [],
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "head or target or source",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "center",
-            "displayMode": "auto",
-            "filterable": false,
-            "inspect": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red"
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Validator"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
+                "matcher": {
+                  "id": "byName",
+                  "options": "count_fail"
+                },
+                "properties": [
                   {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "id": "custom.hidden",
+                    "value": true
                   }
                 ]
-              },
-              {
-                "id": "unit",
-                "value": "string"
               }
             ]
           },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "count_fail"
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 16,
+            "y": 35
+          },
+          "id": 1774,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
             },
-            "properties": [
+            "showHeader": true,
+            "sortBy": [
               {
-                "id": "custom.hidden",
-                "value": true
+                "desc": false,
+                "displayName": "delta"
               }
             ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 35
-      },
-      "id": 1774,
-      "options": {
-        "footer": {
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
+          },
+          "pluginVersion": "9.5.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
+              },
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM (\n  SELECT val_id\n  FROM validators_summary\n  WHERE\n    val_nos_name = '${nos_name_var}' AND\n    (att_valid_head + att_valid_target + att_valid_source = 1) AND\n    val_stuck = 0 AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT 30",
+              "refId": "A"
+            }
           ],
-          "show": false
+          "title": "Invalid attestation properties (${att_epochs_var} epochs in a row)",
+          "type": "table"
         },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.5.15",
-      "targets": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM (\n  SELECT val_id\n  FROM validators_summary\n  WHERE\n    val_nos_name = '${nos_name_var}' AND\n    (att_valid_head + att_valid_target + att_valid_source = 1) AND\n    val_stuck = 0 AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT ${limit}",
-          "rawQuery": "SELECT\n  val_id as Validator,\n  count() as count_fail\nFROM (\n  SELECT val_id\n  FROM validators_summary\n  WHERE\n    val_nos_name = 'Allnodes' AND\n    (att_valid_head + att_valid_target + att_valid_source = 1) AND\n    val_stuck = 0 AND\n    (epoch <= 166139 AND epoch > (166139 - 3))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
-        }
-      ],
-      "title": "Invalid attestation properties (${att_epochs_var} epochs in a row)",
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "center",
-            "displayMode": "auto",
-            "filterable": false,
-            "inspect": false
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red"
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Validator"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": false,
+                "inspect": false
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
                   {
-                    "targetBlank": true,
-                    "title": "beaconcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "color": "red"
                   }
                 ]
-              },
+              }
+            },
+            "overrides": [
               {
-                "id": "unit",
-                "value": "string"
+                "matcher": {
+                  "id": "byName",
+                  "options": "Validator"
+                },
+                "properties": [
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "targetBlank": true,
+                        "title": "beaconcha.in",
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "unit",
+                    "value": "string"
+                  }
+                ]
               }
             ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 0,
-        "y": 43
-      },
-      "id": 1758,
-      "options": {
-        "footer": {
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": false,
-            "displayName": "delta"
-          }
-        ]
-      },
-      "pluginVersion": "8.5.15",
-      "targets": [
-        {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
           },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n    val_status as Status,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) and val_nos_name = '${nos_name_var}' and epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id",
-          "rawQuery": "SELECT\n    val_status as Status,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) and val_nos_name = 'Anyblock Analytics' and epoch = 178184\nORDER BY val_id\nLIMIT 1 by val_id",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 43
+          },
+          "id": 1758,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": false,
+                "displayName": "delta"
+              }
+            ]
+          },
+          "pluginVersion": "9.5.3",
+          "targets": [
+            {
+              "datasource": {
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
+              },
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n    val_status as Status,\n    val_id as Validator\nFROM validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) and val_nos_name = '${nos_name_var}' and epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id",
+              "refId": "A"
+            }
+          ],
+          "title": "Slashed",
+          "type": "table"
         }
       ],
-      "title": "Slashed",
-      "type": "table"
+      "title": "💔 Alerting only (at incident time range)",
+      "type": "row"
     },
     {
       "collapsed": true,
@@ -2475,14 +2545,14 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 27
       },
       "id": 1727,
       "panels": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -2491,6 +2561,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -2552,14 +2624,15 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 53
+            "y": 28
           },
           "id": 1729,
           "options": {
             "legend": {
               "calcs": [],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
               "mode": "single",
@@ -2573,11 +2646,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "(sum(ethereum_validators_monitoring_operator_balance_24h_difference{nos_name=\"${nos_name_var}\"}) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "(sum(ethereum_validators_monitoring_operator_balance_24h_difference{nos_name=\"${nos_name_var}\"}) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "delta",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -2588,7 +2663,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "Delta: current slot - 192 slot",
           "fieldConfig": {
@@ -2599,6 +2674,8 @@
                 "seriesBy": "min"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "right",
                 "axisSoftMax": 200000,
@@ -2649,14 +2726,15 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 58
+            "y": 33
           },
           "id": 2,
           "options": {
             "legend": {
               "calcs": [],
-              "displayMode": "hidden",
-              "placement": "bottom"
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
             },
             "tooltip": {
               "mode": "single",
@@ -2669,10 +2747,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_balances_delta{nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_validator_balances_delta{nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -2682,7 +2762,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "Delta: current slot - 192 slot",
           "fieldConfig": {
@@ -2693,6 +2773,8 @@
                 "seriesBy": "min"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "right",
                 "axisSoftMax": 200000,
@@ -2743,14 +2825,15 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 58
+            "y": 33
           },
           "id": 6,
           "options": {
             "legend": {
               "calcs": [],
-              "displayMode": "hidden",
-              "placement": "bottom"
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
             },
             "tooltip": {
               "mode": "single",
@@ -2763,10 +2846,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -2775,8 +2860,8 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "Delta: current slot - 192 slot",
           "fieldConfig": {
@@ -2786,7 +2871,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "inspect": false
               },
               "links": [],
@@ -2816,8 +2903,10 @@
                     "value": "locale"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -2849,11 +2938,13 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 64
+            "y": 39
           },
           "id": 1733,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -2869,23 +2960,23 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.3",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} - 6 AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var} AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT 100",
-              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 166139 AND\n      val_nos_name = 'Allnodes'\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 166139 - 6 AND\n      val_nos_name = 'Allnodes'\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch > (166139 - 6) AND epoch <= 166139 AND\n      val_nos_name = 'Allnodes'\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT 100",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} - 6 AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var} AND\n      val_nos_name = '${nos_name_var}'\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT 100",
+              "refId": "A"
             }
           ],
           "title": "Validators with worst balance delta",
@@ -2894,7 +2985,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -2904,6 +2995,8 @@
                 "mode": "fixed"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "right",
                 "axisSoftMax": 10,
@@ -2951,14 +3044,15 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 64
+            "y": 39
           },
           "id": 5,
           "options": {
             "legend": {
               "calcs": [],
-              "displayMode": "hidden",
-              "placement": "bottom"
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
             },
             "tooltip": {
               "mode": "single",
@@ -2972,8 +3066,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name=\"${nos_name_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "hide": false,
               "instant": false,
               "interval": "",
@@ -2998,14 +3093,14 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 52
+        "y": 28
       },
       "id": 1735,
       "panels": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "",
           "fieldConfig": {
@@ -3015,7 +3110,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "inspect": false
               },
               "links": [],
@@ -3080,11 +3177,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 53
+            "y": 29
           },
           "id": 1737,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -3100,23 +3199,23 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.3",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_name = '${nos_name_var}' AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
-              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_name = 'Allnodes' AND block_proposed = 0 AND (epoch <= 170500 AND epoch > (170500 - 9))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE is_proposer = 1 AND val_nos_name = '${nos_name_var}' AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
+              "refId": "A"
             }
           ],
           "title": "Missed proposals (${epochs_range} epochs range)",
@@ -3125,7 +3224,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -3135,6 +3234,8 @@
                 "mode": "fixed"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -3178,7 +3279,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 53
+            "y": 29
           },
           "id": 1739,
           "options": {
@@ -3186,8 +3287,9 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "displayMode": "hidden",
+              "displayMode": "list",
               "placement": "right",
+              "showLegend": false,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -3203,10 +3305,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_miss_propose{nos_name='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_miss_propose{nos_name='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -3227,14 +3331,14 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 53
+        "y": 29
       },
       "id": 1711,
       "panels": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -3243,6 +3347,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -3360,7 +3466,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 54
+            "y": 30
           },
           "id": 1745,
           "options": {
@@ -3370,6 +3476,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -3385,11 +3492,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "Rest of chain",
+              "range": true,
               "refId": "A"
             },
             {
@@ -3397,11 +3506,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name!='${nos_name_var}'} AND ON(nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_name!='${nos_name_var}'} + ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_name!='${nos_name_var}'} > 0) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0) ",
+              "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name!='${nos_name_var}'} AND ON(nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_name!='${nos_name_var}'} + ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_name!='${nos_name_var}'} > 0) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0) ",
               "hide": false,
               "interval": "",
               "legendFormat": "Rest of User's",
+              "range": true,
               "refId": "B"
             },
             {
@@ -3409,11 +3520,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_name='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "${nos_name_var}",
+              "range": true,
               "refId": "C"
             }
           ],
@@ -3423,8 +3536,8 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "AVG.\n`Bad` is considered when validator's sync is less than chain avg value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
@@ -3434,7 +3547,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "inspect": false
               },
               "links": [],
@@ -3512,8 +3627,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "custom.width",
@@ -3531,11 +3648,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 60
+            "y": 36
           },
           "id": 1747,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -3551,23 +3670,23 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.3",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_name = '${nos_name_var}' AND val_stuck = 0 AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent, val_id\nLIMIT 1 by val_id",
-              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_name = 'Allnodes' AND val_stuck = 0 AND epoch = 166141 AND sync_percent < (80.91881795600057 - 0)\nORDER BY sync_percent, val_id\nLIMIT 1 by val_id",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n    sync_percent as Percent,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE is_sync = 1 AND val_nos_name = '${nos_name_var}' AND val_stuck = 0 AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent, val_id\nLIMIT 1 by val_id",
+              "refId": "A"
             }
           ],
           "title": "Bad Sync Committee participation",
@@ -3576,7 +3695,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -3585,6 +3704,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -3644,7 +3765,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 60
+            "y": 36
           },
           "id": 1749,
           "options": {
@@ -3652,8 +3773,9 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "displayMode": "hidden",
+              "displayMode": "list",
               "placement": "right",
+              "showLegend": false,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -3669,10 +3791,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_name='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_name='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -3693,14 +3817,14 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 54
+        "y": 30
       },
       "id": 1751,
       "panels": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "",
           "fieldConfig": {
@@ -3710,7 +3834,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -3775,8 +3901,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -3808,11 +3936,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 56
+            "y": 31
           },
           "id": 1755,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -3828,23 +3958,22 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.3",
           "targets": [
             {
+              "builderOptions": "The query is not a select statement.",
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_name = '${nos_name_var}' AND val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_name = 'Allnodes' AND val_stuck = 0 AND epoch = 166141\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
+              "format": 1,
+              "meta": {
+                "builderOptions": "The query is not a select statement."
+              },
+              "queryType": "sql",
+              "rawSql": "    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_name = '${nos_name_var}' AND val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 30",
               "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "selectedFormat": 1
             }
           ],
           "title": "Validators with MISSED attestation",
@@ -3853,7 +3982,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "User only",
           "fieldConfig": {
@@ -3863,6 +3992,8 @@
                 "mode": "fixed"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -3906,7 +4037,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 56
+            "y": 31
           },
           "id": 1757,
           "options": {
@@ -3916,6 +4047,7 @@
               ],
               "displayMode": "list",
               "placement": "bottom",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -3931,10 +4063,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_miss_attestation{nos_name='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_miss_attestation{nos_name='${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -3943,8 +4077,8 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "inc. delay > 1",
           "fieldConfig": {
@@ -3954,7 +4088,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -4019,8 +4155,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -4052,11 +4190,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 64
+            "y": 39
           },
           "id": 1764,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -4072,23 +4212,23 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.3",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = '${nos_name_var}' AND val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = 'Allnodes' AND val_stuck = 0 AND epoch = 166141\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 1 AND att_inc_delay > 1 AND val_nos_name = '${nos_name_var}' AND val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 30",
+              "refId": "A"
             }
           ],
           "title": "Validators with high INC. DELAY attestation",
@@ -4097,7 +4237,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "User only",
           "fieldConfig": {
@@ -4107,6 +4247,8 @@
                 "mode": "fixed"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -4150,7 +4292,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 64
+            "y": 39
           },
           "id": 1765,
           "options": {
@@ -4160,6 +4302,7 @@
               ],
               "displayMode": "list",
               "placement": "bottom",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -4175,10 +4318,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -4187,8 +4332,8 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "",
           "fieldConfig": {
@@ -4198,7 +4343,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -4263,8 +4410,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -4308,11 +4457,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 72
+            "y": 47
           },
           "id": 1770,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -4328,33 +4479,30 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.3",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = '${nos_name_var}' AND val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 BY val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_head = 0 AND val_nos_name = 'Allnodes' AND val_stuck = 0 AND epoch = 166141\n    ORDER BY val_id\n    LIMIT 1 BY val_id\n    LIMIT 100",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_happened = 0 AND val_nos_name = '${nos_name_var}' AND val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 30",
+              "refId": "A"
             }
           ],
           "title": "Validators with invalid HEAD",
           "type": "table"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -4363,6 +4511,8 @@
                 "mode": "fixed"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -4406,7 +4556,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 72
+            "y": 47
           },
           "id": 1766,
           "options": {
@@ -4416,6 +4566,7 @@
               ],
               "displayMode": "list",
               "placement": "bottom",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -4431,10 +4582,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -4443,8 +4596,8 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "",
           "fieldConfig": {
@@ -4454,7 +4607,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -4519,8 +4674,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -4552,11 +4709,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 80
+            "y": 55
           },
           "id": 1771,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -4572,33 +4731,30 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.3",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = '${nos_name_var}' AND val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = 'Allnodes' AND val_stuck = 0 AND epoch = 166141\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_target = 0 AND val_nos_name = '${nos_name_var}' AND val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 30",
+              "refId": "A"
             }
           ],
           "title": "Validators with invalid TARGET",
           "type": "table"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -4607,6 +4763,8 @@
                 "mode": "fixed"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -4650,7 +4808,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 80
+            "y": 55
           },
           "id": 1767,
           "options": {
@@ -4660,6 +4818,7 @@
               ],
               "displayMode": "list",
               "placement": "bottom",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -4675,10 +4834,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -4687,8 +4848,8 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "",
           "fieldConfig": {
@@ -4698,7 +4859,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -4763,8 +4926,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -4796,11 +4961,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 88
+            "y": 63
           },
           "id": 1772,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -4816,33 +4983,30 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.3",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = '${nos_name_var}' AND val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT ${limit}",
-              "rawQuery": "SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = 'Allnodes' AND val_stuck = 0 AND epoch = 166141\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "\n    SELECT\n      val_id as Validator\n    FROM validators_summary\n    WHERE att_valid_source = 0 AND val_nos_name = '${nos_name_var}' AND val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 30",
+              "refId": "A"
             }
           ],
           "title": "Validator with invalid SOURCE",
           "type": "table"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -4851,6 +5015,8 @@
                 "mode": "fixed"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -4894,7 +5060,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 88
+            "y": 63
           },
           "id": 1768,
           "options": {
@@ -4904,6 +5070,7 @@
               ],
               "displayMode": "list",
               "placement": "bottom",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -4919,10 +5086,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_validator_count_invalid_attestation{nos_name='${nos_name_var}', reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -4934,21 +5103,21 @@
       "type": "row"
     }
   ],
-  "refresh": false,
-  "schemaVersion": 36,
+  "refresh": "",
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": true,
-          "text": "cryptomanufaktur.io",
-          "value": "cryptomanufaktur.io"
+          "selected": false,
+          "text": "AWS",
+          "value": "AWS"
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
+          "uid": "-6MUIj77k"
         },
         "definition": "query_result(ethereum_validators_monitoring_user_validators)",
         "description": "",
@@ -4971,12 +5140,12 @@
       {
         "current": {
           "selected": false,
-          "text": "166657",
-          "value": "166657"
+          "text": "190324",
+          "value": "190324"
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
+          "uid": "-6MUIj77k"
         },
         "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
         "description": "Last epoch number",
@@ -4999,12 +5168,12 @@
       {
         "current": {
           "selected": false,
-          "text": "10",
-          "value": "10"
+          "text": "0",
+          "value": "0"
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
+          "uid": "-6MUIj77k"
         },
         "definition": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
         "description": "Sync participation distance down from Blockchain average",
@@ -5026,33 +5195,13 @@
       },
       {
         "current": {
-          "selected": true,
-          "text": "100",
-          "value": "100"
-        },
-        "hide": 0,
-        "label": "Row limit",
-        "name": "limit",
-        "options": [
-          {
-            "selected": true,
-            "text": "100",
-            "value": "100"
-          }
-        ],
-        "query": "100",
-        "skipUrlSync": false,
-        "type": "textbox"
-      },
-      {
-        "current": {
           "selected": false,
           "text": "3",
           "value": "3"
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
+          "uid": "-6MUIj77k"
         },
         "definition": "label_values(ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch, epoch_interval)",
         "hide": 2,
@@ -5078,7 +5227,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
+          "uid": "-6MUIj77k"
         },
         "definition": "label_values(ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch, epoch_interval)",
         "hide": 2,
@@ -5099,12 +5248,12 @@
       {
         "current": {
           "selected": false,
-          "text": "69.30803390266374",
-          "value": "69.30803390266374"
+          "text": "74.81915485486388",
+          "value": "74.81915485486388"
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
+          "uid": "-6MUIj77k"
         },
         "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
         "description": "Chain sync participation average value",
@@ -5127,14 +5276,14 @@
       {
         "current": {
           "selected": false,
-          "text": "12",
-          "value": "12"
+          "text": "16",
+          "value": "16"
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
+          "uid": "-6MUIj77k"
         },
-        "definition": "query_result(sum_over_time((changes(sum(ethereum_validators_monitoring_epoch_number)[25s:]) > 0)[$__range:]))",
+        "definition": "query_result(sum_over_time((changes(sum(ethereum_validators_monitoring_epoch_number)[30s:]) > 0)[$__range:]))",
         "description": "Epochs range by prometheus metric",
         "hide": 2,
         "includeAll": false,
@@ -5143,7 +5292,7 @@
         "name": "epochs_range",
         "options": [],
         "query": {
-          "query": "query_result(sum_over_time((changes(sum(ethereum_validators_monitoring_epoch_number)[25s:]) > 0)[$__range:]))",
+          "query": "query_result(sum_over_time((changes(sum(ethereum_validators_monitoring_epoch_number)[30s:]) > 0)[$__range:]))",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -5162,8 +5311,8 @@
     "refresh_intervals": []
   },
   "timezone": "",
-  "title": "NodeOperators",
+  "title": "Ethereum Node Operators",
   "uid": "3wimU2H7h",
-  "version": 25,
+  "version": 20,
   "weekStart": ""
 }

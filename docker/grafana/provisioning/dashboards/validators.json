@@ -24,20 +24,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "links": [
-    {
-      "asDropdown": false,
-      "icon": "external link",
-      "includeVars": false,
-      "keepTime": false,
-      "tags": [],
-      "targetBlank": false,
-      "title": "Dashboard",
-      "tooltip": "",
-      "type": "dashboards",
-      "url": ""
-    }
-  ],
+  "id": 100,
+  "links": [],
   "liveNow": false,
   "panels": [
     {
@@ -58,10 +46,7 @@
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "description": "Difference between `Now` and timestamp of last slot of processed epoch ",
       "fieldConfig": {
         "defaults": {
@@ -117,17 +102,19 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_data_actuality)",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -135,10 +122,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "description": "Last processed for a specified time period",
       "fieldConfig": {
         "defaults": {
@@ -183,17 +167,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_epoch_number)",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -201,10 +187,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -247,17 +230,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_contract_keys_total{type=\"total\"})",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -265,10 +250,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -311,17 +293,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_steth_buffered_ether_total)",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -329,10 +313,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "description": "Number of unmonitored (stuck) keys that are defined manually. Such keys will not be taken into account when calculating validator metrics and alerts",
       "fieldConfig": {
         "defaults": {
@@ -373,14 +354,16 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"stuck\"})",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -388,10 +371,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -434,17 +414,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_contract_keys_total{type=\"used\"})",
           "interval": "",
           "legendFormat": "",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -469,10 +451,7 @@
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -515,17 +494,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"ongoing\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -533,10 +514,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "description": "Alias for `pending_queued` and `pending_initialized` statuses",
       "fieldConfig": {
         "defaults": {
@@ -580,17 +558,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"pending\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -598,10 +578,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "description": "Alias for `active_exiting`, `exited_unslashed`, `exited_slashed` and `withdrawal_possible` statuses",
       "fieldConfig": {
         "defaults": {
@@ -645,17 +622,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"withdrawal_pending\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -663,10 +642,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "description": "Alias for `withdrawal_done`, and `withdrawal_possible` statuses. `withdrawal_possible` is considered fully withdrawn when the validator balance is `0`.",
       "fieldConfig": {
         "defaults": {
@@ -710,17 +686,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"withdrawal_done\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -728,10 +706,7 @@
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "description": "Alias for `active_slashed`, `exited_slashed` or any validator status with `slashed = true` in state",
       "fieldConfig": {
         "defaults": {
@@ -782,17 +757,19 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"})",
           "interval": "",
           "legendFormat": "{{owner}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -802,7 +779,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "fieldConfig": {
         "defaults": {
@@ -863,6 +840,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value",
             "percent"
@@ -888,10 +866,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"ongoing\"})",
           "interval": "",
           "legendFormat": "User",
+          "range": true,
           "refId": "A"
         },
         {
@@ -899,11 +879,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"ongoing\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -913,7 +895,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Alias for `pending_queued` and `pending_initialized` statuses",
       "fieldConfig": {
@@ -976,6 +958,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value",
             "percent"
@@ -1001,10 +984,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"pending\"})",
           "interval": "",
           "legendFormat": "User",
+          "range": true,
           "refId": "A"
         },
         {
@@ -1012,11 +997,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"pending\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -1026,7 +1013,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Alias for `active_exiting`, `exited_unslashed`, `exited_slashed` and `withdrawal_possible` statuses",
       "fieldConfig": {
@@ -1089,6 +1076,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value",
             "percent"
@@ -1114,10 +1102,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"withdrawal_pending\"})",
           "interval": "",
           "legendFormat": "User",
+          "range": true,
           "refId": "A"
         },
         {
@@ -1125,11 +1115,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"withdrawal_pending\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -1139,7 +1131,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Alias for `withdrawal_done`, and `withdrawal_possible` statuses. `withdrawal_possible` is considered fully withdrawn when the validator balance is `0`.",
       "fieldConfig": {
@@ -1202,6 +1194,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value",
             "percent"
@@ -1227,10 +1220,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"withdrawal_done\"})",
           "interval": "",
           "legendFormat": "User",
+          "range": true,
           "refId": "A"
         },
         {
@@ -1238,11 +1233,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"withdrawal_done\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -1252,7 +1249,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "Alias for `active_slashed`, `exited_slashed` or any validator status with `slashed = true` in state",
       "fieldConfig": {
@@ -1315,6 +1312,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value"
           ]
@@ -1339,10 +1337,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"})",
           "interval": "",
           "legendFormat": "User",
+          "range": true,
           "refId": "A"
         },
         {
@@ -1350,11 +1350,13 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"slashed\"})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
+          "range": true,
           "refId": "B"
         }
       ],
@@ -1362,10 +1364,7 @@
       "type": "piechart"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1375,7 +1374,9 @@
           },
           "custom": {
             "align": "center",
-            "displayMode": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
             "filterable": false,
             "inspect": false
           },
@@ -1407,8 +1408,11 @@
                 "value": 120
               },
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "color",
@@ -1430,8 +1434,11 @@
                 "value": 120
               },
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "color",
@@ -1453,8 +1460,11 @@
                 "value": 150
               },
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "color",
@@ -1476,8 +1486,11 @@
                 "value": 120
               },
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "color",
@@ -1516,7 +1529,9 @@
       },
       "id": 75,
       "options": {
+        "cellHeight": "sm",
         "footer": {
+          "countRows": false,
           "enablePagination": true,
           "fields": "",
           "reducer": [
@@ -1528,13 +1543,14 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": false,
           "expr": "(sort_desc(sum by (nos_name, status) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\"})))",
           "instant": true,
@@ -1607,10 +1623,7 @@
       "type": "table"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1619,6 +1632,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1734,7 +1749,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -1750,7 +1766,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
           "instant": false,
           "interval": "",
           "legendFormat": "{{status}}",
@@ -1765,7 +1781,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "-6MUIj77k"
       },
       "description": "A validator is considered `fully` withdrawn if it has withdrawn a balance in a certain epoch and its balance is 0,  otherwise it is considered `partially` withdrawn",
       "fieldConfig": {
@@ -1775,6 +1791,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1808,8 +1826,7 @@
             "mode": "percentage",
             "steps": [
               {
-                "color": "text",
-                "value": null
+                "color": "text"
               }
             ]
           },
@@ -1874,7 +1891,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -1890,7 +1908,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (type) (ethereum_validators_monitoring_operator_withdrawals_count) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+          "expr": "sum by (type) (ethereum_validators_monitoring_operator_withdrawals_count) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
           "instant": false,
           "interval": "",
           "legendFormat": "{{type}}",
@@ -1904,8 +1922,8 @@
     },
     {
       "datasource": {
-        "type": "vertamedia-clickhouse-datasource",
-        "uid": "PDEE91DDB90597936"
+        "type": "grafana-clickhouse-datasource",
+        "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
       },
       "fieldConfig": {
         "defaults": {
@@ -1914,7 +1932,9 @@
           },
           "custom": {
             "align": "center",
-            "displayMode": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
             "inspect": false
           },
           "mappings": [],
@@ -1922,8 +1942,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -1954,8 +1973,10 @@
             },
             "properties": [
               {
-                "id": "custom.displayMode",
-                "value": "json-view"
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "json-view"
+                }
               },
               {
                 "id": "custom.filterable",
@@ -2007,7 +2028,9 @@
       },
       "id": 123,
       "options": {
+        "cellHeight": "sm",
         "footer": {
+          "countRows": false,
           "enablePagination": true,
           "fields": [
             "Balance"
@@ -2019,23 +2042,23 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "10.0.2",
       "targets": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
-          "dateTimeType": "DATETIME",
-          "extrapolate": true,
-          "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-          "intervalFactor": 1,
-          "query": "SELECT\n    val_id as Validator,\n    val_nos_name as Operator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    stats.validators_summary\nWHERE val_nos_name is not NULL AND epoch = ${epoch_number_var} AND (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
-          "rawQuery": "SELECT\n    val_id as Validator,\n    val_nos_name as Operator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    stats.validators_summary\nWHERE val_nos_name is not NULL AND epoch = 166657 AND (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
-          "refId": "A",
-          "round": "0s",
-          "skip_comments": true
+          "meta": {
+            "builderOptions": {
+              "fields": [],
+              "limit": 100,
+              "mode": "list"
+            }
+          },
+          "queryType": "sql",
+          "rawSql": "SELECT\n    val_id as Validator,\n    val_nos_name as Operator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    stats.validators_summary\nWHERE val_nos_name is not NULL AND epoch = ${epoch_number_var} AND (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
+          "refId": "A"
         }
       ],
       "title": "Withdrawal pending User validators",
@@ -2058,7 +2081,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -2112,13 +2135,14 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 34
+            "y": 3
           },
           "id": 108,
           "options": {
             "legend": {
               "displayMode": "table",
               "placement": "bottom",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -2144,8 +2168,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2158,8 +2183,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2193,7 +2219,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -2247,13 +2273,14 @@
             "h": 7,
             "w": 6,
             "x": 6,
-            "y": 34
+            "y": 3
           },
           "id": 113,
           "options": {
             "legend": {
               "displayMode": "table",
               "placement": "bottom",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -2279,8 +2306,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2293,8 +2321,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2328,7 +2357,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -2338,7 +2367,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -2360,8 +2391,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -2390,8 +2423,11 @@
                     }
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-background-solid"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "mode": "basic",
+                      "type": "color-background"
+                    }
                   }
                 ]
               },
@@ -2402,8 +2438,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -2454,11 +2492,13 @@
             "h": 14,
             "w": 12,
             "x": 12,
-            "y": 34
+            "y": 3
           },
           "id": 110,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": [],
               "reducer": [
@@ -2470,15 +2510,16 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2491,8 +2532,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2506,7 +2548,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:]) + sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2598,7 +2640,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -2652,13 +2694,14 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 41
+            "y": 10
           },
           "id": 109,
           "options": {
             "legend": {
               "displayMode": "table",
               "placement": "bottom",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -2684,8 +2727,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2698,8 +2742,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_good_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2735,7 +2780,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "`Bad` is considered when validator's sync is less than chain avg value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
@@ -2789,13 +2834,14 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 48
+            "y": 17
           },
           "id": 111,
           "options": {
             "legend": {
               "displayMode": "table",
               "placement": "bottom",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -2821,8 +2867,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2835,8 +2882,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2870,7 +2918,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "`Bad` is considered when validator's sync is less than chain avg value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
@@ -2924,13 +2972,14 @@
             "h": 7,
             "w": 6,
             "x": 6,
-            "y": 48
+            "y": 17
           },
           "id": 114,
           "options": {
             "legend": {
               "displayMode": "table",
               "placement": "bottom",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -2956,8 +3005,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2970,8 +3020,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3005,7 +3056,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "`Bad` is considered when validator's sync is less than chain avg value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
@@ -3015,7 +3066,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -3037,8 +3090,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3067,8 +3122,11 @@
                     }
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-background-solid"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "mode": "basic",
+                      "type": "color-background"
+                    }
                   }
                 ]
               },
@@ -3079,8 +3137,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3135,11 +3195,13 @@
             "h": 14,
             "w": 12,
             "x": 12,
-            "y": 48
+            "y": 17
           },
           "id": 107,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": [
                 "Value #good (sum)",
@@ -3154,15 +3216,16 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3175,8 +3238,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3190,7 +3254,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "avg_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "avg_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3366,7 +3430,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -3420,13 +3484,14 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 55
+            "y": 24
           },
           "id": 112,
           "options": {
             "legend": {
               "displayMode": "table",
               "placement": "bottom",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -3452,8 +3517,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3466,8 +3532,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "(sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+              "expr": "(sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_with_good_sync_participation) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:]))",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3503,7 +3570,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -3617,13 +3684,14 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 62
+            "y": 31
           },
           "id": 106,
           "options": {
             "legend": {
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -3649,8 +3717,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3663,8 +3732,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3677,8 +3747,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3692,7 +3763,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3706,7 +3777,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "instant": true,
               "interval": "",
@@ -3719,7 +3790,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_user_validators{status=~\"ongoing\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_user_validators{status=~\"ongoing\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3733,7 +3804,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_perfect_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_perfect_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "hide": false,
               "instant": true,
               "interval": "",
@@ -3788,7 +3859,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -3798,7 +3869,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -3820,8 +3893,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3843,8 +3918,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3866,8 +3943,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3889,8 +3968,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3912,8 +3993,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3935,8 +4018,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3975,11 +4060,13 @@
             "h": 12,
             "w": 12,
             "x": 12,
-            "y": 62
+            "y": 31
           },
           "id": 104,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -3991,15 +4078,16 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4012,8 +4100,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4026,8 +4115,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4040,8 +4130,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4054,8 +4145,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "instant": true,
               "interval": "",
@@ -4067,8 +4159,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_perfect_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_perfect_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4224,7 +4317,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -4338,13 +4431,14 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 68
+            "y": 37
           },
           "id": 115,
           "options": {
             "legend": {
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -4370,8 +4464,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4384,8 +4479,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4398,8 +4494,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4412,8 +4509,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4426,8 +4524,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "format": "table",
               "instant": true,
               "interval": "",
@@ -4439,8 +4538,9 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_perfect_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_perfect_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0)[$__range:])",
               "hide": false,
               "instant": true,
               "interval": "",
@@ -4511,10 +4611,7 @@
       "id": 23,
       "panels": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "",
           "fieldConfig": {
             "defaults": {
@@ -4522,6 +4619,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -4583,14 +4682,15 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 35
+            "y": 4
           },
           "id": 24,
           "options": {
             "legend": {
               "calcs": [],
-              "displayMode": "hidden",
-              "placement": "bottom"
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
             },
             "tooltip": {
               "mode": "single",
@@ -4604,11 +4704,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "(sum(ethereum_validators_monitoring_total_balance_24h_difference) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "(sum(ethereum_validators_monitoring_total_balance_24h_difference) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "delta",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -4617,10 +4719,7 @@
           "type": "timeseries"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "Delta: current slot - 192 slot",
           "fieldConfig": {
             "defaults": {
@@ -4669,7 +4768,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 40
+            "y": 9
           },
           "id": 21,
           "options": {
@@ -4685,15 +4784,17 @@
               "values": false
             },
             "showUnfilled": true,
-            "text": {}
+            "text": {},
+            "valueMode": "color"
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": false,
               "expr": "(sort_desc(ethereum_validators_monitoring_validator_balances_delta))",
               "instant": true,
@@ -4707,10 +4808,7 @@
           "type": "bargauge"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "Delta: current slot - 192 slot",
           "fieldConfig": {
             "defaults": {
@@ -4718,6 +4816,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -4764,7 +4864,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 40
+            "y": 9
           },
           "id": 10,
           "options": {
@@ -4774,6 +4874,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -4789,10 +4890,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_negative_balances_delta) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_negative_balances_delta) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -4808,10 +4911,7 @@
           "type": "timeseries"
         },
         {
-          "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
+          "datasource": {},
           "description": "Delta: current slot - 192 slot",
           "fieldConfig": {
             "defaults": {
@@ -4820,7 +4920,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "inspect": false
               },
               "links": [],
@@ -4850,8 +4952,10 @@
                     "value": "locale"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -4909,11 +5013,13 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 47
+            "y": 16
           },
           "id": 28,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -4929,7 +5035,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
@@ -4937,11 +5043,15 @@
                 "uid": "PDEE91DDB90597936"
               },
               "dateTimeType": "DATETIME",
+              "editorMode": "code",
+              "expr": "",
               "extrapolate": true,
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
+              "legendFormat": "__auto",
               "query": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM stats.validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
+              "range": true,
               "rawQuery": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 166137\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 166137 - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM stats.validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch > (166137 - 6) AND epoch <= 166137\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
               "refId": "A",
               "round": "0s",
@@ -4952,10 +5062,7 @@
           "type": "table"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "Delta: current slot - 192 slot",
           "fieldConfig": {
             "defaults": {
@@ -4963,6 +5070,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -5019,7 +5128,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 47
+            "y": 16
           },
           "id": 11,
           "options": {
@@ -5029,6 +5138,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": false
             },
@@ -5044,10 +5154,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -5074,8 +5186,8 @@
       "panels": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "",
           "fieldConfig": {
@@ -5085,7 +5197,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -5185,11 +5299,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 36
+            "y": 5
           },
           "id": 63,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -5205,33 +5321,30 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, Operator, Validator\nLIMIT 1 by epoch, val_id",
-              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND block_proposed = 0 AND (epoch <= 166137 AND epoch >= (166137 - 3))\nORDER BY block_to_propose DESC, Operator, Validator\nLIMIT 1 by epoch, val_id",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE is_proposer = 1 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND block_proposed = 0 AND (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, Operator, Validator\nLIMIT 1 by epoch, val_id",
+              "refId": "A"
             }
           ],
           "title": "Missed proposals (${epochs_range} epochs range)",
           "type": "table"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -5239,6 +5352,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -5282,7 +5397,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 36
+            "y": 5
           },
           "id": 67,
           "options": {
@@ -5292,6 +5407,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -5307,10 +5423,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -5338,7 +5456,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "-6MUIj77k"
           },
           "description": "",
           "fieldConfig": {
@@ -5347,6 +5465,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -5450,7 +5570,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 37
+            "y": 6
           },
           "id": 92,
           "options": {
@@ -5460,6 +5580,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -5475,10 +5596,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_user_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_user_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "User",
+              "range": true,
               "refId": "A"
             },
             {
@@ -5486,11 +5609,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "Other",
+              "range": true,
               "refId": "B"
             }
           ],
@@ -5499,8 +5624,8 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "AVG.\n`Bad` is considered when validator's sync is less than chain avg value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
@@ -5510,7 +5635,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "inspect": false
               },
               "links": [],
@@ -5614,8 +5741,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "custom.width",
@@ -5633,11 +5762,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 43
+            "y": 12
           },
           "id": 72,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -5653,33 +5784,30 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent, Operator, Validator\nLIMIT 1 by epoch, val_id",
-              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = 166137 AND sync_percent < (81.2011719206348 - 0)\nORDER BY sync_percent, Operator, Validator\nLIMIT 1 by epoch, val_id",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    stats.validators_summary\nWHERE is_sync = 1 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var} AND sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent, Operator, Validator\nLIMIT 1 by epoch, val_id",
+              "refId": "A"
             }
           ],
           "title": "Bad Sync Committee participation",
           "type": "table"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "",
           "fieldConfig": {
             "defaults": {
@@ -5687,6 +5815,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -5730,7 +5860,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 43
+            "y": 12
           },
           "id": 73,
           "options": {
@@ -5740,6 +5870,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -5755,10 +5886,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -5785,8 +5918,8 @@
       "panels": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "TOP 100",
           "fieldConfig": {
@@ -5796,7 +5929,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -5861,8 +5996,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -5920,11 +6057,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 38
+            "y": 7
           },
           "id": 57,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -5940,33 +6079,30 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_happened = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_happened = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = 166137\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_happened = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "refId": "A"
             }
           ],
           "title": "Validators with MISSED attestation",
           "type": "table"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -5974,6 +6110,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -6017,7 +6155,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 38
+            "y": 7
           },
           "id": 58,
           "options": {
@@ -6027,6 +6165,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -6042,10 +6181,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -6055,8 +6196,8 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "TOP 100 (inc. delay > 1)",
           "fieldConfig": {
@@ -6066,7 +6207,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -6131,8 +6274,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -6190,11 +6335,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 46
+            "y": 15
           },
           "id": 99,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -6210,33 +6357,30 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_happened = 1 AND att_inc_delay > 1 AND val_stuck = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_happened = 1 AND att_inc_delay > 1 AND val_stuck = 0 AND val_nos_id IS NOT NULL AND epoch = 166137\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_happened = 1 AND att_inc_delay > 1 AND val_stuck = 0 AND val_nos_id IS NOT NULL AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "refId": "A"
             }
           ],
           "title": "Validators with high INC. DELAY attestation",
           "type": "table"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -6244,6 +6388,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -6287,7 +6433,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 46
+            "y": 15
           },
           "id": 95,
           "options": {
@@ -6297,6 +6443,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -6312,10 +6459,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -6324,8 +6473,8 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "TOP 100",
           "fieldConfig": {
@@ -6335,7 +6484,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -6400,8 +6551,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -6459,11 +6612,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 54
+            "y": 23
           },
           "id": 100,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -6479,33 +6634,30 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = 166137\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_head = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "refId": "A"
             }
           ],
           "title": "Validators with invalid HEAD",
           "type": "table"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -6513,6 +6665,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -6556,7 +6710,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 54
+            "y": 23
           },
           "id": 96,
           "options": {
@@ -6566,6 +6720,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -6581,10 +6736,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -6593,8 +6750,8 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "TOP 100",
           "fieldConfig": {
@@ -6604,7 +6761,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -6669,8 +6828,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -6728,11 +6889,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 62
+            "y": 31
           },
           "id": 101,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -6748,33 +6911,30 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "\nSELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = 166137\nORDER BY val_id\nLIMIT 100",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "\nSELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_target = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 100",
+              "refId": "A"
             }
           ],
           "title": "Validators with invalid TARGET",
           "type": "table"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -6782,6 +6942,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -6825,7 +6987,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 62
+            "y": 31
           },
           "id": 97,
           "options": {
@@ -6835,6 +6997,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -6850,10 +7013,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -6862,8 +7027,8 @@
         },
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "description": "TOP 100",
           "fieldConfig": {
@@ -6873,7 +7038,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -6938,8 +7105,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -6997,11 +7166,13 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 70
+            "y": 39
           },
           "id": 102,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -7017,33 +7188,30 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "\nSELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = 166137\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "\nSELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM stats.validators_summary\nWHERE att_valid_source = 0 AND val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "refId": "A"
             }
           ],
           "title": "Validator with invalid SOURCE",
           "type": "table"
         },
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+          "datasource": {},
           "description": "User only",
           "fieldConfig": {
             "defaults": {
@@ -7051,6 +7219,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -7094,7 +7264,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 70
+            "y": 39
           },
           "id": 98,
           "options": {
@@ -7104,6 +7274,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -7119,10 +7290,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -7149,8 +7322,8 @@
       "panels": [
         {
           "datasource": {
-            "type": "vertamedia-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
+            "type": "grafana-clickhouse-datasource",
+            "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
           },
           "fieldConfig": {
             "defaults": {
@@ -7159,7 +7332,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "inspect": false
               },
               "mappings": [],
@@ -7231,11 +7406,13 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 39
+            "y": 8
           },
           "id": 51,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -7245,23 +7422,23 @@
             },
             "showHeader": true
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "10.0.2",
           "targets": [
             {
               "datasource": {
-                "type": "vertamedia-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
+                "type": "grafana-clickhouse-datasource",
+                "uid": "c0199889-2715-4e1d-b07c-95e78ba6a3b6"
               },
-              "dateTimeType": "DATETIME",
-              "extrapolate": true,
-              "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
-              "intervalFactor": 1,
-              "query": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = ${epoch_number_var}\nORDER by val_id\nLIMIT 1 by val_id",
-              "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM stats.validators_summary\nWHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = 166572\nORDER by val_id\nLIMIT 1 by val_id",
-              "refId": "A",
-              "round": "0s",
-              "skip_comments": true
+              "meta": {
+                "builderOptions": {
+                  "fields": [],
+                  "limit": 100,
+                  "mode": "list"
+                }
+              },
+              "queryType": "sql",
+              "rawSql": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\n    FROM stats.validators_summary\n    WHERE (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND val_nos_id IS NOT NULL and epoch = ${epoch_number_var}\n    ORDER by val_id\n    LIMIT 1 by val_id",
+              "refId": "A"
             }
           ],
           "title": "Slashed validators (User)",
@@ -7289,16 +7466,15 @@
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -7331,8 +7507,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -7355,7 +7530,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -7368,6 +7544,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_data_actuality)",
           "format": "time_series",
@@ -7390,16 +7567,15 @@
       "type": "timeseries"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
+      "datasource": {},
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -7432,8 +7608,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -7455,7 +7630,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -7468,10 +7644,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[30s]) > 0",
           "interval": "",
           "legendFormat": "Number of slashed validators",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -7488,7 +7666,7 @@
     }
   ],
   "refresh": "5m",
-  "schemaVersion": 36,
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -7496,12 +7674,12 @@
       {
         "current": {
           "selected": false,
-          "text": "166658",
-          "value": "166658"
+          "text": "190324",
+          "value": "190324"
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
+          "uid": "-6MUIj77k"
         },
         "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
         "description": "Last epoch number",
@@ -7524,12 +7702,12 @@
       {
         "current": {
           "selected": false,
-          "text": "10",
-          "value": "10"
+          "text": "0",
+          "value": "0"
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
+          "uid": "-6MUIj77k"
         },
         "definition": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
         "description": "Sync participation distance down from Blockchain average",
@@ -7552,12 +7730,12 @@
       {
         "current": {
           "selected": false,
-          "text": "70.671875",
-          "value": "70.671875"
+          "text": "74.81915485486388",
+          "value": "74.81915485486388"
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
+          "uid": "-6MUIj77k"
         },
         "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
         "description": "Chain sync participation average value",
@@ -7580,14 +7758,14 @@
       {
         "current": {
           "selected": false,
-          "text": "29",
-          "value": "29"
+          "text": "16",
+          "value": "16"
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
+          "uid": "-6MUIj77k"
         },
-        "definition": "query_result(sum_over_time((changes(sum(ethereum_validators_monitoring_epoch_number)[25s:]) > 0)[$__range:]))",
+        "definition": "query_result(sum_over_time((changes(sum(ethereum_validators_monitoring_epoch_number)[30s:]) > 0)[$__range:]))",
         "description": "Epochs range by prometheus metric",
         "hide": 2,
         "includeAll": false,
@@ -7596,7 +7774,7 @@
         "name": "epochs_range",
         "options": [],
         "query": {
-          "query": "query_result(sum_over_time((changes(sum(ethereum_validators_monitoring_epoch_number)[25s:]) > 0)[$__range:]))",
+          "query": "query_result(sum_over_time((changes(sum(ethereum_validators_monitoring_epoch_number)[30s:]) > 0)[$__range:]))",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -7622,8 +7800,8 @@
     ]
   },
   "timezone": "",
-  "title": "Validators",
+  "title": "Ethereum Validators",
   "uid": "HRgPmpNnz",
-  "version": 20,
+  "version": 8,
   "weekStart": ""
 }
