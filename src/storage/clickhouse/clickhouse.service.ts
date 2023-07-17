@@ -1,4 +1,4 @@
-import Stream from 'stream';
+import { Readable, Transform } from 'stream';
 
 import { ClickHouseClient, createClient } from '@clickhouse/client';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
@@ -132,12 +132,12 @@ export class ClickhouseService implements OnModuleInit {
 
   @TrackTask('write-summary')
   public async writeSummary(summary: IterableIterator<ValidatorDutySummary>): Promise<void> {
-    const runWriteTasks = (stream: Stream.Readable): Promise<any>[] => {
+    const runWriteTasks = (stream: Readable): Promise<any>[] => {
       const indexes = this.retry(async () =>
         this.db.insert({
           table: 'validators_index',
           values: stream.pipe(
-            new Stream.Transform({
+            new Transform({
               transform(chunk, encoding, callback) {
                 callback(null, { val_id: chunk.val_id, val_pubkey: chunk.val_pubkey });
               },
@@ -151,7 +151,7 @@ export class ClickhouseService implements OnModuleInit {
         this.db.insert({
           table: 'validators_summary',
           values: stream.pipe(
-            new Stream.Transform({
+            new Transform({
               transform(chunk, encoding, callback) {
                 callback(null, {
                   ...chunk,
@@ -178,7 +178,7 @@ export class ClickhouseService implements OnModuleInit {
     await allSettled(
       runWriteTasks(
         chain([
-          Stream.Readable.from(summary, { objectMode: true, autoDestroy: true }),
+          Readable.from(summary, { objectMode: true, autoDestroy: true }),
           batch({ batchSize: 100 }),
           async (batch) => {
             await unblock();
