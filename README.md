@@ -4,7 +4,7 @@ Consensus layer validators monitoring bot, that fetches Lido or Custom Users Nod
 from Execution layer and checks their performance in Consensus
 layer by: balance delta, attestations, proposes, sync committee participation.
 
-Bot has two separate working modes: `head` and `finalized` for fetching validator info,
+Bot has two separate working modes: `finalized` and `head` for fetching validator info,
 writes data to **Clickhouse**, displays aggregates by **Grafana**
 dashboard, alerts about bad performance by **Prometheus + Alertmanger** and
 routes notifications to Discord channel via **alertmanager-discord**.
@@ -211,7 +211,7 @@ If you want to implement your own source, it must match [RegistrySource interfac
 * **Required:** false
 * **Default:** 155000
 ---
-`VALIDATOR_REGISTRY_SOURCE` - Validators registry source. Possible values: `lido` (Lido contract), `file`
+`VALIDATOR_REGISTRY_SOURCE` - Validators registry source. Possible values: `lido` (Lido NodeOperatorsRegistry module keys), `keysapi` (Lido keys from multiple modules), `file`
 * **Required:** false
 * **Default:** lido
 ---

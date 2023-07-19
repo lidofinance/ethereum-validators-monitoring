@@ -19,7 +19,8 @@ const selectSource = () => {
           {
             provide: REGISTRY_SOURCE,
             useFactory: async (logger: LoggerService, lido: LidoSourceService): Promise<RegistrySource> => {
-              logger.warn('DEPRECATED: VALIDATOR_REGISTRY_SOURCE=lido. Use VALIDATOR_REGISTRY_SOURCE=keysapi instead');
+              // todo: turn on in next major release
+              // logger.warn('DEPRECATED: VALIDATOR_REGISTRY_SOURCE=lido. Use VALIDATOR_REGISTRY_SOURCE=keysapi instead');
               return lido;
             },
             inject: [LOGGER_PROVIDER, LidoSourceService],
