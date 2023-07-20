@@ -11,6 +11,7 @@ import { PrometheusService, TrackTask } from 'common/prometheus';
 import { DutyMetrics, DutyService } from 'duty';
 import { ClickhouseService } from 'storage';
 import { EpochProcessingState } from 'storage/clickhouse';
+import { RegistryService } from 'validators-registry';
 
 @Injectable()
 export class InspectorService implements OnModuleInit {
@@ -22,6 +23,7 @@ export class InspectorService implements OnModuleInit {
     protected readonly prometheus: PrometheusService,
     protected readonly criticalAlerts: CriticalAlertsService,
     protected readonly blockCacheService: BlockCacheService,
+    protected readonly registryService: RegistryService,
 
     protected readonly dutyService: DutyService,
     protected readonly dutyMetrics: DutyMetrics,
@@ -42,7 +44,7 @@ export class InspectorService implements OnModuleInit {
       try {
         const toProcess = await this.getEpochDataToProcess();
         if (toProcess) {
-          if (this.config.get('WORKING_MODE') === WorkingMode.Head) {
+          if (this.config.get('WORKING_MODE') == WorkingMode.Head) {
             this.logger.warn(`Working in HEAD mode. This can cause calculation errors and inaccurate data!`);
           }
           const { epoch, slot, is_stored, is_calculated } = toProcess;
@@ -51,6 +53,10 @@ export class InspectorService implements OnModuleInit {
             possibleHighRewardValidators = await this.dutyService.checkAndWrite({ epoch: epoch, stateSlot: slot });
           }
           if (!is_calculated) {
+            if (!this.registryService.isFilled()) {
+              const slotTime = await this.clClient.getSlotTime(epoch * this.config.get('FETCH_INTERVAL_SLOTS'));
+              await this.registryService.updateKeysRegistry(slotTime);
+            }
             await this.dutyMetrics.calculate(epoch, possibleHighRewardValidators);
           }
           await this.criticalAlerts.send(epoch);
