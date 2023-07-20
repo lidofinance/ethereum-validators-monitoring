@@ -60,7 +60,7 @@ export class ConsensusProviderService {
   protected version = '';
   protected genesisTime = 0;
   protected defaultMaxSlotDeepCount = 32;
-  protected lastFinalizedSlot = { slot: 0, fetchTime: 0 };
+  protected latestSlot = { slot: 0, fetchTime: 0 };
 
   protected endpoints = {
     version: 'eth/v1/node/version',
@@ -116,21 +116,22 @@ export class ConsensusProviderService {
     );
   }
 
-  public async getFinalizedBlockHeader(processingState: EpochProcessingState): Promise<BlockHeaderResponse | void> {
+  public async getLatestBlockHeader(processingState: EpochProcessingState): Promise<BlockHeaderResponse | void> {
+    const latestFrom = this.config.get('WORKING_MODE');
     return await this.retryRequest<BlockHeaderResponse>(
-      async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders('finalized')),
+      async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(latestFrom)),
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
-          if (Number(r.data.header.message.slot) > this.lastFinalizedSlot.slot) {
-            this.lastFinalizedSlot = { slot: Number(r.data.header.message.slot), fetchTime: Number(Date.now()) };
+          if (Number(r.data.header.message.slot) > this.latestSlot.slot) {
+            this.latestSlot = { slot: Number(r.data.header.message.slot), fetchTime: Number(Date.now()) };
           }
-          if (processingState.epoch <= Math.trunc(this.lastFinalizedSlot.slot / this.config.get('FETCH_INTERVAL_SLOTS'))) {
-            // if our last processed epoch is less than last finalized, we shouldn't use fallback
+          if (processingState.epoch <= Math.trunc(this.latestSlot.slot / this.config.get('FETCH_INTERVAL_SLOTS'))) {
+            // if our last processed epoch is less than last, we shouldn't use fallback
             return false;
-          } else if (Number(Date.now()) - this.lastFinalizedSlot.fetchTime > 420 * 1000) {
-            // if 'finalized' slot doesn't change ~7m we must switch to fallback
-            this.logger.error("Finalized slot hasn't changed in ~7m");
+          } else if (Number(Date.now()) - this.latestSlot.fetchTime > 420 * 1000) {
+            // if latest slot doesn't change ~7m we must switch to fallback
+            this.logger.error("Latest slot hasn't changed in ~7m");
             return true;
           }
           // for other states don't use fallback on resolved

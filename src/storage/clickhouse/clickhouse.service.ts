@@ -1,8 +1,10 @@
-import * as Stream from 'stream';
+import { Readable, Transform } from 'stream';
 
 import { ClickHouseClient, createClient } from '@clickhouse/client';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
+import { chain } from 'stream-chain';
+import { batch } from 'stream-json/utils/Batch';
 
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/consensus-provider/types';
@@ -70,7 +72,6 @@ export class ClickhouseService implements OnModuleInit {
   private readonly maxRetries: number;
   private readonly minBackoff: number;
   private readonly maxBackoff: number;
-  private readonly chunkSize: number;
   private readonly retry: ReturnType<typeof retrier>;
 
   private async select<T>(query: string): Promise<T> {
@@ -85,7 +86,6 @@ export class ClickhouseService implements OnModuleInit {
     this.maxRetries = this.config.get('DB_MAX_RETRIES');
     this.minBackoff = this.config.get('DB_MIN_BACKOFF_SEC');
     this.maxBackoff = this.config.get('DB_MAX_BACKOFF_SEC');
-    this.chunkSize = this.config.get('DB_INSERT_CHUNK_SIZE');
 
     this.logger.log(`DB backoff set to (min=[${this.minBackoff}], max=[${this.maxBackoff}] seconds`);
     this.logger.log(`DB max retries set to [${this.maxRetries}]`);
@@ -98,8 +98,8 @@ export class ClickhouseService implements OnModuleInit {
       password: this.config.get('DB_PASSWORD'),
       database: this.config.get('DB_NAME'),
       compression: {
-        response: true,
-        request: true,
+        response: false,
+        request: false,
       },
     });
   }
@@ -132,51 +132,61 @@ export class ClickhouseService implements OnModuleInit {
 
   @TrackTask('write-summary')
   public async writeSummary(summary: IterableIterator<ValidatorDutySummary>): Promise<void> {
-    let indexesChunk = [];
-    let summaryChunk = [];
-    let chunkSize = 0;
-    const writeChunks = async (indexesChunk, summaryChunk) => {
-      return await allSettled([
-        this.retry(
-          async () =>
-            await this.db.insert({
-              table: 'validators_index',
-              values: Stream.Readable.from(indexesChunk, { objectMode: true }),
-              format: 'JSONEachRow',
+    const runWriteTasks = (stream: Readable): Promise<any>[] => {
+      const indexes = this.retry(async () =>
+        this.db.insert({
+          table: 'validators_index',
+          values: stream.pipe(
+            new Transform({
+              transform(chunk, encoding, callback) {
+                callback(null, { val_id: chunk.val_id, val_pubkey: chunk.val_pubkey });
+              },
+              objectMode: true,
             }),
-        ),
-        this.retry(
-          async () =>
-            await this.db.insert({
-              table: 'validators_summary',
-              values: Stream.Readable.from(summaryChunk, { objectMode: true }),
-              format: 'JSONEachRow',
+          ),
+          format: 'JSONEachRow',
+        }),
+      );
+      const summaries = this.retry(async () =>
+        this.db.insert({
+          table: 'validators_summary',
+          values: stream.pipe(
+            new Transform({
+              transform(chunk, encoding, callback) {
+                callback(null, {
+                  ...chunk,
+                  val_balance: chunk.val_balance.toString(),
+                  val_effective_balance: chunk.val_effective_balance.toString(),
+                  val_balance_withdrawn: chunk.val_balance_withdrawn?.toString(),
+                  propose_earned_reward: chunk.propose_earned_reward?.toString(),
+                  propose_missed_reward: chunk.propose_missed_reward?.toString(),
+                  propose_penalty: chunk.propose_penalty?.toString(),
+                  sync_meta: undefined,
+                  val_pubkey: undefined,
+                });
+              },
+              objectMode: true,
             }),
-        ),
-      ]);
+          ),
+          format: 'JSONEachRow',
+        }),
+      );
+
+      return [indexes, summaries];
     };
-    for (const v of summary) {
-      indexesChunk.push({ val_id: v.val_id, val_pubkey: v.val_pubkey });
-      summaryChunk.push({
-        ...v,
-        val_balance: v.val_balance.toString(),
-        val_effective_balance: v.val_effective_balance.toString(),
-        val_balance_withdrawn: v.val_balance_withdrawn?.toString(),
-        propose_earned_reward: v.propose_earned_reward?.toString(),
-        propose_missed_reward: v.propose_missed_reward?.toString(),
-        propose_penalty: v.propose_penalty?.toString(),
-        sync_meta: undefined,
-        val_pubkey: undefined,
-      });
-      chunkSize++;
-      if (chunkSize == this.chunkSize) {
-        await writeChunks(indexesChunk, summaryChunk);
-        [indexesChunk, summaryChunk] = [[], []];
-        chunkSize = 0;
-        await unblock();
-      }
-    }
-    if (chunkSize) await writeChunks(indexesChunk, summaryChunk);
+
+    await allSettled(
+      runWriteTasks(
+        chain([
+          Readable.from(summary, { objectMode: true, autoDestroy: true }),
+          batch({ batchSize: 100 }),
+          async (batch) => {
+            await unblock();
+            return batch;
+          },
+        ]),
+      ),
+    );
   }
 
   @TrackTask('write-epoch-meta')

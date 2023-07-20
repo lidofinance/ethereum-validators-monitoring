@@ -93,16 +93,19 @@ services:
       - "0.0.0.0:9093:9093/tcp"
 
   alertmanager-discord:
-    image: vgorkavenko/alertmanager-discord-balval:1.4.0
+    image: lidofinance/alertmanager-discord:2.7.0
+    platform: linux/x86_64
     container_name: alertmanager-discord
     restart: unless-stopped
+    environment:
+      - WORKING_MODE=alternative
+      - PORT=9094
     expose:
       - 9094
     ports:
       - "0.0.0.0:9094:9094/tcp"
-    environment:
-      - "PORT=9094"
-      - "DISCORD_WEBHOOK=${DISCORD_WEBHOOK_URL}"
+    volumes:
+      - ./docker/alertmanager-discord/alertmanager-discord.yml:/etc/alertmanager-discord.yml
 
   grafana:
     image: grafana/grafana:9.0.9

@@ -29,6 +29,7 @@ export class RegistryService {
 
   @TrackTask('update-validators')
   public async updateKeysRegistry(timestamp: number): Promise<void> {
+    this.logger.log('Updating validators registry data');
     const tasks = await Promise.all([
       this.source.update(),
       this.config.get('VALIDATOR_USE_STUCK_KEYS_FILE') ? this.readStuckKeysFile() : (() => [])(),
@@ -55,6 +56,10 @@ export class RegistryService {
 
   public getStuckKeys() {
     return this.stuckKeys;
+  }
+
+  public isFilled() {
+    return this.lastTimestamp > 0;
   }
 
   /**

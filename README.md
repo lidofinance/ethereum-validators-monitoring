@@ -4,10 +4,40 @@ Consensus layer validators monitoring bot, that fetches Lido or Custom Users Nod
 from Execution layer and checks their performance in Consensus
 layer by: balance delta, attestations, proposes, sync committee participation.
 
-Bot uses finalized state (2 epochs back from HEAD) for fetching validator info,
+Bot has two separate working modes: `finalized` and `head` for fetching validator info,
 writes data to **Clickhouse**, displays aggregates by **Grafana**
 dashboard, alerts about bad performance by **Prometheus + Alertmanger** and
 routes notifications to Discord channel via **alertmanager-discord**.
+
+## Working modes
+
+You can switch working mode by providing `WORKING_MODE` environment variable with one of the following values:
+
+### `finalized`
+Default working mode. The service will fetch validators info from finalized states (the latest finalized epoch is 2 epochs back from `head`).
+It is more stable and reliable because all data is already finalized.
+
+**Pros**:
+* No errors due to reorgs
+* Less rewards calculation errors
+* Accurate data in alerts and dashboard
+
+**Cons**:
+* 2 epochs delay in processing and critical alerts will be given with 2 epochs delay
+* In case of long finality the app will not monitor and will wait for the finality
+
+### `head`
+Alternative working mode. The service will fetch validators info from non-finalized states.
+It is less stable and reliable because of data is not finalized yet. There can be some calculation errors because of reorgs.
+
+**Pros**:
+* Less delay in processing and critical alerts will be given with less delay
+* In case of long finality the app will monitor and will not wait for the finality
+
+**Cons**:
+* Errors due to reorgs
+* More rewards calculation errors
+* Possible inaccurate data in alerts and dashboard
 
 ## Dashboards
 
@@ -37,8 +67,6 @@ There are several default alerts which are triggered by Prometheus rules:
   * 📝🐢 Operators with high inc. delay attestation
   * 📝🏷️ Operators with two invalid attestation property (head/target/source)
   * 📈📝❌ Operators with missed attestation (on possible high reward validators)
-
-
 
 ## First run
 
@@ -105,6 +133,10 @@ If you want to implement your own source, it must match [RegistrySource interfac
 `LOG_FORMAT` - Application log format (simple or json)
 * **Required:** false
 * **Default:** json
+---
+`WORKING_MODE` - Application working mode (finalized or head)
+* **Required:** false
+* **Default:** finalized
 ---
 `DB_HOST` - Clickhouse server host
 * **Required:** true
@@ -179,7 +211,7 @@ If you want to implement your own source, it must match [RegistrySource interfac
 * **Required:** false
 * **Default:** 155000
 ---
-`VALIDATOR_REGISTRY_SOURCE` - Validators registry source. Possible values: `lido` (Lido contract), `file`
+`VALIDATOR_REGISTRY_SOURCE` - Validators registry source. Possible values: `lido` (Lido NodeOperatorsRegistry module keys), `keysapi` (Lido keys from multiple modules), `file`
 * **Required:** false
 * **Default:** lido
 ---
@@ -261,7 +293,6 @@ And if `ethereum_validators_monitoring_data_actuality < 1h` it allows you to rec
 | validator_count_invalid_attestation                                       | nos_name, reason                 | Number of validators with invalid properties (head, target, source) \ high inc. delay in attestation for each user Node Operator                                                             |
 | validator_count_invalid_attestation_last_n_epoch                          | nos_name, reason, epoch_interval | Number of validators with invalid properties (head, target, source) \ high inc. delay in attestation last `BAD_ATTESTATION_EPOCHS` epoch for each user Node Operator                         |
 | validator_count_miss_attestation_last_n_epoch                             | nos_name, epoch_interval         | Number of validators miss attestation last `BAD_ATTESTATION_EPOCHS` epoch for each user Node Operator                                                                                        |
-| validator_count_high_avg_inc_delay_of_n_epoch                             | nos_name, epoch_interval         | Number of validators with high avg inc. delay of N epochs for each user Node Operator                                                                                                        |
 | validator_count_high_inc_delay_last_n_epoch                               | nos_name, epoch_interval         | Number of validators with inc. delay > 2 last N epochs for each user Node Operator                                                                                                           |
 | validator_count_invalid_attestation_property_last_n_epoch                 | nos_name, epoch_interval         | Number of validators with two invalid attestation property (head or target or source) last N epochs for each user Node Operator                                                              |
 | high_reward_validator_count_miss_attestation_last_n_epoch                 | nos_name, epoch_interval         | Number of validators miss attestation last `BAD_ATTESTATION_EPOCHS` epoch  (with possible high reward in the future) for each user Node Operator                                             |
