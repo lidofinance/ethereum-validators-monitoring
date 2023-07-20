@@ -24,12 +24,12 @@ route:
 receivers:
   - name: 'discord_webhook_default'
     webhook_configs:
-      - url: 'http://alertmanager-discord:9094/'
+      - url: 'http://alertmanager-discord:9094/hook/evm'
         send_resolved: false
 
   - name: 'discord_webhook_send_resolved'
     webhook_configs:
-      - url: 'http://alertmanager-discord:9094/'
+      - url: 'http://alertmanager-discord:9094/hook/evm'
         send_resolved: true
 
   - name: 'telegram'
