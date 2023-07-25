@@ -1,3 +1,23 @@
+# [4.5.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.4.0...4.5.0) (2023-07-25)
+
+
+### Bug Fixes
+
+* import ([f896663](https://github.com/lidofinance/ethereum-validators-monitoring/commit/f896663c23f7b18003a36f3b533eac13c27053d6))
+* rename ([3996e23](https://github.com/lidofinance/ethereum-validators-monitoring/commit/3996e23b33755353a4d57b3ad9da94c762b8cb71))
+* undefined operators for metrics ([3f6bd9e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/3f6bd9eb680f4e2c7b616723f1a35134cf492811))
+* unused module init ([#182](https://github.com/lidofinance/ethereum-validators-monitoring/issues/182)) ([7f02522](https://github.com/lidofinance/ethereum-validators-monitoring/commit/7f0252273ebd8a39e84dba25250a28f1a26e0c93))
+* use batch and one stream ([9f10e7e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/9f10e7e712d9db8c6784924597f88c46d1de81ea))
+
+
+### Features
+
+* `head` working mode ([71fb8a8](https://github.com/lidofinance/ethereum-validators-monitoring/commit/71fb8a8c212dfdeeee97999f59cee8bfe311e900))
+* README ([51e113e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/51e113ef838371c145724a61cc2a9aa192894824))
+* speed up writing to db ([9441c0b](https://github.com/lidofinance/ethereum-validators-monitoring/commit/9441c0bffe91535a9018c573d848ef4f799304e2))
+
+
+
 # [4.4.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.3.3...4.4.0) (2023-07-05)
 
 
@@ -117,15 +137,6 @@
 ### Bug Fixes
 
 * `getEpochDataToProcess` condition ([#103](https://github.com/lidofinance/ethereum-validators-monitoring/issues/103)) ([18971c5](https://github.com/lidofinance/ethereum-validators-monitoring/commit/18971c53b995c5c37e21bae28277f910a5bdabcd))
-
-
-
-## [4.1.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.1.0...4.1.1) (2023-01-10)
-
-
-### Bug Fixes
-
-* add async notation for api request callbacks ([#100](https://github.com/lidofinance/ethereum-validators-monitoring/issues/100)) ([74a946e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/74a946ec593d1cbbdd56cf53387defef04051eb6))
 
 
 
