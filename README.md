@@ -123,6 +123,18 @@ By default, monitoring bot fetches validator keys from Lido contract, but you ca
 
 If you want to implement your own source, it must match [RegistrySource interface](src/validators-registry/registry-source.interface.ts) and be included in [RegistryModule providers](src/validators-registry/registry.module.ts)
 
+## Clickhouse data retention
+
+By default, storage keep the data with `Inf.` time to live.
+It can be changed by the TTL policy for Clickhouse:
+```
+# goerli
+ALTER TABLE validators_summary MODIFY TTL toDateTime(1616508000 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
+
+# mainnet
+ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
+```
+
 ## Application Env variables
 
 ---
