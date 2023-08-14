@@ -157,7 +157,8 @@ services:
         hard: 262144
     environment:
       - LOG_FORMAT=${LOG_FORMAT}
-      - HTTP_PORT=${HTTP_PORT}
+      - APP_CONTAINER_HTTP_PORT=${APP_CONTAINER_HTTP_PORT}
+      - APP_EXTERNAL_HTTP_PORT=${APP_EXTERNAL_HTTP_PORT}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USER}
@@ -169,7 +170,7 @@ services:
       - EL_RPC_URLS=${EL_RPC_URLS}
       - CL_API_URLS=${CL_API_URLS}
     ports:
-      - "${HTTP_PORT}:${HTTP_PORT}"
+      - "${APP_EXTERNAL_HTTP_PORT}:${APP_CONTAINER_HTTP_PORT}"
     volumes:
       - ./docker/validators/:/app/docker/validators
     depends_on:

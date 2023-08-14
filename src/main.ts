@@ -12,7 +12,7 @@ async function bootstrap() {
 
   // config
   const configService: ConfigService = app.get(ConfigService);
-  const appPort = configService.get('HTTP_PORT');
+  const appPort = configService.get('APP_CONTAINER_HTTP_PORT');
 
   // versions
   app.enableVersioning({ type: VersioningType.URI });

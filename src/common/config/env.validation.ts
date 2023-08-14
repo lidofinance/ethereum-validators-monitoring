@@ -68,11 +68,19 @@ export class EnvironmentVariables {
   @IsEnum(Environment)
   NODE_ENV: Environment = Environment.development;
 
+  @IsNotEmpty()
   @IsNumber()
   @Min(1025)
   @Max(65535)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public HTTP_PORT = 8080;
+  public APP_CONTAINER_HTTP_PORT!: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(1025)
+  @Max(65535)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public APP_EXTERNAL_HTTP_PORT!: number;
 
   @IsEnum(LogLevel)
   LOG_LEVEL: LogLevel = LogLevel.info;
