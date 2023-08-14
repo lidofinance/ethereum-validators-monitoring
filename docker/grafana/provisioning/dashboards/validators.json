@@ -117,7 +117,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -183,7 +183,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -247,7 +247,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -311,7 +311,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -373,7 +373,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -434,7 +434,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -515,7 +515,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -580,7 +580,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -645,7 +645,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -710,7 +710,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -782,7 +782,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -863,6 +863,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value",
             "percent"
@@ -976,6 +977,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value",
             "percent"
@@ -1089,6 +1091,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value",
             "percent"
@@ -1202,6 +1205,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value",
             "percent"
@@ -1315,6 +1319,7 @@
         "legend": {
           "displayMode": "table",
           "placement": "bottom",
+          "showLegend": true,
           "values": [
             "value"
           ]
@@ -1375,7 +1380,9 @@
           },
           "custom": {
             "align": "center",
-            "displayMode": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
             "filterable": false,
             "inspect": false
           },
@@ -1407,8 +1414,11 @@
                 "value": 120
               },
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "color",
@@ -1430,8 +1440,11 @@
                 "value": 120
               },
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "color",
@@ -1453,8 +1466,11 @@
                 "value": 150
               },
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "color",
@@ -1476,8 +1492,11 @@
                 "value": 120
               },
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "color",
@@ -1500,7 +1519,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator's dashboard",
-                    "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -1516,7 +1535,9 @@
       },
       "id": 75,
       "options": {
+        "cellHeight": "sm",
         "footer": {
+          "countRows": false,
           "enablePagination": true,
           "fields": "",
           "reducer": [
@@ -1528,7 +1549,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -1619,6 +1640,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1734,7 +1757,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -1750,7 +1774,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "instant": false,
           "interval": "",
           "legendFormat": "{{status}}",
@@ -1775,6 +1799,8 @@
             "mode": "fixed"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1874,7 +1900,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -1890,7 +1917,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (type) (ethereum_validators_monitoring_operator_withdrawals_count) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+          "expr": "sum by (type) (ethereum_validators_monitoring_operator_withdrawals_count) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "instant": false,
           "interval": "",
           "legendFormat": "{{type}}",
@@ -1914,7 +1941,9 @@
           },
           "custom": {
             "align": "center",
-            "displayMode": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
             "inspect": false
           },
           "mappings": [],
@@ -1941,7 +1970,7 @@
                   {
                     "targetBlank": true,
                     "title": "blockcha.in",
-                    "url": "https://beaconcha.in/validator/${__value.raw}"
+                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               }
@@ -1954,8 +1983,10 @@
             },
             "properties": [
               {
-                "id": "custom.displayMode",
-                "value": "json-view"
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "json-view"
+                }
               },
               {
                 "id": "custom.filterable",
@@ -1987,7 +2018,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator's dashboard",
-                    "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                   }
                 ]
               },
@@ -2007,7 +2038,9 @@
       },
       "id": 123,
       "options": {
+        "cellHeight": "sm",
         "footer": {
+          "countRows": false,
           "enablePagination": true,
           "fields": [
             "Balance"
@@ -2019,7 +2052,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "9.0.9",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -2119,6 +2152,7 @@
             "legend": {
               "displayMode": "table",
               "placement": "bottom",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -2254,6 +2288,7 @@
             "legend": {
               "displayMode": "table",
               "placement": "bottom",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -2338,7 +2373,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -2347,7 +2384,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -2360,8 +2398,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -2380,7 +2420,8 @@
                       "mode": "absolute",
                       "steps": [
                         {
-                          "color": "light-green"
+                          "color": "light-green",
+                          "value": null
                         },
                         {
                           "color": "light-red",
@@ -2390,8 +2431,11 @@
                     }
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-background-solid"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "mode": "basic",
+                      "type": "color-background"
+                    }
                   }
                 ]
               },
@@ -2402,8 +2446,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -2442,7 +2488,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -2458,7 +2504,9 @@
           },
           "id": 110,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": [],
               "reducer": [
@@ -2470,7 +2518,7 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -2659,6 +2707,7 @@
             "legend": {
               "displayMode": "table",
               "placement": "bottom",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -2796,6 +2845,7 @@
             "legend": {
               "displayMode": "table",
               "placement": "bottom",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -2931,6 +2981,7 @@
             "legend": {
               "displayMode": "table",
               "placement": "bottom",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -3015,7 +3066,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -3024,7 +3077,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -3037,8 +3091,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3057,7 +3113,8 @@
                       "mode": "absolute",
                       "steps": [
                         {
-                          "color": "light-green"
+                          "color": "light-green",
+                          "value": null
                         },
                         {
                           "color": "light-red",
@@ -3067,8 +3124,11 @@
                     }
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-background-solid"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "mode": "basic",
+                      "type": "color-background"
+                    }
                   }
                 ]
               },
@@ -3079,8 +3139,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3123,7 +3185,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -3139,7 +3201,9 @@
           },
           "id": 107,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": [
                 "Value #good (sum)",
@@ -3154,7 +3218,7 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -3427,6 +3491,7 @@
             "legend": {
               "displayMode": "table",
               "placement": "bottom",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -3624,6 +3689,7 @@
             "legend": {
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -3798,7 +3864,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -3807,7 +3875,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -3820,8 +3889,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3843,8 +3914,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3866,8 +3939,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3889,8 +3964,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3912,8 +3989,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3935,8 +4014,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "color",
@@ -3963,7 +4044,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -3979,7 +4060,9 @@
           },
           "id": 104,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -3991,7 +4074,7 @@
             "showHeader": true,
             "sortBy": []
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -4345,6 +4428,7 @@
             "legend": {
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "values": [
                 "value",
                 "percent"
@@ -4522,6 +4606,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -4558,7 +4644,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               },
@@ -4589,8 +4676,9 @@
           "options": {
             "legend": {
               "calcs": [],
-              "displayMode": "hidden",
-              "placement": "bottom"
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
             },
             "tooltip": {
               "mode": "single",
@@ -4604,11 +4692,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "(sum(ethereum_validators_monitoring_total_balance_24h_difference) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "(sum(ethereum_validators_monitoring_total_balance_24h_difference) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "delta",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -4636,7 +4726,8 @@
                 "mode": "percentage",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   },
                   {
                     "color": "yellow",
@@ -4685,9 +4776,10 @@
               "values": false
             },
             "showUnfilled": true,
-            "text": {}
+            "text": {},
+            "valueMode": "color"
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -4718,6 +4810,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -4753,7 +4847,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -4774,6 +4869,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -4789,10 +4885,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_negative_balances_delta) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_negative_balances_delta) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -4820,7 +4918,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "inspect": false
               },
               "links": [],
@@ -4829,7 +4929,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -4850,8 +4951,10 @@
                     "value": "locale"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -4867,7 +4970,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -4897,7 +5000,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -4913,7 +5016,9 @@
           },
           "id": 28,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -4929,7 +5034,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -4941,8 +5046,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM stats.validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
-              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 166137\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status != 'pending_queued' AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 166137 - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM stats.validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch > (166137 - 6) AND epoch <= 166137\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
+              "query": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM stats.validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_stuck = 0 AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
+              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 196599\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM stats.validators_summary \n    WHERE \n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 196599 - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM stats.validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_stuck = 0 AND\n      epoch > (196599 - 6) AND epoch <= 196599\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4963,6 +5068,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -4995,7 +5102,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               }
@@ -5029,6 +5137,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": false
             },
@@ -5044,10 +5153,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -5085,7 +5196,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -5095,7 +5208,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -5113,7 +5227,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -5155,7 +5269,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/slot/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/slot/${__value.raw}"
                       }
                     ]
                   }
@@ -5173,7 +5287,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5189,7 +5303,9 @@
           },
           "id": 63,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -5205,7 +5321,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -5239,6 +5355,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -5271,7 +5389,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -5292,6 +5411,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -5307,10 +5427,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -5347,6 +5469,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -5383,7 +5507,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -5460,6 +5585,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -5475,10 +5601,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_user_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_user_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "User",
+              "range": true,
               "refId": "A"
             },
             {
@@ -5486,11 +5614,13 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_other_sync_participation_avg_percent) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "Other",
+              "range": true,
               "refId": "B"
             }
           ],
@@ -5510,7 +5640,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "inspect": false
               },
               "links": [],
@@ -5553,7 +5685,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -5571,7 +5704,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -5601,7 +5734,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5614,8 +5747,10 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   },
                   {
                     "id": "custom.width",
@@ -5637,7 +5772,9 @@
           },
           "id": 72,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -5653,7 +5790,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -5687,6 +5824,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -5719,7 +5858,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -5740,6 +5880,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -5755,10 +5896,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -5796,7 +5939,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -5840,7 +5985,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -5861,8 +6007,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -5878,7 +6026,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -5908,7 +6056,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5924,7 +6072,9 @@
           },
           "id": 57,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -5940,7 +6090,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -5974,6 +6124,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -6006,7 +6158,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -6027,6 +6180,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -6042,10 +6196,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -6066,7 +6222,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -6110,7 +6268,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -6131,8 +6290,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -6148,7 +6309,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -6178,7 +6339,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -6194,7 +6355,9 @@
           },
           "id": 99,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -6210,7 +6373,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -6244,6 +6407,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -6276,7 +6441,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -6297,6 +6463,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -6312,10 +6479,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -6335,7 +6504,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -6379,7 +6550,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -6400,8 +6572,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -6417,7 +6591,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -6447,7 +6621,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -6463,7 +6637,9 @@
           },
           "id": 100,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -6479,7 +6655,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -6513,6 +6689,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -6545,7 +6723,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -6566,6 +6745,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -6581,10 +6761,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -6604,7 +6786,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -6648,7 +6832,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -6669,8 +6854,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -6686,7 +6873,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -6716,7 +6903,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -6732,7 +6919,9 @@
           },
           "id": 101,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -6748,7 +6937,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -6782,6 +6971,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -6814,7 +7005,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -6835,6 +7027,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -6850,10 +7043,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -6873,7 +7068,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "filterable": false,
                 "inspect": false
               },
@@ -6917,7 +7114,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "red"
+                    "color": "red",
+                    "value": null
                   }
                 ]
               }
@@ -6938,8 +7136,10 @@
                     "value": "none"
                   },
                   {
-                    "id": "custom.displayMode",
-                    "value": "color-text"
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
                   }
                 ]
               },
@@ -6955,7 +7155,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -6985,7 +7185,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -7001,7 +7201,9 @@
           },
           "id": 102,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -7017,7 +7219,7 @@
               }
             ]
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -7051,6 +7253,8 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -7083,7 +7287,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "semi-dark-green"
+                    "color": "semi-dark-green",
+                    "value": null
                   }
                 ]
               }
@@ -7104,6 +7309,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
+              "showLegend": true,
               "sortBy": "Last *",
               "sortDesc": true
             },
@@ -7119,10 +7325,12 @@
                 "type": "prometheus",
                 "uid": "PBFA97CFB590B2093"
               },
+              "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
+              "range": true,
               "refId": "A"
             }
           ],
@@ -7159,7 +7367,9 @@
               },
               "custom": {
                 "align": "center",
-                "displayMode": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
                 "inspect": false
               },
               "mappings": [],
@@ -7168,7 +7378,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -7193,7 +7404,7 @@
                     "value": [
                       {
                         "title": "beaconcha.in",
-                        "url": "https://beaconcha.in/validator/${__value.raw}"
+                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   }
@@ -7219,7 +7430,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://ethereum-validators.testnet.fi/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -7235,7 +7446,9 @@
           },
           "id": 51,
           "options": {
+            "cellHeight": "sm",
             "footer": {
+              "countRows": false,
               "enablePagination": true,
               "fields": "",
               "reducer": [
@@ -7245,7 +7458,7 @@
             },
             "showHeader": true
           },
-          "pluginVersion": "8.5.15",
+          "pluginVersion": "9.5.7",
           "targets": [
             {
               "datasource": {
@@ -7299,6 +7512,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -7355,7 +7570,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -7400,6 +7616,8 @@
             "mode": "thresholds"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -7455,7 +7673,8 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -7468,10 +7687,12 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "interval": "",
           "legendFormat": "Number of slashed validators",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -7488,7 +7709,7 @@
     }
   ],
   "refresh": "5m",
-  "schemaVersion": 36,
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -7496,8 +7717,8 @@
       {
         "current": {
           "selected": false,
-          "text": "166658",
-          "value": "166658"
+          "text": "196600",
+          "value": "196600"
         },
         "datasource": {
           "type": "prometheus",
@@ -7524,8 +7745,8 @@
       {
         "current": {
           "selected": false,
-          "text": "10",
-          "value": "10"
+          "text": "20",
+          "value": "20"
         },
         "datasource": {
           "type": "prometheus",
@@ -7552,8 +7773,8 @@
       {
         "current": {
           "selected": false,
-          "text": "70.671875",
-          "value": "70.671875"
+          "text": "71.46738895401359",
+          "value": "71.46738895401359"
         },
         "datasource": {
           "type": "prometheus",
@@ -7580,8 +7801,8 @@
       {
         "current": {
           "selected": false,
-          "text": "29",
-          "value": "29"
+          "text": "10",
+          "value": "10"
         },
         "datasource": {
           "type": "prometheus",
@@ -7624,6 +7845,6 @@
   "timezone": "",
   "title": "Validators",
   "uid": "HRgPmpNnz",
-  "version": 20,
+  "version": 21,
   "weekStart": ""
 }
