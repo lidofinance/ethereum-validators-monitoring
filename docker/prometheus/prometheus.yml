@@ -10,6 +10,7 @@ alerting:
       - targets: ['alertmanager:9093']
 
 rule_files:
+  - "operators_map.yml"
   - "alerts_rules.yml"
 
 scrape_configs:
@@ -24,3 +25,6 @@ scrape_configs:
   - job_name: 'ethereum_validators_monitoring'
     static_configs:
       - targets: ['ethereum-validators-monitoring:8080']
+    metric_relabel_configs:
+      - source_labels: [ nos_module_id, nos_id ]
+        target_label: nos_global_index

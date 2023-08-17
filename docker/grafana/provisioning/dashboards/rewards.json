@@ -62,6 +62,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "Difference between `Now` and timestamp of last slot of processed epoch ",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -96,15 +97,15 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
+        "h": 2,
         "w": 5,
         "x": 0,
         "y": 1
       },
-      "id": 1703,
+      "id": 1784,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
+        "colorMode": "background_solid",
+        "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
@@ -116,7 +117,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.4.13",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -138,66 +139,170 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
-      "description": "Last processed for a specified time period",
+      "description": "Difference between `Now` and timestamp of last slot of processed epoch ",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "fixedColor": "text",
-            "mode": "fixed"
+            "mode": "palette-classic"
           },
-          "decimals": 0,
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "series",
+            "axisGridShow": false,
+            "axisLabel": "",
+            "axisPlacement": "right",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "line+area"
+            }
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "super-light-blue",
+                "color": "green",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 1800000
+              },
+              {
+                "color": "red",
+                "value": 3600000
               }
             ]
           },
           "unit": "none"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Data actuality"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds",
+                  "seriesBy": "last"
+                }
+              },
+              {
+                "id": "unit",
+                "value": "ms"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "left"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Epoch"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "purple",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 4,
-        "w": 5,
+        "w": 15,
         "x": 5,
         "y": 1
       },
-      "id": 1760,
+      "id": 1786,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true,
+          "width": 105
         },
-        "text": {},
-        "textMode": "auto"
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
       },
-      "pluginVersion": "9.4.13",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_epoch_number)",
+          "expr": "sum(ethereum_validators_monitoring_data_actuality)",
+          "format": "time_series",
+          "instant": false,
           "interval": "",
-          "legendFormat": "",
+          "intervalFactor": 1,
+          "legendFormat": "Data actuality",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "ethereum_validators_monitoring_epoch_number",
+          "hide": false,
+          "legendFormat": "Epoch",
+          "range": true,
+          "refId": "B"
         }
       ],
-      "title": "Current epoch",
-      "type": "stat"
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "op": "gt",
+          "value": 3600000,
+          "visible": true
+        }
+      ],
+      "title": "Data actuality x Epoch",
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -245,7 +350,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.4.13",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -258,6 +363,74 @@
       ],
       "title": "Calculation error",
       "transformations": [],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Last processed for a specified time period",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "super-light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 5,
+        "x": 0,
+        "y": 3
+      },
+      "id": 1785,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "sum(ethereum_validators_monitoring_epoch_number)",
+          "interval": "",
+          "legendFormat": "",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Epoch",
       "type": "stat"
     },
     {
@@ -316,8 +489,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -329,7 +501,7 @@
             "h": 4,
             "w": 8,
             "x": 0,
-            "y": 6
+            "y": 30
           },
           "id": 1765,
           "options": {
@@ -413,8 +585,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -426,7 +597,7 @@
             "h": 4,
             "w": 8,
             "x": 8,
-            "y": 6
+            "y": 30
           },
           "id": 1766,
           "options": {
@@ -510,8 +681,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -523,7 +693,7 @@
             "h": 4,
             "w": 8,
             "x": 16,
-            "y": 6
+            "y": 30
           },
           "id": 1767,
           "options": {
@@ -608,8 +778,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -621,7 +790,7 @@
             "h": 4,
             "w": 12,
             "x": 0,
-            "y": 10
+            "y": 34
           },
           "id": 1768,
           "options": {
@@ -706,8 +875,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -719,7 +887,7 @@
             "h": 4,
             "w": 12,
             "x": 12,
-            "y": 10
+            "y": 34
           },
           "id": 1769,
           "options": {
@@ -804,8 +972,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -817,7 +984,7 @@
             "h": 4,
             "w": 8,
             "x": 0,
-            "y": 14
+            "y": 38
           },
           "id": 1770,
           "options": {
@@ -902,8 +1069,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -915,7 +1081,7 @@
             "h": 4,
             "w": 8,
             "x": 8,
-            "y": 14
+            "y": 38
           },
           "id": 1771,
           "options": {
@@ -1000,8 +1166,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -1013,7 +1178,7 @@
             "h": 4,
             "w": 8,
             "x": 16,
-            "y": 14
+            "y": 38
           },
           "id": 1772,
           "options": {
@@ -1561,9 +1726,10 @@
           "fields": "",
           "values": false
         },
-        "showUnfilled": true
+        "showUnfilled": true,
+        "valueMode": "color"
       },
-      "pluginVersion": "9.4.13",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -1757,7 +1923,7 @@
               },
               {
                 "id": "unit",
-                "value": "percent"
+                "value": "percentunit"
               },
               {
                 "id": "color",
@@ -1807,6 +1973,7 @@
       },
       "id": 1758,
       "options": {
+        "cellHeight": "sm",
         "footer": {
           "countRows": false,
           "enablePagination": true,
@@ -1831,7 +1998,7 @@
           }
         ]
       },
-      "pluginVersion": "9.4.13",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -1882,21 +2049,6 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9) - (sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9)",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "legendFormat": "{{nos_name}}",
-          "range": false,
-          "refId": "earned"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "exemplar": false,
           "expr": "(sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_calculated_balance_calculation_error{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9)",
           "format": "table",
           "hide": false,
@@ -1904,21 +2056,6 @@
           "legendFormat": "{{nos_name}}",
           "range": false,
           "refId": "error"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "(sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) / ((sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) + (sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) + sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) * 100",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "legendFormat": "{{nos_name}}",
-          "range": false,
-          "refId": "effectiveness"
         },
         {
           "datasource": {
@@ -2038,18 +2175,66 @@
           "options": {}
         },
         {
+          "id": "calculateField",
+          "options": {
+            "alias": "rpm",
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [
+                "Value #reward (sum)",
+                "Value #missed (sum)",
+                "Value #penalty (sum)"
+              ],
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "binary": {
+              "left": "Value #reward (sum)",
+              "operator": "/",
+              "reducer": "sum",
+              "right": "rpm"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "binary": {
+              "left": "Value #reward (sum)",
+              "reducer": "sum",
+              "right": "Value #penalty (sum)"
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
           "id": "organize",
           "options": {
-            "excludeByName": {},
+            "excludeByName": {
+              "rpm": true
+            },
             "indexByName": {
               "Value #earned (sum)": 5,
-              "Value #effectiveness (sum)": 1,
-              "Value #error (sum)": 7,
+              "Value #error (sum)": 8,
               "Value #missed (sum)": 4,
               "Value #penalty (sum)": 3,
               "Value #reward (sum)": 2,
-              "Value #withdrawn (sum)": 6,
-              "nos_name": 0
+              "Value #reward (sum)  Value #penalty (sum)": 6,
+              "Value #reward (sum) / rpm": 1,
+              "Value #withdrawn (sum)": 7,
+              "nos_name": 0,
+              "rpm": 9
             },
             "renameByName": {
               "Value #all (sum)": "All",
@@ -2063,6 +2248,8 @@
               "Value #penalty (sum)": "Penalty",
               "Value #prop (sum)": "Proposal",
               "Value #reward (sum)": "Rewards",
+              "Value #reward (sum)  Value #penalty (sum)": "Earned",
+              "Value #reward (sum) / rpm": "Rew. eff.",
               "Value #sync (sum)": "Sync",
               "Value #total (sum)": "Total",
               "Value #withdrawn (sum)": "Withdrawn",
@@ -2143,7 +2330,7 @@
         "text": {},
         "textMode": "value"
       },
-      "pluginVersion": "9.4.13",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -2230,7 +2417,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.4.13",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -2300,7 +2487,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.4.13",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -2365,7 +2552,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.4.13",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -2430,7 +2617,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.4.13",
+      "pluginVersion": "9.5.7",
       "targets": [
         {
           "datasource": {
@@ -2478,8 +2665,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-green",
-                    "value": null
+                    "color": "light-green"
                   }
                 ]
               }
@@ -2566,7 +2752,7 @@
             "h": 13,
             "w": 11,
             "x": 0,
-            "y": 33
+            "y": 57
           },
           "id": 1754,
           "options": {
@@ -2778,8 +2964,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -2790,7 +2975,7 @@
             "h": 13,
             "w": 13,
             "x": 11,
-            "y": 33
+            "y": 57
           },
           "id": 1744,
           "options": {
@@ -2866,8 +3051,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-red",
-                    "value": null
+                    "color": "light-red"
                   }
                 ]
               }
@@ -2946,7 +3130,7 @@
             "h": 13,
             "w": 11,
             "x": 0,
-            "y": 34
+            "y": 58
           },
           "id": 1755,
           "options": {
@@ -3144,8 +3328,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -3156,7 +3339,7 @@
             "h": 13,
             "w": 13,
             "x": 11,
-            "y": 34
+            "y": 58
           },
           "id": 1750,
           "options": {
@@ -3232,8 +3415,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-purple",
-                    "value": null
+                    "color": "light-purple"
                   }
                 ]
               }
@@ -3320,7 +3502,7 @@
             "h": 13,
             "w": 11,
             "x": 0,
-            "y": 35
+            "y": 59
           },
           "id": 1756,
           "options": {
@@ -3543,8 +3725,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -3555,7 +3736,7 @@
             "h": 13,
             "w": 13,
             "x": 11,
-            "y": 35
+            "y": 59
           },
           "id": 1751,
           "options": {
@@ -3631,8 +3812,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "light-yellow",
-                    "value": null
+                    "color": "light-yellow"
                   }
                 ]
               }
@@ -3711,7 +3891,7 @@
             "h": 13,
             "w": 11,
             "x": 0,
-            "y": 36
+            "y": 60
           },
           "id": 1780,
           "options": {
@@ -3923,8 +4103,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               }
@@ -3935,7 +4114,7 @@
             "h": 13,
             "w": 13,
             "x": 11,
-            "y": 36
+            "y": 60
           },
           "id": 1781,
           "options": {
@@ -3988,8 +4167,8 @@
       {
         "current": {
           "selected": false,
-          "text": "164857",
-          "value": "164857"
+          "text": "222178",
+          "value": "222178"
         },
         "datasource": {
           "type": "prometheus",
@@ -4016,8 +4195,8 @@
       {
         "current": {
           "selected": false,
-          "text": "10",
-          "value": "10"
+          "text": "0",
+          "value": "0"
         },
         "datasource": {
           "type": "prometheus",
@@ -4096,8 +4275,8 @@
       {
         "current": {
           "selected": false,
-          "text": "76.69270841777325",
-          "value": "76.69270841777325"
+          "text": "99.03564453125",
+          "value": "99.03564453125"
         },
         "datasource": {
           "type": "prometheus",
@@ -4124,8 +4303,8 @@
       {
         "current": {
           "selected": false,
-          "text": "8",
-          "value": "8"
+          "text": "19",
+          "value": "19"
         },
         "datasource": {
           "type": "prometheus",
@@ -4183,8 +4362,8 @@
       {
         "current": {
           "selected": false,
-          "text": "Alex T|Allnodes|Anyblock Analytics|Artem\\.V|Attestant|Blockdaemon|BridgeTower Capital|Certus One|ChainLayer|ChainSafe|Chorus One|ConsenSys Software Inc \\(Codefi\\)|DKCSBES\\-Lido|DSRV|Denis|DmitIvh|Eugene\\.M|Everstake One|Figment|HCNS\\-Lido|HashQuark|InfStones|Infloop|KRogLA|Kiln|Kukis Global|Ledger|Lido x Obol\\: Clustery McClusterfaces|Lido x Obol\\: Group 4|Lido x Obol\\: Group 5 Rangers|Lido x Obol\\: Group 7|Lido x Obol\\: Group2 Guardians|Lido x Obol\\: Group9 Hunter|Lido x Obol\\: Mostly Harmless|Lido x Obol\\: Quadforce|Lido x Obol\\: SevenNodes|Lido x Obol\\: dvt2\\-g3|Nethermind|Nikita\\.L|Nikolay|P2P\\.ORG \\- P2P Validator|Prylabs|Psirex|QA Ledger 1|QA Ledger 2|QA Test|Raman S|RockLogic|RockX|SSV\\-DHRR|SSV\\-KCCA|Sigma Prime|Simply VC \\(Simply Staking\\)|Sjors|Stakely|Stakin|Staking Facilities|blockscape|cryptomanufaktur\\.io|qa\\-multisig|special_agent|stakefish",
-          "value": "Alex T|Allnodes|Anyblock Analytics|Artem\\.V|Attestant|Blockdaemon|BridgeTower Capital|Certus One|ChainLayer|ChainSafe|Chorus One|ConsenSys Software Inc \\(Codefi\\)|DKCSBES\\-Lido|DSRV|Denis|DmitIvh|Eugene\\.M|Everstake One|Figment|HCNS\\-Lido|HashQuark|InfStones|Infloop|KRogLA|Kiln|Kukis Global|Ledger|Lido x Obol\\: Clustery McClusterfaces|Lido x Obol\\: Group 4|Lido x Obol\\: Group 5 Rangers|Lido x Obol\\: Group 7|Lido x Obol\\: Group2 Guardians|Lido x Obol\\: Group9 Hunter|Lido x Obol\\: Mostly Harmless|Lido x Obol\\: Quadforce|Lido x Obol\\: SevenNodes|Lido x Obol\\: dvt2\\-g3|Nethermind|Nikita\\.L|Nikolay|P2P\\.ORG \\- P2P Validator|Prylabs|Psirex|QA Ledger 1|QA Ledger 2|QA Test|Raman S|RockLogic|RockX|SSV\\-DHRR|SSV\\-KCCA|Sigma Prime|Simply VC \\(Simply Staking\\)|Sjors|Stakely|Stakin|Staking Facilities|blockscape|cryptomanufaktur\\.io|qa\\-multisig|special_agent|stakefish"
+          "text": "DVT_Cluster_1|DVT_Cluster_2|DVT_Cluster_3|DVT_Cluster_4|Operator_1|Operator_2|Operator_3",
+          "value": "DVT_Cluster_1|DVT_Cluster_2|DVT_Cluster_3|DVT_Cluster_4|Operator_1|Operator_2|Operator_3"
         },
         "datasource": {
           "type": "vertamedia-clickhouse-datasource",
@@ -4225,6 +4404,6 @@
   "timezone": "",
   "title": "Rewards & Penalties",
   "uid": "poBeaLaRD",
-  "version": 9,
+  "version": 10,
   "weekStart": ""
 }
