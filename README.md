@@ -172,7 +172,7 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 
 ---
 `EXTERNAL_HTTP_PORT` - Port for Prometheus HTTP server in application that is exposed to the host
 * **Required:** false
-* **Default:** $HTTP_PORT
+* **Default:** `HTTP_PORT`
 ---
 `DB_MAX_RETRIES` - Max retries for each query to DB
 * **Required:** false
