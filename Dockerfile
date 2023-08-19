@@ -21,6 +21,6 @@ RUN mkdir -p ./docker/validators/ && chown -R node:node ./docker/validators/
 USER node
 
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 \
-  CMD sh -c "wget -nv -t1 --spider http://localhost:$APP_EXTERNAL_HTTP_PORT/health" || exit 1
+  CMD sh -c "wget -nv -t1 --spider http://localhost:$HTTP_PORT/health" || exit 1
 
 CMD ["yarn", "start:prod"]

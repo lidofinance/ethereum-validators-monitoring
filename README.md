@@ -166,11 +166,13 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 
 * **Required:** false
 * **Default:** 8123
 ---
-`APP_CONTAINER_HTTP_PORT` - Application's Prometheus HTTP server port on container (Note: if you change this, also update it in prometheus.yml)
-* **Required:** true
+`HTTP_PORT` - Port for Prometheus HTTP server in application on the container (Note: if you change this, also update it in [prometheus.yml](docker/prometheus/prometheus.yml))
+* **Required:** false
+* **Default:** 8080
 ---
-`APP_EXTERNAL_HTTP_PORT` - Application's Prometheus HTTP server port exposed on the host
-* **Required:** true
+`EXTERNAL_HTTP_PORT` - Port for Prometheus HTTP server in application that is exposed to the host
+* **Required:** false
+* **Default:** $HTTP_PORT
 ---
 `DB_MAX_RETRIES` - Max retries for each query to DB
 * **Required:** false
