@@ -1772,19 +1772,19 @@
               },
               {
                 "color": "#EAB839",
-                "value": 90
+                "value": 0.9
               },
               {
                 "color": "super-light-green",
-                "value": 95
+                "value": 0.95
               },
               {
                 "color": "light-green",
-                "value": 99
+                "value": 0.99
               },
               {
                 "color": "green",
-                "value": 99.5
+                "value": 0.995
               }
             ]
           }
