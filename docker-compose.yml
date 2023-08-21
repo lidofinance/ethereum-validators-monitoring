@@ -168,8 +168,10 @@ services:
       - VALIDATOR_REGISTRY_SOURCE=${VALIDATOR_REGISTRY_SOURCE}
       - EL_RPC_URLS=${EL_RPC_URLS}
       - CL_API_URLS=${CL_API_URLS}
+    expose:
+      - "${HTTP_PORT}"
     ports:
-      - "${HTTP_PORT}:${HTTP_PORT}"
+      - "${EXTERNAL_HTTP_PORT:-${HTTP_PORT}}:${HTTP_PORT}"
     volumes:
       - ./docker/validators/:/app/docker/validators
     depends_on:
