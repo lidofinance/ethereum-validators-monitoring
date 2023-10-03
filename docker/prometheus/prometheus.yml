@@ -27,4 +27,6 @@ scrape_configs:
       - targets: ['ethereum-validators-monitoring:8080']
     metric_relabel_configs:
       - source_labels: [ nos_module_id, nos_id ]
+        regex: '(\d+);(\d+)'
+        replacement: ${1};${2}
         target_label: nos_global_index
