@@ -1,9 +1,9 @@
 import { join } from 'lodash';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
-import { RegistrySourceOperator } from 'common/validators-registry';
+import { Epoch } from 'common/consensus-provider/types';
 import { ClickhouseService } from 'storage';
+import { RegistrySourceOperator } from 'validators-registry';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
@@ -17,8 +17,8 @@ export class CriticalSlashing extends Alert {
     const currOperators = await this.storage.getUserNodeOperatorsStats(epoch);
     const prevOperators = await this.storage.getUserNodeOperatorsStats(epoch - 1); // compare with previous epoch
     for (const currOperator of currOperators) {
-      const operator = this.operators.find((o) => +currOperator.val_nos_id == o.index);
-      const prevOperator = prevOperators.find((a) => a.val_nos_id == currOperator.val_nos_id);
+      const operator = this.operators.find((o) => +currOperator.val_nos_module_id == o.module && +currOperator.val_nos_id == o.index);
+      const prevOperator = prevOperators.find((a) => +a.val_nos_module_id == operator.module && +a.val_nos_id == operator.index);
       // if count of slashed validators increased, we should alert about it
       const prevSlashed = prevOperator ? prevOperator.slashed : 0;
       if (currOperator.slashed > prevSlashed) {

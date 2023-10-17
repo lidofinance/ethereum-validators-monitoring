@@ -1,10 +1,10 @@
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
-import { ConfigService } from 'common/config';
-import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
-import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
-import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
+import { ConfigService, WorkingMode } from 'common/config';
+import { BlockHeaderResponse, ConsensusProviderService } from 'common/consensus-provider';
+import { BlockCacheService } from 'common/consensus-provider/block-cache';
+import { Epoch, Slot } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { range } from 'common/functions/range';
 import { unblock } from 'common/functions/unblock';
@@ -42,6 +42,7 @@ export class DutyService {
   ) {}
 
   public async checkAndWrite({ epoch, stateSlot }: { epoch: Epoch; stateSlot: Slot }): Promise<string[]> {
+    const workingMode = this.config.get('WORKING_MODE');
     const [, , possibleHighRewardVals] = await allSettled([
       // Prefetch will be done before main checks because duty by state requests are heavy
       // and while we wait for their responses we fetch blocks and headers.
@@ -52,7 +53,7 @@ export class DutyService {
       this.checkAll(epoch, stateSlot),
       // Optional task to get possible high reward validators for head epoch
       // it's nice to have but not critical
-      this.getPossibleHighRewardValidators().catch(() => []),
+      workingMode == WorkingMode.Finalized ? this.getPossibleHighRewardValidators().catch(() => []) : [],
     ]);
     await allSettled([this.writeEpochMeta(epoch), this.writeSummary(epoch)]);
     this.summary.clear();

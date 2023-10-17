@@ -2,11 +2,11 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric } from 'common/prometheus';
-import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
+import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
 @Injectable()
 export class ProposeMetrics {

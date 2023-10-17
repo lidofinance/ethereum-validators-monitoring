@@ -2,11 +2,12 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric } from 'common/prometheus';
-import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage';
+import { RegistryService, RegistrySourceOperator } from 'validators-registry';
+
+import { Epoch } from '../../common/consensus-provider/types';
 
 @Injectable()
 export class SyncMetrics {
@@ -27,7 +28,7 @@ export class SyncMetrics {
   public async calculate(epoch: Epoch, possibleHighRewardValidators: string[]) {
     this.logger.log('Calculating sync committee metrics');
     this.processedEpoch = epoch;
-    this.operators = await this.registryService.getOperators();
+    this.operators = this.registryService.getOperators();
 
     await allSettled([
       this.userAvgSyncPercent(),
@@ -39,7 +40,8 @@ export class SyncMetrics {
 
   private async userAvgSyncPercent() {
     const result = await this.storage.getUserSyncParticipationAvgPercent(this.processedEpoch);
-    if (result) this.prometheus.userSyncParticipationAvgPercent.set(result.amount);
+    if (result)
+      result.forEach((r) => this.prometheus.userSyncParticipationAvgPercent.set({ nos_module_id: r.val_nos_module_id }, r.amount));
     else this.prometheus.userSyncParticipationAvgPercent.remove();
   }
 

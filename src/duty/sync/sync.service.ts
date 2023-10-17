@@ -3,11 +3,11 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { BlockInfoResponse, ConsensusProviderService, SyncCommitteeValidator } from 'common/eth-providers';
-import { Epoch, Slot, StateId } from 'common/eth-providers/consensus-provider/types';
+import { BlockInfoResponse, ConsensusProviderService, SyncCommitteeValidator } from 'common/consensus-provider';
+import { Epoch, Slot, StateId } from 'common/consensus-provider/types';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { SummaryService } from 'duty/summary';
 
-import { SummaryService } from '../summary';
 import { SYNC_COMMITTEE_SIZE } from './sync.constants';
 
 @Injectable()

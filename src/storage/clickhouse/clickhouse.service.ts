@@ -1,11 +1,13 @@
-import * as Stream from 'stream';
+import { Readable, Transform } from 'stream';
 
 import { ClickHouseClient, createClient } from '@clickhouse/client';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
+import { chain } from 'stream-chain';
+import { batch } from 'stream-json/utils/Batch';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { retrier } from 'common/functions/retrier';
 import { unblock } from 'common/functions/unblock';
@@ -40,6 +42,7 @@ import {
 import {
   AvgChainRewardsStats,
   EpochProcessingState,
+  NOsBalance24hDiff,
   NOsDelta,
   NOsProposesStats,
   NOsValidatorsByConditionAttestationCount,
@@ -61,6 +64,7 @@ import migration_000003_epoch_meta from './migrations/migration_000003_epoch_met
 import migration_000004_epoch_processing from './migrations/migration_000004_epoch_processing';
 import migration_000005_withdrawals from './migrations/migration_000005_withdrawals';
 import migration_000006_stuck_validators from './migrations/migration_000006_stuck_validators';
+import migration_000007_module_id from './migrations/migration_000007_module_id';
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -68,7 +72,6 @@ export class ClickhouseService implements OnModuleInit {
   private readonly maxRetries: number;
   private readonly minBackoff: number;
   private readonly maxBackoff: number;
-  private readonly chunkSize: number;
   private readonly retry: ReturnType<typeof retrier>;
 
   private async select<T>(query: string): Promise<T> {
@@ -83,7 +86,6 @@ export class ClickhouseService implements OnModuleInit {
     this.maxRetries = this.config.get('DB_MAX_RETRIES');
     this.minBackoff = this.config.get('DB_MIN_BACKOFF_SEC');
     this.maxBackoff = this.config.get('DB_MAX_BACKOFF_SEC');
-    this.chunkSize = this.config.get('DB_INSERT_CHUNK_SIZE');
 
     this.logger.log(`DB backoff set to (min=[${this.minBackoff}], max=[${this.maxBackoff}] seconds`);
     this.logger.log(`DB max retries set to [${this.maxRetries}]`);
@@ -96,8 +98,8 @@ export class ClickhouseService implements OnModuleInit {
       password: this.config.get('DB_PASSWORD'),
       database: this.config.get('DB_NAME'),
       compression: {
-        response: true,
-        request: true,
+        response: false,
+        request: false,
       },
     });
   }
@@ -130,51 +132,61 @@ export class ClickhouseService implements OnModuleInit {
 
   @TrackTask('write-summary')
   public async writeSummary(summary: IterableIterator<ValidatorDutySummary>): Promise<void> {
-    let indexesChunk = [];
-    let summaryChunk = [];
-    let chunkSize = 0;
-    const writeChunks = async (indexesChunk, summaryChunk) => {
-      return await allSettled([
-        this.retry(
-          async () =>
-            await this.db.insert({
-              table: 'validators_index',
-              values: Stream.Readable.from(indexesChunk, { objectMode: true }),
-              format: 'JSONEachRow',
+    const runWriteTasks = (stream: Readable): Promise<any>[] => {
+      const indexes = this.retry(async () =>
+        this.db.insert({
+          table: 'validators_index',
+          values: stream.pipe(
+            new Transform({
+              transform(chunk, encoding, callback) {
+                callback(null, { val_id: chunk.val_id, val_pubkey: chunk.val_pubkey });
+              },
+              objectMode: true,
             }),
-        ),
-        this.retry(
-          async () =>
-            await this.db.insert({
-              table: 'validators_summary',
-              values: Stream.Readable.from(summaryChunk, { objectMode: true }),
-              format: 'JSONEachRow',
+          ),
+          format: 'JSONEachRow',
+        }),
+      );
+      const summaries = this.retry(async () =>
+        this.db.insert({
+          table: 'validators_summary',
+          values: stream.pipe(
+            new Transform({
+              transform(chunk, encoding, callback) {
+                callback(null, {
+                  ...chunk,
+                  val_balance: chunk.val_balance.toString(),
+                  val_effective_balance: chunk.val_effective_balance.toString(),
+                  val_balance_withdrawn: chunk.val_balance_withdrawn?.toString(),
+                  propose_earned_reward: chunk.propose_earned_reward?.toString(),
+                  propose_missed_reward: chunk.propose_missed_reward?.toString(),
+                  propose_penalty: chunk.propose_penalty?.toString(),
+                  sync_meta: undefined,
+                  val_pubkey: undefined,
+                });
+              },
+              objectMode: true,
             }),
-        ),
-      ]);
+          ),
+          format: 'JSONEachRow',
+        }),
+      );
+
+      return [indexes, summaries];
     };
-    for (const v of summary) {
-      indexesChunk.push({ val_id: v.val_id, val_pubkey: v.val_pubkey });
-      summaryChunk.push({
-        ...v,
-        val_balance: v.val_balance.toString(),
-        val_effective_balance: v.val_effective_balance.toString(),
-        val_balance_withdrawn: v.val_balance_withdrawn?.toString(),
-        propose_earned_reward: v.propose_earned_reward?.toString(),
-        propose_missed_reward: v.propose_missed_reward?.toString(),
-        propose_penalty: v.propose_penalty?.toString(),
-        sync_meta: undefined,
-        val_pubkey: undefined,
-      });
-      chunkSize++;
-      if (chunkSize == this.chunkSize) {
-        await writeChunks(indexesChunk, summaryChunk);
-        [indexesChunk, summaryChunk] = [[], []];
-        chunkSize = 0;
-        await unblock();
-      }
-    }
-    if (chunkSize) await writeChunks(indexesChunk, summaryChunk);
+
+    await allSettled(
+      runWriteTasks(
+        chain([
+          Readable.from(summary, { objectMode: true, autoDestroy: true }),
+          batch({ batchSize: 100 }),
+          async (batch) => {
+            await unblock();
+            return batch;
+          },
+        ]),
+      ),
+    );
   }
 
   @TrackTask('write-epoch-meta')
@@ -230,6 +242,7 @@ export class ClickhouseService implements OnModuleInit {
       migration_000004_epoch_processing,
       migration_000005_withdrawals,
       migration_000006_stuck_validators,
+      migration_000007_module_id,
     ];
     for (const query of migrations) {
       await this.db.exec({ query });
@@ -260,9 +273,11 @@ export class ClickhouseService implements OnModuleInit {
   /**
    * Send query to Clickhouse and receives information about User Sync Committee participants
    */
-  public async getUserSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
-    const ret = await this.select(userSyncParticipationAvgPercentQuery(epoch));
-    return { amount: Number(ret[0].amount) };
+  public async getUserSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents[]> {
+    return (await this.select<SyncCommitteeParticipationAvgPercents[]>(userSyncParticipationAvgPercentQuery(epoch))).map((v) => ({
+      ...v,
+      amount: Number(v.amount),
+    }));
   }
 
   /**
@@ -497,13 +512,15 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  public async getTotalBalance24hDifference(epoch: Epoch): Promise<number | undefined> {
-    const ret = await this.select<{ amount }[]>(totalBalance24hDifferenceQuery(epoch));
-    if (ret[0]) return Number(ret[0].amount);
+  public async getTotalBalance24hDifference(epoch: Epoch): Promise<{ val_nos_module_id; amount }[]> {
+    return (await this.select<{ val_nos_module_id; amount }[]>(totalBalance24hDifferenceQuery(epoch))).map((v) => ({
+      ...v,
+      amount: Number(v.amount),
+    }));
   }
 
-  public async getOperatorBalance24hDifference(epoch: Epoch): Promise<{ val_nos_id; amount }[]> {
-    return (await this.select<{ val_nos_id; amount }[]>(operatorBalance24hDifferenceQuery(epoch))).map((v) => ({
+  public async getOperatorBalance24hDifference(epoch: Epoch): Promise<NOsBalance24hDiff[]> {
+    return (await this.select<NOsBalance24hDiff[]>(operatorBalance24hDifferenceQuery(epoch))).map((v) => ({
       ...v,
       amount: Number(v.amount),
     }));
@@ -529,16 +546,16 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about summary
    * how many User Node Operator validators have active, slashed, pending status
    */
-  public async getUserValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats> {
-    const ret = await this.select(userValidatorsSummaryStatsQuery(epoch));
-    return {
-      active_ongoing: Number(ret[0].active_ongoing),
-      pending: Number(ret[0].pending),
-      slashed: Number(ret[0].slashed),
-      withdraw_pending: Number(ret[0].withdraw_pending),
-      withdrawn: Number(ret[0].withdrawn),
-      stuck: Number(ret[0].stuck),
-    };
+  public async getUserValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats[]> {
+    return (await this.select<ValidatorsStatusStats[]>(userValidatorsSummaryStatsQuery(epoch))).map((v) => ({
+      ...v,
+      active_ongoing: Number(v.active_ongoing),
+      pending: Number(v.pending),
+      slashed: Number(v.slashed),
+      withdraw_pending: Number(v.withdraw_pending),
+      withdrawn: Number(v.withdrawn),
+      stuck: Number(v.stuck),
+    }));
   }
 
   /**
@@ -548,6 +565,7 @@ export class ClickhouseService implements OnModuleInit {
   public async getOtherValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats> {
     const ret = await this.select(otherValidatorsSummaryStatsQuery(epoch));
     return {
+      ...ret[0],
       active_ongoing: Number(ret[0].active_ongoing),
       pending: Number(ret[0].pending),
       slashed: Number(ret[0].slashed),
@@ -663,6 +681,7 @@ export class ClickhouseService implements OnModuleInit {
 
   public async getOtherChainWithdrawalsStats(epoch: Epoch): Promise<WithdrawalsStats> {
     return (await this.select<WithdrawalsStats[]>(otherChainWithdrawalsStats(epoch))).map((v) => ({
+      ...v,
       full_withdrawn_sum: +v.full_withdrawn_sum,
       full_withdrawn_count: +v.full_withdrawn_count,
       partial_withdrawn_sum: +v.partial_withdrawn_sum,

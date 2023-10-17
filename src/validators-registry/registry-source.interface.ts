@@ -1,7 +1,7 @@
 export const REGISTRY_SOURCE = 'validatorsRegistrySourceToken';
 
 export interface RegistrySourceKey {
-  index: number;
+  moduleIndex: number;
   operatorIndex: number;
   key: string;
 }
@@ -12,12 +12,13 @@ export interface RegistrySourceKeyWithOperatorName extends RegistrySourceKey {
 
 export interface RegistrySourceOperator {
   index: number;
+  module: number;
   name: string;
 }
 
 export interface RegistrySource {
   update(...args): Promise<void>;
-  getOperatorsMap(): Map<number, RegistrySourceOperator>;
+  getOperatorsMap(): Map<string, RegistrySourceOperator>;
   getOperatorKey(pubKey: string): RegistrySourceKey | null;
   sourceTimestamp(): Promise<number>;
 }

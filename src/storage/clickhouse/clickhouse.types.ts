@@ -1,6 +1,7 @@
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { Epoch } from 'common/consensus-provider/types';
 
 export interface ValidatorsStatusStats {
+  val_nos_module_id?: string;
   active_ongoing: number;
   pending: number;
   slashed: number;
@@ -10,31 +11,43 @@ export interface ValidatorsStatusStats {
 }
 
 export interface NOsDelta {
+  val_nos_module_id: string;
   val_nos_id: string;
   amount: number;
 }
 
 export interface NOsValidatorsNegDeltaCount {
+  val_nos_module_id: string;
   val_nos_id: string;
   amount: number;
 }
 
 export interface NOsValidatorsSyncAvgPercent {
+  val_nos_module_id: string;
   val_nos_id: string;
   amount: number;
 }
 
 export interface NOsValidatorsSyncByConditionCount {
+  val_nos_module_id: string;
   val_nos_id: string;
   amount: number;
 }
 
 export interface NOsValidatorsByConditionAttestationCount {
+  val_nos_module_id: string;
   val_nos_id: string;
   amount: number;
 }
 
 export interface NOsValidatorsByConditionProposeCount {
+  val_nos_module_id: string;
+  val_nos_id: string;
+  amount: number;
+}
+
+export interface NOsBalance24hDiff {
+  val_nos_module_id: string;
   val_nos_id: string;
   amount: number;
 }
@@ -44,6 +57,7 @@ export interface NOsValidatorsStatusStats extends ValidatorsStatusStats {
 }
 
 export interface NOsValidatorsRewardsStats {
+  val_nos_module_id: string;
   val_nos_id: string;
   prop_reward: number;
   prop_missed: number;
@@ -75,12 +89,14 @@ export interface AvgChainRewardsStats {
 }
 
 export interface NOsProposesStats {
+  val_nos_module_id: string;
   val_nos_id: string;
   all: number;
   missed: number;
 }
 
 export interface SyncCommitteeParticipationAvgPercents {
+  val_nos_module_id?: string;
   amount: number;
 }
 
@@ -97,5 +113,6 @@ export interface WithdrawalsStats {
   partial_withdrawn_count: number;
 }
 export interface NOsWithdrawalsStats extends WithdrawalsStats {
+  val_nos_module_id: string;
   val_nos_id: string;
 }

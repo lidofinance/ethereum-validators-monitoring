@@ -28,6 +28,12 @@ export enum Network {
 export enum ValidatorRegistrySource {
   Lido = 'lido',
   File = 'file',
+  KeysAPI = 'keysapi',
+}
+
+export enum WorkingMode {
+  Finalized = 'finalized',
+  Head = 'head',
 }
 
 const toBoolean = (value: any): boolean => {
@@ -114,24 +120,19 @@ export class EnvironmentVariables {
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public DB_MAX_BACKOFF_SEC = 120;
 
-  @IsNumber()
-  @Min(100)
-  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public DB_INSERT_CHUNK_SIZE = 50000;
-
   @IsNotEmpty()
   @IsInt()
   @Min(1)
   @Max(5000000)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
+  @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.Lido && vars.NODE_ENV != Environment.test)
   public ETH_NETWORK!: Network;
 
   @IsArray()
   @ArrayMinSize(1)
   @Transform(({ value }) => value.split(','))
-  @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
-  public EL_RPC_URLS!: string[];
+  @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.Lido && vars.NODE_ENV != Environment.test)
+  public EL_RPC_URLS: string[] = [];
 
   @IsArray()
   @ArrayMinSize(1)
@@ -179,6 +180,38 @@ export class EnvironmentVariables {
 
   @IsString()
   public VALIDATOR_REGISTRY_LIDO_SOURCE_SQLITE_CACHE_PATH = './docker/validators/lido_mainnet.db';
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @Transform(({ value }) => value.split(','))
+  @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.KeysAPI && vars.NODE_ENV != Environment.test)
+  public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_URLS!: string[];
+
+  @IsInt()
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RETRY_DELAY_MS = 500;
+
+  @IsNumber()
+  @Min(5000)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RESPONSE_TIMEOUT = 30000;
+
+  @IsNumber()
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_MAX_RETRIES = 2;
+
+  /**
+   * Use a file with list of validators that are stuck and should be excluded from the monitoring metrics
+   */
+  @IsBoolean()
+  @Transform(({ value }) => toBoolean(value), { toClassOnly: true })
+  public VALIDATOR_USE_STUCK_KEYS_FILE = false;
+
+  /**
+   * Path to file with list of validators that are stuck and should be excluded from the monitoring metrics
+   */
+  @IsString()
+  public VALIDATOR_STUCK_KEYS_FILE_PATH = './docker/validators/stuck_keys.yaml';
 
   /**
    * Use a file with list of validators that are stuck and should be excluded from the monitoring metrics
@@ -252,6 +285,9 @@ export class EnvironmentVariables {
   @IsObject()
   @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
   public CRITICAL_ALERTS_ALERTMANAGER_LABELS = {};
+
+  @IsEnum(WorkingMode)
+  public WORKING_MODE = WorkingMode.Finalized;
 }
 
 export function validate(config: Record<string, unknown>) {

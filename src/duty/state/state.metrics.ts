@@ -3,12 +3,12 @@ import { RegistryOperator } from '@lido-nestjs/registry';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { Owner, PrometheusService, PrometheusValStatus, TrackTask, setUserOperatorsMetric } from 'common/prometheus';
-import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
-import { LidoSourceService } from 'common/validators-registry/lido-source';
 import { ClickhouseService } from 'storage/clickhouse';
+import { RegistryService, RegistrySourceOperator } from 'validators-registry';
+import { LidoSourceService } from 'validators-registry/lido-source';
 
 const GWEI_WEI_RATIO = 1e9;
 const ETH_GWEI_RATIO = 1e9;
@@ -29,7 +29,7 @@ export class StateMetrics {
   public async calculate(epoch: Epoch) {
     this.logger.log('Calculating state metrics');
     this.processedEpoch = epoch;
-    this.operators = await this.registryService.getOperators();
+    this.operators = this.registryService.getOperators();
     await allSettled([
       this.operatorsIdentifies(),
       this.nosStats(),
@@ -49,7 +49,7 @@ export class StateMetrics {
       this.prometheus.operatorsIdentifies,
       this.operators.map((operator) => ({ val_nos_id: operator.index, amount: 1 })),
       this.operators,
-      (o) => ({ nos_id: o.index, nos_name: o.name }),
+      (o) => ({ nos_module_id: o.module, nos_id: o.index, nos_name: o.name }),
     );
   }
 
@@ -114,48 +114,56 @@ export class StateMetrics {
   private async userValidatorsStats() {
     const result = await this.storage.getUserValidatorsSummaryStats(this.processedEpoch);
     this.logger.debug(`User stats: ${JSON.stringify(result)}`);
-    this.prometheus.validators.set(
-      {
-        owner: Owner.USER,
-        status: PrometheusValStatus.Slashed,
-      },
-      result.slashed,
-    );
-    this.prometheus.validators.set(
-      {
-        owner: Owner.USER,
-        status: PrometheusValStatus.Ongoing,
-      },
-      result.active_ongoing,
-    );
-    this.prometheus.validators.set(
-      {
-        owner: Owner.USER,
-        status: PrometheusValStatus.Pending,
-      },
-      result.pending,
-    );
-    this.prometheus.validators.set(
-      {
-        owner: Owner.USER,
-        status: PrometheusValStatus.WithdrawalPending,
-      },
-      result.withdraw_pending,
-    );
-    this.prometheus.validators.set(
-      {
-        owner: Owner.USER,
-        status: PrometheusValStatus.WithdrawalDone,
-      },
-      result.withdrawn,
-    );
-    this.prometheus.validators.set(
-      {
-        owner: Owner.USER,
-        status: PrometheusValStatus.Stuck,
-      },
-      result.stuck,
-    );
+    result.map((r) => {
+      this.prometheus.validators.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.Slashed,
+        },
+        r.slashed,
+      );
+      this.prometheus.validators.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.Ongoing,
+        },
+        r.active_ongoing,
+      );
+      this.prometheus.validators.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.Pending,
+        },
+        r.pending,
+      );
+      this.prometheus.validators.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.WithdrawalPending,
+        },
+        r.withdraw_pending,
+      );
+      this.prometheus.validators.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.WithdrawalDone,
+        },
+        r.withdrawn,
+      );
+      this.prometheus.validators.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.Stuck,
+        },
+        r.stuck,
+      );
+    });
   }
 
   private async otherValidatorsStats() {
@@ -215,7 +223,7 @@ export class StateMetrics {
 
   private async totalBalance24hDifference() {
     const result = await this.storage.getTotalBalance24hDifference(this.processedEpoch);
-    if (result) this.prometheus.totalBalance24hDifference.set(result);
+    result.forEach((r) => this.prometheus.totalBalance24hDifference.set({ nos_module_id: r.val_nos_module_id }, r.amount));
   }
 
   private async operatorBalance24hDifference() {
@@ -227,11 +235,11 @@ export class StateMetrics {
     if (!(this.registryService.source instanceof LidoSourceService)) return;
     this.prometheus.contractKeysTotal.set(
       { type: 'total' },
-      this.operators.reduce((sum, o: RegistryOperator) => sum + o.totalSigningKeys, 0),
+      (this.operators as any as RegistryOperator[]).reduce((sum, o: RegistryOperator) => sum + o.totalSigningKeys, 0),
     );
     this.prometheus.contractKeysTotal.set(
       { type: 'used' },
-      this.operators.reduce((sum, o: RegistryOperator) => sum + o.usedSigningKeys, 0),
+      (this.operators as any as RegistryOperator[]).reduce((sum, o: RegistryOperator) => sum + o.usedSigningKeys, 0),
     );
     const bufferedEther = (await this.registryService.source.contract.getBufferedEther()).div(GWEI_WEI_RATIO).div(ETH_GWEI_RATIO);
     this.prometheus.bufferedEther.set(bufferedEther.toNumber());

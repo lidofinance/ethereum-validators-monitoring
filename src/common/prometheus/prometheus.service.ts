@@ -5,8 +5,8 @@ import { join } from 'lodash';
 import { LabelValues } from 'prom-client';
 
 import { ConfigService } from 'common/config';
+import { RegistrySourceOperator } from 'validators-registry';
 
-import { RegistrySourceOperator } from '../validators-registry';
 import { Metric, Options } from './interfaces';
 import {
   METRICS_PREFIX,
@@ -46,6 +46,8 @@ import {
   METRIC_OUTGOING_CL_REQUESTS_DURATION_SECONDS,
   METRIC_OUTGOING_EL_REQUESTS_COUNT,
   METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS,
+  METRIC_OUTGOING_KEYSAPI_REQUESTS_COUNT,
+  METRIC_OUTGOING_KEYSAPI_REQUESTS_DURATION_SECONDS,
   METRIC_STETH_BUFFERED_ETHER_TOTAL,
   METRIC_SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG,
   METRIC_TASK_DURATION_SECONDS,
@@ -57,7 +59,6 @@ import {
   METRIC_VALIDATORS,
   METRIC_VALIDATOR_BALANCES_DELTA,
   METRIC_VALIDATOR_COUNT_GOOD_PROPOSE,
-  METRIC_VALIDATOR_COUNT_HIGH_AVG_INC_DELAY_ATTESTATION_OF_N_EPOCH,
   METRIC_VALIDATOR_COUNT_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
   METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_LAST_N_EPOCH,
@@ -196,6 +197,19 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['name', 'target', 'status', 'code'] as const,
   });
 
+  public outgoingKeysAPIRequestsDuration = this.getOrCreateMetric('Histogram', {
+    name: METRIC_OUTGOING_KEYSAPI_REQUESTS_DURATION_SECONDS,
+    help: 'Duration of outgoing KeysAPI requests',
+    buckets: [0.01, 0.1, 0.5, 1, 2, 5, 15, 30, 60],
+    labelNames: ['name', 'target'] as const,
+  });
+
+  public outgoingKeysAPIRequestsCount = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OUTGOING_KEYSAPI_REQUESTS_COUNT,
+    help: 'Count of outgoing KeysAPI requests',
+    labelNames: ['name', 'target', 'status', 'code'] as const,
+  });
+
   public taskDuration = this.getOrCreateMetric('Histogram', {
     name: METRIC_TASK_DURATION_SECONDS,
     help: 'Duration of task execution',
@@ -212,55 +226,55 @@ export class PrometheusService implements OnApplicationBootstrap {
   public operatorsIdentifies = this.getOrCreateMetric('Gauge', {
     name: METRIC_USER_OPERATORS_IDENTIFIES,
     help: 'Operators identifies',
-    labelNames: ['nos_id', 'nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public validators = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATORS,
     help: 'Validators number',
-    labelNames: ['owner', 'status'],
+    labelNames: ['owner', 'nos_module_id', 'status'],
   });
 
   public userValidators = this.getOrCreateMetric('Gauge', {
     name: METRIC_USER_VALIDATORS,
     help: 'User validators number',
-    labelNames: ['nos_name', 'status'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'status'],
   });
 
   public avgValidatorBalanceDelta = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_BALANCES_DELTA,
     help: 'average validator balances delta (6 epochs delta)',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public operatorRealBalanceDelta = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_REAL_BALANCE_DELTA,
     help: 'operator real balance delta (according to state)',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public operatorCalculatedBalanceDelta = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_CALCULATED_BALANCE_DELTA,
     help: 'operator calculated balance delta (according to calculated rewards and penalties)',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public operatorCalculatedBalanceCalculationError = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_CALCULATED_BALANCE_CALCULATION_ERROR,
     help: 'operator calculated balance delta calculation error by real balance change',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public validatorQuantile001BalanceDelta = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_QUANTILE_001_BALANCES_DELTA,
     help: 'validator 0.1% quantile balances delta (6 epochs delta)',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public validatorsCountWithNegativeBalanceDelta = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_WITH_NEGATIVE_BALANCES_DELTA,
     help: 'number of validators with negative balances delta',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public otherValidatorsCountWithGoodSyncParticipation = this.getOrCreateMetric('Gauge', {
@@ -272,7 +286,7 @@ export class PrometheusService implements OnApplicationBootstrap {
   public validatorsCountWithGoodSyncParticipation = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_WITH_GOOD_SYNC_PARTICIPATION,
     help: 'number of validators with good sync committee participation',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public otherValidatorsCountWithSyncParticipationLessAvg = this.getOrCreateMetric('Gauge', {
@@ -284,7 +298,7 @@ export class PrometheusService implements OnApplicationBootstrap {
   public validatorsCountWithSyncParticipationLessAvg = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG,
     help: 'number of validators with sync committee participation less avg',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public otherValidatorsCountPerfectAttestation = this.getOrCreateMetric('Gauge', {
@@ -296,7 +310,7 @@ export class PrometheusService implements OnApplicationBootstrap {
   public validatorsCountPerfectAttestation = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_PERFECT_ATTESTATION,
     help: 'number of validators with perfect attestation',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public otherValidatorsCountMissAttestation = this.getOrCreateMetric('Gauge', {
@@ -308,7 +322,7 @@ export class PrometheusService implements OnApplicationBootstrap {
   public validatorsCountMissAttestation = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_MISS_ATTESTATION,
     help: 'number of validators miss attestation',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public otherValidatorsCountInvalidAttestation = this.getOrCreateMetric('Gauge', {
@@ -320,55 +334,49 @@ export class PrometheusService implements OnApplicationBootstrap {
   public validatorsCountInvalidAttestation = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
     help: 'number of validators with invalid properties or high inc. delay in attestation',
-    labelNames: ['nos_name', 'reason'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'reason'],
   });
 
   public validatorsCountMissAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
     help: 'number of validators miss attestation last N epoch',
-    labelNames: ['nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
   public validatorsCountInvalidAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_LAST_N_EPOCH,
     help: 'number of validators with invalid properties or high inc. delay in attestation last N epoch',
-    labelNames: ['nos_name', 'reason', 'epoch_interval'],
-  });
-
-  public validatorsCountHighAvgIncDelayAttestationOfNEpoch = this.getOrCreateMetric('Gauge', {
-    name: METRIC_VALIDATOR_COUNT_HIGH_AVG_INC_DELAY_ATTESTATION_OF_N_EPOCH,
-    help: 'number of validators with high avg inc. delay of N epochs',
-    labelNames: ['nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'reason', 'epoch_interval'],
   });
 
   public validatorsCountHighIncDelayAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
     help: 'number of validators with high inc. delay last N epochs',
-    labelNames: ['nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
   public validatorsCountInvalidAttestationPropertyLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_PROPERTY_LAST_N_EPOCH,
     help: 'number of validators with two invalid attestation property (head, target, source) last N epochs',
-    labelNames: ['nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
   public highRewardValidatorsCountMissAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
     help: 'number of validators miss attestation last N epoch (with possible high reward in the future)',
-    labelNames: ['nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
   public validatorsCountWithSyncParticipationLessAvgLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
     help: 'number of validators with sync participation less than avg last N epoch',
-    labelNames: ['nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
   public highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
     help: 'number of validators with sync participation less than avg last N epoch (with possible high reward in the future)',
-    labelNames: ['nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
   public otherValidatorsCountGoodPropose = this.getOrCreateMetric('Gauge', {
@@ -380,7 +388,7 @@ export class PrometheusService implements OnApplicationBootstrap {
   public validatorsCountGoodPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_GOOD_PROPOSE,
     help: 'number of validators good propose',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public otherValidatorsCountMissPropose = this.getOrCreateMetric('Gauge', {
@@ -392,25 +400,25 @@ export class PrometheusService implements OnApplicationBootstrap {
   public validatorsCountMissPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_MISS_PROPOSE,
     help: 'number of validators miss propose',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public highRewardValidatorsCountMissPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
     help: 'number of validators miss propose (with possible high reward in the future)',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public userSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
     name: METRIC_USER_SYNC_PARTICIPATION_AVG_PERCENT,
     help: 'User sync committee validators participation avg percent',
-    labelNames: [],
+    labelNames: ['nos_module_id'],
   });
 
   public operatorSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
     help: 'Operator sync committee validators participation avg percent',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public otherSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
@@ -434,13 +442,13 @@ export class PrometheusService implements OnApplicationBootstrap {
   public totalBalance24hDifference = this.getOrCreateMetric('Gauge', {
     name: METRIC_TOTAL_BALANCE_24H_DIFFERENCE,
     help: 'Total balance difference (24 hours)',
-    labelNames: [],
+    labelNames: ['nos_module_id'],
   });
 
   public operatorBalance24hDifference = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
     help: 'Operator balance difference (24 hours)',
-    labelNames: ['nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public avgChainReward = this.getOrCreateMetric('Gauge', {
@@ -452,7 +460,7 @@ export class PrometheusService implements OnApplicationBootstrap {
   public operatorReward = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_REWARD,
     help: 'rewards for each duty for each operator',
-    labelNames: ['nos_name', 'duty'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'duty'],
   });
 
   public avgChainMissedReward = this.getOrCreateMetric('Gauge', {
@@ -464,7 +472,7 @@ export class PrometheusService implements OnApplicationBootstrap {
   public operatorMissedReward = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_MISSED_REWARD,
     help: 'missed rewards for each duty for each operator',
-    labelNames: ['nos_name', 'duty'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'duty'],
   });
 
   public avgChainPenalty = this.getOrCreateMetric('Gauge', {
@@ -476,13 +484,13 @@ export class PrometheusService implements OnApplicationBootstrap {
   public operatorPenalty = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_PENALTY,
     help: 'operator penalty for each duty',
-    labelNames: ['nos_name', 'duty'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'duty'],
   });
 
   public operatorWithdrawalsSum = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_WITHDRAWALS_SUM,
     help: 'operator withdrawals sum',
-    labelNames: ['nos_name', 'type'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'type'],
   });
 
   public otherChainWithdrawalsSum = this.getOrCreateMetric('Gauge', {
@@ -494,7 +502,7 @@ export class PrometheusService implements OnApplicationBootstrap {
   public operatorWithdrawalsCount = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_WITHDRAWALS_COUNT,
     help: 'operator withdrawals count',
-    labelNames: ['nos_name', 'type'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'type'],
   });
 
   public otherChainWithdrawalsCount = this.getOrCreateMetric('Gauge', {
@@ -524,8 +532,13 @@ export const setUserOperatorsMetric = (
   value: (dataItem: any) => number = (dataItem) => dataItem.amount,
 ) => {
   operators.forEach((operator) => {
-    const _labels = typeof labels == 'function' ? labels(operator) : { nos_name: operator.name, ...labels };
-    const operatorResult = data.find((p) => p.val_nos_id != null && +p.val_nos_id == operator.index);
+    const _labels =
+      typeof labels == 'function'
+        ? labels(operator)
+        : { nos_module_id: operator.module, nos_id: operator.index, nos_name: operator.name, ...labels };
+    const operatorResult = data.find(
+      (p) => p.val_nos_id != null && +p.val_nos_module_id == operator.module && +p.val_nos_id == operator.index,
+    );
     if (operatorResult) metric.set(_labels, value(operatorResult));
     else metric.set(_labels, 0);
   });
@@ -565,6 +578,40 @@ export function TrackCLRequest(target: any, propertyKey: string, descriptor: Pro
       })
       .catch((e: any) => {
         this.prometheus.outgoingCLRequestsCount.inc({
+          name: reqName,
+          target: targetName,
+          status: RequestStatus.ERROR,
+          code: e.$httpCode,
+        });
+        throw e;
+      })
+      .finally(() => stop());
+  };
+}
+
+export function TrackKeysAPIRequest(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  const originalValue = descriptor.value;
+  descriptor.value = function (...args) {
+    if (!this.prometheus) throw Error(`'${this.constructor.name}' class object must contain 'prometheus' property`);
+    const [apiUrl, subUrl] = args;
+    const [targetName, reqName] = requestLabels(apiUrl, subUrl);
+    const stop = this.prometheus.outgoingKeysAPIRequestsDuration.startTimer({
+      name: reqName,
+      target: targetName,
+    });
+    return originalValue
+      .apply(this, args)
+      .then((r: any) => {
+        this.prometheus.outgoingKeysAPIRequestsCount.inc({
+          name: reqName,
+          target: targetName,
+          status: RequestStatus.COMPLETE,
+          code: 200,
+        });
+        return r;
+      })
+      .catch((e: any) => {
+        this.prometheus.outgoingKeysAPIRequestsCount.inc({
           name: reqName,
           target: targetName,
           status: RequestStatus.ERROR,

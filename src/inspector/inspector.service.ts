@@ -2,15 +2,16 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 
 import { CriticalAlertsService } from 'common/alertmanager';
-import { ConfigService } from 'common/config';
-import { BlockHeaderResponse, ConsensusProviderService } from 'common/eth-providers';
-import { BlockCacheService } from 'common/eth-providers/consensus-provider/block-cache';
-import { Slot } from 'common/eth-providers/consensus-provider/types';
+import { ConfigService, WorkingMode } from 'common/config';
+import { BlockHeaderResponse, ConsensusProviderService } from 'common/consensus-provider';
+import { BlockCacheService } from 'common/consensus-provider/block-cache';
+import { Slot } from 'common/consensus-provider/types';
 import { sleep } from 'common/functions/sleep';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { DutyMetrics, DutyService } from 'duty';
 import { ClickhouseService } from 'storage';
 import { EpochProcessingState } from 'storage/clickhouse';
+import { RegistryService } from 'validators-registry';
 
 @Injectable()
 export class InspectorService implements OnModuleInit {
@@ -22,6 +23,7 @@ export class InspectorService implements OnModuleInit {
     protected readonly prometheus: PrometheusService,
     protected readonly criticalAlerts: CriticalAlertsService,
     protected readonly blockCacheService: BlockCacheService,
+    protected readonly registryService: RegistryService,
 
     protected readonly dutyService: DutyService,
     protected readonly dutyMetrics: DutyMetrics,
@@ -37,18 +39,24 @@ export class InspectorService implements OnModuleInit {
   public async startLoop(): Promise<never> {
     const version = await this.clClient.getVersion();
     this.logger.log(`Beacon chain API info [${version}]`);
-
     // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
         const toProcess = await this.getEpochDataToProcess();
         if (toProcess) {
+          if (this.config.get('WORKING_MODE') == WorkingMode.Head) {
+            this.logger.warn(`Working in HEAD mode. This can cause calculation errors and inaccurate data!`);
+          }
           const { epoch, slot, is_stored, is_calculated } = toProcess;
           let possibleHighRewardValidators = [];
           if (!is_stored) {
             possibleHighRewardValidators = await this.dutyService.checkAndWrite({ epoch: epoch, stateSlot: slot });
           }
           if (!is_calculated) {
+            if (!this.registryService.isFilled()) {
+              const slotTime = await this.clClient.getSlotTime(epoch * this.config.get('FETCH_INTERVAL_SLOTS'));
+              await this.registryService.updateKeysRegistry(slotTime);
+            }
             await this.dutyMetrics.calculate(epoch, possibleHighRewardValidators);
           }
           await this.criticalAlerts.send(epoch);
@@ -71,29 +79,25 @@ export class InspectorService implements OnModuleInit {
 
   protected async getEpochDataToProcess(): Promise<EpochProcessingState & { slot: Slot }> {
     const chosen = await this.chooseEpochToProcess();
-    const latestFinalizedBeaconBlock = Number(
-      (<BlockHeaderResponse>await this.clClient.getFinalizedBlockHeader(chosen)).header.message.slot,
-    );
-    let latestFinalizedEpoch = Math.trunc(latestFinalizedBeaconBlock / this.config.get('FETCH_INTERVAL_SLOTS'));
-    if (latestFinalizedEpoch * this.config.get('FETCH_INTERVAL_SLOTS') == latestFinalizedBeaconBlock) {
-      // if it's the first slot of epoch, it finalizes previous epoch
-      latestFinalizedEpoch -= 1;
+    const latestBeaconBlock = Number((<BlockHeaderResponse>await this.clClient.getLatestBlockHeader(chosen)).header.message.slot);
+    let latestEpoch = Math.trunc(latestBeaconBlock / this.config.get('FETCH_INTERVAL_SLOTS'));
+    if (latestEpoch * this.config.get('FETCH_INTERVAL_SLOTS') == latestBeaconBlock) {
+      // if it's the first slot of epoch, it makes checkpoint for previous epoch
+      latestEpoch -= 1;
     }
-    if (chosen.slot > latestFinalizedBeaconBlock) {
-      // new finalized slot hasn't happened, from which parent we can get information about needed state
-      // just wait `CHAIN_SLOT_TIME_SECONDS` until finality happens
+    if (chosen.slot > latestBeaconBlock) {
+      // new latest slot hasn't happened, from which parent we can get information about needed state
+      // just wait `CHAIN_SLOT_TIME_SECONDS` until new slot happens
       const sleepTime = this.config.get('CHAIN_SLOT_TIME_SECONDS');
-      this.logger.log(
-        `Latest finalized epoch [${latestFinalizedEpoch}]. Waiting [${sleepTime}] seconds for next finalized epoch [${chosen.epoch}]`,
-      );
+      this.logger.log(`Latest epoch [${latestEpoch}]. Waiting [${sleepTime}] seconds for the end of epoch [${chosen.epoch}]`);
 
       return new Promise((resolve) => {
         setTimeout(() => resolve(undefined), sleepTime * 1000);
       });
     }
-    // new finalized epoch has happened, from which parent we can get information about needed state
+    // new epoch has happened, from which parent we can get information about needed state
     const existedHeader = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(chosen.slot)).header.message;
-    this.logger.log(`Latest finalized epoch [${latestFinalizedEpoch}]. Next epoch to process [${chosen.epoch}]`);
+    this.logger.log(`Latest epoch [${latestEpoch}]. Next epoch to process [${chosen.epoch}]`);
     if (chosen.slot == Number(existedHeader.slot)) {
       this.logger.log(
         `Epoch [${chosen.epoch}] is chosen to process with state slot [${chosen.slot}] with root [${existedHeader.state_root}]`,

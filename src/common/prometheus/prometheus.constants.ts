@@ -1,4 +1,4 @@
-import { APP_NAME } from '../../app';
+import { APP_NAME } from 'app';
 
 export const METRICS_URL = '/metrics';
 export const METRICS_PREFIX = `${APP_NAME.replace(/[- ]/g, '_')}_`;
@@ -9,6 +9,8 @@ export const METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS = `outgoing_el_request
 export const METRIC_OUTGOING_EL_REQUESTS_COUNT = `outgoing_el_requests_count`;
 export const METRIC_OUTGOING_CL_REQUESTS_DURATION_SECONDS = `outgoing_cl_requests_duration_seconds`;
 export const METRIC_OUTGOING_CL_REQUESTS_COUNT = `outgoing_cl_requests_count`;
+export const METRIC_OUTGOING_KEYSAPI_REQUESTS_DURATION_SECONDS = `outgoing_keysapi_requests_duration_seconds`;
+export const METRIC_OUTGOING_KEYSAPI_REQUESTS_COUNT = `outgoing_keysapi_requests_count`;
 export const METRIC_TASK_DURATION_SECONDS = `task_duration_seconds`;
 export const METRIC_TASK_RESULT_COUNT = `task_result_count`;
 export const METRIC_DATA_ACTUALITY = `data_actuality`;
@@ -36,7 +38,6 @@ export const METRIC_OTHER_VALIDATOR_COUNT_INVALID_ATTESTATION = `other_validator
 export const METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION = `validator_count_invalid_attestation`;
 export const METRIC_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH = `validator_count_miss_attestation_last_n_epoch`;
 export const METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_LAST_N_EPOCH = `validator_count_invalid_attestation_last_n_epoch`;
-export const METRIC_VALIDATOR_COUNT_HIGH_AVG_INC_DELAY_ATTESTATION_OF_N_EPOCH = `validator_count_high_avg_inc_delay_of_n_epoch`;
 export const METRIC_VALIDATOR_COUNT_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH = `validator_count_high_inc_delay_last_n_epoch`;
 export const METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_PROPERTY_LAST_N_EPOCH = `validator_count_invalid_attestation_property_last_n_epoch`;
 export const METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH = `high_reward_validator_count_miss_attestation_last_n_epoch`;

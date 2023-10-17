@@ -8,15 +8,14 @@ import { streamArray } from 'stream-json/streamers/StreamArray';
 import { batch } from 'stream-json/utils/Batch';
 
 import { ConfigService } from 'common/config';
-import { ConsensusProviderService, StateValidatorResponse, ValStatus } from 'common/eth-providers';
-import { Epoch, Slot } from 'common/eth-providers/consensus-provider/types';
+import { ConsensusProviderService, StateValidatorResponse, ValStatus } from 'common/consensus-provider';
+import { Epoch, Slot } from 'common/consensus-provider/types';
 import { bigNumberSqrt } from 'common/functions/bigNumberSqrt';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-import { RegistryService } from 'common/validators-registry';
+import { SummaryService } from 'duty/summary';
 import { ClickhouseService } from 'storage/clickhouse';
-
-import { SummaryService } from '../summary';
+import { RegistryService } from 'validators-registry';
 
 @Injectable()
 export class StateService {
@@ -33,9 +32,11 @@ export class StateService {
   @TrackTask('check-state-duties')
   public async check(epoch: Epoch, stateSlot: Slot): Promise<void> {
     const slotTime = await this.clClient.getSlotTime(epoch * this.config.get('FETCH_INTERVAL_SLOTS'));
-    await this.registry.updateKeysRegistry(Number(slotTime));
     this.logger.log('Getting all validators state');
-    const readStream = await this.clClient.getValidatorsState(stateSlot);
+    const [readStream, _] = await Promise.all([
+      this.clClient.getValidatorsState(stateSlot),
+      this.registry.updateKeysRegistry(Number(slotTime)),
+    ]);
     this.logger.log('Processing all validators state');
     let activeValidatorsCount = 0;
     let activeValidatorsEffectiveBalance = 0n;
@@ -56,6 +57,7 @@ export class StateService {
             epoch,
             val_id: index,
             val_pubkey: state.validator.pubkey,
+            val_nos_module_id: operator?.moduleIndex,
             val_nos_id: operator?.operatorIndex,
             val_nos_name: operator?.operatorName,
             val_slashed: state.validator.slashed,

@@ -1,0 +1,3 @@
+hooks:
+  - slug: evm
+    hook: https://discord.com/api/webhooks/1

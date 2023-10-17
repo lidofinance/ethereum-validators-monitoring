@@ -2,11 +2,11 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
+import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric } from 'common/prometheus';
-import { RegistryService, RegistrySourceOperator } from 'common/validators-registry';
 import { ClickhouseService } from 'storage/clickhouse';
+import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
 enum BadAttReason {
   HighIncDelay = 'high_inclusion_delay',
@@ -48,7 +48,6 @@ export class AttestationMetrics {
       this.invalidHeadAttestationsLastNEpoch(),
       this.invalidTargetAttestationsLastNEpoch(),
       this.invalidSourceAttestationsLastNEpoch(),
-      this.highAvgIncDelayAttestationsOfNEpoch(),
       // metrics for alerts
       this.incDelayGtTwoAttestationsLastNEpoch(),
       this.invalidAttestationPropertyGtOneLastNEpoch(),
@@ -135,13 +134,6 @@ export class AttestationMetrics {
     const data = await this.storage.getValidatorCountWithInvalidSourceAttestationsLastNEpoch(this.processedEpoch);
     setUserOperatorsMetric(this.prometheus.validatorsCountInvalidAttestationLastNEpoch, data, this.operators, {
       reason: BadAttReason.InvalidSource,
-      epoch_interval: this.epochInterval,
-    });
-  }
-
-  private async highAvgIncDelayAttestationsOfNEpoch() {
-    const data = await this.storage.getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(this.processedEpoch);
-    setUserOperatorsMetric(this.prometheus.validatorsCountHighAvgIncDelayAttestationOfNEpoch, data, this.operators, {
       epoch_interval: this.epochInterval,
     });
   }

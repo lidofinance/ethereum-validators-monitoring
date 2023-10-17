@@ -2,9 +2,9 @@ import { join } from 'lodash';
 
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/eth-providers/consensus-provider/types';
-import { RegistrySourceOperator } from 'common/validators-registry';
+import { Epoch } from 'common/consensus-provider/types';
 import { ClickhouseService } from 'storage';
+import { RegistrySourceOperator } from 'validators-registry';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
@@ -20,8 +20,10 @@ export class CriticalMissedAttestations extends Alert {
     const nosStats = await this.storage.getUserNodeOperatorsStats(epoch);
     const missedAttValidatorsCount = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(epoch);
     for (const noStats of nosStats.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
-      const operator = this.operators.find((o) => +noStats.val_nos_id == o.index);
-      const missedAtt = missedAttValidatorsCount.find((a) => a.val_nos_id != null && +a.val_nos_id == operator.index);
+      const operator = this.operators.find((o) => +noStats.val_nos_module_id == o.module && +noStats.val_nos_id == o.index);
+      const missedAtt = missedAttValidatorsCount.find(
+        (a) => a.val_nos_id != null && +a.val_nos_module_id == operator.module && +a.val_nos_id == operator.index,
+      );
       if (!missedAtt) continue;
       if (missedAtt.amount > noStats.active_ongoing * VALIDATORS_WITH_MISSED_ATTESTATION_COUNT_THRESHOLD) {
         result[operator.name] = { ongoing: noStats.active_ongoing, missedAtt: missedAtt.amount };

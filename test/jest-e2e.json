@@ -1,10 +1,7 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": "..",
-  "moduleDirectories": [
-    "node_modules",
-    "src"
-  ],
+  "moduleDirectories": ["node_modules", "src"],
   "moduleNameMapper": {
     "^build-info$": "<rootDir>/build-info.json"
   },

@@ -3,7 +3,6 @@ import { Inject, Injectable, LoggerService, OnApplicationBootstrap, OnModuleInit
 
 import * as buildInfo from 'build-info';
 import { ConfigService } from 'common/config';
-import { ExecutionProviderService } from 'common/eth-providers';
 import { PrometheusService } from 'common/prometheus';
 
 import { InspectorService } from '../inspector';
@@ -16,20 +15,18 @@ export class AppService implements OnModuleInit, OnApplicationBootstrap {
     protected readonly configService: ConfigService,
     protected readonly prometheus: PrometheusService,
     protected readonly inspectorService: InspectorService,
-    protected readonly executionProviderService: ExecutionProviderService,
   ) {}
 
   public async onModuleInit(): Promise<void> {
     const env = this.configService.get('NODE_ENV');
     const startEpoch = this.configService.get('START_EPOCH');
-    const network = await this.executionProviderService.getNetworkName();
     const version = buildInfo.version;
     const commit = buildInfo.commit;
     const branch = buildInfo.branch;
     const name = APP_NAME;
 
     this.prometheus.buildInfo.labels({ env, name, version, commit, branch }).inc();
-    this.logger.log('Init app', { env, network, name, version, startEpoch });
+    this.logger.log('Init app', { env, name, version, startEpoch });
     this.logger.log(`DRY RUN ${this.configService.get('DRY_RUN') ? 'enabled' : 'disabled'}`);
     this.logger.log(`Slot time: ${this.configService.get('CHAIN_SLOT_TIME_SECONDS')} seconds`);
     this.logger.log(`Epoch size: ${this.configService.get('FETCH_INTERVAL_SLOTS')} slots`);

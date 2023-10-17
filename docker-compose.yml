@@ -93,19 +93,22 @@ services:
       - "0.0.0.0:9093:9093/tcp"
 
   alertmanager-discord:
-    image: vgorkavenko/alertmanager-discord-balval:1.4.0
+    image: lidofinance/alertmanager-discord:2.7.0
+    platform: linux/x86_64
     container_name: alertmanager-discord
     restart: unless-stopped
+    environment:
+      - WORKING_MODE=alternative
+      - PORT=9094
     expose:
       - 9094
     ports:
       - "0.0.0.0:9094:9094/tcp"
-    environment:
-      - "PORT=9094"
-      - "DISCORD_WEBHOOK=${DISCORD_WEBHOOK_URL}"
+    volumes:
+      - ./docker/alertmanager-discord/alertmanager-discord.yml:/etc/alertmanager-discord.yml
 
   grafana:
-    image: grafana/grafana:9.0.9
+    image: grafana/grafana:9.5.7
     sysctls:
       - net.ipv6.conf.lo.disable_ipv6=0
       - net.ipv6.conf.all.disable_ipv6=0
@@ -165,8 +168,10 @@ services:
       - VALIDATOR_REGISTRY_SOURCE=${VALIDATOR_REGISTRY_SOURCE}
       - EL_RPC_URLS=${EL_RPC_URLS}
       - CL_API_URLS=${CL_API_URLS}
+    expose:
+      - "${HTTP_PORT}"
     ports:
-      - "${HTTP_PORT}:${HTTP_PORT}"
+      - "${EXTERNAL_HTTP_PORT:-${HTTP_PORT}}:${HTTP_PORT}"
     volumes:
       - ./docker/validators/:/app/docker/validators
     depends_on:
