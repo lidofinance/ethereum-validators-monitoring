@@ -160,7 +160,7 @@ export class EnvironmentVariables {
   @IsNumber()
   @Min(74240) // Altair
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  @ValidateIf((vars) => vars.NODE_ENV != Environment.test && vars.ETH_NETWORK === Network.Mainnet)
+  @ValidateIf((vars) => vars.ETH_NETWORK === Network.Mainnet)
   public START_EPOCH = 155000;
 
   @IsNumber()
