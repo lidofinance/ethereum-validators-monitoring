@@ -169,9 +169,9 @@ services:
       - EL_RPC_URLS=${EL_RPC_URLS}
       - CL_API_URLS=${CL_API_URLS}
     expose:
-      - "${HTTP_PORT}"
+      - "${HTTP_PORT:-8080}"
     ports:
-      - "${EXTERNAL_HTTP_PORT:-${HTTP_PORT}}:${HTTP_PORT}"
+      - "${EXTERNAL_HTTP_PORT:-${HTTP_PORT:-8080}}:${HTTP_PORT:-8080}"
     volumes:
       - ./docker/validators/:/app/docker/validators
     depends_on:
