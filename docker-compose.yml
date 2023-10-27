@@ -136,7 +136,7 @@ services:
       - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource
       - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
       - CLICKHOUSE_DB_HOST=${DB_HOST}
-      - CLICKHOUSE_DB_PORT=${DB_PORT}
+      - CLICKHOUSE_DB_PORT=${DB_PORT:-8123}
       - CLICKHOUSE_DB_USER=${DB_USER}
       - CLICKHOUSE_DB_PASSWORD=${DB_PASSWORD}
       - CLICKHOUSE_DB_NAME=${DB_NAME}
@@ -156,16 +156,16 @@ services:
         soft: 262144
         hard: 262144
     environment:
-      - LOG_FORMAT=${LOG_FORMAT}
-      - HTTP_PORT=${HTTP_PORT}
+      - LOG_FORMAT=${LOG_FORMAT:-json}
+      - HTTP_PORT=${HTTP_PORT:-8080}
       - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
+      - DB_PORT=${DB_PORT:-8123}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
-      - START_EPOCH=${START_EPOCH}
+      - START_EPOCH=${START_EPOCH:-155000}
       - ETH_NETWORK=${ETH_NETWORK}
-      - VALIDATOR_REGISTRY_SOURCE=${VALIDATOR_REGISTRY_SOURCE}
+      - VALIDATOR_REGISTRY_SOURCE=${VALIDATOR_REGISTRY_SOURCE:-lido}
       - EL_RPC_URLS=${EL_RPC_URLS}
       - CL_API_URLS=${CL_API_URLS}
     expose:
