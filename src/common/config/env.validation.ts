@@ -1,4 +1,7 @@
-import { Transform, plainToInstance } from 'class-transformer';
+import {
+  Transform,
+  plainToInstance
+} from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
@@ -17,11 +20,16 @@ import {
   validateSync,
 } from 'class-validator';
 
-import { Environment, LogFormat, LogLevel } from './interfaces';
+import {
+  Environment,
+  LogFormat,
+  LogLevel
+} from './interfaces';
 
 export enum Network {
   Mainnet = 1,
-  Görli = 5,
+  Goerli = 5,
+  Holesky = 17000,
   Kintsugi = 1337702,
 }
 
@@ -125,13 +133,15 @@ export class EnvironmentVariables {
   @Min(1)
   @Max(5000000)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.Lido && vars.NODE_ENV != Environment.test)
+  @ValidateIf((vars) =>
+    vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.Lido && vars.NODE_ENV != Environment.test)
   public ETH_NETWORK!: Network;
 
   @IsArray()
   @ArrayMinSize(1)
   @Transform(({ value }) => value.split(','))
-  @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.Lido && vars.NODE_ENV != Environment.test)
+  @ValidateIf((vars) =>
+    vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.Lido && vars.NODE_ENV != Environment.test)
   public EL_RPC_URLS: string[] = [];
 
   @IsArray()
@@ -185,7 +195,8 @@ export class EnvironmentVariables {
   @IsArray()
   @ArrayMinSize(1)
   @Transform(({ value }) => value.split(','))
-  @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.KeysAPI && vars.NODE_ENV != Environment.test)
+  @ValidateIf((vars) =>
+    vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.KeysAPI && vars.NODE_ENV != Environment.test)
   public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_URLS!: string[];
 
   @IsInt()
