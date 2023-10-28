@@ -178,11 +178,11 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 
 * **Required:** false
 * **Default:** 10
 ---
-`DB_MIN_BACKOFF_SEC` - Min backoff for DB query retrier
+`DB_MIN_BACKOFF_SEC` - Min backoff for DB query retrier (sec)
 * **Required:** false
 * **Default:** 1
 ---
-`DB_MAX_BACKOFF_SEC` - Min backoff for DB query retrier
+`DB_MAX_BACKOFF_SEC` - Min backoff for DB query retrier (sec)
 * **Required:** false
 * **Default:** 120
 ---
@@ -199,7 +199,7 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 
 `CL_API_URLS` - Ethereum consensus layer comma separated API urls
 * **Required:** true
 ---
-`CL_API_RETRY_DELAY_MS` - Ethereum consensus layer request retry delay
+`CL_API_RETRY_DELAY_MS` - Ethereum consensus layer request retry delay (ms)
 * **Required:** false
 * **Default:** 500
 ---
@@ -238,6 +238,22 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 
 `VALIDATOR_REGISTRY_LIDO_SOURCE_SQLITE_CACHE_PATH` - Validators registry lido source sqlite cache path. It makes sense to change default value if you set `VALIDATOR_REGISTRY_SOURCE` to `lido`
 * **Required:** false
 * **Default:** ./docker/validators/lido_mainnet.db
+---
+`VALIDATOR_REGISTRY_KEYSAPI_SOURCE_URLS` - Comma-separated list of URLs to [Lido Keys API service](https://github.com/lidofinance/lido-keys-api).
+* **Required:** false
+* **Note:** will be used only if `VALIDATOR_REGISTRY_SOURCE` is set to "keysapi"
+---
+`VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RETRY_DELAY_MS` - Retry delay for requests to Lido Keys API service (ms).
+* **Required:** false
+* **Default:** 500
+---
+`VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RESPONSE_TIMEOUT` - Response timeout (ms) for requests to Lido Keys API service (ms).
+* **Required:** false
+* **Default:** 30000
+---
+`VALIDATOR_REGISTRY_KEYSAPI_SOURCE_MAX_RETRIES` - Max retries for each request to Lido Keys API service.
+* **Required:** false
+* **Default:** 2
 ---
 `VALIDATOR_USE_STUCK_KEYS_FILE` - Use a file with list of validators that are stuck and should be excluded from the monitoring metrics
 * **Required:** false
