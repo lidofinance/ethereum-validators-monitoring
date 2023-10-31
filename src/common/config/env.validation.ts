@@ -21,7 +21,8 @@ import { Environment, LogFormat, LogLevel } from './interfaces';
 
 export enum Network {
   Mainnet = 1,
-  Görli = 5,
+  Goerli = 5,
+  Holesky = 17000,
   Kintsugi = 1337702,
 }
 
