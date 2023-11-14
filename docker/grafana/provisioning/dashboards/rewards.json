@@ -2209,6 +2209,7 @@
           "options": {
             "binary": {
               "left": "Value #reward (sum)",
+              "operator": "-",
               "reducer": "sum",
               "right": "Value #penalty (sum)"
             },
@@ -2230,7 +2231,7 @@
               "Value #missed (sum)": 4,
               "Value #penalty (sum)": 3,
               "Value #reward (sum)": 2,
-              "Value #reward (sum)  Value #penalty (sum)": 6,
+              "Value #reward (sum) - Value #penalty (sum)": 6,
               "Value #reward (sum) / rpm": 1,
               "Value #withdrawn (sum)": 7,
               "nos_name": 0,
@@ -2248,7 +2249,7 @@
               "Value #penalty (sum)": "Penalty",
               "Value #prop (sum)": "Proposal",
               "Value #reward (sum)": "Rewards",
-              "Value #reward (sum)  Value #penalty (sum)": "Earned",
+              "Value #reward (sum) - Value #penalty (sum)": "Earned",
               "Value #reward (sum) / rpm": "Rew. eff.",
               "Value #sync (sum)": "Sync",
               "Value #total (sum)": "Total",
