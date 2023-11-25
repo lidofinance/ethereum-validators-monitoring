@@ -19,7 +19,7 @@ export enum LogFormat {
   simple = 'simple',
 }
 
-export enum Network {
+export enum Chain {
   Mainnet = 1,
   Goerli = 5,
   Holesky = 17000,

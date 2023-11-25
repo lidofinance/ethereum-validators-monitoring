@@ -18,7 +18,7 @@ import {
   validateSync,
 } from 'class-validator';
 
-import { Environment, LogFormat, LogLevel, Network, ValidatorRegistrySource, WorkingMode } from './interfaces';
+import { Environment, LogFormat, LogLevel, Chain, ValidatorRegistrySource, WorkingMode } from './interfaces';
 
 export class EnvironmentVariables {
   @IsOptional()
@@ -91,9 +91,9 @@ export class EnvironmentVariables {
 
   @ValidateIf((vars) => vars.NODE_ENV !== Environment.test)
   @IsNotEmpty()
-  @IsEnum(Network)
+  @IsEnum(Chain)
   @Transform(({ value }) => parseInt(value, 10))
-  public ETH_NETWORK!: Network;
+  public ETH_NETWORK!: Chain;
 
   @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE === ValidatorRegistrySource.Lido && vars.NODE_ENV !== Environment.test)
   @IsNotEmpty()
@@ -149,7 +149,7 @@ export class EnvironmentVariables {
   @Transform(toNumber({ defaultValue: 1 }))
   public CL_API_GET_BLOCK_INFO_MAX_RETRIES = 1;
 
-  @ValidateIf((vars) => vars.ETH_NETWORK === Network.Mainnet)
+  @ValidateIf((vars) => vars.ETH_NETWORK === Chain.Mainnet)
   @IsOptional()
   @IsInt()
   @Min(74240) // Altair
@@ -343,15 +343,20 @@ function toBoolean({ defaultValue }) {
 
     const str = value.toString().toLowerCase().trim();
 
-    if (str === 'true') {
-      return true;
-    }
+    switch (str) {
+      case 'true':
+      case 'yes':
+      case '1':
+        return true;
 
-    if (str === 'false') {
-      return false;
-    }
+      case 'false':
+      case 'no':
+      case '0':
+        return false;
 
-    return value;
+      default:
+        return value;
+    }
   };
 }
 
