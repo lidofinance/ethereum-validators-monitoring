@@ -33,12 +33,14 @@ export class ProposeRewards {
       let propose_earned_reward = 0n;
       let propose_missed_reward = 0n;
       const propose_penalty = 0n;
-      if (v.block_proposed) {
-        const attRewardSum = blocksAttRewards.get(v.block_to_propose);
-        const syncRewardSum = blocksSyncRewards.get(v.block_to_propose);
-        propose_earned_reward = attRewardSum + syncRewardSum;
-      } else {
-        propose_missed_reward = attestationsAvg + syncAvg;
+      for (const [block, is_proposed] of v.block_proposals) {
+        if (is_proposed) {
+          const attRewardSum = blocksAttRewards.get(block);
+          const syncRewardSum = blocksSyncRewards.get(block);
+          propose_earned_reward += attRewardSum + syncRewardSum;
+        } else {
+          propose_missed_reward += attestationsAvg + syncAvg;
+        }
       }
       this.summary.epoch(epoch).set({
         epoch,
