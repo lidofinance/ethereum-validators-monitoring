@@ -1,6 +1,6 @@
 {
   "name": "ethereum-validators-monitoring",
-  "version": "4.4.0",
+  "version": "4.6.0",
   "main": "./dist/main.js",
   "private": true,
   "scripts": {
