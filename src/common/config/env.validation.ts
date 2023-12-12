@@ -277,6 +277,14 @@ export class EnvironmentVariables {
 
   @IsEnum(WorkingMode)
   public WORKING_MODE = WorkingMode.Finalized;
+
+  /**
+   * Effective balance.
+   */
+  @IsNumber()
+  @Min(32)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public EFFECTIVE_BALANCE = 32;
 }
 
 export function validate(config: Record<string, unknown>) {
