@@ -38,7 +38,7 @@ export class AttestationRewards {
         .toString(),
     );
     // Perfect attestation (with multipliers). Need for calculating missed reward
-    const effectiveBalance = this.config.get('EFFECTIVE_BALANCE');
+    const effectiveBalance = this.config.get('EFFECTIVE_BALANCE_INCREMENTS');
 
     const perfect = getRewards({ source: true, target: true, head: true });
     const perfectAttestationRewards =
