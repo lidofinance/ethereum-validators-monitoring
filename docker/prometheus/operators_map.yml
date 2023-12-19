@@ -1,0 +1,11 @@
+# Here you can map operators by their global index in registry (module_index;node_operator_index)
+# One record - one operator map
+# This allows you to see the metrics of related operators on a single dashboard
+groups:
+  - name: operators_map
+    rules:
+      - record: operators_indexes_map
+        expr: 1
+#        labels:
+#          main_global_index: "1;0"
+#          additional_global_indexes: "2;0|2;1"

@@ -74,7 +74,7 @@ You have two options to run this application: `docker-compose` or `node`
 and two sources of validator list: `lido` (by default) or `file` (see [here](#use-custom-validators-list)).
 
 Because Lido contract on `mainnet` contains a lot of validators,
-fetching and saving them to local storage can take time (depends on your EL RPC host) and a lot of RAM.
+fetching and saving them to local storage can take time (depends on EL RPC host) and a lot of RAM.
 For avoiding `heap out of memory` error, you can pass `NODE_OPTIONS` env var with `--max-old-space-size=8192` value
 and when the application completes its first cycle, you can restart your instance without this env variable.
 
@@ -123,135 +123,186 @@ By default, monitoring bot fetches validator keys from Lido contract, but you ca
 
 If you want to implement your own source, it must match [RegistrySource interface](src/validators-registry/registry-source.interface.ts) and be included in [RegistryModule providers](src/validators-registry/registry.module.ts)
 
+## Clickhouse data retention
+
+By default, storage keep the data with `Inf.` time to live.
+It can be changed by the TTL policy for Clickhouse:
+```
+# goerli
+ALTER TABLE validators_summary MODIFY TTL toDateTime(1616508000 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
+
+# mainnet
+ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
+```
+
 ## Application Env variables
 
 ---
-`LOG_LEVEL` - Application log level
+`LOG_LEVEL` - Application log level.
 * **Required:** false
+* **Values:** error / warning / notice / info / debug
 * **Default:** info
 ---
-`LOG_FORMAT` - Application log format (simple or json)
+`LOG_FORMAT` - Application log format.
 * **Required:** false
+* **Values:** simple / json
 * **Default:** json
 ---
-`WORKING_MODE` - Application working mode (finalized or head)
+`WORKING_MODE` - Application working mode.
 * **Required:** false
+* **Values:** finalized / head
 * **Default:** finalized
 ---
-`DB_HOST` - Clickhouse server host
+`DB_HOST` - Clickhouse server host.
 * **Required:** true
 ---
-`DB_USER` - Clickhouse server user
+`DB_USER` - Clickhouse server user.
 * **Required:** true
 ---
-`DB_PASSWORD` - Clickhouse server password
+`DB_PASSWORD` - Clickhouse server password.
 * **Required:** true
 ---
-`DB_NAME` - Clickhouse server DB name
+`DB_NAME` - Clickhouse server DB name.
 * **Required:** true
 ---
-`DB_PORT` - Clickhouse server port
+`DB_PORT` - Clickhouse server port.
 * **Required:** false
 * **Default:** 8123
 ---
-`HTTP_PORT` - Port for Prometheus HTTP server in application
+`HTTP_PORT` - Port for Prometheus HTTP server in application on the container.
 * **Required:** false
 * **Default:** 8080
+* **Note:** if this variable is changed, it also should be updated in [prometheus.yml](docker/prometheus/prometheus.yml)
 ---
-`DB_MAX_RETRIES` - Max retries for each query to DB
+`EXTERNAL_HTTP_PORT` - Port for Prometheus HTTP server in application that is exposed to the host.
+* **Required:** false
+* **Default:** `HTTP_PORT`
+---
+`DB_MAX_RETRIES` - Max retries for each query to DB.
 * **Required:** false
 * **Default:** 10
 ---
-`DB_MIN_BACKOFF_SEC` - Min backoff for DB query retrier
+`DB_MIN_BACKOFF_SEC` - Min backoff for DB query retrier (sec).
 * **Required:** false
 * **Default:** 1
 ---
-`DB_MAX_BACKOFF_SEC` - Min backoff for DB query retrier
+`DB_MAX_BACKOFF_SEC` - Max backoff for DB query retrier (sec).
 * **Required:** false
 * **Default:** 120
 ---
-`DRY_RUN` - Run application in dry mode. This means that it runs a main cycle once every 24 hours
+`DRY_RUN` - Run application in dry mode. This means that it runs a main cycle once every 24 hours.
 * **Required:** false
+* **Values:** true / false
 * **Default:** false
 ---
-`ETH_NETWORK` - Ethereum network ID for connection execution layer RPC
+`NODE_ENV` - Node.js environment.
+* **Required:** false
+* **Values:** development / production / staging / testnet / test
+* **Default:** development
+---
+`ETH_NETWORK` - Ethereum network ID for connection execution layer RPC.
+* **Required:** true
+* **Values:** 1 (mainnet) / 5 (goerli) / 17000 (holesky) / 1337702 (kintsugi)
+---
+`EL_RPC_URLS` - Ethereum execution layer comma-separated RPC URLs.
 * **Required:** true
 ---
-`EL_RPC_URLS` - Ethereum execution layer comma separated RPC urls
+`CL_API_URLS` - Ethereum consensus layer comma-separated API URLs.
 * **Required:** true
 ---
-`CL_API_URLS` - Ethereum consensus layer comma separated API urls
-* **Required:** true
----
-`CL_API_RETRY_DELAY_MS` - Ethereum consensus layer request retry delay
+`CL_API_RETRY_DELAY_MS` - Ethereum consensus layer request retry delay (ms).
 * **Required:** false
 * **Default:** 500
 ---
-`CL_API_GET_RESPONSE_TIMEOUT` - Ethereum consensus layer GET response (header) timeout (ms)
+`CL_API_GET_RESPONSE_TIMEOUT` - Ethereum consensus layer GET response (header) timeout (ms).
 * **Required:** false
 * **Default:** 15000
 ---
-`CL_API_MAX_RETRIES` - Ethereum consensus layer max retries for all requests
+`CL_API_MAX_RETRIES` - Ethereum consensus layer max retries for all requests.
 * **Required:** false
 * **Default:** 1 (means that request will be executed once)
 ---
-`CL_API_GET_BLOCK_INFO_MAX_RETRIES` - Ethereum consensus layer max retries for fetching block info. Independent of `CL_API_MAX_RETRIES`
+`CL_API_GET_BLOCK_INFO_MAX_RETRIES` - Ethereum consensus layer max retries for fetching block info.
+Independent of `CL_API_MAX_RETRIES`.
 * **Required:** false
 * **Default:** 1 (means that request will be executed once)
 ---
-`FETCH_INTERVAL_SLOTS` - Count of slots in Ethereum consensus layer epoch
+`FETCH_INTERVAL_SLOTS` - Count of slots in Ethereum consensus layer epoch.
 * **Required:** false
 * **Default:** 32
 ---
-`CHAIN_SLOT_TIME_SECONDS` - Ethereum consensus layer time slot size (sec)
+`CHAIN_SLOT_TIME_SECONDS` - Ethereum consensus layer time slot size (sec).
 * **Required:** false
 * **Default:** 12
 ---
-`START_EPOCH` - Ethereum consensus layer epoch for start application
+`START_EPOCH` - Ethereum consensus layer epoch for start application.
 * **Required:** false
 * **Default:** 155000
 ---
-`VALIDATOR_REGISTRY_SOURCE` - Validators registry source. Possible values: `lido` (Lido NodeOperatorsRegistry module keys), `keysapi` (Lido keys from multiple modules), `file`
+`VALIDATOR_REGISTRY_SOURCE` - Validators registry source.
 * **Required:** false
+* **Values:** lido (Lido NodeOperatorsRegistry module keys) / keysapi (Lido keys from multiple modules) / file
 * **Default:** lido
 ---
-`VALIDATOR_REGISTRY_FILE_SOURCE_PATH` - Validators registry file source path. It makes sense to change default value if you set `VALIDATOR_REGISTRY_SOURCE` to `file`
+`VALIDATOR_REGISTRY_FILE_SOURCE_PATH` - Validators registry file source path.
 * **Required:** false
 * **Default:** ./docker/validators/custom_mainnet.yaml
+* **Note:** it makes sense to change default value if `VALIDATOR_REGISTRY_SOURCE` is set to "file"
 ---
-`VALIDATOR_REGISTRY_LIDO_SOURCE_SQLITE_CACHE_PATH` - Validators registry lido source sqlite cache path. It makes sense to change default value if you set `VALIDATOR_REGISTRY_SOURCE` to `lido`
+`VALIDATOR_REGISTRY_LIDO_SOURCE_SQLITE_CACHE_PATH` - Validators registry lido source sqlite cache path.
 * **Required:** false
 * **Default:** ./docker/validators/lido_mainnet.db
+* **Note:** it makes sense to change default value if `VALIDATOR_REGISTRY_SOURCE` is set to "lido"
 ---
-`VALIDATOR_USE_STUCK_KEYS_FILE` - Use a file with list of validators that are stuck and should be excluded from the monitoring metrics
+`VALIDATOR_REGISTRY_KEYSAPI_SOURCE_URLS` - Comma-separated list of URLs to [Lido Keys API service](https://github.com/lidofinance/lido-keys-api).
 * **Required:** false
+* **Note:** will be used only if `VALIDATOR_REGISTRY_SOURCE` is set to "keysapi"
+---
+`VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RETRY_DELAY_MS` - Retry delay for requests to Lido Keys API service (ms).
+* **Required:** false
+* **Default:** 500
+---
+`VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RESPONSE_TIMEOUT` - Response timeout (ms) for requests to Lido Keys API service (ms).
+* **Required:** false
+* **Default:** 30000
+---
+`VALIDATOR_REGISTRY_KEYSAPI_SOURCE_MAX_RETRIES` - Max retries for each request to Lido Keys API service.
+* **Required:** false
+* **Default:** 2
+---
+`VALIDATOR_USE_STUCK_KEYS_FILE` - Use a file with list of validators that are stuck and should be excluded from the monitoring metrics.
+* **Required:** false
+* **Values:** true / false
 * **Default:** false
 ---
-`VALIDATOR_STUCK_KEYS_FILE_PATH` - Path to file with list of validators that are stuck and should be excluded from the monitoring metrics
+`VALIDATOR_STUCK_KEYS_FILE_PATH` - Path to file with list of validators that are stuck and should be excluded from the monitoring metrics.
 * **Required:** false
 * **Default:** ./docker/validators/stuck_keys.yaml
 * **Note:** will be used only if `VALIDATOR_USE_STUCK_KEYS_FILE` is true
 ---
-`SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG` - Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad
+`SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG` - Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad.
 * **Required:** false
 * **Default:** 0
 ---
-`SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` - Number epochs after which we think that our sync participation is bad and alert about that
+`SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` - Number epochs after which we think that our sync participation is bad and alert about that.
 * **Required:** false
 * **Default:** 3
 ---
-`BAD_ATTESTATION_EPOCHS` - Number epochs after which we think that our attestation is bad and alert about that
+`BAD_ATTESTATION_EPOCHS` - Number epochs after which we think that our attestation is bad and alert about that.
 * **Required:** false
 * **Default:** 3
 ---
-`CRITICAL_ALERTS_ALERTMANAGER_URL` - If passed, application sends additional critical alerts about validators performance to Alertmanager
+`CRITICAL_ALERTS_ALERTMANAGER_URL` - If passed, application sends additional critical alerts about validators performance to Alertmanager.
 * **Required:** false
 ---
-`CRITICAL_ALERTS_MIN_VAL_COUNT` - Critical alerts will be sent for Node Operators with validators count greater this value
+`CRITICAL_ALERTS_MIN_VAL_COUNT` - Critical alerts will be sent for Node Operators with validators count greater this value.
 * **Required:** false
+* **Default:** 100
 ---
-`CRITICAL_ALERTS_ALERTMANAGER_LABELS` - Additional labels for critical alerts. Must be in JSON string format. Example - '{"a":"valueA","b":"valueB"}'
+`CRITICAL_ALERTS_ALERTMANAGER_LABELS` - Additional labels for critical alerts.
+Must be in JSON string format. Example - '{"a":"valueA","b":"valueB"}'.
 * **Required:** false
+* **Default:** {}
 ---
 
 ## Application critical alerts (via Alertmanager)

@@ -21,7 +21,8 @@ import { Environment, LogFormat, LogLevel } from './interfaces';
 
 export enum Network {
   Mainnet = 1,
-  Görli = 5,
+  Goerli = 5,
+  Holesky = 17000,
   Kintsugi = 1337702,
 }
 
@@ -160,6 +161,7 @@ export class EnvironmentVariables {
   @IsNumber()
   @Min(74240) // Altair
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  @ValidateIf((vars) => vars.ETH_NETWORK === Network.Mainnet)
   public START_EPOCH = 155000;
 
   @IsNumber()
