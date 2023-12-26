@@ -7,7 +7,7 @@ import { pick } from 'stream-json/filters/Pick';
 import { streamArray } from 'stream-json/streamers/StreamArray';
 import { batch } from 'stream-json/utils/Batch';
 
-import { ConfigService } from 'common/config';
+import { ConfigService, Network } from 'common/config';
 import { AttestationCommitteeInfo, ConsensusProviderService } from 'common/consensus-provider';
 import { Epoch, Slot } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
@@ -23,9 +23,9 @@ interface SlotAttestation {
   bits: BitArray;
   head: string;
   target_root: string;
-  target_epoch: number;
+  target_epoch: Epoch;
   source_root: string;
-  source_epoch: number;
+  source_epoch: Epoch;
   slot: number;
   committee_index: number;
 }
@@ -34,7 +34,9 @@ interface SlotAttestation {
 export class AttestationService {
   private processedEpoch: number;
   private readonly slotsInEpoch: number;
+  private readonly dencunEpoch: Epoch;
   private readonly savedCanonSlotsAttProperties: Map<number, string>;
+
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
@@ -44,6 +46,24 @@ export class AttestationService {
   ) {
     this.slotsInEpoch = this.config.get('FETCH_INTERVAL_SLOTS');
     this.savedCanonSlotsAttProperties = new Map<number, string>();
+
+    const chainId = this.config.get('ETH_NETWORK');
+    switch (chainId) {
+      case Network.Mainnet:
+        /**
+         * @todo This should be corrected once the particular epoch of the Dencun hard fork on Mainnet is known.
+         */
+        this.dencunEpoch = 300000;
+        break;
+      case Network.Goerli:
+        this.dencunEpoch = 231680;
+        break;
+      case Network.Holesky:
+        this.dencunEpoch = 29696;
+        break;
+      default:
+        throw Error(`Dencun hard fork epoch is unknown for chain ID ${chainId}`);
+    }
   }
 
   @TrackTask('check-attestation-duties')
@@ -59,7 +79,9 @@ export class AttestationService {
     for (const attestation of attestations) {
       // Each attestation corresponds to committee. Committee may have several aggregate attestations
       const committee = committees.get(`${attestation.committee_index}_${attestation.slot}`);
-      if (!committee) continue;
+      if (!committee) {
+        continue;
+      }
       await this.processAttestation(epoch, attestation, committee);
       // Long loop (2048 committees will be checked by ~7k attestations).
       // We need to unblock event loop immediately after each iteration
@@ -83,10 +105,13 @@ export class AttestationService {
     const att_valid_target = attestation.target_root == canonTarget;
     const att_valid_source = attestation.source_root == canonSource;
     const att_inc_delay = Number(attestation.included_in_block - attestation.slot);
-    const flags = getFlags(att_inc_delay, att_valid_source, att_valid_target, att_valid_head);
+    const before_dencun = epoch < this.dencunEpoch;
+    const flags = getFlags(att_inc_delay, att_valid_source, att_valid_target, att_valid_head, before_dencun);
     for (const [valCommIndex, validatorIndex] of committee.entries()) {
       const att_happened = attestation.bits.get(valCommIndex);
-      if (!att_happened) continue;
+      if (!att_happened) {
+        continue;
+      }
       const processed = this.summary.epoch(attestation.target_epoch).get(validatorIndex);
       if (!processed?.att_valid_source && flags.source) {
         attestationFlags.source.push(validatorIndex);
@@ -116,7 +141,9 @@ export class AttestationService {
 
   protected async getCanonSlotRoot(slot: Slot) {
     const cached = this.savedCanonSlotsAttProperties.get(slot);
-    if (cached) return cached;
+    if (cached) {
+      return cached;
+    }
     const root = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(slot)).root;
     this.savedCanonSlotsAttProperties.set(slot, root);
     return root;
