@@ -7,7 +7,7 @@ import { pick } from 'stream-json/filters/Pick';
 import { streamArray } from 'stream-json/streamers/StreamArray';
 import { batch } from 'stream-json/utils/Batch';
 
-import { ConfigService, Network } from 'common/config';
+import { ConfigService } from 'common/config';
 import { AttestationCommitteeInfo, ConsensusProviderService } from 'common/consensus-provider';
 import { Epoch, Slot } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
@@ -45,25 +45,8 @@ export class AttestationService {
     protected readonly summary: SummaryService,
   ) {
     this.slotsInEpoch = this.config.get('FETCH_INTERVAL_SLOTS');
+    this.dencunEpoch = this.config.get('DENCUN_FORK_EPOCH');
     this.savedCanonSlotsAttProperties = new Map<number, string>();
-
-    const chainId = this.config.get('ETH_NETWORK');
-    switch (chainId) {
-      case Network.Mainnet:
-        /**
-         * @todo This should be corrected once the particular epoch of the Dencun hard fork on Mainnet is known.
-         */
-        this.dencunEpoch = 300000;
-        break;
-      case Network.Goerli:
-        this.dencunEpoch = 231680;
-        break;
-      case Network.Holesky:
-        this.dencunEpoch = 29696;
-        break;
-      default:
-        throw Error(`Dencun hard fork epoch is unknown for chain ID ${chainId}`);
-    }
   }
 
   @TrackTask('check-attestation-duties')
@@ -101,15 +84,15 @@ export class AttestationService {
       this.getCanonSlotRoot(attestation.target_epoch * this.slotsInEpoch),
       this.getCanonSlotRoot(attestation.source_epoch * this.slotsInEpoch),
     ]);
-    const att_valid_head = attestation.head == canonHead;
-    const att_valid_target = attestation.target_root == canonTarget;
-    const att_valid_source = attestation.source_root == canonSource;
-    const att_inc_delay = Number(attestation.included_in_block - attestation.slot);
-    const before_dencun = epoch < this.dencunEpoch;
-    const flags = getFlags(att_inc_delay, att_valid_source, att_valid_target, att_valid_head, before_dencun);
+    const attValidHead = attestation.head == canonHead;
+    const attValidTarget = attestation.target_root == canonTarget;
+    const attValidSource = attestation.source_root == canonSource;
+    const attIncDelay = Number(attestation.included_in_block - attestation.slot);
+    const beforeDencun = epoch < this.dencunEpoch;
+    const flags = getFlags(attIncDelay, attValidSource, attValidTarget, attValidHead, beforeDencun);
     for (const [valCommIndex, validatorIndex] of committee.entries()) {
-      const att_happened = attestation.bits.get(valCommIndex);
-      if (!att_happened) {
+      const attHappened = attestation.bits.get(valCommIndex);
+      if (!attHappened) {
         continue;
       }
       const processed = this.summary.epoch(attestation.target_epoch).get(validatorIndex);
@@ -125,8 +108,8 @@ export class AttestationService {
       this.summary.epoch(attestation.target_epoch).set({
         val_id: validatorIndex,
         epoch: attestation.target_epoch,
-        att_happened,
-        att_inc_delay: processed?.att_inc_delay || att_inc_delay,
+        att_happened: attHappened,
+        att_inc_delay: processed?.att_inc_delay || attIncDelay,
         att_valid_source: processed?.att_valid_source || flags.source,
         att_valid_target: processed?.att_valid_target || flags.target,
         att_valid_head: processed?.att_valid_head || flags.head,

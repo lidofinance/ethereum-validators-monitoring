@@ -1,4 +1,4 @@
-import { Transform, plainToInstance } from 'class-transformer';
+import { plainToInstance, Expose, Transform } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
@@ -9,15 +9,19 @@ import {
   IsNumber,
   IsObject,
   IsPort,
+  IsPositive,
   IsString,
   Max,
   Min,
   MinLength,
   ValidateIf,
+  ValidationArguments,
+  registerDecorator,
   validateSync,
 } from 'class-validator';
+import { Epoch } from 'common/consensus-provider/types';
 
-import { Environment, LogFormat, LogLevel } from './interfaces';
+import { DencunForkEpoch, Environment, LogFormat, LogLevel } from './interfaces';
 
 export enum Network {
   Mainnet = 1,
@@ -164,6 +168,13 @@ export class EnvironmentVariables {
   @ValidateIf((vars) => vars.ETH_NETWORK === Network.Mainnet)
   public START_EPOCH = 155000;
 
+  @IsInt()
+  @IsPositive()
+  @IsValidDencunEpoch()
+  @Expose()
+  @Transform(transformDencunEpoch)
+  public DENCUN_FORK_EPOCH: Epoch;
+
   @IsNumber()
   @Min(32)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
@@ -291,4 +302,56 @@ export function validate(config: Record<string, unknown>) {
   }
 
   return validatedConfig;
+}
+
+// ====================================================================================================================
+// PRIVATE FUNCTIONS
+// ====================================================================================================================
+function IsValidDencunEpoch() {
+  return function (object: Object, propertyName: string) {
+    registerDecorator({
+      name: 'isValidDencunEpoch',
+      target: object.constructor,
+      propertyName: propertyName,
+      validator: {
+        validate(value: Epoch, args: ValidationArguments) {
+          switch ((args.object as any).ETH_NETWORK) {
+            case Network.Mainnet:
+              return value === DencunForkEpoch.Mainnet;
+            case Network.Holesky:
+              return value === DencunForkEpoch.Holesky;
+            case Network.Goerli:
+              return value === DencunForkEpoch.Goerli;
+            default:
+              return true;
+          }
+        },
+      },
+    });
+  };
+}
+
+function transformDencunEpoch({ value, obj }) {
+  if (value == null) {
+    value = '';
+  }
+
+  value = value.trim();
+
+  if (value === '') {
+    const chainId = parseInt(obj.ETH_NETWORK, 10);
+
+    switch (chainId) {
+      case Network.Mainnet:
+        return DencunForkEpoch.Mainnet;
+      case Network.Holesky:
+        return DencunForkEpoch.Holesky;
+      case Network.Goerli:
+        return DencunForkEpoch.Goerli;
+      default:
+        return null;
+    }
+  }
+
+  return parseInt(value, 10);
 }

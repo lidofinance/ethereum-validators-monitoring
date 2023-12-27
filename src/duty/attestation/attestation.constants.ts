@@ -4,27 +4,27 @@ export const TIMELY_TARGET_WEIGHT = 26; // Wt
 export const TIMELY_HEAD_WEIGHT = 14; // Wh
 const WEIGHT_DENOMINATOR = 64; // W sigma
 
-const timelySource = (att_inc_delay: number, att_valid_source: boolean): boolean => {
-  return att_valid_source && att_inc_delay <= 5;
+const timelySource = (attIncDelay: number, attValidSource: boolean): boolean => {
+  return attValidSource && attIncDelay <= 5;
 };
-const timelyTarget = (att_inc_delay: number, att_valid_source: boolean, att_valid_target: boolean, before_dencun): boolean => {
-  return att_valid_source && att_valid_target && (!before_dencun || att_inc_delay <= 32);
+const timelyTarget = (attIncDelay: number, attValidSource: boolean, attValidTarget: boolean, beforeDencun): boolean => {
+  return attValidSource && attValidTarget && (!beforeDencun || attIncDelay <= 32);
 };
-const timelyHead = (att_inc_delay: number, att_valid_source: boolean, att_valid_target: boolean, att_valid_head: boolean): boolean => {
-  return att_valid_source && att_valid_target && att_valid_head && att_inc_delay == 1;
+const timelyHead = (attIncDelay: number, attValidSource: boolean, attValidTarget: boolean, attValidHead: boolean): boolean => {
+  return attValidSource && attValidTarget && attValidHead && attIncDelay == 1;
 };
 
 export const getFlags = (
-  att_inc_delay: number,
-  att_valid_source: boolean,
-  att_valid_target: boolean,
-  att_valid_head: boolean,
-  before_dencun: boolean,
+  attIncDelay: number,
+  attValidSource: boolean,
+  attValidTarget: boolean,
+  attValidHead: boolean,
+  beforeDencun: boolean,
 ) => {
   return {
-    source: timelySource(att_inc_delay, att_valid_source),
-    target: timelyTarget(att_inc_delay, att_valid_source, att_valid_target, before_dencun),
-    head: timelyHead(att_inc_delay, att_valid_source, att_valid_target, att_valid_head),
+    source: timelySource(attIncDelay, attValidSource),
+    target: timelyTarget(attIncDelay, attValidSource, attValidTarget, beforeDencun),
+    head: timelyHead(attIncDelay, attValidSource, attValidTarget, attValidHead),
   };
 };
 

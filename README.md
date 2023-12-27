@@ -239,6 +239,10 @@ Independent of `CL_API_MAX_RETRIES`.
 * **Required:** false
 * **Default:** 155000
 ---
+`DENCUN_FORK_EPOCH` - Ethereum consensus layer epoch when the Dencun hard fork has been released. This value must be set
+only for networks other than Mainnet, Goerli and Holesky.
+* **Required:** false
+---
 `VALIDATOR_REGISTRY_SOURCE` - Validators registry source.
 * **Required:** false
 * **Values:** lido (Lido NodeOperatorsRegistry module keys) / keysapi (Lido keys from multiple modules) / file
