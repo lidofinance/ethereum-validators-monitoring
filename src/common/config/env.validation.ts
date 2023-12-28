@@ -173,6 +173,7 @@ export class EnvironmentVariables {
   @IsValidDencunEpoch()
   @Expose()
   @Transform(transformDencunEpoch)
+  @ValidateIf((vars) => vars.NODE_ENV !== Environment.test)
   public DENCUN_FORK_EPOCH: Epoch;
 
   @IsNumber()
