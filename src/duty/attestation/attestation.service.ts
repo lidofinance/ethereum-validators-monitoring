@@ -88,8 +88,8 @@ export class AttestationService {
     const attValidTarget = attestation.target_root == canonTarget;
     const attValidSource = attestation.source_root == canonSource;
     const attIncDelay = Number(attestation.included_in_block - attestation.slot);
-    const beforeDencun = epoch < this.dencunEpoch;
-    const flags = getFlags(attIncDelay, attValidSource, attValidTarget, attValidHead, beforeDencun);
+    const isDencunFork = epoch < this.dencunEpoch;
+    const flags = getFlags(attIncDelay, attValidSource, attValidTarget, attValidHead, isDencunFork);
     for (const [valCommIndex, validatorIndex] of committee.entries()) {
       const attHappened = attestation.bits.get(valCommIndex);
       if (!attHappened) {

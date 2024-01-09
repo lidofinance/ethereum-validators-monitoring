@@ -7,11 +7,17 @@ const WEIGHT_DENOMINATOR = 64; // W sigma
 const timelySource = (attIncDelay: number, attValidSource: boolean): boolean => {
   return attValidSource && attIncDelay <= 5;
 };
-const timelyTarget = (attIncDelay: number, attValidSource: boolean, attValidTarget: boolean, beforeDencun): boolean => {
-  return attValidSource && attValidTarget && (!beforeDencun || attIncDelay <= 32);
+
+const timelyTarget = (attIncDelay: number, attValidSource: boolean, attValidTarget: boolean): boolean => {
+  return attValidSource && attValidTarget && attIncDelay <= 32;
 };
+
+const timelyTargetDencun = (attValidSource: boolean, attValidTarget: boolean): boolean => {
+  return attValidSource && attValidTarget;
+};
+
 const timelyHead = (attIncDelay: number, attValidSource: boolean, attValidTarget: boolean, attValidHead: boolean): boolean => {
-  return attValidSource && attValidTarget && attValidHead && attIncDelay == 1;
+  return attValidSource && attValidTarget && attValidHead && attIncDelay === 1;
 };
 
 export const getFlags = (
@@ -19,11 +25,11 @@ export const getFlags = (
   attValidSource: boolean,
   attValidTarget: boolean,
   attValidHead: boolean,
-  beforeDencun: boolean,
+  isDencunFork: boolean,
 ) => {
   return {
     source: timelySource(attIncDelay, attValidSource),
-    target: timelyTarget(attIncDelay, attValidSource, attValidTarget, beforeDencun),
+    target: isDencunFork ? timelyTargetDencun(attValidSource, attValidTarget) : timelyTarget(attIncDelay, attValidSource, attValidTarget),
     head: timelyHead(attIncDelay, attValidSource, attValidTarget, attValidHead),
   };
 };
