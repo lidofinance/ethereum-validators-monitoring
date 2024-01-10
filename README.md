@@ -202,7 +202,7 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 
 ---
 `ETH_NETWORK` - Ethereum network ID for connection execution layer RPC.
 * **Required:** true
-* **Values:** 1 (mainnet) / 5 (goerli) / 17000 (holesky) / 1337702 (kintsugi)
+* **Values:** 1 (Mainnet) / 5 (Goerli) / 17000 (Holesky)
 ---
 `EL_RPC_URLS` - Ethereum execution layer comma-separated RPC URLs.
 * **Required:** true
