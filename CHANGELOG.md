@@ -1,3 +1,22 @@
+## [4.5.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.5.0...4.5.1) (2024-01-11)
+
+
+### Bug Fixes
+
+* abs ([9b9bdad](https://github.com/lidofinance/ethereum-validators-monitoring/commit/9b9bdad5ffd3efb89ef9b24549f6f7a7c3dd2bd8))
+* add all env variables to docker-compose ([8b1d097](https://github.com/lidofinance/ethereum-validators-monitoring/commit/8b1d097b437ef6281f2e6ca6576ae735c0317768))
+* add default env values in docker-compose ([7228530](https://github.com/lidofinance/ethereum-validators-monitoring/commit/7228530cb765e0f183b42c4f88306b190e3329b9))
+* color ([73dffeb](https://github.com/lidofinance/ethereum-validators-monitoring/commit/73dffeb4939cc879f1b41eaa334bc640697133ed))
+* HTTP_PORT environment variable update to differentiate container and external app ports ([04cd7eb](https://github.com/lidofinance/ethereum-validators-monitoring/commit/04cd7ebd2af991c710f22fbd816358caa6f30b5b))
+* incorrect calculation in "Earned" column ([58dd9be](https://github.com/lidofinance/ethereum-validators-monitoring/commit/58dd9be8fa5db1e4f1bb2a5a620c3b6a8d58fcc3))
+* incorrect ports in `docker-compose` ([ed23a26](https://github.com/lidofinance/ethereum-validators-monitoring/commit/ed23a26ab2d58b721057650ec48f1adab49b061b)), closes [#202](https://github.com/lidofinance/ethereum-validators-monitoring/issues/202)
+* metric_relabel_configs ([54129f6](https://github.com/lidofinance/ethereum-validators-monitoring/commit/54129f63c7f63c459ffaba8641176ffd93c6d35f))
+* skip validation of `START_EPOCH` env variable ([a5c354e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/a5c354e45092b9887ddd53b19544f20827043969))
+* temporarily increase space size ([bb9e421](https://github.com/lidofinance/ethereum-validators-monitoring/commit/bb9e421fb5d4063193ea63c1e4ff5450d9e9fbac))
+* validate `START_EPOCH` in all environments ([fe4b1a4](https://github.com/lidofinance/ethereum-validators-monitoring/commit/fe4b1a437c0ea90562b80f5193805daa0451cf0c))
+
+
+
 # [4.5.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.4.0...4.5.0) (2023-07-25)
 
 
@@ -128,15 +147,6 @@
 
 * speed up writing to DB ([#106](https://github.com/lidofinance/ethereum-validators-monitoring/issues/106)) ([5f46711](https://github.com/lidofinance/ethereum-validators-monitoring/commit/5f46711f2feaaf2978e33d68d47dc81b8163f4b8))
 * use BigNumber ([#108](https://github.com/lidofinance/ethereum-validators-monitoring/issues/108)) ([325ab92](https://github.com/lidofinance/ethereum-validators-monitoring/commit/325ab92cb2cc082f2525280215b2ffbb39615ea5))
-
-
-
-## [4.1.2](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.1.1...4.1.2) (2023-01-10)
-
-
-### Bug Fixes
-
-* `getEpochDataToProcess` condition ([#103](https://github.com/lidofinance/ethereum-validators-monitoring/issues/103)) ([18971c5](https://github.com/lidofinance/ethereum-validators-monitoring/commit/18971c53b995c5c37e21bae28277f910a5bdabcd))
 
 
 
