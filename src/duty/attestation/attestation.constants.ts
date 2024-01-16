@@ -4,25 +4,33 @@ export const TIMELY_TARGET_WEIGHT = 26; // Wt
 export const TIMELY_HEAD_WEIGHT = 14; // Wh
 const WEIGHT_DENOMINATOR = 64; // W sigma
 
-export const timelySource = (att_inc_delay: number, att_valid_source: boolean): boolean => {
-  return att_valid_source && att_inc_delay <= 5;
+const timelySource = (attIncDelay: number, attValidSource: boolean): boolean => {
+  return attValidSource && attIncDelay <= 5;
 };
-export const timelyTarget = (att_inc_delay: number, att_valid_source: boolean, att_valid_target: boolean): boolean => {
-  return att_valid_source && att_valid_target && att_inc_delay <= 32;
+
+const timelyTarget = (attIncDelay: number, attValidSource: boolean, attValidTarget: boolean): boolean => {
+  return attValidSource && attValidTarget && attIncDelay <= 32;
 };
-export const timelyHead = (
-  att_inc_delay: number,
-  att_valid_source: boolean,
-  att_valid_target: boolean,
-  att_valid_head: boolean,
-): boolean => {
-  return att_valid_source && att_valid_target && att_valid_head && att_inc_delay == 1;
+
+const timelyTargetDencun = (attValidSource: boolean, attValidTarget: boolean): boolean => {
+  return attValidSource && attValidTarget;
 };
-export const getFlags = (att_inc_delay: number, att_valid_source: boolean, att_valid_target: boolean, att_valid_head: boolean) => {
+
+const timelyHead = (attIncDelay: number, attValidSource: boolean, attValidTarget: boolean, attValidHead: boolean): boolean => {
+  return attValidSource && attValidTarget && attValidHead && attIncDelay === 1;
+};
+
+export const getFlags = (
+  attIncDelay: number,
+  attValidSource: boolean,
+  attValidTarget: boolean,
+  attValidHead: boolean,
+  isDencunFork: boolean,
+) => {
   return {
-    source: timelySource(att_inc_delay, att_valid_source),
-    target: timelyTarget(att_inc_delay, att_valid_source, att_valid_target),
-    head: timelyHead(att_inc_delay, att_valid_source, att_valid_target, att_valid_head),
+    source: timelySource(attIncDelay, attValidSource),
+    target: isDencunFork ? timelyTargetDencun(attValidSource, attValidTarget) : timelyTarget(attIncDelay, attValidSource, attValidTarget),
+    head: timelyHead(attIncDelay, attValidSource, attValidTarget, attValidHead),
   };
 };
 

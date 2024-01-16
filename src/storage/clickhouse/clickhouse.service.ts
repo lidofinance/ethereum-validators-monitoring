@@ -343,7 +343,7 @@ export class ClickhouseService implements OnModuleInit {
           epoch,
           epochInterval,
           validatorIndexes,
-          `sync_percent < (${chainAvg} - ${this.config.get('SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG')})`,
+          `sync_percent < abs(${chainAvg} - ${this.config.get('SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG')})`,
         ),
       )
     ).map((v) => ({
