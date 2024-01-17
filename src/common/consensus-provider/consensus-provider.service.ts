@@ -126,10 +126,7 @@ export class ConsensusProviderService {
           if (Number(r.data.header.message.slot) > this.latestSlot.slot) {
             this.latestSlot = { slot: Number(r.data.header.message.slot), fetchTime: Number(Date.now()) };
           }
-          if (processingState.epoch < Math.trunc(this.latestSlot.slot / this.config.get('FETCH_INTERVAL_SLOTS'))) {
-            // if our last processed epoch is less than last, we shouldn't use fallback
-            return false;
-          } else if (Number(Date.now()) - this.latestSlot.fetchTime > 420 * 1000) {
+          if (Number(Date.now()) - this.latestSlot.fetchTime > 420 * 1000) {
             // if latest slot doesn't change ~7m we must switch to fallback
             this.logger.error("Latest slot hasn't changed in ~7m");
             return true;
