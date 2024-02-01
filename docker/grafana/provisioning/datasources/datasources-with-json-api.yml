@@ -1,0 +1,49 @@
+---
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    orgId: 1
+    uid: PBFA97CFB590B2093
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    basicAuth: true
+    basicAuthUser: admin
+    basicAuthPassword: foobar
+
+  - name: ClickHouse
+    type: vertamedia-clickhouse-datasource
+    access: proxy
+    orgId: 1
+    uid: PDEE91DDB90597936
+    url: ${CLICKHOUSE_DB_HOST}:${CLICKHOUSE_DB_PORT}
+    basicAuth: true
+    basicAuthUser: ${CLICKHOUSE_DB_USER}
+    jsonData:
+      graphiteVersion: 1.1
+      tlsAuth: false
+      tlsAuthWithCACert: false
+      defaultDatabase: ${CLICKHOUSE_DB_NAME}
+    secureJsonData:
+      basicAuthPassword: ${CLICKHOUSE_DB_PASSWORD}
+    editable: false
+
+  - name: Alertmanager
+    type: alertmanager
+    url: http://alertmanager:9093
+    access: proxy
+    orgId: 1
+    uid: P7647F508D5F54FCB
+    jsonData:
+      implementation: 'prometheus'
+    editable: false
+
+  - name: JSON API
+    type: marcusolsson-json-datasource
+    url: ${SIMPLE_DVT_MAPPING_FILE_PATH}/chain-${ETH_NETWORK}.json
+    access: proxy
+    orgId: 1
+    uid: PDEE91DDB90597432
+    editable: false
