@@ -126,7 +126,7 @@ services:
       - ./docker/grafana/provisioning/datasources/${GRAFANA_DATASOURCE:-datasources.yml}:/etc/grafana/provisioning/datasources/datasources.yml
       - ./docker/grafana/provisioning/dashboards/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
       - ./docker/grafana/provisioning/dashboards/${GRAFANA_SIMPLE_DVT_OPERATORS_DASHBOARD:-/dev/null}:/etc/grafana/provisioning/dashboards/${GRAFANA_SIMPLE_DVT_OPERATORS_DASHBOARD:-/dev/null}
-      - ./docker/grafana/provisioning/dashboards/${GRAFANA_NODE_OPERATORS_WITH_SIMPLE_DVT_INFO_DASHBOARD:-operators.json}:/etc/grafana/provisioning/dashboards/operators.json
+      - ./docker/grafana/provisioning/dashboards/${GRAFANA_NODE_OPERATORS_DASHBOARD:-operators.json}:/etc/grafana/provisioning/dashboards/operators.json
       - ./docker/grafana/provisioning/dashboards/rewards.json:/etc/grafana/provisioning/dashboards/rewards.json
       - ./docker/grafana/provisioning/dashboards/validators.json:/etc/grafana/provisioning/dashboards/validators.json
     environment:
@@ -138,8 +138,8 @@ services:
       - GF_SMTP_USER=myadrress@gmail.com
       - GF_SMTP_PASSWORD=mypassword
       - GF_SMTP_FROM_ADDRESS=myaddress@gmail.com
-      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource,${OPTIONAL_GRAFANA_DATASOURCES}
-      - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource,${OPTIONAL_GRAFANA_DATASOURCES}
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource,${GRAFANA_OPTIONAL_DATASOURCE_PLUGINS}
+      - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource,${GRAFANA_OPTIONAL_DATASOURCE_PLUGINS}
       - CLICKHOUSE_DB_HOST=${DB_HOST}
       - CLICKHOUSE_DB_PORT=${DB_PORT:-8123}
       - CLICKHOUSE_DB_USER=${DB_USER}
