@@ -23,9 +23,9 @@ interface SlotAttestation {
   bits: BitArray;
   head: string;
   target_root: string;
-  target_epoch: number;
+  target_epoch: Epoch;
   source_root: string;
-  source_epoch: number;
+  source_epoch: Epoch;
   slot: number;
   committee_index: number;
 }
@@ -34,7 +34,9 @@ interface SlotAttestation {
 export class AttestationService {
   private processedEpoch: number;
   private readonly slotsInEpoch: number;
+  private readonly dencunEpoch: Epoch;
   private readonly savedCanonSlotsAttProperties: Map<number, string>;
+
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
@@ -43,6 +45,7 @@ export class AttestationService {
     protected readonly summary: SummaryService,
   ) {
     this.slotsInEpoch = this.config.get('FETCH_INTERVAL_SLOTS');
+    this.dencunEpoch = this.config.get('DENCUN_FORK_EPOCH');
     this.savedCanonSlotsAttProperties = new Map<number, string>();
   }
 
@@ -59,7 +62,9 @@ export class AttestationService {
     for (const attestation of attestations) {
       // Each attestation corresponds to committee. Committee may have several aggregate attestations
       const committee = committees.get(`${attestation.committee_index}_${attestation.slot}`);
-      if (!committee) continue;
+      if (!committee) {
+        continue;
+      }
       await this.processAttestation(epoch, attestation, committee);
       // Long loop (2048 committees will be checked by ~7k attestations).
       // We need to unblock event loop immediately after each iteration
@@ -79,14 +84,17 @@ export class AttestationService {
       this.getCanonSlotRoot(attestation.target_epoch * this.slotsInEpoch),
       this.getCanonSlotRoot(attestation.source_epoch * this.slotsInEpoch),
     ]);
-    const att_valid_head = attestation.head == canonHead;
-    const att_valid_target = attestation.target_root == canonTarget;
-    const att_valid_source = attestation.source_root == canonSource;
-    const att_inc_delay = Number(attestation.included_in_block - attestation.slot);
-    const flags = getFlags(att_inc_delay, att_valid_source, att_valid_target, att_valid_head);
+    const attValidHead = attestation.head == canonHead;
+    const attValidTarget = attestation.target_root == canonTarget;
+    const attValidSource = attestation.source_root == canonSource;
+    const attIncDelay = Number(attestation.included_in_block - attestation.slot);
+    const isDencunFork = epoch >= this.dencunEpoch;
+    const flags = getFlags(attIncDelay, attValidSource, attValidTarget, attValidHead, isDencunFork);
     for (const [valCommIndex, validatorIndex] of committee.entries()) {
-      const att_happened = attestation.bits.get(valCommIndex);
-      if (!att_happened) continue;
+      const attHappened = attestation.bits.get(valCommIndex);
+      if (!attHappened) {
+        continue;
+      }
       const processed = this.summary.epoch(attestation.target_epoch).get(validatorIndex);
       if (!processed?.att_valid_source && flags.source) {
         attestationFlags.source.push(validatorIndex);
@@ -100,8 +108,8 @@ export class AttestationService {
       this.summary.epoch(attestation.target_epoch).set({
         val_id: validatorIndex,
         epoch: attestation.target_epoch,
-        att_happened,
-        att_inc_delay: processed?.att_inc_delay || att_inc_delay,
+        att_happened: attHappened,
+        att_inc_delay: processed?.att_inc_delay || attIncDelay,
         att_valid_source: processed?.att_valid_source || flags.source,
         att_valid_target: processed?.att_valid_target || flags.target,
         att_valid_head: processed?.att_valid_head || flags.head,
@@ -116,7 +124,9 @@ export class AttestationService {
 
   protected async getCanonSlotRoot(slot: Slot) {
     const cached = this.savedCanonSlotsAttProperties.get(slot);
-    if (cached) return cached;
+    if (cached) {
+      return cached;
+    }
     const root = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(slot)).root;
     this.savedCanonSlotsAttProperties.set(slot, root);
     return root;
