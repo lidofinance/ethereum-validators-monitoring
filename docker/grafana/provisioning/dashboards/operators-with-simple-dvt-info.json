@@ -5934,9 +5934,33 @@
                     "id": "links",
                     "value": [
                       {
-                        "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "https://localhost:8082/d/${__data.fields[\"dashboardId\"]}/${__data.fields[\"dashboardName\"]}/?var-nos_name_var=${__value.raw}"
                       }
                     ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "dashboardId"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "dashboardName"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
                   }
                 ]
               }
@@ -5977,7 +6001,17 @@
               "fields": [
                 {
                   "name": "Operator",
-                  "jsonPath": "($contains($nos_global_index_var[0], \"1;\") ? `operators` : `clusters`)[name=$nos_name_var[0]].($contains($nos_global_index_var[0], \"1;\") ? `clusters` : `operators`).name",
+                  "jsonPath": "($contains($nos_global_index_var[0], \"1;\") ? `operators` : `clusters`)[name = $nos_name_var[0]].($contains($nos_global_index_var[0], \"1;\") ? `clusters` : `operators`).name",
+                  "language": "jsonata"
+                },
+                {
+                  "name": "dashboardId",
+                  "jsonPath": "($contains($nos_global_index_var[0], \"1;\") ? `operators` : `clusters`)[name = $nos_name_var[0]].($contains($nos_global_index_var[0], \"1;\") ? `clusters` : `operators`).($type(indexInCuratedModule) = \"number\" or $contains($nos_global_index_var[0], \"1;\") ? '3wimU2H7h' : '3wimU2H7j')",
+                  "language": "jsonata"
+                },
+                {
+                  "name": "dashboardName",
+                  "jsonPath": "($contains($nos_global_index_var[0], \"1;\") ? `operators` : `clusters`)[name = $nos_name_var[0]].($contains($nos_global_index_var[0], \"1;\") ? `clusters` : `operators`).($type(indexInCuratedModule) = \"number\" or $contains($nos_global_index_var[0], \"1;\") ? 'nodeoperators' : 'operators-list')",
                   "language": "jsonata"
                 }
               ]
