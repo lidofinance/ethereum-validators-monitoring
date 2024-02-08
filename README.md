@@ -339,6 +339,12 @@ To enable dashboards with information about Simple DVT clusters and their partic
 `GRAFANA_OPTIONAL_DATASOURCE_PLUGINS` must have the "marcusolsson-json-datasource" value.
 To keep the default application behavior this variable must be omitted.
 * **Required:** false
+---
+`JSON_API_AUTH_TOKEN` - authentication token for all requests made from the JSON API Grafana plugin.
+If special dashboards with information about Simple DVT clusters and their participants are enabled and API requests to
+fetch the content of the file specified in the `SIMPLE_DVT_MAPPING_FILE_PATH` variable require authorization, the
+`JSON_API_AUTH_TOKEN` variable must have valid access token to authorize these requests.
+* **Required:** false
 
 ## Application critical alerts (via Alertmanager)
 

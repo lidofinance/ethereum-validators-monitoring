@@ -46,4 +46,8 @@ datasources:
     access: proxy
     orgId: 1
     uid: PDEE91DDB90597432
+    jsonData:
+      httpHeaderName1: Authorization
+    secureJsonData:
+      httpHeaderValue1: Bearer ${JSON_API_AUTH_TOKEN}
     editable: false
