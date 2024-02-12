@@ -14,8 +14,6 @@ import {
   Min,
   MinLength,
   ValidateIf,
-  ValidationArguments,
-  registerDecorator,
   validateSync,
 } from 'class-validator';
 
@@ -279,20 +277,6 @@ export class EnvironmentVariables {
 
   @IsEnum(WorkingMode)
   public WORKING_MODE = WorkingMode.Finalized;
-
-  public SIMPLE_DVT_MAPPING_FILE_PATH: string | null;
-
-  @IsValidGrafanaConfigVariable('datasources.yml', 'datasources-with-json-api.yml')
-  public GRAFANA_DATASOURCE: string | null;
-
-  @IsValidGrafanaConfigVariable('/dev/null', 'operators-list.json')
-  public GRAFANA_SIMPLE_DVT_OPERATORS_DASHBOARD: string | null;
-
-  @IsValidGrafanaConfigVariable('operators.json', 'operators-with-simple-dvt-info.json')
-  public GRAFANA_NODE_OPERATORS_DASHBOARD: string | null;
-
-  @IsValidGrafanaConfigVariable('', 'marcusolsson-json-datasource')
-  public GRAFANA_OPTIONAL_DATASOURCE_PLUGINS: string | null;
 }
 
 export function validate(config: Record<string, unknown>) {
@@ -307,30 +291,4 @@ export function validate(config: Record<string, unknown>) {
   }
 
   return validatedConfig;
-}
-
-// ====================================================================================================================
-// PRIVATE FUNCTIONS
-// ====================================================================================================================
-function IsValidGrafanaConfigVariable(defaultValue: string, nonDefaultValue: string) {
-  return function (object: Object, propertyName: string) {
-    registerDecorator({
-      name: 'isValidGrafanaConfigVariable',
-      target: object.constructor,
-      propertyName: propertyName,
-      constraints: [defaultValue, nonDefaultValue],
-      validator: {
-        validate(value: string, args: ValidationArguments) {
-          const [defaultValue, nonDefaultValue] = args.constraints;
-          const simpleDVTMappingFilePath = (args.object as any).SIMPLE_DVT_MAPPING_FILE_PATH;
-
-          if (simpleDVTMappingFilePath == null || simpleDVTMappingFilePath === '') {
-            return value == null || value === '' || value === defaultValue;
-          }
-
-          return value === nonDefaultValue;
-        },
-      },
-    });
-  };
 }
