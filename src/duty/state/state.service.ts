@@ -28,6 +28,23 @@ export class StateService {
     protected readonly registry: RegistryService,
   ) {}
 
+  private selectFork(epoch: Epoch) {
+    // mainnet
+    if (epoch >= Infinity) {
+      return types.ssz.deneb;
+    }
+    if (epoch >= 194048) {
+      return types.ssz.capella;
+    }
+    if (epoch >= 144896) {
+      return types.ssz.bellatrix;
+    }
+    if (epoch >= 74240) {
+      return types.ssz.altair;
+    }
+    return types.ssz.phase0;
+  }
+
   @TrackTask('check-state-duties')
   public async check(epoch: Epoch, stateSlot: Slot): Promise<void> {
     const slotTime = await this.clClient.getSlotTime(epoch * this.config.get('FETCH_INTERVAL_SLOTS'));
@@ -40,7 +57,8 @@ export class StateService {
     let activeValidatorsEffectiveBalance = 0n;
     const stuckKeys = this.registry.getStuckKeys();
     types = await eval(`import('@lodestar/types')`);
-    const stateView = types.ssz.capella.BeaconState.deserializeToView(stateSSZ);
+    // TODO: fork selector
+    const stateView = this.selectFork(epoch).BeaconState.deserializeToView(stateSSZ);
     const balances = stateView.balances.getAll();
     // unblock every 1000 validators
     for (const [index, validator] of stateView.validators.getAllReadonlyValues().entries()) {
