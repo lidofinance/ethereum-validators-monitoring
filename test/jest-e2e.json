@@ -10,7 +10,7 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "testEnvironment": "jest-environment-jsdom",
+  "testEnvironment": "node",
   "testEnvironmentOptions": {
     "customExportConditions": [""]
   }
