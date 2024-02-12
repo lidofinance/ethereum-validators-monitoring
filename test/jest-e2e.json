@@ -6,9 +6,12 @@
     "^build-info$": "<rootDir>/build-info.json"
   },
   "setupFiles": ["<rootDir>/test/jest.polyfills.js"],
-  "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "testEnvironment": "jest-environment-jsdom",
+  "testEnvironmentOptions": {
+    "customExportConditions": [""]
   }
 }
