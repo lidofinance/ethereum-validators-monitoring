@@ -28,6 +28,7 @@ jobs:
       - name: Run e2e tests
         run: yarn test:e2e
         env:
+          ETH_NETWORK: 1
           CL_API_URLS: ${{ secrets.CL_API_URL }}
           CL_API_GET_RESPONSE_TIMEOUT: 60000
           TEST_EPOCH_NUMBER: 152978
