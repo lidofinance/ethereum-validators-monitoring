@@ -44,7 +44,7 @@ const dencunForkEpoch = {
   /**
    * @todo This should be corrected once the particular epoch of the Dencun hard fork on Mainnet is known.
    */
-  '1': Infinity,
+  '1': Number.MAX_SAFE_INTEGER,
   '5': 231680,
   '17000': 29696,
 };
