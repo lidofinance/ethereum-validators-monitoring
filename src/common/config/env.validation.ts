@@ -201,7 +201,6 @@ export class EnvironmentVariables {
     ({ value, obj }) =>
       dencunForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
   )
-  @ValidateIf((vars) => vars.NODE_ENV !== Environment.test)
   public DENCUN_FORK_EPOCH: Epoch;
 
   @IsInt()
@@ -211,7 +210,6 @@ export class EnvironmentVariables {
     ({ value, obj }) =>
       capellaForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
   )
-  @ValidateIf((vars) => vars.NODE_ENV !== Environment.test)
   public CAPELLA_FORK_EPOCH: Epoch;
 
   @IsInt()
@@ -221,7 +219,6 @@ export class EnvironmentVariables {
     ({ value, obj }) =>
       bellatrixForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
   )
-  @ValidateIf((vars) => vars.NODE_ENV !== Environment.test)
   public BELLATRIX_FORK_EPOCH: Epoch;
 
   @IsInt()
@@ -231,7 +228,6 @@ export class EnvironmentVariables {
     ({ value, obj }) =>
       altairForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
   )
-  @ValidateIf((vars) => vars.NODE_ENV !== Environment.test)
   public ALTAIR_FORK_EPOCH: Epoch;
 
   @IsNumber()
