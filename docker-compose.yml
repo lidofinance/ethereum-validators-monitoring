@@ -150,7 +150,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 3g
+          memory: 8g
+          cpus: '4'
     ulimits:
       nofile:
         soft: 262144

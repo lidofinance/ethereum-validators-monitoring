@@ -29,17 +29,16 @@ export class StateService {
   ) {}
 
   private selectFork(epoch: Epoch) {
-    // mainnet
-    if (epoch >= Infinity) {
+    if (epoch >= this.config.get('DENCUN_FORK_EPOCH')) {
       return types.ssz.deneb;
     }
-    if (epoch >= 194048) {
+    if (epoch >= this.config.get('CAPELLA_FORK_EPOCH')) {
       return types.ssz.capella;
     }
-    if (epoch >= 144896) {
+    if (epoch >= this.config.get('BELLATRIX_FORK_EPOCH')) {
       return types.ssz.bellatrix;
     }
-    if (epoch >= 74240) {
+    if (epoch >= this.config.get('ALTAIR_FORK_EPOCH')) {
       return types.ssz.altair;
     }
     return types.ssz.phase0;
