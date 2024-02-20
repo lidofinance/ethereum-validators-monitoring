@@ -128,11 +128,14 @@ If you want to implement your own source, it must match [RegistrySource interfac
 By default, storage keep the data with `Inf.` time to live.
 It can be changed by the TTL policy for Clickhouse:
 ```
-# goerli
-ALTER TABLE validators_summary MODIFY TTL toDateTime(1616508000 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
-
-# mainnet
+# Mainnet
 ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
+
+# Holesky
+ALTER TABLE validators_summary MODIFY TTL toDateTime(1695902400 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
+
+# Goerli
+ALTER TABLE validators_summary MODIFY TTL toDateTime(1616508000 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
 ```
 
 ## Application Env variables
