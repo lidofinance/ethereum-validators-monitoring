@@ -3503,7 +3503,7 @@
           "pluginVersion": "9.5.7",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -3780,7 +3780,7 @@
           "pluginVersion": "9.5.7",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -4287,7 +4287,7 @@
           "pluginVersion": "9.5.7",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -4595,7 +4595,7 @@
           "pluginVersion": "9.5.7",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -4886,7 +4886,7 @@
           "pluginVersion": "9.5.7",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -5177,7 +5177,7 @@
           "pluginVersion": "9.5.7",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -5468,7 +5468,7 @@
           "pluginVersion": "9.5.7",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -5759,7 +5759,7 @@
           "pluginVersion": "9.5.7",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -5874,6 +5874,154 @@
         }
       ],
       "title": "📝 Attestations",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "marcusolsson-json-datasource",
+        "uid": "PDEE91DDB90597432"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 54
+      },
+      "id": 1752,
+      "panels": [
+        {
+          "datasource": {
+            "type": "marcusolsson-json-datasource",
+            "uid": "PDEE91DDB90597432"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "text",
+                "mode": "fixed"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "text",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Operator"
+                },
+                "properties": [
+                  {
+                    "id": "custom.filterable",
+                    "value": true
+                  },
+                  {
+                    "id": "links",
+                    "value": [
+                      {
+                        "url": "https://localhost:8082/d/${__data.fields[\"dashboardId\"]}/${__data.fields[\"dashboardName\"]}/?var-nos_name_var=${__value.raw}"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "dashboardId"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "dashboardName"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 4
+          },
+          "id": 57,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "9.5.7",
+          "targets": [
+            {
+              "datasource": {
+                "type": "marcusolsson-json-datasource",
+                "uid": "PDEE91DDB90597432"
+              },
+              "refId": "A",
+              "cacheDurationSeconds": 300,
+              "method": "GET",
+              "queryParams": "",
+              "urlPath": "",
+              "fields": [
+                {
+                  "name": "Operator",
+                  "jsonPath": "($contains($nos_global_index_var[0], \"1;\") ? `operators` : `clusters`)[name = $nos_name_var[0]].($contains($nos_global_index_var[0], \"1;\") ? `clusters` : `operators`).name",
+                  "language": "jsonata"
+                },
+                {
+                  "name": "dashboardId",
+                  "jsonPath": "($contains($nos_global_index_var[0], \"1;\") ? `operators` : `clusters`)[name = $nos_name_var[0]].($contains($nos_global_index_var[0], \"1;\") ? `clusters` : `operators`).($type(indexInCuratedModule) = \"number\" or $contains($nos_global_index_var[0], \"1;\") ? '3wimU2H7h' : '3wimU2H7j')",
+                  "language": "jsonata"
+                },
+                {
+                  "name": "dashboardName",
+                  "jsonPath": "($contains($nos_global_index_var[0], \"1;\") ? `operators` : `clusters`)[name = $nos_name_var[0]].($contains($nos_global_index_var[0], \"1;\") ? `clusters` : `operators`).($type(indexInCuratedModule) = \"number\" or $contains($nos_global_index_var[0], \"1;\") ? 'nodeoperators' : 'operators-list')",
+                  "language": "jsonata"
+                }
+              ]
+            }
+          ],
+          "title": "Operators",
+          "type": "table"
+        }
+      ],
+      "title": "☂️ Clusters & Participants",
       "type": "row"
     }
   ],

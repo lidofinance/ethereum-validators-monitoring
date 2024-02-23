@@ -310,36 +310,6 @@ participants.
 To keep the default application behavior this variable must be omitted.
 * **Required:** false
 ---
-`GRAFANA_DATASOURCE` - name of Grafana datasource config file with the correct configuration of all datasources.
-To enable dashboards with information about Simple DVT clusters and their participants, the
-`SIMPLE_DVT_MAPPING_FILE_PATH` variable must have the correct path to the JSON config file, and the value of the
-`GRAFANA_DATASOURCE` variable must have the "datasources-with-json-api.yml" value.
-To keep the default application behavior this variable must be omitted.
-* **Required:** false
----
-`GRAFANA_SIMPLE_DVT_OPERATORS_DASHBOARD` - name of Grafana configuration file for the dashboard that displays all
-operators in the Curated module and in all Simple DVT clusters.
-To enable this dashboard, the `SIMPLE_DVT_MAPPING_FILE_PATH` variable must have the correct path to the JSON config
-file, and the value of the `GRAFANA_SIMPLE_DVT_OPERATORS_DASHBOARD` variable must have the "operators-list.json" value.
-To keep the default application behavior this variable must be omitted.
-* **Required:** false
----
-`GRAFANA_NODE_OPERATORS_DASHBOARD` - name of Grafana configuration file for the "Node Operators" dashboard with the
-additional panel that displays information about Simple DVT clusters and their participants.
-To enable the special  version of this dashboard, the `SIMPLE_DVT_MAPPING_FILE_PATH` variable must have the correct path
-to the JSON config file, and the value of the `GRAFANA_NODE_OPERATORS_DASHBOARD` variable must have the
-"operators-with-simple-dvt-info.json" value.
-To keep the default application behavior this variable must be omitted.
-* **Required:** false
----
-`GRAFANA_OPTIONAL_DATASOURCE_PLUGINS` - comma-separated list of optional datasource plugins that should be included in
-Grafana.
-To enable dashboards with information about Simple DVT clusters and their participants, the
-`SIMPLE_DVT_MAPPING_FILE_PATH` variable must have the correct path to the JSON config file, and the value of the
-`GRAFANA_OPTIONAL_DATASOURCE_PLUGINS` must have the "marcusolsson-json-datasource" value.
-To keep the default application behavior this variable must be omitted.
-* **Required:** false
----
 `JSON_API_AUTH_TOKEN` - authentication token for all requests made from the JSON API Grafana plugin.
 If special dashboards with information about Simple DVT clusters and their participants are enabled and API requests to
 fetch the content of the file specified in the `SIMPLE_DVT_MAPPING_FILE_PATH` variable require authorization, the

@@ -39,3 +39,15 @@ datasources:
     jsonData:
       implementation: 'prometheus'
     editable: false
+
+  - name: JSON API
+    type: marcusolsson-json-datasource
+    url: ${SIMPLE_DVT_MAPPING_FILE_PATH}/chain-${ETH_NETWORK}.json
+    access: proxy
+    orgId: 1
+    uid: PDEE91DDB90597432
+    jsonData:
+      httpHeaderName1: Authorization
+    secureJsonData:
+      httpHeaderValue1: Bearer ${JSON_API_AUTH_TOKEN}
+    editable: false
