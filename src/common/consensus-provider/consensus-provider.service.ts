@@ -1,7 +1,8 @@
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
-import { HTTPError, Response, got } from 'got-cjs';
+import { request } from 'undici';
+import BodyReadable from 'undici/types/readable';
 
 import { ConfigService } from 'common/config';
 import { range } from 'common/functions/range';
@@ -74,6 +75,7 @@ export class ConsensusProviderService {
     proposerDutes: (epoch: Epoch): string => `eth/v1/validator/duties/proposer/${epoch}`,
     attesterDuties: (epoch: Epoch): string => `eth/v1/validator/duties/attester/${epoch}`,
     syncCommitteeDuties: (epoch: Epoch): string => `eth/v1/validator/duties/sync/${epoch}`,
+    state: (stateId: StateId): string => `eth/v2/debug/beacon/states/${stateId}`,
   };
 
   public constructor(
@@ -278,10 +280,19 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getValidatorsState(stateId: StateId): Promise<Request> {
+  public async getValidatorsState(stateId: StateId): Promise<BodyReadable> {
     return await this.retryRequest(async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.validatorsState(stateId)), {
       dataOnly: false,
     });
+  }
+
+  public async getStateSSZ(stateId: StateId): Promise<BodyReadable> {
+    return await this.retryRequest(
+      async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.state(stateId), { accept: 'application/octet-stream' }),
+      {
+        dataOnly: false,
+      },
+    );
   }
 
   public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse | void> {
@@ -315,7 +326,7 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getAttestationCommitteesInfo(stateId: StateId, epoch: Epoch): Promise<Request> {
+  public async getAttestationCommitteesInfo(stateId: StateId, epoch: Epoch): Promise<BodyReadable> {
     return await this.retryRequest(
       async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.attestationCommittees(stateId, epoch)),
       {
@@ -401,43 +412,38 @@ export class ConsensusProviderService {
 
   @TrackCLRequest
   protected async apiGet<T>(apiURL: string, subUrl: string): Promise<T> {
-    const res = await got
-      .get(urljoin(apiURL, subUrl), { timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
-      .catch((e) => {
-        if (e.response) {
-          throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
-        }
-        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-      });
-    if (res.statusCode !== 200) {
-      throw new ResponseError(errRequest(res.body, subUrl, apiURL), res.statusCode);
+    const { body, statusCode } = await request(urljoin(apiURL, subUrl), {
+      method: 'GET',
+      headersTimeout: this.config.get('CL_API_GET_RESPONSE_TIMEOUT'),
+    }).catch((e) => {
+      if (e.response) {
+        throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
+      }
+      throw new ResponseError(errCommon(e.message, subUrl, apiURL));
+    });
+    if (statusCode !== 200) {
+      const errorText = await body.text();
+      throw new ResponseError(errRequest(errorText, subUrl, apiURL), statusCode);
     }
-    try {
-      return JSON.parse(res.body);
-    } catch (e) {
-      throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
-    }
+    return (await body.json()) as T;
   }
 
   @TrackCLRequest
-  protected async apiGetStream(apiURL: string, subUrl: string): Promise<Request> {
-    const readStream = got.stream.get(urljoin(apiURL, subUrl), {
-      timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') },
+  protected async apiGetStream(apiURL: string, subUrl: string, headers?: Record<string, string>): Promise<BodyReadable> {
+    const { body, statusCode } = await request(urljoin(apiURL, subUrl), {
+      method: 'GET',
+      headersTimeout: this.config.get('CL_API_GET_RESPONSE_TIMEOUT'),
+      headers: headers,
+    }).catch((e) => {
+      if (e.response) {
+        throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
+      }
+      throw new ResponseError(errCommon(e.message, subUrl, apiURL));
     });
-
-    return new Promise((resolve, reject) => {
-      readStream.on('response', (r: Response) => {
-        if (r.statusCode != 200) reject(new HTTPError(r));
-        resolve(readStream);
-      });
-      readStream.on('error', (e) => reject(e));
-    })
-      .then((r: Request) => r)
-      .catch((e) => {
-        if (e instanceof HTTPError) {
-          throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
-        }
-        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-      });
+    if (statusCode !== 200) {
+      const errorText = await body.text();
+      throw new ResponseError(errRequest(errorText, subUrl, apiURL), statusCode);
+    }
+    return body;
   }
 }

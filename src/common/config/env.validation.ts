@@ -1,4 +1,4 @@
-import { plainToInstance, Expose, Transform } from 'class-transformer';
+import { Expose, Transform, plainToInstance } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
@@ -17,6 +17,7 @@ import {
   ValidateIf,
   validateSync,
 } from 'class-validator';
+
 import { Epoch } from 'common/consensus-provider/types';
 
 import { Environment, LogFormat, LogLevel } from './interfaces';
@@ -42,9 +43,27 @@ const dencunForkEpoch = {
   /**
    * @todo This should be corrected once the particular epoch of the Dencun hard fork on Mainnet is known.
    */
-  '1': 300000,
+  '1': Number.MAX_SAFE_INTEGER,
   '5': 231680,
   '17000': 29696,
+};
+
+const capellaForkEpoch = {
+  '1': 194048,
+  '5': 162304,
+  '17000': 0,
+};
+
+const bellatrixForkEpoch = {
+  '1': 144896,
+  '5': 112260,
+  '17000': 0,
+};
+
+const altairForkEpoch = {
+  '1': 74240,
+  '5': 47300,
+  '17000': 0,
 };
 
 const toBoolean = (value: any): boolean => {
@@ -136,7 +155,6 @@ export class EnvironmentVariables {
   @Min(1)
   @Max(5000000)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.Lido && vars.NODE_ENV != Environment.test)
   public ETH_NETWORK!: Network;
 
   @IsArray()
@@ -181,8 +199,34 @@ export class EnvironmentVariables {
     ({ value, obj }) =>
       dencunForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
   )
-  @ValidateIf((vars) => vars.NODE_ENV !== Environment.test)
   public DENCUN_FORK_EPOCH: Epoch;
+
+  @IsInt()
+  @IsPositive()
+  @Expose()
+  @Transform(
+    ({ value, obj }) =>
+      capellaForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
+  )
+  public CAPELLA_FORK_EPOCH: Epoch;
+
+  @IsInt()
+  @IsPositive()
+  @Expose()
+  @Transform(
+    ({ value, obj }) =>
+      bellatrixForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
+  )
+  public BELLATRIX_FORK_EPOCH: Epoch;
+
+  @IsInt()
+  @IsPositive()
+  @Expose()
+  @Transform(
+    ({ value, obj }) =>
+      altairForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
+  )
+  public ALTAIR_FORK_EPOCH: Epoch;
 
   @IsNumber()
   @Min(32)
