@@ -80,7 +80,7 @@ and when the application completes its first cycle, you can restart your instanc
 
 ## Run via docker-compose
 
-1. Use `.env.example` file content to create your own `.env` file
+1. Use `.env.example.compose` file content to create your own `.env` file
 2. Build app image via `docker-compose build app`
 3. Set owner for validators registry sources
 ```bash
@@ -102,17 +102,16 @@ chown -R 472:472 .volumes/grafana
 
 1. Install dependencies via `yarn install`
 2. Run `yarn build`
-3. Tweak `.env` file from `.env.example`
+3. Tweak `.env` file from `.env.example.local`
 4. Run Clickhouse to use as bot DB
 ```bash
 docker-compose up -d clickhouse
 ```
-5. Change `DB_HOST` value to `http://localhost`
-6. Set owner for validators registry sources
+5. Set owner for validators registry sources
 ```bash
 chown -R 1000:1000 ./docker/validators
 ```
-7. Run `yarn start:prod`
+6. Run `yarn start:prod`
 
 ## Use custom validators list
 
@@ -128,11 +127,14 @@ If you want to implement your own source, it must match [RegistrySource interfac
 By default, storage keep the data with `Inf.` time to live.
 It can be changed by the TTL policy for Clickhouse:
 ```
-# goerli
-ALTER TABLE validators_summary MODIFY TTL toDateTime(1616508000 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
-
-# mainnet
+# Mainnet
 ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
+
+# Holesky
+ALTER TABLE validators_summary MODIFY TTL toDateTime(1695902400 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
+
+# Goerli
+ALTER TABLE validators_summary MODIFY TTL toDateTime(1616508000 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
 ```
 
 ## Application Env variables
@@ -202,7 +204,7 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 
 ---
 `ETH_NETWORK` - Ethereum network ID for connection execution layer RPC.
 * **Required:** true
-* **Values:** 1 (mainnet) / 5 (goerli) / 17000 (holesky) / 1337702 (kintsugi)
+* **Values:** 1 (Mainnet) / 5 (Goerli) / 17000 (Holesky)
 ---
 `EL_RPC_URLS` - Ethereum execution layer comma-separated RPC URLs.
 * **Required:** true

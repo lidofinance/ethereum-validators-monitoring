@@ -5,9 +5,9 @@ services:
     container_name: clickhouse
     restart: unless-stopped
     environment:
-      - CLICKHOUSE_USER=${DB_USER}
-      - CLICKHOUSE_PASSWORD=${DB_PASSWORD}
-      - CLICKHOUSE_DB=${DB_NAME}
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=
+      - CLICKHOUSE_DB=default
     deploy:
       resources:
         limits:
@@ -135,11 +135,11 @@ services:
       - GF_SMTP_FROM_ADDRESS=myaddress@gmail.com
       - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=vertamedia-clickhouse-datasource
       - GF_INSTALL_PLUGINS=vertamedia-clickhouse-datasource
-      - CLICKHOUSE_DB_HOST=${DB_HOST}
-      - CLICKHOUSE_DB_PORT=${DB_PORT:-8123}
-      - CLICKHOUSE_DB_USER=${DB_USER}
-      - CLICKHOUSE_DB_PASSWORD=${DB_PASSWORD}
-      - CLICKHOUSE_DB_NAME=${DB_NAME}
+      - CLICKHOUSE_DB_HOST=http://clickhouse
+      - CLICKHOUSE_DB_PORT=8123
+      - CLICKHOUSE_DB_USER=default
+      - CLICKHOUSE_DB_PASSWORD=
+      - CLICKHOUSE_DB_NAME=default
     ports:
       - "8082:3000"
 
@@ -162,11 +162,11 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - LOG_FORMAT=${LOG_FORMAT:-json}
       - HTTP_PORT=${HTTP_PORT:-8080}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT:-8123}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
+      - DB_HOST=http://clickhouse
+      - DB_PORT=8123
+      - DB_USER=default
+      - DB_PASSWORD=
+      - DB_NAME=default
       - DB_MAX_RETRIES=${DB_MAX_RETRIES:-10}
       - DB_MIN_BACKOFF_SEC=${DB_MIN_BACKOFF_SEC:-1}
       - DB_MAX_BACKOFF_SEC=${DB_MAX_BACKOFF_SEC:-120}
