@@ -127,6 +127,7 @@ export class ConsensusProviderService {
 
           if (nodeLatestSlot < this.latestSlot.slot) {
             // we assume that the node must never return a slot less than the last saved slot
+            this.logger.error(`Latest slot [${nodeLatestSlot}] received from node is less than the actual finalized slot in the chain [${this.latestSlot.slot}].`);
             return true;
           }
           if (nodeLatestSlot > this.latestSlot.slot) {
@@ -137,7 +138,7 @@ export class ConsensusProviderService {
             return false;
           } else if (Number(Date.now()) - this.latestSlot.fetchTime > 420 * 1000) {
             // if latest slot doesn't change ~7m we must switch to fallback
-            this.logger.error("Latest slot hasn't changed in ~7m");
+            this.logger.error(`Latest slot [${this.latestSlot.slot}] hasn't changed in ~7m`);
             return true;
           }
           // for other states don't use fallback on resolved
