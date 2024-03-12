@@ -1,4 +1,4 @@
-import { Transform, plainToInstance } from 'class-transformer';
+import { plainToInstance, Expose, Transform } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
@@ -9,6 +9,7 @@ import {
   IsNumber,
   IsObject,
   IsPort,
+  IsPositive,
   IsString,
   Max,
   Min,
@@ -16,6 +17,7 @@ import {
   ValidateIf,
   validateSync,
 } from 'class-validator';
+import { Epoch } from 'common/consensus-provider/types';
 
 import { Environment, LogFormat, LogLevel } from './interfaces';
 
@@ -23,7 +25,6 @@ export enum Network {
   Mainnet = 1,
   Goerli = 5,
   Holesky = 17000,
-  Kintsugi = 1337702,
 }
 
 export enum ValidatorRegistrySource {
@@ -36,6 +37,12 @@ export enum WorkingMode {
   Finalized = 'finalized',
   Head = 'head',
 }
+
+const dencunForkEpoch = {
+  '1': 269568,
+  '5': 231680,
+  '17000': 29696,
+};
 
 const toBoolean = (value: any): boolean => {
   if (typeof value === 'boolean') {
@@ -163,6 +170,16 @@ export class EnvironmentVariables {
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   @ValidateIf((vars) => vars.ETH_NETWORK === Network.Mainnet)
   public START_EPOCH = 155000;
+
+  @IsInt()
+  @IsPositive()
+  @Expose()
+  @Transform(
+    ({ value, obj }) =>
+      dencunForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
+  )
+  @ValidateIf((vars) => vars.NODE_ENV !== Environment.test)
+  public DENCUN_FORK_EPOCH: Epoch;
 
   @IsNumber()
   @Min(32)

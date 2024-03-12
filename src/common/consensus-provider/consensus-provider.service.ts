@@ -123,15 +123,22 @@ export class ConsensusProviderService {
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
-          if (Number(r.data.header.message.slot) > this.latestSlot.slot) {
-            this.latestSlot = { slot: Number(r.data.header.message.slot), fetchTime: Number(Date.now()) };
+          const nodeLatestSlot = Number(r.data.header.message.slot);
+
+          if (nodeLatestSlot < this.latestSlot.slot) {
+            // we assume that the node must never return a slot less than the last saved slot
+            this.logger.error(`Received ${latestFrom} slot [${nodeLatestSlot}] is less than last [${this.latestSlot.slot}] slot received before, but shouldn't`);
+            return true;
           }
-          if (processingState.epoch <= Math.trunc(this.latestSlot.slot / this.config.get('FETCH_INTERVAL_SLOTS'))) {
+          if (nodeLatestSlot > this.latestSlot.slot) {
+            this.latestSlot = { slot: nodeLatestSlot, fetchTime: Number(Date.now()) };
+          }
+          if (processingState.epoch < Math.trunc(this.latestSlot.slot / this.config.get('FETCH_INTERVAL_SLOTS'))) {
             // if our last processed epoch is less than last, we shouldn't use fallback
             return false;
           } else if (Number(Date.now()) - this.latestSlot.fetchTime > 420 * 1000) {
             // if latest slot doesn't change ~7m we must switch to fallback
-            this.logger.error("Latest slot hasn't changed in ~7m");
+            this.logger.error(`Latest slot [${this.latestSlot.slot}] hasn't changed in ~7m`);
             return true;
           }
           // for other states don't use fallback on resolved

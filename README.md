@@ -80,7 +80,7 @@ and when the application completes its first cycle, you can restart your instanc
 
 ## Run via docker-compose
 
-1. Use `.env.example` file content to create your own `.env` file
+1. Use `.env.example.compose` file content to create your own `.env` file
 2. Build app image via `docker-compose build app`
 3. Set owner for validators registry sources
 ```bash
@@ -102,17 +102,16 @@ chown -R 472:472 .volumes/grafana
 
 1. Install dependencies via `yarn install`
 2. Run `yarn build`
-3. Tweak `.env` file from `.env.example`
+3. Tweak `.env` file from `.env.example.local`
 4. Run Clickhouse to use as bot DB
 ```bash
 docker-compose up -d clickhouse
 ```
-5. Change `DB_HOST` value to `http://localhost`
-6. Set owner for validators registry sources
+5. Set owner for validators registry sources
 ```bash
 chown -R 1000:1000 ./docker/validators
 ```
-7. Run `yarn start:prod`
+6. Run `yarn start:prod`
 
 ## Use custom validators list
 
@@ -128,11 +127,14 @@ If you want to implement your own source, it must match [RegistrySource interfac
 By default, storage keep the data with `Inf.` time to live.
 It can be changed by the TTL policy for Clickhouse:
 ```
-# goerli
-ALTER TABLE validators_summary MODIFY TTL toDateTime(1616508000 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
-
-# mainnet
+# Mainnet
 ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
+
+# Holesky
+ALTER TABLE validators_summary MODIFY TTL toDateTime(1695902400 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
+
+# Goerli
+ALTER TABLE validators_summary MODIFY TTL toDateTime(1616508000 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
 ```
 
 ## Application Env variables
@@ -202,7 +204,7 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 
 ---
 `ETH_NETWORK` - Ethereum network ID for connection execution layer RPC.
 * **Required:** true
-* **Values:** 1 (mainnet) / 5 (goerli) / 17000 (holesky) / 1337702 (kintsugi)
+* **Values:** 1 (Mainnet) / 5 (Goerli) / 17000 (Holesky)
 ---
 `EL_RPC_URLS` - Ethereum execution layer comma-separated RPC URLs.
 * **Required:** true
@@ -238,6 +240,12 @@ Independent of `CL_API_MAX_RETRIES`.
 `START_EPOCH` - Ethereum consensus layer epoch for start application.
 * **Required:** false
 * **Default:** 155000
+---
+`DENCUN_FORK_EPOCH` - Ethereum consensus layer epoch when the Dencun hard fork has been released. This value must be set
+only for custom networks that support the Dencun hard fork. If the value of this variable is not specified for a custom
+network, it is supposed that this network doesn't support Dencun. For officially supported networks (Mainnet, Goerli and
+Holesky) this value should be omitted.
+* **Required:** false
 ---
 `VALIDATOR_REGISTRY_SOURCE` - Validators registry source.
 * **Required:** false
