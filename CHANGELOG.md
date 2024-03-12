@@ -1,3 +1,24 @@
+# [4.6.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.5.1...4.6.0) (2024-03-12)
+
+
+### Bug Fixes
+
+* bug in Dencun epoch calculation ([c43a2aa](https://github.com/lidofinance/ethereum-validators-monitoring/commit/c43a2aa4e5b0b0d07f26d8250544b9ed55942caa))
+* conditions ([eacccd9](https://github.com/lidofinance/ethereum-validators-monitoring/commit/eacccd9b05faa0e87f651988c93a78da29b4425a))
+* incorrect links in dashboards ([aab53a1](https://github.com/lidofinance/ethereum-validators-monitoring/commit/aab53a1ff53f44c135593b2bf611f9d63b92a4c1))
+* set correct Dencun Mainnet epoch ([3bd82b6](https://github.com/lidofinance/ethereum-validators-monitoring/commit/3bd82b6299097f829c542a3e59c82ab782ecf3e0))
+* simplify `DENCUN_FORK_EPOCH` validation ([334eb16](https://github.com/lidofinance/ethereum-validators-monitoring/commit/334eb1663b4c2f822655e2a8ebcf0a4ac7374c6f))
+* skip `DENCUN_FORK_EPOCH` validation ([689f4c4](https://github.com/lidofinance/ethereum-validators-monitoring/commit/689f4c4c6e55e8a515d5bfb35bdbca6207af89e1))
+* switch to fallback if primary node is stuck ([afc1835](https://github.com/lidofinance/ethereum-validators-monitoring/commit/afc1835f6b6b03b8ea052455dc0eaadfc22e97da))
+
+
+### Features
+
+* new `DENCUN_FORK_EPOCH` env variable ([77952e2](https://github.com/lidofinance/ethereum-validators-monitoring/commit/77952e29d7f1bc0ad3362dc4002508983463e6f8))
+* support for new attestation logic (Dencun) ([58558f8](https://github.com/lidofinance/ethereum-validators-monitoring/commit/58558f8f5760c4414268740a27546d98f65b0851))
+
+
+
 ## [4.5.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.5.0...4.5.1) (2024-01-11)
 
 
@@ -128,25 +149,6 @@
 ### Reverts
 
 * Revert "fix: long loops" (#121) ([4f8fbaf](https://github.com/lidofinance/ethereum-validators-monitoring/commit/4f8fbaf37a465c4fba8947e424fc041d85f2710e)), closes [#121](https://github.com/lidofinance/ethereum-validators-monitoring/issues/121)
-
-
-
-# [4.2.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.1.2...4.2.0) (2023-01-23)
-
-
-### Bug Fixes
-
-* att participation rate ([#114](https://github.com/lidofinance/ethereum-validators-monitoring/issues/114)) ([10e928c](https://github.com/lidofinance/ethereum-validators-monitoring/commit/10e928c1b0c5f01412f236c8f643e44cb19a5340))
-* attestation and proposal rewards calculation error ([#110](https://github.com/lidofinance/ethereum-validators-monitoring/issues/110)) ([140a3f2](https://github.com/lidofinance/ethereum-validators-monitoring/commit/140a3f20c8a917059df76cf49d198c0ae0b694c3))
-* event loop lag ([#115](https://github.com/lidofinance/ethereum-validators-monitoring/issues/115)) ([0135d0e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/0135d0edec5e5254fd094b1fb48e2310c860678d))
-* optional `high-reward-validators` task ([#113](https://github.com/lidofinance/ethereum-validators-monitoring/issues/113)) ([b275062](https://github.com/lidofinance/ethereum-validators-monitoring/commit/b275062b67806a206a3e738737121873edb4bfc3))
-* remove unnecessary use of BigNumber ([#111](https://github.com/lidofinance/ethereum-validators-monitoring/issues/111)) ([917c0b4](https://github.com/lidofinance/ethereum-validators-monitoring/commit/917c0b4e6f50c3ff22b8f75fc4f505111161d424))
-
-
-### Features
-
-* speed up writing to DB ([#106](https://github.com/lidofinance/ethereum-validators-monitoring/issues/106)) ([5f46711](https://github.com/lidofinance/ethereum-validators-monitoring/commit/5f46711f2feaaf2978e33d68d47dc81b8163f4b8))
-* use BigNumber ([#108](https://github.com/lidofinance/ethereum-validators-monitoring/issues/108)) ([325ab92](https://github.com/lidofinance/ethereum-validators-monitoring/commit/325ab92cb2cc082f2525280215b2ffbb39615ea5))
 
 
 
