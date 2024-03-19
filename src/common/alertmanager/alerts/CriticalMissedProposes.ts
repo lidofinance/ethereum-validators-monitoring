@@ -8,7 +8,9 @@ import { RegistrySourceOperator } from 'validators-registry';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
-const VALIDATORS_WITH_MISSED_PROPOSALS_COUNT_THRESHOLD = 1 / 3;
+const validatorsWithMissedProposalsCountThreshold = (quantity: number) => {
+  return Math.min(quantity / 3, 1000);
+};
 
 export class CriticalMissedProposes extends Alert {
   constructor(config: ConfigService, storage: ClickhouseService, operators: RegistrySourceOperator[]) {
@@ -25,7 +27,7 @@ export class CriticalMissedProposes extends Alert {
         (a) => a.val_nos_id != null && +a.val_nos_module_id == operator.module && +a.val_nos_id == operator.index,
       );
       if (!proposeStats) continue;
-      if (proposeStats.missed > proposeStats.all * VALIDATORS_WITH_MISSED_PROPOSALS_COUNT_THRESHOLD) {
+      if (proposeStats.missed > validatorsWithMissedProposalsCountThreshold(proposeStats.all)) {
         result[operator.name] = { all: proposeStats.all, missed: proposeStats.missed };
       }
     }

@@ -8,7 +8,9 @@ import { RegistrySourceOperator } from 'validators-registry';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
-const VALIDATORS_WITH_MISSED_ATTESTATION_COUNT_THRESHOLD = 1 / 3;
+const validatorsWithMissedAttestationCountThreshold = (quantity: number) => {
+  return Math.min(quantity / 3, 1000);
+};
 
 export class CriticalMissedAttestations extends Alert {
   constructor(config: ConfigService, storage: ClickhouseService, operators: RegistrySourceOperator[]) {
@@ -25,7 +27,7 @@ export class CriticalMissedAttestations extends Alert {
         (a) => a.val_nos_id != null && +a.val_nos_module_id == operator.module && +a.val_nos_id == operator.index,
       );
       if (!missedAtt) continue;
-      if (missedAtt.amount > noStats.active_ongoing * VALIDATORS_WITH_MISSED_ATTESTATION_COUNT_THRESHOLD) {
+      if (missedAtt.amount > validatorsWithMissedAttestationCountThreshold(noStats.active_ongoing)) {
         result[operator.name] = { ongoing: noStats.active_ongoing, missedAtt: missedAtt.amount };
       }
     }
