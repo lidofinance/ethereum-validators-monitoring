@@ -127,7 +127,9 @@ export class ConsensusProviderService {
 
           if (nodeLatestSlot < this.latestSlot.slot) {
             // we assume that the node must never return a slot less than the last saved slot
-            this.logger.error(`Received ${latestFrom} slot [${nodeLatestSlot}] is less than last [${this.latestSlot.slot}] slot received before, but shouldn't`);
+            this.logger.error(
+              `Received ${latestFrom} slot [${nodeLatestSlot}] is less than last [${this.latestSlot.slot}] slot received before, but shouldn't`,
+            );
             return true;
           }
           if (nodeLatestSlot > this.latestSlot.slot) {
