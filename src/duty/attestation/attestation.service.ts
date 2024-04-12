@@ -53,9 +53,8 @@ export class AttestationService {
   public async check(epoch: Epoch, stateSlot: Slot): Promise<void> {
     this.processedEpoch = epoch;
     this.savedCanonSlotsAttProperties.clear();
-    const { attestations } = await this.getProcessedAttestations();
-    this.logger.log(`Getting attestation duties info`);
-    const committees = await this.getAttestationCommittees(stateSlot);
+    this.logger.log(`Getting attestations and duties info`);
+    const [attestations, committees] = await allSettled([this.getProcessedAttestations(), this.getAttestationCommittees(stateSlot)]);
     this.logger.log(`Processing attestation duty info`);
     const maxBatchSize = 5;
     let index = 0;
@@ -169,7 +168,7 @@ export class AttestationService {
       }
     }
     this.logger.debug(`All missed slots in getting attestations info process: ${allMissedSlots}`);
-    return { attestations, allMissedSlots };
+    return attestations;
   }
 
   @TrackTask('get-attestation-committees')

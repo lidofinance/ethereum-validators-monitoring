@@ -1,3 +1,7 @@
+import { iterateNodesAtDepth } from '@chainsafe/persistent-merkle-tree';
+import { BooleanType, ByteVectorType, ContainerNodeStructType, UintNumberType } from '@chainsafe/ssz';
+import { ArrayBasicTreeView } from '@chainsafe/ssz/lib/view/arrayBasic';
+import { ListCompositeTreeView } from '@chainsafe/ssz/lib/view/listComposite';
 import { BigNumber } from '@ethersproject/bignumber';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
@@ -12,9 +16,20 @@ import { SummaryService } from 'duty/summary';
 import { ClickhouseService } from 'storage/clickhouse';
 import { RegistryService } from 'validators-registry';
 
-let types: typeof import('@lodestar/types');
-
 const FAR_FUTURE_EPOCH = Infinity;
+
+type Validators = ListCompositeTreeView<
+  ContainerNodeStructType<{
+    pubkey: ByteVectorType;
+    withdrawalCredentials: ByteVectorType;
+    effectiveBalance: UintNumberType;
+    slashed: BooleanType;
+    activationEligibilityEpoch: UintNumberType;
+    activationEpoch: UintNumberType;
+    exitEpoch: UintNumberType;
+    withdrawableEpoch: UintNumberType;
+  }>
+>;
 
 @Injectable()
 export class StateService {
@@ -28,42 +43,30 @@ export class StateService {
     protected readonly registry: RegistryService,
   ) {}
 
-  private selectFork(epoch: Epoch) {
-    if (epoch >= this.config.get('DENCUN_FORK_EPOCH')) {
-      return types.ssz.deneb;
-    }
-    if (epoch >= this.config.get('CAPELLA_FORK_EPOCH')) {
-      return types.ssz.capella;
-    }
-    if (epoch >= this.config.get('BELLATRIX_FORK_EPOCH')) {
-      return types.ssz.bellatrix;
-    }
-    if (epoch >= this.config.get('ALTAIR_FORK_EPOCH')) {
-      return types.ssz.altair;
-    }
-    return types.ssz.phase0;
-  }
-
   @TrackTask('check-state-duties')
   public async check(epoch: Epoch, stateSlot: Slot): Promise<void> {
     const slotTime = await this.clClient.getSlotTime(epoch * this.config.get('FETCH_INTERVAL_SLOTS'));
     await this.registry.updateKeysRegistry(Number(slotTime));
+    const stuckKeys = this.registry.getStuckKeys();
     this.logger.log('Getting all validators state');
-    const stateBody = await this.clClient.getStateSSZ(stateSlot);
-    const stateSSZ = new Uint8Array(await stateBody.arrayBuffer());
+    const stateView = await this.clClient.getState(stateSlot);
     this.logger.log('Processing all validators state');
     let activeValidatorsCount = 0;
     let activeValidatorsEffectiveBalance = 0n;
-    const stuckKeys = this.registry.getStuckKeys();
-    types = await eval(`import('@lodestar/types')`);
-    // TODO: fork selector
-    const stateView = this.selectFork(epoch).BeaconState.deserializeToView(stateSSZ);
-    const balances = stateView.balances.getAll();
-    // unblock every 1000 validators
-    for (const [index, validator] of stateView.validators.getAllReadonlyValues().entries()) {
-      if (index % 1000 === 0) {
+    const balances = stateView.balances as ArrayBasicTreeView<UintNumberType>;
+    const validators = stateView.validators as Validators;
+    const iterator = iterateNodesAtDepth(
+      validators.type.tree_getChunksNode(validators.node),
+      validators.type.chunkDepth,
+      0,
+      validators.length,
+    );
+    for (let index = 0; index < validators.length; index++) {
+      if (index % 100 === 0) {
         await unblock();
       }
+      const node = iterator.next().value;
+      const validator = node.value;
       const status = this.getValidatorStatus(validator, epoch);
       const pubkey = '0x'.concat(Buffer.from(validator.pubkey).toString('hex'));
       const operator = this.registry.getOperatorKey(pubkey);
@@ -76,7 +79,7 @@ export class StateService {
         val_nos_name: operator?.operatorName,
         val_slashed: validator.slashed,
         val_status: status,
-        val_balance: BigInt(balances[index]),
+        val_balance: BigInt(balances.get(index)),
         val_effective_balance: BigInt(validator.effectiveBalance),
         val_stuck: stuckKeys.includes(pubkey),
       };
