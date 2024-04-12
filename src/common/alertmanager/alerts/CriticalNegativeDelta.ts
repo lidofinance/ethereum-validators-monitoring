@@ -8,7 +8,9 @@ import { RegistrySourceOperator } from 'validators-registry';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
-const VALIDATORS_WITH_NEGATIVE_DELTA_COUNT_THRESHOLD = 1 / 3;
+const validatorsWithNegativeDeltaCountThreshold = (quantity: number) => {
+  return Math.min(quantity / 3, 1000);
+};
 
 export class CriticalNegativeDelta extends Alert {
   constructor(config: ConfigService, storage: ClickhouseService, operators: RegistrySourceOperator[]) {
@@ -23,7 +25,7 @@ export class CriticalNegativeDelta extends Alert {
       const operator = this.operators.find((o) => +noStats.val_nos_module_id == o.module && +noStats.val_nos_id == o.index);
       const negDelta = negativeValidatorsCount.find((a) => +a.val_nos_module_id == operator.module && +a.val_nos_id == operator.index);
       if (!negDelta) continue;
-      if (negDelta.amount > noStats.active_ongoing * VALIDATORS_WITH_NEGATIVE_DELTA_COUNT_THRESHOLD) {
+      if (negDelta.amount > validatorsWithNegativeDeltaCountThreshold(noStats.active_ongoing)) {
         result[operator.name] = { ongoing: noStats.active_ongoing, negDelta: negDelta.amount };
       }
     }

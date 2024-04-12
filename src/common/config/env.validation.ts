@@ -26,7 +26,6 @@ export enum Network {
   Mainnet = 1,
   Goerli = 5,
   Holesky = 17000,
-  Kintsugi = 1337702,
 }
 
 export enum ValidatorRegistrySource {
@@ -41,10 +40,7 @@ export enum WorkingMode {
 }
 
 const dencunForkEpoch = {
-  /**
-   * @todo This should be corrected once the particular epoch of the Dencun hard fork on Mainnet is known.
-   */
-  '1': Number.MAX_SAFE_INTEGER,
+  '1': 269568,
   '5': 231680,
   '17000': 29696,
 };

@@ -1635,7 +1635,7 @@
                   {
                     "targetBlank": true,
                     "title": "blockcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               }
@@ -1703,7 +1703,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -1978,7 +1978,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -2045,7 +2045,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                   }
                 ]
               },
@@ -2148,7 +2148,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -2174,7 +2174,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/slot/${__value.raw}"
+                    "url": "https://beaconcha.in/slot/${__value.raw}"
                   }
                 ]
               }
@@ -2212,7 +2212,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -2345,7 +2345,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -2387,7 +2387,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -2488,7 +2488,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -2530,7 +2530,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -2630,7 +2630,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -2684,7 +2684,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operators dashboard",
-                    "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -2785,7 +2785,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -2839,7 +2839,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -2939,7 +2939,7 @@
                   {
                     "targetBlank": true,
                     "title": "beaconcha.in",
-                    "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                    "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
               },
@@ -2981,7 +2981,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -3424,7 +3424,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -3466,7 +3466,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -3679,7 +3679,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -3705,7 +3705,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/slot/${__value.raw}"
+                        "url": "https://beaconcha.in/slot/${__value.raw}"
                       }
                     ]
                   }
@@ -3743,7 +3743,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -4186,7 +4186,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -4250,7 +4250,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -4516,7 +4516,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -4558,7 +4558,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -4807,7 +4807,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -4849,7 +4849,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5098,7 +5098,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -5140,7 +5140,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5389,7 +5389,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -5431,7 +5431,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5680,7 +5680,7 @@
                       {
                         "targetBlank": true,
                         "title": "beaconcha.in",
-                        "url": "https://goerli.beaconcha.in/validator/${__value.raw}"
+                        "url": "https://beaconcha.in/validator/${__value.raw}"
                       }
                     ]
                   },
@@ -5722,7 +5722,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "https://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
