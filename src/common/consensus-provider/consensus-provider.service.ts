@@ -1,6 +1,6 @@
 import { ContainerTreeViewType } from '@chainsafe/ssz/lib/view/container';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
 import { request } from 'undici';
 import { IncomingHttpHeaders } from 'undici/types/header';
@@ -39,7 +39,7 @@ interface RequestRetryOptions {
 }
 
 @Injectable()
-export class ConsensusProviderService implements OnModuleInit {
+export class ConsensusProviderService {
   protected apiUrls: string[];
   protected version = '';
   protected genesisTime = 0;
@@ -68,11 +68,6 @@ export class ConsensusProviderService implements OnModuleInit {
     protected readonly cache: BlockCacheService,
   ) {
     this.apiUrls = config.get('CL_API_URLS') as NonEmptyArray<string>;
-  }
-
-  async onModuleInit(): Promise<void> {
-    // ugly hack to import ESModule to CommonJS project
-    ssz = await eval(`import('@lodestar/types').then((m) => m.ssz)`);
   }
 
   public async getVersion(): Promise<string> {
@@ -286,6 +281,8 @@ export class ConsensusProviderService implements OnModuleInit {
     );
     const forkName = headers['eth-consensus-version'] as keyof typeof ForkName;
     const bodyBytes = new Uint8Array(await body.arrayBuffer());
+    // ugly hack to import ESModule to CommonJS project
+    ssz = await eval(`import('@lodestar/types').then((m) => m.ssz)`);
     return ssz[forkName].BeaconState.deserializeToView(bodyBytes) as any as ContainerTreeViewType<typeof anySsz.BeaconState.fields>;
   }
 

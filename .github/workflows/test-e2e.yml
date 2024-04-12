@@ -16,7 +16,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: '21.2'
+          node-version: '18.20.1'
           cache: 'yarn'
 
       - name: Install dependencies
