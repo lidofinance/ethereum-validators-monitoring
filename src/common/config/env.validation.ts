@@ -49,24 +49,6 @@ const dencunForkEpoch = {
   '17000': 29696,
 };
 
-const capellaForkEpoch = {
-  '1': 194048,
-  '5': 162304,
-  '17000': 0,
-};
-
-const bellatrixForkEpoch = {
-  '1': 144896,
-  '5': 112260,
-  '17000': 0,
-};
-
-const altairForkEpoch = {
-  '1': 74240,
-  '5': 47300,
-  '17000': 0,
-};
-
 const toBoolean = (value: any): boolean => {
   if (typeof value === 'boolean') {
     return value;
@@ -201,33 +183,6 @@ export class EnvironmentVariables {
       dencunForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
   )
   public DENCUN_FORK_EPOCH: Epoch;
-
-  @IsInt()
-  @IsPositive()
-  @Expose()
-  @Transform(
-    ({ value, obj }) =>
-      capellaForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
-  )
-  public CAPELLA_FORK_EPOCH: Epoch;
-
-  @IsInt()
-  @IsPositive()
-  @Expose()
-  @Transform(
-    ({ value, obj }) =>
-      bellatrixForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
-  )
-  public BELLATRIX_FORK_EPOCH: Epoch;
-
-  @IsInt()
-  @IsPositive()
-  @Expose()
-  @Transform(
-    ({ value, obj }) =>
-      altairForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
-  )
-  public ALTAIR_FORK_EPOCH: Epoch;
 
   @IsNumber()
   @Min(32)
