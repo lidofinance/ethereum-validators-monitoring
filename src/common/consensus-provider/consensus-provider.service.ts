@@ -1,7 +1,9 @@
+import { ContainerTreeViewType } from '@chainsafe/ssz/lib/view/container';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
 import { request } from 'undici';
+import { IncomingHttpHeaders } from 'undici/types/header';
 import BodyReadable from 'undici/types/readable';
 
 import { ConfigService } from 'common/config';
@@ -25,6 +27,10 @@ import {
 } from './intefaces';
 import { BlockId, Epoch, Slot, StateId } from './types';
 
+let ssz: typeof import('@lodestar/types').ssz;
+let anySsz: typeof ssz.phase0 | typeof ssz.altair | typeof ssz.bellatrix | typeof ssz.capella | typeof ssz.deneb;
+let ForkName: typeof import('@lodestar/params').ForkName;
+
 interface RequestRetryOptions {
   maxRetries?: number;
   dataOnly?: boolean;
@@ -32,31 +38,8 @@ interface RequestRetryOptions {
   useFallbackOnResolved?: (r: any) => boolean;
 }
 
-const REQUEST_TIMEOUT_POLICY_MS = {
-  // Starts when a socket is assigned.
-  // Ends when the hostname has been resolved.
-  lookup: undefined,
-  // Starts when lookup completes.
-  // Ends when the socket is fully connected.
-  // If lookup does not apply to the request, this event starts when the socket is assigned and ends when the socket is connected.
-  connect: 1000,
-  // Starts when connect completes.
-  // Ends when the handshake process completes.
-  secureConnect: undefined,
-  // Starts when the socket is connected.
-  // Resets when new data is transferred.
-  socket: undefined,
-  // Starts when the socket is connected.
-  // Ends when all data have been written to the socket.
-  send: undefined,
-  // Starts when request has been flushed.
-  // Ends when the headers are received.
-  // Will be redefined by `CL_API_GET_RESPONSE_TIMEOUT`
-  response: 1000,
-};
-
 @Injectable()
-export class ConsensusProviderService {
+export class ConsensusProviderService implements OnModuleInit {
   protected apiUrls: string[];
   protected version = '';
   protected genesisTime = 0;
@@ -85,6 +68,11 @@ export class ConsensusProviderService {
     protected readonly cache: BlockCacheService,
   ) {
     this.apiUrls = config.get('CL_API_URLS') as NonEmptyArray<string>;
+  }
+
+  async onModuleInit(): Promise<void> {
+    // ugly hack to import ESModule to CommonJS project
+    ssz = await eval(`import('@lodestar/types').then((m) => m.ssz)`);
   }
 
   public async getVersion(): Promise<string> {
@@ -280,19 +268,16 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getValidatorsState(stateId: StateId): Promise<BodyReadable> {
-    return await this.retryRequest(async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.validatorsState(stateId)), {
-      dataOnly: false,
-    });
-  }
-
-  public async getStateSSZ(stateId: StateId): Promise<BodyReadable> {
-    return await this.retryRequest(
+  public async getState(stateId: StateId): Promise<ContainerTreeViewType<typeof anySsz.BeaconState.fields>> {
+    const { body, headers } = await this.retryRequest<{ body: BodyReadable; headers: IncomingHttpHeaders }>(
       async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.state(stateId), { accept: 'application/octet-stream' }),
       {
         dataOnly: false,
       },
     );
+    const forkName = headers['eth-consensus-version'] as keyof typeof ForkName;
+    const bodyBytes = new Uint8Array(await body.arrayBuffer());
+    return ssz[forkName].BeaconState.deserializeToView(bodyBytes) as any as ContainerTreeViewType<typeof anySsz.BeaconState.fields>;
   }
 
   public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse | void> {
@@ -327,12 +312,13 @@ export class ConsensusProviderService {
   }
 
   public async getAttestationCommitteesInfo(stateId: StateId, epoch: Epoch): Promise<BodyReadable> {
-    return await this.retryRequest(
+    const { body }: BodyReadable = await this.retryRequest(
       async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.attestationCommittees(stateId, epoch)),
       {
         dataOnly: false,
       },
     );
+    return body;
   }
 
   public async getSyncCommitteeInfo(stateId: StateId, epoch: Epoch): Promise<SyncCommitteeInfo> {
@@ -429,11 +415,15 @@ export class ConsensusProviderService {
   }
 
   @TrackCLRequest
-  protected async apiGetStream(apiURL: string, subUrl: string, headers?: Record<string, string>): Promise<BodyReadable> {
-    const { body, statusCode } = await request(urljoin(apiURL, subUrl), {
+  protected async apiGetStream(
+    apiURL: string,
+    subUrl: string,
+    headersToSend?: Record<string, string>,
+  ): Promise<{ body: BodyReadable; headers: IncomingHttpHeaders }> {
+    const { body, headers, statusCode } = await request(urljoin(apiURL, subUrl), {
       method: 'GET',
       headersTimeout: this.config.get('CL_API_GET_RESPONSE_TIMEOUT'),
-      headers: headers,
+      headers: headersToSend,
     }).catch((e) => {
       if (e.response) {
         throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
@@ -444,6 +434,6 @@ export class ConsensusProviderService {
       const errorText = await body.text();
       throw new ResponseError(errRequest(errorText, subUrl, apiURL), statusCode);
     }
-    return body;
+    return { body, headers };
   }
 }
