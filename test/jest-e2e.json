@@ -1,4 +1,11 @@
 {
+  "globals": {
+    "ts-jest": {
+      "tsconfig": {
+        "allowJs": true
+      }
+    }
+  },
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": "..",
   "moduleDirectories": ["node_modules", "src"],

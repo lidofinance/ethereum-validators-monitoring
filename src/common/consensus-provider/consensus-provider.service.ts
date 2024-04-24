@@ -52,12 +52,9 @@ export class ConsensusProviderService {
     beaconHeadFinalityCheckpoints: 'eth/v1/beacon/states/head/finality_checkpoints',
     blockInfo: (blockId: BlockId): string => `eth/v2/beacon/blocks/${blockId}`,
     beaconHeaders: (blockId: BlockId): string => `eth/v1/beacon/headers/${blockId}`,
-    validatorsState: (stateId: StateId): string => `eth/v1/beacon/states/${stateId}/validators`,
     attestationCommittees: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/committees?epoch=${epoch}`,
     syncCommittee: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/sync_committees?epoch=${epoch}`,
     proposerDutes: (epoch: Epoch): string => `eth/v1/validator/duties/proposer/${epoch}`,
-    attesterDuties: (epoch: Epoch): string => `eth/v1/validator/duties/attester/${epoch}`,
-    syncCommitteeDuties: (epoch: Epoch): string => `eth/v1/validator/duties/sync/${epoch}`,
     state: (stateId: StateId): string => `eth/v2/debug/beacon/states/${stateId}`,
   };
 

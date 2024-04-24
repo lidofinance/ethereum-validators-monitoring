@@ -21,6 +21,7 @@
   "license": "MIT",
   "description": "Consensus layer validators monitoring bot, that fetches Lido or User Node Operator keys from Execution layer and checks their performance in Consensus layer by: balance delta, attestations, proposes, sync committee participation.",
   "dependencies": {
+    "@chainsafe/persistent-merkle-tree": "^0.7.1",
     "@chainsafe/ssz": "^0.9.4",
     "@clickhouse/client": "^0.0.11",
     "@ethersproject/abstract-signer": "^5.4.0",
