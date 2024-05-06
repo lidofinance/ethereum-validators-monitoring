@@ -92,7 +92,6 @@ export class SummaryService {
       setMeta: (val: EpochMeta) => {
         const curr = epochStorageData.meta;
         epochStorageData.meta = merge(curr, val);
-        this.storage.set(epoch, epochStorageData);
       },
       getMeta: (): EpochMeta => {
         return epochStorageData.meta;
@@ -100,7 +99,6 @@ export class SummaryService {
       set: (val: ValidatorDutySummary) => {
         const curr = epochStorageData.summary.get(val.val_id) ?? {};
         epochStorageData.summary.set(val.val_id, merge(curr, val));
-        this.storage.set(epoch, epochStorageData);
       },
       get: (val_id: ValidatorId): ValidatorDutySummary => {
         return epochStorageData.summary.get(val_id);

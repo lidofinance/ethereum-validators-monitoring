@@ -1,7 +1,10 @@
+import { ContainerTreeViewType } from '@chainsafe/ssz/lib/view/container';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
-import { HTTPError, Response, got } from 'got-cjs';
+import { request } from 'undici';
+import { IncomingHttpHeaders } from 'undici/types/header';
+import BodyReadable from 'undici/types/readable';
 
 import { ConfigService } from 'common/config';
 import { range } from 'common/functions/range';
@@ -24,35 +27,16 @@ import {
 } from './intefaces';
 import { BlockId, Epoch, Slot, StateId } from './types';
 
+let ssz: typeof import('@lodestar/types').ssz;
+let anySsz: typeof ssz.phase0 | typeof ssz.altair | typeof ssz.bellatrix | typeof ssz.capella | typeof ssz.deneb;
+let ForkName: typeof import('@lodestar/params').ForkName;
+
 interface RequestRetryOptions {
   maxRetries?: number;
   dataOnly?: boolean;
   useFallbackOnRejected?: (last_error: any, current_error: any) => boolean;
   useFallbackOnResolved?: (r: any) => boolean;
 }
-
-const REQUEST_TIMEOUT_POLICY_MS = {
-  // Starts when a socket is assigned.
-  // Ends when the hostname has been resolved.
-  lookup: undefined,
-  // Starts when lookup completes.
-  // Ends when the socket is fully connected.
-  // If lookup does not apply to the request, this event starts when the socket is assigned and ends when the socket is connected.
-  connect: 1000,
-  // Starts when connect completes.
-  // Ends when the handshake process completes.
-  secureConnect: undefined,
-  // Starts when the socket is connected.
-  // Resets when new data is transferred.
-  socket: undefined,
-  // Starts when the socket is connected.
-  // Ends when all data have been written to the socket.
-  send: undefined,
-  // Starts when request has been flushed.
-  // Ends when the headers are received.
-  // Will be redefined by `CL_API_GET_RESPONSE_TIMEOUT`
-  response: 1000,
-};
 
 @Injectable()
 export class ConsensusProviderService {
@@ -68,12 +52,10 @@ export class ConsensusProviderService {
     beaconHeadFinalityCheckpoints: 'eth/v1/beacon/states/head/finality_checkpoints',
     blockInfo: (blockId: BlockId): string => `eth/v2/beacon/blocks/${blockId}`,
     beaconHeaders: (blockId: BlockId): string => `eth/v1/beacon/headers/${blockId}`,
-    validatorsState: (stateId: StateId): string => `eth/v1/beacon/states/${stateId}/validators`,
     attestationCommittees: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/committees?epoch=${epoch}`,
     syncCommittee: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/sync_committees?epoch=${epoch}`,
     proposerDutes: (epoch: Epoch): string => `eth/v1/validator/duties/proposer/${epoch}`,
-    attesterDuties: (epoch: Epoch): string => `eth/v1/validator/duties/attester/${epoch}`,
-    syncCommitteeDuties: (epoch: Epoch): string => `eth/v1/validator/duties/sync/${epoch}`,
+    state: (stateId: StateId): string => `eth/v2/debug/beacon/states/${stateId}`,
   };
 
   public constructor(
@@ -287,10 +269,18 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getValidatorsState(stateId: StateId): Promise<Request> {
-    return await this.retryRequest(async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.validatorsState(stateId)), {
-      dataOnly: false,
-    });
+  public async getState(stateId: StateId): Promise<ContainerTreeViewType<typeof anySsz.BeaconState.fields>> {
+    const { body, headers } = await this.retryRequest<{ body: BodyReadable; headers: IncomingHttpHeaders }>(
+      async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.state(stateId), { accept: 'application/octet-stream' }),
+      {
+        dataOnly: false,
+      },
+    );
+    const forkName = headers['eth-consensus-version'] as keyof typeof ForkName;
+    const bodyBytes = new Uint8Array(await body.arrayBuffer());
+    // ugly hack to import ESModule to CommonJS project
+    ssz = await eval(`import('@lodestar/types').then((m) => m.ssz)`);
+    return ssz[forkName].BeaconState.deserializeToView(bodyBytes) as any as ContainerTreeViewType<typeof anySsz.BeaconState.fields>;
   }
 
   public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse | void> {
@@ -324,13 +314,14 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getAttestationCommitteesInfo(stateId: StateId, epoch: Epoch): Promise<Request> {
-    return await this.retryRequest(
+  public async getAttestationCommitteesInfo(stateId: StateId, epoch: Epoch): Promise<BodyReadable> {
+    const { body }: BodyReadable = await this.retryRequest(
       async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.attestationCommittees(stateId, epoch)),
       {
         dataOnly: false,
       },
     );
+    return body;
   }
 
   public async getSyncCommitteeInfo(stateId: StateId, epoch: Epoch): Promise<SyncCommitteeInfo> {
@@ -410,43 +401,42 @@ export class ConsensusProviderService {
 
   @TrackCLRequest
   protected async apiGet<T>(apiURL: string, subUrl: string): Promise<T> {
-    const res = await got
-      .get(urljoin(apiURL, subUrl), { timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') } })
-      .catch((e) => {
-        if (e.response) {
-          throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
-        }
-        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-      });
-    if (res.statusCode !== 200) {
-      throw new ResponseError(errRequest(res.body, subUrl, apiURL), res.statusCode);
+    const { body, statusCode } = await request(urljoin(apiURL, subUrl), {
+      method: 'GET',
+      headersTimeout: this.config.get('CL_API_GET_RESPONSE_TIMEOUT'),
+    }).catch((e) => {
+      if (e.response) {
+        throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
+      }
+      throw new ResponseError(errCommon(e.message, subUrl, apiURL));
+    });
+    if (statusCode !== 200) {
+      const errorText = await body.text();
+      throw new ResponseError(errRequest(errorText, subUrl, apiURL), statusCode);
     }
-    try {
-      return JSON.parse(res.body);
-    } catch (e) {
-      throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
-    }
+    return (await body.json()) as T;
   }
 
   @TrackCLRequest
-  protected async apiGetStream(apiURL: string, subUrl: string): Promise<Request> {
-    const readStream = got.stream.get(urljoin(apiURL, subUrl), {
-      timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('CL_API_GET_RESPONSE_TIMEOUT') },
+  protected async apiGetStream(
+    apiURL: string,
+    subUrl: string,
+    headersToSend?: Record<string, string>,
+  ): Promise<{ body: BodyReadable; headers: IncomingHttpHeaders }> {
+    const { body, headers, statusCode } = await request(urljoin(apiURL, subUrl), {
+      method: 'GET',
+      headersTimeout: this.config.get('CL_API_GET_RESPONSE_TIMEOUT'),
+      headers: headersToSend,
+    }).catch((e) => {
+      if (e.response) {
+        throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
+      }
+      throw new ResponseError(errCommon(e.message, subUrl, apiURL));
     });
-
-    return new Promise((resolve, reject) => {
-      readStream.on('response', (r: Response) => {
-        if (r.statusCode != 200) reject(new HTTPError(r));
-        resolve(readStream);
-      });
-      readStream.on('error', (e) => reject(e));
-    })
-      .then((r: Request) => r)
-      .catch((e) => {
-        if (e instanceof HTTPError) {
-          throw new ResponseError(errRequest(<string>e.response.body, subUrl, apiURL), e.response.statusCode);
-        }
-        throw new ResponseError(errCommon(e.message, subUrl, apiURL));
-      });
+    if (statusCode !== 200) {
+      const errorText = await body.text();
+      throw new ResponseError(errRequest(errorText, subUrl, apiURL), statusCode);
+    }
+    return { body, headers };
   }
 }

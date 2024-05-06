@@ -16,7 +16,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18.20.1'
           cache: 'yarn'
 
       - name: Install dependencies
@@ -28,6 +28,7 @@ jobs:
       - name: Run e2e tests
         run: yarn test:e2e
         env:
+          ETH_NETWORK: 1
           CL_API_URLS: ${{ secrets.CL_API_URL }}
           CL_API_GET_RESPONSE_TIMEOUT: 60000
           TEST_EPOCH_NUMBER: 152978
