@@ -1,0 +1,111 @@
+groups:
+  - name: Mentions
+    rules:
+      - record: ethereum_validators_monitoring_mentions
+        expr: 1
+        labels:
+          nos_global_index: 1;0
+          mentions: "op_0:ping_1,op_0:ping_2"
+          alerts: >-
+            UserSlashedValidators,
+            NumValidatorsWithNegativeDelta,
+            NumValidatorsWithMissPropose,
+            NumValidatorsWithSyncParticipationLessAvgLastNEpoch,
+            NumValidatorsWithMissAttestationLastNEpoch
+
+      - record: ethereum_validators_monitoring_mentions
+        expr: 1
+        labels:
+          nos_global_index: 1;0
+          mentions: "op_0:ping_3"
+          alerts: >-
+            UserSlashedValidators
+
+      - record: ethereum_validators_monitoring_mentions
+        expr: 1
+        labels:
+          nos_global_index: 1;0
+          mentions: "" # Empty mentions key is not supported. This leads to metric with a trailing comma, like this one: op_0:ping_1,op_0:ping_2,
+          alerts: >-
+            NumValidatorsWithNegativeDelta
+
+      - record: ethereum_validators_monitoring_mentions
+        expr: 1
+        labels:
+          nos_global_index: 1;1
+          mentions: "op_1:ping_1,op_1:ping_2"
+          alerts: >-
+            UserSlashedValidators,
+            NumValidatorsWithNegativeDelta,
+            NumValidatorsWithMissPropose,
+            NumValidatorsWithSyncParticipationLessAvgLastNEpoch,
+            NumValidatorsWithMissAttestationLastNEpoch
+
+      - record: ethereum_validators_monitoring_mentions
+        expr: 1
+        labels:
+          nos_global_index: 1;1
+          mentions: "op_1:ping_3,op_1:ping_4"
+          alerts: >-
+            UserSlashedValidators
+
+      - record: ethereum_validators_monitoring_mentions
+        expr: 1
+        labels:
+          nos_global_index: 1;1
+          alerts: >-
+            NumValidatorsWithNegativeDelta
+
+      - record: ethereum_validators_monitoring_mentions
+        expr: 1
+        labels:
+          nos_global_index: 1;2
+          mentions: "op_2:ping_1,op_2:ping_2"
+          alerts: >-
+            NumValidatorsWithNegativeDelta,
+            NumValidatorsWithMissPropose,
+            NumValidatorsWithSyncParticipationLessAvgLastNEpoch,
+            NumValidatorsWithMissAttestationLastNEpoch
+
+      - record: ethereum_validators_monitoring_mentions
+        expr: 1
+        labels:
+          nos_global_index: 1;2
+          mentions: "op_2:ping_3"
+          alerts: >-
+            UserSlashedValidators
+
+      - record: ethereum_validators_monitoring_mentions
+        expr: 1
+        labels:
+          nos_global_index: 1;3
+          mentions: ""
+          alerts: >-
+            UserSlashedValidators,
+            NumValidatorsWithNegativeDelta,
+            NumValidatorsWithMissPropose,
+            NumValidatorsWithSyncParticipationLessAvgLastNEpoch,
+            NumValidatorsWithMissAttestationLastNEpoch
+
+      - record: ethereum_validators_monitoring_mentions
+        expr: 1
+        labels:
+          nos_global_index: 1;4
+          alerts: >-
+            UserSlashedValidators,
+            NumValidatorsWithNegativeDelta,
+            NumValidatorsWithMissPropose,
+            NumValidatorsWithSyncParticipationLessAvgLastNEpoch,
+            NumValidatorsWithMissAttestationLastNEpoch
+
+      - record: ethereum_validators_monitoring_mentions
+        expr: 1
+        labels:
+          nos_global_index: 1;5
+          mentions: "op_5:ping_1,op_5:ping_2"
+          alerts: >-
+            UserSlashedValidators,
+            NumValidatorsWithNegativeDelta,
+            NumValidatorsWithMissPropose,
+            NumValidatorsWithSyncParticipationLessAvgLastNEpoch,
+            NumValidatorsWithMissAttestationLastNEpoch

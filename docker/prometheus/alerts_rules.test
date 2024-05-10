@@ -2,15 +2,36 @@
 evaluation_interval: 1m
 rule_files:
   - alerts_rules.yml
+  - mentions.yml
 tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_user_validators{nos_name="Operator 1", status="slashed"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47 2+0x47 3+0x47
       - series: ethereum_validators_monitoring_user_validators{nos_name="Operator 2", status="slashed"}
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47 0+0x47 0+0x47
+      - series: ethereum_validators_monitoring_user_validators{nos_name="Operator 3", status="slashed"}
+        values: 0+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 0+0x47 0+0x47
+      - series: ethereum_validators_monitoring_user_validators{nos_name="Operator 4", status="slashed"}
+        values: 0+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 0+0x47 0+0x47
+      - series: ethereum_validators_monitoring_user_validators{nos_name="Operator 5", status="slashed"}
+        values: 0+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 0+0x47 0+0x47
+      # - series: ethereum_validators_monitoring_mentions{nos_global_index="1;0", mentions="op_0:ping_1,op_0:ping_2", alerts="UserSlashedValidators"}
+      #   values: 1+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47
+      # - series: ethereum_validators_monitoring_mentions{nos_global_index="1;1", mentions="op_1:ping_1,op_1:ping_2", alerts="UserSlashedValidators"}
+      #   values: 1+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47
+      - series: ethereum_validators_monitoring_user_operators_identifies{nos_name="Operator 1", nos_global_index="1;0"}
+        values: 1+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47
+      - series: ethereum_validators_monitoring_user_operators_identifies{nos_name="Operator 2", nos_global_index="1;1"}
+        values: 1+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47
+      - series: ethereum_validators_monitoring_user_operators_identifies{nos_name="Operator 3", nos_global_index="1;2"}
+        values: 1+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47
+      - series: ethereum_validators_monitoring_user_operators_identifies{nos_name="Operator 4", nos_global_index="1;3"}
+        values: 1+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47
+      - series: ethereum_validators_monitoring_user_operators_identifies{nos_name="Operator 5", nos_global_index="1;4"}
+        values: 1+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 4+0x48 5+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47 5+0x47 6+0x47
     alert_rule_test:
       - eval_time: 5m
         alertname: UserSlashedValidators
@@ -21,6 +42,7 @@ tests:
               severity: critical
               status: slashed
               nos_name: Operator 1
+              mentions: op_0:ping_1,op_0:ping_2,op_0:ping_3
             exp_annotations:
               emoji: 🔪
               summary: "Operators have slashed validators"
@@ -35,12 +57,56 @@ tests:
               severity: critical
               status: slashed
               nos_name: Operator 2
+              mentions: op_1:ping_1,op_1:ping_2,op_1:ping_3,op_1:ping_4
             exp_annotations:
               emoji: 🔪
               summary: "Operators have slashed validators"
               description: "Number of slashed validators per operator"
               field_name: "Operator 2"
               field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=-660000.000000&to=540000.000000)"
+              url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
+              footer_text: 'Epoch • 1'
+              footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
+
+          - exp_labels:
+              severity: critical
+              status: slashed
+              nos_name: Operator 3
+              mentions: op_2:ping_3
+            exp_annotations:
+              emoji: 🔪
+              summary: "Operators have slashed validators"
+              description: "Number of slashed validators per operator"
+              field_name: "Operator 3"
+              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+3&from=-660000.000000&to=540000.000000)"
+              url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
+              footer_text: 'Epoch • 1'
+              footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
+
+          - exp_labels:
+              severity: critical
+              status: slashed
+              nos_name: Operator 4
+            exp_annotations:
+              emoji: 🔪
+              summary: "Operators have slashed validators"
+              description: "Number of slashed validators per operator"
+              field_name: "Operator 4"
+              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+4&from=-660000.000000&to=540000.000000)"
+              url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
+              footer_text: 'Epoch • 1'
+              footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
+
+          - exp_labels:
+              severity: critical
+              status: slashed
+              nos_name: Operator 5
+            exp_annotations:
+              emoji: 🔪
+              summary: "Operators have slashed validators"
+              description: "Number of slashed validators per operator"
+              field_name: "Operator 5"
+              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+5&from=-660000.000000&to=540000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 1'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -53,6 +119,7 @@ tests:
               severity: critical
               status: slashed
               nos_name: Operator 1
+              mentions: op_0:ping_1,op_0:ping_2,op_0:ping_3
             exp_annotations:
               emoji: 🔪
               summary: "Operators have slashed validators"
@@ -66,6 +133,7 @@ tests:
               severity: critical
               status: slashed
               nos_name: Operator 2
+              mentions: op_1:ping_1,op_1:ping_2,op_1:ping_3,op_1:ping_4
             exp_annotations:
               emoji: 🔪
               summary: "Operators have slashed validators"
@@ -82,6 +150,7 @@ tests:
               severity: critical
               status: slashed
               nos_name: Operator 2
+              mentions: op_1:ping_1,op_1:ping_2,op_1:ping_3,op_1:ping_4
             exp_annotations:
               emoji: 🔪
               summary: "Operators have slashed validators"
@@ -91,13 +160,28 @@ tests:
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 3'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
+      - eval_time: 57m
+        alertname: UserSlashedValidators
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              status: slashed
+              nos_name: Operator 1
+              mentions: op_0:ping_1,op_0:ping_2,op_0:ping_3
+            exp_annotations:
+              emoji: 🔪
+              summary: "Operators have slashed validators"
+              description: "Number of slashed validators per operator"
+              field_name: "Operator 1"
+              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=2220000.000000&to=3420000.000000)"
+              url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
+              footer_text: 'Epoch • 6'
+              footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
 
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_data_actuality
         values: 3700000+0x180 3300000+0x180
-      - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x180 1+0x180
     alert_rule_test:
       - alertname: DataActuality
         eval_time: 30m
@@ -111,7 +195,7 @@ tests:
               resolved_summary: "Data actuality is back to normal and now less then 1 hour"
               resolved_description: "It's OK"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-              footer_text: 'Epoch • 0'
+              footer_text: 'Epoch • '
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
       - alertname: DataActuality
         eval_time: 35m
@@ -119,11 +203,11 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name="Operator 1"}
-        values: 0+0x48 1+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 0+0x47
+      - series: ethereum_validators_monitoring_user_operators_identifies{nos_name="Operator 1", nos_global_index="1;0"}
+        values: 1+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
-      - series: ethereum_validators_monitoring_validator_count_with_negative_balances_delta_alert{nos_name="Operator 1"}
-        values: 0+0x48 1+0x6 0+0x41 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: NumValidatorsWithNegativeDelta
         eval_time: 5m
@@ -133,6 +217,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              mentions: op_0:ping_1,op_0:ping_2,
             exp_annotations:
               emoji: 💸
               summary: "Operators have a negative balance delta"
@@ -150,6 +235,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              mentions: op_0:ping_1,op_0:ping_2,
             exp_annotations:
               emoji: 💸
               summary: "Operators have a negative balance delta"
@@ -167,9 +253,11 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
+      - series: ethereum_validators_monitoring_user_operators_identifies{nos_name="Operator 1", nos_global_index="1;0"}
+        values: 1+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: NumValidatorsWithMissAttestationLastNEpoch
         eval_time: 5m
@@ -180,6 +268,7 @@ tests:
               severity: critical
               nos_name: Operator 1
               epoch_interval: 3
+              mentions: op_0:ping_1,op_0:ping_2
             exp_annotations:
               emoji: 📝❌
               summary: "Operators have missed attestation in last 3 finalized epochs"
@@ -200,6 +289,7 @@ tests:
               severity: critical
               nos_name: Operator 1
               epoch_interval: 3
+              mentions: op_0:ping_1,op_0:ping_2
             exp_annotations:
               emoji: 📝❌
               summary: "Operators have missed attestation in last 3 finalized epochs"
@@ -220,6 +310,7 @@ tests:
               severity: critical
               nos_name: Operator 1
               epoch_interval: 3
+              mentions: op_0:ping_1,op_0:ping_2
             exp_annotations:
               emoji: 📝❌
               summary: "Operators have missed attestation in last 3 finalized epochs"
@@ -239,9 +330,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: NumValidatorsWithHighIncDelayAttestationLastNEpoch
         eval_time: 5m
@@ -305,9 +396,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: NumValidatorsWithInvalidPropertyAttestationLastNEpoch
         eval_time: 5m
@@ -371,9 +462,11 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_validator_count_miss_propose{nos_name="Operator 1"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
+      - series: ethereum_validators_monitoring_user_operators_identifies{nos_name="Operator 1", nos_global_index="1;0"}
+        values: 1+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: NumValidatorsWithMissPropose
         eval_time: 5m
@@ -383,6 +476,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              mentions: op_0:ping_1,op_0:ping_2
             exp_annotations:
               emoji: 📥
               summary: "Operators missed block propose in the last finalized epoch"
@@ -402,6 +496,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              mentions: op_0:ping_1,op_0:ping_2
             exp_annotations:
               emoji: 📥
               summary: "Operators missed block propose in the last finalized epoch"
@@ -421,6 +516,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              mentions: op_0:ping_1,op_0:ping_2
             exp_annotations:
               emoji: 📥
               summary: "Operators missed block propose in the last finalized epoch"
@@ -440,9 +536,11 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
+      - series: ethereum_validators_monitoring_user_operators_identifies{nos_name="Operator 1", nos_global_index="1;0"}
+        values: 1+0x48 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47 1+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: NumValidatorsWithSyncParticipationLessAvgLastNEpoch
         eval_time: 5m
@@ -453,6 +551,7 @@ tests:
               severity: critical
               nos_name: Operator 1
               epoch_interval: 3
+              mentions: op_0:ping_1,op_0:ping_2
             exp_annotations:
               emoji: 🔄
               summary: "Operators sync participation less than average in last 3 finalized epochs"
@@ -473,6 +572,7 @@ tests:
               severity: critical
               nos_name: Operator 1
               epoch_interval: 3
+              mentions: op_0:ping_1,op_0:ping_2
             exp_annotations:
               emoji: 🔄
               summary: "Operators sync participation less than average in last 3 finalized epochs"
@@ -493,6 +593,7 @@ tests:
               severity: critical
               nos_name: Operator 1
               epoch_interval: 3
+              mentions: op_0:ping_1,op_0:ping_2
             exp_annotations:
               emoji: 🔄
               summary: "Operators sync participation less than average in last 3 finalized epochs"
@@ -513,9 +614,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: HighRewardNumValidatorsWithSyncParticipationLessAvgLastNEpoch
         eval_time: 5m
@@ -585,9 +686,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: HighRewardNumValidatorsWithMissAttestationLastNEpoch
         eval_time: 5m
@@ -657,9 +758,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_high_reward_validator_count_miss_propose{nos_name="Operator 1"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: HighRewardNumValidatorsWithMissPropose
         eval_time: 5m

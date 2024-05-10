@@ -1,11 +1,23 @@
 groups:
-  - name: test-alerts
+  - name: ValidatorsAlerts
     rules:
 
       - alert: UserSlashedValidators
         expr: (ethereum_validators_monitoring_user_validators{status="slashed"} - ethereum_validators_monitoring_user_validators{status="slashed"} offset 1m) > 0
         labels:
           severity: critical
+          mentions: '
+                    {{- with printf "ethereum_validators_monitoring_user_operators_identifies{nos_name=%q}" .Labels.nos_name | query -}}
+                      {{- $nos_global_index:= . | first | label "nos_global_index" -}}
+                      {{- with printf "ethereum_validators_monitoring_mentions{nos_global_index=%q, alerts=~\".*UserSlashedValidators.*\"}" $nos_global_index | query -}}
+                        {{- $mentions := "" -}}
+                        {{- range . -}}
+                          {{- $mentions = printf "%s,%s" $mentions (. | label "mentions") -}}
+                        {{- end -}}
+                        {{- slice $mentions 1 -}}
+                      {{- end -}}
+                    {{- end -}}
+                    '
         annotations:
           emoji: 🔪
           summary: "Operators have slashed validators"
@@ -35,6 +47,18 @@ groups:
         expr: ethereum_validators_monitoring_validator_count_with_negative_balances_delta > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
+          mentions: '
+                    {{- with printf "ethereum_validators_monitoring_user_operators_identifies{nos_name=%q}" .Labels.nos_name | query -}}
+                      {{- $nos_global_index:= . | first | label "nos_global_index" -}}
+                      {{- with printf "ethereum_validators_monitoring_mentions{nos_global_index=%q, alerts=~\".*NumValidatorsWithNegativeDelta.*\"}" $nos_global_index | query -}}
+                        {{- $mentions := "" -}}
+                        {{- range . -}}
+                          {{- $mentions = printf "%s,%s" $mentions (. | label "mentions") -}}
+                        {{- end -}}
+                        {{- slice $mentions 1 -}}
+                      {{- end -}}
+                    {{- end -}}
+                    '
         annotations:
           emoji: 💸
           summary: 'Operators have a negative balance delta'
@@ -51,6 +75,18 @@ groups:
         expr: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
+          mentions: '
+                    {{- with printf "ethereum_validators_monitoring_user_operators_identifies{nos_name=%q}" .Labels.nos_name | query -}}
+                      {{- $nos_global_index:= . | first | label "nos_global_index" -}}
+                      {{- with printf "ethereum_validators_monitoring_mentions{nos_global_index=%q, alerts=~\".*NumValidatorsWithMissAttestationLastNEpoch.*\"}" $nos_global_index | query -}}
+                        {{- $mentions := "" -}}
+                        {{- range . -}}
+                          {{- $mentions = printf "%s,%s" $mentions (. | label "mentions") -}}
+                        {{- end -}}
+                        {{- slice $mentions 1 -}}
+                      {{- end -}}
+                    {{- end -}}
+                    '
         annotations:
           emoji: 📝❌
           summary: 'Operators have missed attestation in last {{ $labels.epoch_interval }} finalized epochs'
@@ -95,6 +131,18 @@ groups:
         expr: ethereum_validators_monitoring_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
+          mentions: '
+                    {{- with printf "ethereum_validators_monitoring_user_operators_identifies{nos_name=%q}" .Labels.nos_name | query -}}
+                      {{- $nos_global_index:= . | first | label "nos_global_index" -}}
+                      {{- with printf "ethereum_validators_monitoring_mentions{nos_global_index=%q, alerts=~\".*NumValidatorsWithMissPropose.*\"}" $nos_global_index | query -}}
+                        {{- $mentions := "" -}}
+                        {{- range . -}}
+                          {{- $mentions = printf "%s,%s" $mentions (. | label "mentions") -}}
+                        {{- end -}}
+                        {{- slice $mentions 1 -}}
+                      {{- end -}}
+                    {{- end -}}
+                    '
         annotations:
           emoji: 📥
           summary: 'Operators missed block propose in the last finalized epoch'
@@ -111,6 +159,18 @@ groups:
         expr: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
+          mentions: '
+                    {{- with printf "ethereum_validators_monitoring_user_operators_identifies{nos_name=%q}" .Labels.nos_name | query -}}
+                      {{- $nos_global_index:= . | first | label "nos_global_index" -}}
+                      {{- with printf "ethereum_validators_monitoring_mentions{nos_global_index=%q, alerts=~\".*NumValidatorsWithSyncParticipationLessAvgLastNEpoch.*\"}" $nos_global_index | query -}}
+                        {{- $mentions := "" -}}
+                        {{- range . -}}
+                          {{- $mentions = printf "%s,%s" $mentions (. | label "mentions") -}}
+                        {{- end -}}
+                        {{- slice $mentions 1 -}}
+                      {{- end -}}
+                    {{- end -}}
+                    '
         annotations:
           emoji: 🔄
           summary: 'Operators sync participation less than average in last {{ $labels.epoch_interval }} finalized epochs'
@@ -143,6 +203,18 @@ groups:
         expr: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
+          mentions: '
+                    {{- with printf "ethereum_validators_monitoring_user_operators_identifies{nos_name=%q}" .Labels.nos_name | query -}}
+                      {{- $nos_global_index:= . | first | label "nos_global_index" -}}
+                      {{- with printf "ethereum_validators_monitoring_mentions{nos_global_index=%q, alerts=~\".*HighRewardNumValidatorsWithMissAttestationLastNEpoch.*\"}" $nos_global_index | query -}}
+                        {{- $mentions := "" -}}
+                        {{- range . -}}
+                          {{- $mentions = printf "%s,%s" $mentions (. | label "mentions") -}}
+                        {{- end -}}
+                        {{- slice $mentions 1 -}}
+                      {{- end -}}
+                    {{- end -}}
+                    '
         annotations:
           emoji: '📈📝❌'
           summary: 'Operators may get high rewards in the future, but missed attestation in last {{ $labels.epoch_interval }} finalized epochs!'
@@ -159,6 +231,18 @@ groups:
         expr: ethereum_validators_monitoring_high_reward_validator_count_miss_propose > 0 AND ON() changes(ethereum_validators_monitoring_epoch_number[1m]) > 0
         labels:
           severity: critical
+          mentions: '
+                    {{- with printf "ethereum_validators_monitoring_user_operators_identifies{nos_name=%q}" .Labels.nos_name | query -}}
+                      {{- $nos_global_index:= . | first | label "nos_global_index" -}}
+                      {{- with printf "ethereum_validators_monitoring_mentions{nos_global_index=%q, alerts=~\".*HighRewardNumValidatorsWithMissPropose.*\"}" $nos_global_index | query -}}
+                        {{- $mentions := "" -}}
+                        {{- range . -}}
+                          {{- $mentions = printf "%s,%s" $mentions (. | label "mentions") -}}
+                        {{- end -}}
+                        {{- slice $mentions 1 -}}
+                      {{- end -}}
+                    {{- end -}}
+                    '
         annotations:
           emoji: '📈📥'
           summary: 'Operators may get high rewards in the future, but missed block propose in the last finalized epoch!'
