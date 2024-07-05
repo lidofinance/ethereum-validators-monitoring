@@ -205,6 +205,9 @@ export class EnvironmentVariables {
   @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.KeysAPI && vars.NODE_ENV != Environment.test)
   public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_URLS!: string[];
 
+  @IsString()
+  public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_ONLY_MODULE_ADDRESS: string;
+
   @IsInt()
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RETRY_DELAY_MS = 500;

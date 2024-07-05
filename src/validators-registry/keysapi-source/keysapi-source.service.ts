@@ -7,12 +7,17 @@ import { batch } from 'stream-json/utils/Batch';
 
 import { unblock } from 'common/functions/unblock';
 
-import { RegistrySource, RegistrySourceKey, RegistrySourceOperator } from '../registry-source.interface';
 import { KeysapiSourceClient } from './keysapi-source.client';
+import { ConfigService } from '../../common/config';
+import { RegistrySource, RegistrySourceKey, RegistrySourceOperator } from '../registry-source.interface';
 
 @Injectable()
 export class KeysapiSourceService implements RegistrySource {
-  constructor(protected readonly client: KeysapiSourceClient) {}
+  moduleAddress: string | undefined;
+
+  constructor(protected readonly client: KeysapiSourceClient, protected readonly config: ConfigService) {
+    this.moduleAddress = this.config.get('VALIDATOR_REGISTRY_KEYSAPI_SOURCE_ONLY_MODULE_ADDRESS');
+  }
 
   protected modules = new Map<string, number>();
   protected operatorsMap = new Map<string, RegistrySourceOperator>();
@@ -60,13 +65,15 @@ export class KeysapiSourceService implements RegistrySource {
         await unblock();
         for (const data of batch) {
           for (const operator of data.value.operators) {
-            this.operatorsMap.set(`${data.value.module.id}_${operator.index}`, {
-              index: operator.index,
-              module: data.value.module.id,
-              name: operator.name,
-            });
-            if (!this.modules.has(data.value.module.stakingModuleAddress)) {
-              this.modules.set(data.value.module.stakingModuleAddress, +data.value.module.id);
+            if (!this.moduleAddress || this.moduleAddress == data.value.module.stakingModuleAddress) {
+              this.operatorsMap.set(`${data.value.module.id}_${operator.index}`, {
+                index: operator.index,
+                module: data.value.module.id,
+                name: operator.name,
+              });
+              if (!this.modules.has(data.value.module.stakingModuleAddress)) {
+                this.modules.set(data.value.module.stakingModuleAddress, +data.value.module.id);
+              }
             }
           }
         }
@@ -91,11 +98,13 @@ export class KeysapiSourceService implements RegistrySource {
       async (batch) => {
         await unblock();
         for (const data of batch) {
-          this.keysMap.set(data.value.key, {
-            key: data.value.key,
-            operatorIndex: +data.value.operatorIndex,
-            moduleIndex: this.modules.get(data.value.moduleAddress),
-          });
+          if (!this.moduleAddress || this.moduleAddress == data.value.moduleAddress) {
+            this.keysMap.set(data.value.key, {
+              key: data.value.key,
+              operatorIndex: +data.value.operatorIndex,
+              moduleIndex: this.modules.get(data.value.moduleAddress),
+            });
+          }
         }
       },
     ]);
