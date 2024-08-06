@@ -1,4 +1,4 @@
-import { plainToInstance, Expose, Transform } from 'class-transformer';
+import { Expose, Transform, plainToInstance } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
@@ -17,6 +17,7 @@ import {
   ValidateIf,
   validateSync,
 } from 'class-validator';
+
 import { Epoch } from 'common/consensus-provider/types';
 
 import { Environment, LogFormat, LogLevel } from './interfaces';
@@ -133,7 +134,6 @@ export class EnvironmentVariables {
   @Min(1)
   @Max(5000000)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.Lido && vars.NODE_ENV != Environment.test)
   public ETH_NETWORK!: Network;
 
   @IsArray()
@@ -178,7 +178,6 @@ export class EnvironmentVariables {
     ({ value, obj }) =>
       dencunForkEpoch[obj.ETH_NETWORK] || (value != null && value.trim() !== '' ? parseInt(value, 10) : Number.MAX_SAFE_INTEGER),
   )
-  @ValidateIf((vars) => vars.NODE_ENV !== Environment.test)
   public DENCUN_FORK_EPOCH: Epoch;
 
   @IsNumber()
