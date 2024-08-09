@@ -132,7 +132,7 @@ export interface BeaconBlockAttestation {
 export interface StateValidatorResponse {
   index: string;
   balance: string;
-  status: typeof ValStatus[keyof typeof ValStatus];
+  status: (typeof ValStatus)[keyof typeof ValStatus];
   validator: {
     pubkey: string;
     withdrawal_credentials: string;

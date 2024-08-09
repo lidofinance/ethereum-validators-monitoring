@@ -6,7 +6,7 @@ import { request } from 'undici';
 import { IncomingHttpHeaders } from 'undici/types/header';
 import BodyReadable from 'undici/types/readable';
 
-import { ConfigService } from 'common/config';
+import { ConfigService, WorkingMode } from 'common/config';
 import { range } from 'common/functions/range';
 import { rejectDelay } from 'common/functions/rejectDelay';
 import { retrier } from 'common/functions/retrier';
@@ -290,10 +290,19 @@ export class ConsensusProviderService {
       return cached.missed ? undefined : cached.info;
     }
 
+    const workingMode = this.config.get('WORKING_MODE');
+
     const blockInfo = await this.retryRequest<BlockInfoResponse>(
       async (apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(blockId)),
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
+        useFallbackOnResolved: (r) => {
+          if (r.hasOwnProperty('finalized') && !r.finalized && workingMode === WorkingMode.Finalized) {
+            this.logger.error(`State for slot ${r.data.message.slot} is not finalized`);
+            return true;
+          }
+          return false;
+        },
         useFallbackOnRejected: (last_fallback_err, curr_fallback_error) => {
           if (last_fallback_err && last_fallback_err.$httpCode == 404 && curr_fallback_error.$httpCode != 404) {
             this.logger.debug('Request error from last fallback was 404, but current is not. Will be used previous error');
