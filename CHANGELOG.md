@@ -1,3 +1,37 @@
+# [4.7.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.6.0...4.7.0) (2024-08-12)
+
+
+### Bug Fixes
+
+* add ETH_NETWORK for tests ([5bfdc36](https://github.com/lidofinance/ethereum-validators-monitoring/commit/5bfdc3685c207ea08dd68d57ce20e996655df93f))
+* add fork selector ([8cd5936](https://github.com/lidofinance/ethereum-validators-monitoring/commit/8cd593637d03949bcb5ecba87b5057e658fff113))
+* add fork selector for testnets ([191b665](https://github.com/lidofinance/ethereum-validators-monitoring/commit/191b6655922b0b44a666960a6806f196a1f66240))
+* add NODE_OPTIONS=--experimental-vm-modules for jest ([6058284](https://github.com/lidofinance/ethereum-validators-monitoring/commit/6058284d1db84589e1dbb78acebb8067e5b810a6))
+* allowJs for jest ([ecd49cf](https://github.com/lidofinance/ethereum-validators-monitoring/commit/ecd49cfc8ff770fd33a2c3a4f953f5747bceab89))
+* jest ([01d6ffe](https://github.com/lidofinance/ethereum-validators-monitoring/commit/01d6ffe96370d9b8f618cfdf8fd30334432205ef))
+* jest ([e8b7442](https://github.com/lidofinance/ethereum-validators-monitoring/commit/e8b7442cfa53f34f451b90a7cd2cfbfa4b1e0487))
+* jest config ([02f40c3](https://github.com/lidofinance/ethereum-validators-monitoring/commit/02f40c35d7ed1a29e9b385cd4c961b431c61b311))
+* node version in workflow ([b22f982](https://github.com/lidofinance/ethereum-validators-monitoring/commit/b22f98220347c758614f3af8c13ce1ea89007f27))
+* polyfills ([2829e19](https://github.com/lidofinance/ethereum-validators-monitoring/commit/2829e19b9ecac1dfebccec40240accd6560e9819))
+* polyfills ([9f0f80f](https://github.com/lidofinance/ethereum-validators-monitoring/commit/9f0f80f2f1dae4f1df47c536f960b921e4890912))
+* polyfills ([459527b](https://github.com/lidofinance/ethereum-validators-monitoring/commit/459527bb420e44278f6da6a5a4e673b802ce8020))
+* remove condition for tests ([d8af449](https://github.com/lidofinance/ethereum-validators-monitoring/commit/d8af449c9e943a186a02e80e73ebbc35569fc058))
+* remove extra `export` before NODE_OPTIONS ([db32eb7](https://github.com/lidofinance/ethereum-validators-monitoring/commit/db32eb7a7c476133dafc81bdf1747035fc2d5a99))
+* return previous rule of missed proposes calculation ([9080501](https://github.com/lidofinance/ethereum-validators-monitoring/commit/90805015fd0aef7f9ee26d73450d4d9198f555eb))
+* review ([d5fb98c](https://github.com/lidofinance/ethereum-validators-monitoring/commit/d5fb98cad0dbe1a18b20ba7086c45281eda998c7))
+* tests ([2df4da0](https://github.com/lidofinance/ethereum-validators-monitoring/commit/2df4da0225b56f48986bf9b19737a313616203bc))
+* value for Dencun ([79d9b8a](https://github.com/lidofinance/ethereum-validators-monitoring/commit/79d9b8a6ff6884f6f51bcd75b12249e9a58af030))
+
+
+### Features
+
+* add minimum bound to alerts threshold ([a5a0be7](https://github.com/lidofinance/ethereum-validators-monitoring/commit/a5a0be75bd4e6934e1001d71b580285ff7a74a59))
+* honing consensus provider ([75b5f18](https://github.com/lidofinance/ethereum-validators-monitoring/commit/75b5f182f5c02e46d5c382f80a6eb2771ac7c488))
+* honing state processing ([fe384cd](https://github.com/lidofinance/ethereum-validators-monitoring/commit/fe384cd90a05c689cd0c13a16d90e827f2a23af4))
+* node 21.1 + undici + state from ssz ([6df86d3](https://github.com/lidofinance/ethereum-validators-monitoring/commit/6df86d31107437e21937b7aefd459136a8abe054))
+
+
+
 # [4.6.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.5.1...4.6.0) (2024-03-12)
 
 
@@ -132,23 +166,6 @@
 ### Bug Fixes
 
 * get balance diff in rewards query ([#125](https://github.com/lidofinance/ethereum-validators-monitoring/issues/125)) ([222ff20](https://github.com/lidofinance/ethereum-validators-monitoring/commit/222ff2065ccaf31e39a107f4c383318f02c27261))
-
-
-
-## [4.2.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.2.0...4.2.1) (2023-01-30)
-
-
-### Bug Fixes
-
-* average chain rewards metric ([#123](https://github.com/lidofinance/ethereum-validators-monitoring/issues/123)) ([c8035ae](https://github.com/lidofinance/ethereum-validators-monitoring/commit/c8035ae93aecbf7828bb8d75265d636b2c37ce71))
-* keys registry processing ([#119](https://github.com/lidofinance/ethereum-validators-monitoring/issues/119)) ([257ef29](https://github.com/lidofinance/ethereum-validators-monitoring/commit/257ef2935f7c25642545a53aaa1a7a46cd7d6b37))
-* long loops ([#120](https://github.com/lidofinance/ethereum-validators-monitoring/issues/120)) ([8f11298](https://github.com/lidofinance/ethereum-validators-monitoring/commit/8f112983e7955f14c2f8bec46c5ce4001edfb7bb))
-* remove outdated metrics ([#118](https://github.com/lidofinance/ethereum-validators-monitoring/issues/118)) ([398cf16](https://github.com/lidofinance/ethereum-validators-monitoring/commit/398cf16ea4fa4f65764dd530b6ac417680254f71))
-
-
-### Reverts
-
-* Revert "fix: long loops" (#121) ([4f8fbaf](https://github.com/lidofinance/ethereum-validators-monitoring/commit/4f8fbaf37a465c4fba8947e424fc041d85f2710e)), closes [#121](https://github.com/lidofinance/ethereum-validators-monitoring/issues/121)
 
 
 
