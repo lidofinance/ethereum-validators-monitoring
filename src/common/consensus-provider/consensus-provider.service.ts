@@ -41,6 +41,7 @@ interface RequestRetryOptions {
 @Injectable()
 export class ConsensusProviderService {
   protected apiUrls: string[];
+  protected workingMode: string;
   protected version = '';
   protected genesisTime = 0;
   protected defaultMaxSlotDeepCount = 32;
@@ -65,6 +66,7 @@ export class ConsensusProviderService {
     protected readonly cache: BlockCacheService,
   ) {
     this.apiUrls = config.get('CL_API_URLS') as NonEmptyArray<string>;
+    this.workingMode = config.get('WORKING_MODE');
   }
 
   public async getVersion(): Promise<string> {
@@ -99,9 +101,8 @@ export class ConsensusProviderService {
   }
 
   public async getLatestBlockHeader(processingState: EpochProcessingState): Promise<BlockHeaderResponse | void> {
-    const latestFrom = this.config.get('WORKING_MODE');
     return await this.retryRequest<BlockHeaderResponse>(
-      async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(latestFrom)),
+      async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(this.workingMode)),
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
@@ -110,7 +111,7 @@ export class ConsensusProviderService {
           if (nodeLatestSlot < this.latestSlot.slot) {
             // we assume that the node must never return a slot less than the last saved slot
             this.logger.error(
-              `Received ${latestFrom} slot [${nodeLatestSlot}] is less than last [${this.latestSlot.slot}] slot received before, but shouldn't`,
+              `Received ${this.workingMode} slot [${nodeLatestSlot}] is less than last [${this.latestSlot.slot}] slot received before, but shouldn't`,
             );
             return true;
           }
@@ -290,14 +291,12 @@ export class ConsensusProviderService {
       return cached.missed ? undefined : cached.info;
     }
 
-    const workingMode = this.config.get('WORKING_MODE');
-
     const blockInfo = await this.retryRequest<BlockInfoResponse>(
       async (apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(blockId)),
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
-          if (r.hasOwnProperty('finalized') && !r.finalized && workingMode === WorkingMode.Finalized) {
+          if (r.hasOwnProperty('finalized') && !r.finalized && this.workingMode === WorkingMode.Finalized) {
             this.logger.error(`State for slot ${r.data.message.slot} is not finalized`);
             return true;
           }
