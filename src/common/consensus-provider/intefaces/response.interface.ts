@@ -69,21 +69,6 @@ export interface Withdrawal {
   amount: string;
 }
 
-export interface FinalityCheckpointsResponse {
-  previous_justified: {
-    epoch: string;
-    root: RootHex;
-  };
-  current_justified: {
-    epoch: string;
-    root: RootHex;
-  };
-  finalized: {
-    epoch: string;
-    root: RootHex;
-  };
-}
-
 export interface GenesisResponse {
   /**
    * example: 1590832934

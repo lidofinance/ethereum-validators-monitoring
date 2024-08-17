@@ -7,7 +7,6 @@ import { IncomingHttpHeaders } from 'undici/types/header';
 import BodyReadable from 'undici/types/readable';
 
 import { ConfigService, WorkingMode } from 'common/config';
-import { range } from 'common/functions/range';
 import { rejectDelay } from 'common/functions/rejectDelay';
 import { retrier } from 'common/functions/retrier';
 import { urljoin } from 'common/functions/urljoin';
@@ -16,15 +15,7 @@ import { EpochProcessingState } from 'storage/clickhouse';
 
 import { BlockCache, BlockCacheService } from './block-cache';
 import { MaxDeepError, ResponseError, errCommon, errRequest } from './errors';
-import {
-  BlockHeaderResponse,
-  BlockInfoResponse,
-  FinalityCheckpointsResponse,
-  GenesisResponse,
-  ProposerDutyInfo,
-  SyncCommitteeInfo,
-  VersionResponse,
-} from './intefaces';
+import { BlockHeaderResponse, BlockInfoResponse, GenesisResponse, ProposerDutyInfo, SyncCommitteeInfo, VersionResponse } from './intefaces';
 import { BlockId, Epoch, Slot, StateId } from './types';
 
 let ssz: typeof import('@lodestar/types').ssz;
@@ -50,7 +41,6 @@ export class ConsensusProviderService {
   protected endpoints = {
     version: 'eth/v1/node/version',
     genesis: 'eth/v1/beacon/genesis',
-    beaconHeadFinalityCheckpoints: 'eth/v1/beacon/states/head/finality_checkpoints',
     blockInfo: (blockId: BlockId): string => `eth/v2/beacon/blocks/${blockId}`,
     beaconHeaders: (blockId: BlockId): string => `eth/v1/beacon/headers/${blockId}`,
     attestationCommittees: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/committees?epoch=${epoch}`,
@@ -90,22 +80,17 @@ export class ConsensusProviderService {
     return (this.genesisTime = genesisTime);
   }
 
-  public async getFinalizedEpoch(): Promise<Epoch> {
-    return Number(
-      (
-        await this.retryRequest<FinalityCheckpointsResponse>(async (apiURL: string) =>
-          this.apiGet(apiURL, this.endpoints.beaconHeadFinalityCheckpoints),
-        )
-      ).finalized.epoch,
-    );
-  }
-
   public async getLatestBlockHeader(processingState: EpochProcessingState): Promise<BlockHeaderResponse | void> {
     return await this.retryRequest<BlockHeaderResponse>(
       async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(this.workingMode)),
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
+          if (r.hasOwnProperty('finalized') && !r.finalized && this.workingMode === WorkingMode.Finalized) {
+            this.logger.error(`getLatestBlockHeader: state for slot ${r.data.header.message.slot} is not finalized`);
+            return true;
+          }
+
           const nodeLatestSlot = Number(r.data.header.message.slot);
 
           if (nodeLatestSlot < this.latestSlot.slot) {
@@ -230,46 +215,6 @@ export class ConsensusProviderService {
     return (await this.getPreviousNotMissedBlockHeader(dutyRootSlot, this.defaultMaxSlotDeepCount, ignoreCache)).root;
   }
 
-  /**
-   * Trying to get nearest block with slot attestation info.
-   * Assumed that the ideal attestation is included in the next non-missed block
-   */
-  public async getBlockInfoWithSlotAttestations(
-    slot: Slot,
-    maxDeep = this.defaultMaxSlotDeepCount,
-  ): Promise<[BlockInfoResponse | undefined, Array<number>]> {
-    const nearestBlockIncludedAttestations = slot + 1; // good attestation should be included to the next block
-    let blockInfo;
-    let missedSlots: number[] = [];
-    try {
-      blockInfo = await this.getNextNotMissedBlockInfo(nearestBlockIncludedAttestations, maxDeep);
-    } catch (e) {
-      if (e instanceof MaxDeepError) {
-        this.logger.error(`Error when trying to get nearest block with attestations for slot ${slot}: from ${slot} to ${slot + maxDeep}`);
-        missedSlots = range(nearestBlockIncludedAttestations, nearestBlockIncludedAttestations + maxDeep + 1);
-      } else {
-        throw e;
-      }
-    }
-
-    if (blockInfo && nearestBlockIncludedAttestations != Number(blockInfo.message.slot)) {
-      missedSlots = range(nearestBlockIncludedAttestations, Number(blockInfo.message.slot));
-    }
-    return [blockInfo, missedSlots];
-  }
-
-  public async getNextNotMissedBlockInfo(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockInfoResponse | undefined> {
-    const blockInfo = await this.getBlockInfo(slot);
-    if (!blockInfo) {
-      if (maxDeep < 1) {
-        throw new MaxDeepError(`Error when trying to get next not missed block info. From ${slot} to ${slot + maxDeep}`);
-      }
-      this.logger.log(`Try to get next info from ${slot + 1} slot because ${slot} is missing`);
-      return await this.getNextNotMissedBlockInfo(slot + 1, maxDeep - 1);
-    }
-    return blockInfo;
-  }
-
   public async getState(stateId: StateId): Promise<ContainerTreeViewType<typeof anySsz.BeaconState.fields>> {
     const { body, headers } = await this.retryRequest<{ body: BodyReadable; headers: IncomingHttpHeaders }>(
       async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.state(stateId), { accept: 'application/octet-stream' }),
@@ -296,8 +241,8 @@ export class ConsensusProviderService {
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
-          if (r.hasOwnProperty('finalized') && !r.finalized && this.workingMode === WorkingMode.Finalized) {
-            this.logger.error(`State for slot ${r.data.message.slot} is not finalized`);
+          if (r.hasOwnProperty('finalized') && !r.finalized && this.workingMode === WorkingMode.Finalized && blockId !== 'head') {
+            this.logger.error(`getBlockInfo: state for slot ${r.data.message.slot} is not finalized`);
             return true;
           }
           return false;
@@ -333,7 +278,15 @@ export class ConsensusProviderService {
   }
 
   public async getSyncCommitteeInfo(stateId: StateId, epoch: Epoch): Promise<SyncCommitteeInfo> {
-    return await this.retryRequest(async (apiURL: string) => this.apiGet(apiURL, this.endpoints.syncCommittee(stateId, epoch)));
+    return await this.retryRequest(async (apiURL: string) => this.apiGet(apiURL, this.endpoints.syncCommittee(stateId, epoch)), {
+      useFallbackOnResolved: (r) => {
+        if (r.hasOwnProperty('finalized') && !r.finalized && this.workingMode === WorkingMode.Finalized && stateId !== 'head') {
+          this.logger.error(`getSyncCommitteeInfo: state ${stateId} for epoch ${epoch} is not finalized`);
+          return true;
+        }
+        return false;
+      },
+    });
   }
 
   public async getCanonicalProposerDuties(epoch: Epoch, maxRetriesForGetCanonical = 3, ignoreCache = false): Promise<ProposerDutyInfo[]> {
