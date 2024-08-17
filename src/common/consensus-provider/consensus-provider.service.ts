@@ -87,7 +87,7 @@ export class ConsensusProviderService {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
           if (this.workingMode === WorkingMode.Finalized && r.hasOwnProperty('finalized') && !r.finalized) {
-            this.logger.error(`getLatestBlockHeader: state for slot ${r.data.header.message.slot} is not finalized`);
+            this.logger.error(`getLatestBlockHeader: slot [${r.data.header.message.slot}] is not finalized`);
             return true;
           }
 
@@ -242,7 +242,7 @@ export class ConsensusProviderService {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
           if (this.workingMode === WorkingMode.Finalized && blockId !== 'head' && r.hasOwnProperty('finalized') && !r.finalized) {
-            this.logger.error(`getBlockInfo: state for slot ${r.data.message.slot} is not finalized`);
+            this.logger.error(`getBlockInfo: slot [${r.data.message.slot}] is not finalized`);
             return true;
           }
           return false;
