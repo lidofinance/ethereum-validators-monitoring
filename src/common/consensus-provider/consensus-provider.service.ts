@@ -86,7 +86,7 @@ export class ConsensusProviderService {
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
-          if (r.hasOwnProperty('finalized') && !r.finalized && this.workingMode === WorkingMode.Finalized) {
+          if (this.workingMode === WorkingMode.Finalized && r.hasOwnProperty('finalized') && !r.finalized) {
             this.logger.error(`getLatestBlockHeader: state for slot ${r.data.header.message.slot} is not finalized`);
             return true;
           }
@@ -241,7 +241,7 @@ export class ConsensusProviderService {
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
-          if (r.hasOwnProperty('finalized') && !r.finalized && this.workingMode === WorkingMode.Finalized && blockId !== 'head') {
+          if (this.workingMode === WorkingMode.Finalized && blockId !== 'head' && r.hasOwnProperty('finalized') && !r.finalized) {
             this.logger.error(`getBlockInfo: state for slot ${r.data.message.slot} is not finalized`);
             return true;
           }
@@ -280,7 +280,7 @@ export class ConsensusProviderService {
   public async getSyncCommitteeInfo(stateId: StateId, epoch: Epoch): Promise<SyncCommitteeInfo> {
     return await this.retryRequest(async (apiURL: string) => this.apiGet(apiURL, this.endpoints.syncCommittee(stateId, epoch)), {
       useFallbackOnResolved: (r) => {
-        if (r.hasOwnProperty('finalized') && !r.finalized && this.workingMode === WorkingMode.Finalized && stateId !== 'head') {
+        if (this.workingMode === WorkingMode.Finalized && stateId !== 'head' && r.hasOwnProperty('finalized') && !r.finalized) {
           this.logger.error(`getSyncCommitteeInfo: state ${stateId} for epoch ${epoch} is not finalized`);
           return true;
         }
