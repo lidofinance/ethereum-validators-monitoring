@@ -5,8 +5,8 @@ import * as buildInfo from 'build-info';
 import { ConfigService } from 'common/config';
 import { PrometheusService } from 'common/prometheus';
 
-import { InspectorService } from '../inspector';
 import { APP_NAME } from './app.constants';
+import { InspectorService } from '../inspector';
 
 @Injectable()
 export class AppService implements OnModuleInit, OnApplicationBootstrap {

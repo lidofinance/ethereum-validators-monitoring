@@ -69,21 +69,6 @@ export interface Withdrawal {
   amount: string;
 }
 
-export interface FinalityCheckpointsResponse {
-  previous_justified: {
-    epoch: string;
-    root: RootHex;
-  };
-  current_justified: {
-    epoch: string;
-    root: RootHex;
-  };
-  finalized: {
-    epoch: string;
-    root: RootHex;
-  };
-}
-
 export interface GenesisResponse {
   /**
    * example: 1590832934
@@ -132,7 +117,7 @@ export interface BeaconBlockAttestation {
 export interface StateValidatorResponse {
   index: string;
   balance: string;
-  status: typeof ValStatus[keyof typeof ValStatus];
+  status: (typeof ValStatus)[keyof typeof ValStatus];
   validator: {
     pubkey: string;
     withdrawal_credentials: string;

@@ -7,8 +7,8 @@ import { batch } from 'stream-json/utils/Batch';
 
 import { unblock } from 'common/functions/unblock';
 
-import { RegistrySource, RegistrySourceKey, RegistrySourceOperator } from '../registry-source.interface';
 import { KeysapiSourceClient } from './keysapi-source.client';
+import { RegistrySource, RegistrySourceKey, RegistrySourceOperator } from '../registry-source.interface';
 
 @Injectable()
 export class KeysapiSourceService implements RegistrySource {
