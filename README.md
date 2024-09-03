@@ -325,8 +325,8 @@ And if `ethereum_validators_monitoring_data_actuality < 1h` it allows you to rec
 |----------------------------|-----------------------------------------------------------------------------------------------------------------|-----------------|---------------------------|
 | CriticalSlashing           | At least one validator was slashed                                                                              | instant         | -                         |
 | CriticalMissedProposes     | More than 1/3 blocks from Node Operator duties was missed in the last 12 hours                                  | every 6h        | -                         |
-| CriticalNegativeDelta      | More than 1/3 Node Operator validators with negative balance delta (between current and 6 epochs ago)           | every 6h        | every 1h                  |
-| CriticalMissedAttestations | More than 1/3 Node Operator validators with missed attestations in the last {{ BAD_ATTESTATION_EPOCHS }} epochs | every 6h        | every 1h                  |
+| CriticalNegativeDelta      | More than 1/3 or more than 1000 Node Operator validators with negative balance delta (between current and 6 epochs ago)           | every 6h        | every 1h                  |
+| CriticalMissedAttestations | More than 1/3 or more than 1000 Node Operator validators with missed attestations in the last {{ BAD_ATTESTATION_EPOCHS }} epochs | every 6h        | every 1h                  |
 
 
 ## Application metrics
