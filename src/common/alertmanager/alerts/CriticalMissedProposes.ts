@@ -40,8 +40,10 @@ export class CriticalMissedProposes extends Alert {
       for (const [operator, operatorResult] of Object.entries(ruleResult)) {
         const prevAll = sentAlerts[this.alertname]?.ruleResult[operator]?.all ?? 0;
         const prevMissed = sentAlerts[this.alertname]?.ruleResult[operator]?.missed ?? 0;
+        const prevMissedShare = prevAll === 0 ? 0 : prevMissed / prevAll;
+
         // if math relation of missed to all increased
-        if (operatorResult.missed / operatorResult.all > prevMissed / prevAll && this.sendTimestamp - prevSendTimestamp > defaultInterval)
+        if (operatorResult.missed / operatorResult.all > prevMissedShare && this.sendTimestamp - prevSendTimestamp > defaultInterval)
           return true;
       }
     }
