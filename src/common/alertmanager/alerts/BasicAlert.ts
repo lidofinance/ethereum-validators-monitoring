@@ -16,32 +16,56 @@ export interface PreparedToSendAlert {
   ruleResult: AlertRuleResult;
 }
 
+export interface PreparedToSendAlerts {
+  [moduleId: string]: PreparedToSendAlert;
+}
+
 export interface AlertRuleResult {
   [operator: string]: any;
 }
 
+export interface AlertRulesResult {
+  [moduleId: string]: AlertRuleResult;
+}
+
 export abstract class Alert {
   public readonly alertname: string;
-  protected sendTimestamp = 0;
+  protected sendTimestamp: {
+    [moduleId: string]: number
+  };
   protected readonly config: ConfigService;
   protected readonly storage: ClickhouseService;
   protected readonly operators: RegistrySourceOperator[];
 
   protected constructor(name: string, config: ConfigService, storage: ClickhouseService, operators: RegistrySourceOperator[]) {
     this.alertname = name;
+    this.sendTimestamp = {};
     this.config = config;
     this.storage = storage;
     this.operators = operators;
   }
 
-  abstract alertRule(bySlot: number): Promise<AlertRuleResult>;
+  abstract alertRules(bySlot: number): Promise<AlertRulesResult>;
 
-  abstract sendRule(ruleResult?: AlertRuleResult): boolean;
+  abstract sendRule(moduleId: string, ruleResult: AlertRuleResult): boolean;
 
-  abstract alertBody(ruleResult: AlertRuleResult): AlertRequestBody;
+  abstract alertBody(moduleId: string, ruleResult: AlertRuleResult): AlertRequestBody;
 
-  async toSend(epoch: Epoch): Promise<PreparedToSendAlert | undefined> {
-    const ruleResult = await this.alertRule(epoch);
-    if (this.sendRule(ruleResult)) return { timestamp: this.sendTimestamp, body: this.alertBody(ruleResult), ruleResult };
+  async toSend(epoch: Epoch): Promise<PreparedToSendAlerts | {}> {
+    const rulesResult = await this.alertRules(epoch);
+    const moduleIds = Object.keys(rulesResult);
+    const result = {};
+
+    for (const moduleId of moduleIds) {
+      if (this.sendRule(moduleId, rulesResult[moduleId])) {
+        result[moduleId] = {
+          timestamp: this.sendTimestamp[moduleId],
+          body: this.alertBody(moduleId, rulesResult[moduleId]),
+          ruleResult: rulesResult[moduleId],
+        };
+      }
+    }
+
+    return result;
   }
 }

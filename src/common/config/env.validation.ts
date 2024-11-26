@@ -274,11 +274,21 @@ export class EnvironmentVariables {
   public BAD_ATTESTATION_EPOCHS = 3;
 
   /**
-   * Critical alerts will be sent for NOs with validators count greater this value
+   * Critical alerts will be sent for NOs with validators count greater or equal to this value
    */
   @IsNumber()
+  @Min(1)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public CRITICAL_ALERTS_MIN_VAL_COUNT = 100;
+
+  /**
+   * If number of validators in CSM module affected by the specific critical event
+   * is greater or equal to this value, the critical alert will be sent.
+   */
+  @IsNumber()
+  @Min(1)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public CRITICAL_ALERTS_MIN_VAL_CSM_ABSOLUTE_COUNT = 1;
 
   @IsString()
   public CRITICAL_ALERTS_ALERTMANAGER_URL = '';
@@ -290,6 +300,11 @@ export class EnvironmentVariables {
   @IsObject()
   @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
   public CRITICAL_ALERTS_ALERTMANAGER_LABELS = {};
+
+  @IsNumber()
+  @Min(1)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public CSM_MODULE_ID = 3;
 
   @IsEnum(WorkingMode)
   public WORKING_MODE = WorkingMode.Finalized;

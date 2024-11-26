@@ -15,7 +15,9 @@ import { CriticalNegativeDelta } from './alerts/CriticalNegativeDelta';
 import { CriticalSlashing } from './alerts/CriticalSlashing';
 
 interface SentAlerts {
-  [alertname: string]: PreparedToSendAlert;
+  [alertname: string]: {
+    [moduleId: string]: PreparedToSendAlert
+  };
 }
 
 export const sentAlerts: SentAlerts = {};
@@ -46,14 +48,23 @@ export class CriticalAlertsService {
       return;
     }
     try {
-      let count = 0;
       for (const alert of this.alerts) {
         const toSend = await alert.toSend(epoch);
-        if (!toSend) continue;
-        count++;
-        await this.fire(toSend.body).then(() => (sentAlerts[alert.alertname] = toSend));
+        const moduleIds = Object.keys(toSend);
+        if (moduleIds.length === 0) continue;
+
+        for (const moduleId of moduleIds) {
+          await this.fire(toSend[moduleId].body).then(() => {
+            if (sentAlerts[alert.alertname] == null) {
+              sentAlerts[alert.alertname] = {};
+            }
+
+            sentAlerts[alert.alertname][moduleId] = toSend[moduleId];
+          });
+        }
+
+        this.logger.log(`Sent ${alert.alertname} alert for modules [${moduleIds.join(', ')}]`);
       }
-      this.logger.log(`Sent critical alerts: ${count}`);
     } catch (e) {
       this.logger.error(`Error when trying to processing critical alerts`);
       this.logger.error(e as Error);

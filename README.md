@@ -303,19 +303,27 @@ Holesky) this value should be omitted.
 `CRITICAL_ALERTS_ALERTMANAGER_URL` - If passed, application sends additional critical alerts about validators performance to Alertmanager.
 * **Required:** false
 ---
-`CRITICAL_ALERTS_MIN_VAL_COUNT` - Critical alerts will be sent for Node Operators with validators count greater this value.
+`CRITICAL_ALERTS_MIN_VAL_COUNT` - Critical alerts will be sent for Node Operators with validators count greater or equal to this value.
 * **Required:** false
 * **Default:** 100
+---
+`CRITICAL_ALERTS_MIN_VAL_CSM_ABSOLUTE_COUNT` - If number of validators in CSM module affected by the specific critical event is greater or equal to this value, the critical alert will be sent.
+* **Required:** false
+* **Default:** 1
 ---
 `CRITICAL_ALERTS_ALERTMANAGER_LABELS` - Additional labels for critical alerts.
 Must be in JSON string format. Example - '{"a":"valueA","b":"valueB"}'.
 * **Required:** false
 * **Default:** {}
 ---
+`CSM_MODULE_ID` - ID of the CSM module in the Staking Router. If the CSM module doesn't exist, any value greater than the total number of Staking Router modules is accepted.
+* **Required:** false
+* **Default:** 3
+---
 
 ## Application critical alerts (via Alertmanager)
 
-In addition to alerts based on Prometheus metrics you can receive special critical alerts based on beaconchain aggregates from app.
+In addition to alerts based on Prometheus metrics you can receive special critical alerts based on Beacon Chain aggregates from app.
 
 You should pass env var `CRITICAL_ALERTS_ALERTMANAGER_URL=http://<alertmanager_host>:<alertmanager_port>`.
 
@@ -325,8 +333,8 @@ And if `ethereum_validators_monitoring_data_actuality < 1h` it allows you to rec
 |----------------------------|-----------------------------------------------------------------------------------------------------------------|-----------------|---------------------------|
 | CriticalSlashing           | At least one validator was slashed                                                                              | instant         | -                         |
 | CriticalMissedProposes     | More than 1/3 blocks from Node Operator duties was missed in the last 12 hours                                  | every 6h        | -                         |
-| CriticalNegativeDelta      | More than 1/3 or more than 1000 Node Operator validators with negative balance delta (between current and 6 epochs ago)           | every 6h        | every 1h                  |
-| CriticalMissedAttestations | More than 1/3 or more than 1000 Node Operator validators with missed attestations in the last {{ BAD_ATTESTATION_EPOCHS }} epochs | every 6h        | every 1h                  |
+| CriticalNegativeDelta      | More than 1/3 or more than 1000 Node Operator validators in curated modules with negative balance delta (between current and 6 epochs ago). More than `{{CRITICAL_ALERTS_MIN_VAL_CSM_ABSOLUTE_COUNT}}` Node Operator validators in the CSM module with negative balance delta.           | every 6h        | every 1h                  |
+| CriticalMissedAttestations | More than 1/3 or more than 1000 Node Operator validators in curated modules with missed attestations in the last `{{BAD_ATTESTATION_EPOCHS}}` epochs. More than `{{CRITICAL_ALERTS_MIN_VAL_CSM_ABSOLUTE_COUNT}}` Node Operator validators in the CSM module with missed attestations. | every 6h        | every 1h                  |
 
 
 ## Application metrics
