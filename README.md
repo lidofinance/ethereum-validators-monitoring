@@ -314,39 +314,38 @@ to this value.
 * **Required:** false
 * **Default:** 100
 ---
-`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` - Specifies the minimal threshold of active validators for node operators in the
-specific module for critical alerts. If the number of validators for a node operator in the specified module is greater
-or equal to the `minActiveCount` value of the variable and the number of node operator's validators affected by the
-critical alert is greater or equal to the total number of node operator's validators multiplied by the `affectedShare`
-value of the variable or greater or equal to the `minAffectedCount` value of the variable, and variable's values for the
-particular module are not overridden by the `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` value, the critical alert will be
-sent.
+`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` - Sets the minimum conditions for triggering critical alerts based on the number
+of active validators for node operators in a specific module.
 
-It must be in JSON string format. Example:
-`{ "0": { "minActiveCount": 100, "affectedShare": 0.33, "minAffectedCount": 1000 }}`.
+The value must be in JSON format. Example:
+`{ "0": { "minActiveCount": 100, "affectedShare": 0.33, "minAffectedCount": 1000 } }`.
 
-The numeric key in this structure defines module ID. Values specified for zero key are applied to all modules. Values
-specified for non-zero keys of this structure are applied only to the specified module and have priority over values,
-specified for the zero key.
+The numeric key represents the module ID. Settings under the `0` key apply to all modules unless overridden by settings
+for specific module IDs. Settings for specific module IDs take precedence over the `0` key.
 
-If this variable doesn't have values for the particular module and no values for the zero key are set, then the rule is
-applied like if the following values are set:
+A critical alert is sent if:
+
+* The number of active validators for a node operator meets or exceeds `minActiveCount`.
+* The number of affected validators:
+  * Is at least `affectedShare` of the total validators for the node operator, OR
+  * Exceeds or equal to `minAffectedCount`.
+* Value in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` for specific module is not overridden by
+  `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`.
+
+If no settings are provided for a specific module or the 0 key, default values are used:
 `{ "minActiveCount": CRITICAL_ALERTS_MIN_VAL_COUNT, "affectedShare": 0.33, "minAffectedCount": 1000 }`.
 * **Required:** false
 * **Default:** {}
 ---
-`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` - If the number of validators for a node operator in the specified module
-affected by the critical alert is greater or equal to this value, the critical alert will be sent.
+`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` - Defines the minimum number of affected validators for a node operator in a
+specific module for which a critical alert should be sent.
 
-It must be in JSON string format. Example: `{ "0": 100, "3": 50 }`.
+The value must be in JSON format, for example: `{ "0": 100, "3": 50 }`.  The numeric key represents the module ID. The
+value for the key `0` applies to all modules. Values for non-zero keys apply only to the specified module and take
+precedence over the `0` key.
 
-The numeric key in this structure defines module ID. Values specified for zero key are applied to all modules. Values
-specified for non-zero keys of this structure are applied only to the specified module and have priority over values,
-specified for the zero key.
-
-This variable has priority over the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and `CRITICAL_ALERTS_MIN_VAL_COUNT` values.
-If this variable doesn't have values for the particular module and no values for the zero key are set, rules defined in
-the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and `CRITICAL_ALERTS_MIN_VAL_COUNT` variables are applied.
+This variable takes priority over `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and `CRITICAL_ALERTS_MIN_VAL_COUNT`. If no
+value is set for a specific module or the `0` key, the rules from the other two variables will apply instead.
 * **Required:** false
 * **Default:** {}
 ---
@@ -363,7 +362,8 @@ aggregates from app.
 
 You should pass env var `CRITICAL_ALERTS_ALERTMANAGER_URL=http://<alertmanager_host>:<alertmanager_port>`.
 
-There are 3 environmental variables that control how critical alerts are sent for certain modules:
+Critical alerts for modules are controlled by three environment variables, listed here with their priority (from lowest
+to highest):
 ```
 CRITICAL_ALERTS_MIN_VAL_COUNT: number;
 CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT: {
@@ -380,8 +380,8 @@ CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT: {
 
 The following rules are applied (listed in order of increasing priority, the next rule overrides the previous one).
 
-1. (lowest priority) `CRITICAL_ALERTS_MIN_VAL_COUNT`. If only this variable is set, the app behaves as if the
-   `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` has the following value:
+1. **Global Fallback** (`CRITICAL_ALERTS_MIN_VAL_COUNT`). If this variable is set, it acts as a default for modules by
+   creating an implicit rule:
 ```
 {
    "0": {
@@ -392,7 +392,8 @@ The following rules are applied (listed in order of increasing priority, the nex
 }
 ```
 
-2. Default rules for the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` variable are set.
+2. **Global Rules for Active Validators** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`). Default rules apply to all modules
+   (key `0`) unless overridden.
 ```
 CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT = {
    "0": {
@@ -402,24 +403,22 @@ CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT = {
    }
 }
 ```
-Values specified for the zero key are applied to all modules. A Critical alert is triggered for the particular module if
-both conditions are met:
+A critical alert is triggered for a module if **both** conditions are met:
+* Active validators exceed or equal to `minActiveCount`.
+* Affected validators exceed or equal to either `minAffectedCount` or `affectedShare` of the total active validators.
 
-a. the number of active validators for the given node operator is greater than `minActiveCount`;
-
-b. the number of validators affected by the critical alert is greater than the `minAffectedCount` or the share of node
-operator's validators affected by the critical alert is greater than `affectedShare`.
-
-3. Default rules for the `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` variable are set.
+3. **Global Rules for Affected Validators** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`). Default rules apply to all
+   modules (key `0`) unless overridden.
 ```
 CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT = {
    "0": <integer>
 }
 ```
-The value specified for the zero key is applied to all modules. A Critical alert is triggered for the particular module
-if the number of node operator's validators affected by the critical alert is greater than the specified value.
+A critical alert is triggered if the number of affected validators exceeds or equal to this value.
 
-4. Value(s) for specific module(s) in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` variable is set.
+4. **Per-Module Rules for Active Validators** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`). If specific module keys are
+   defined, those values override the global rules for `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and
+   `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`.
 ```
 CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT = {
    "n": {
@@ -429,27 +428,48 @@ CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT = {
    }
 }
 ```
-A Critical alert is triggered for the specified module(s) if both conditions are met:
+A critical alert is triggered for those modules if **both** conditions are met:
 
-a. the number of active validators for the given node operator is greater than `minActiveCount`;
+* Active validators exceed or equal to `minActiveCount`.
+* Affected validators exceed or equal either `minAffectedCount` or `affectedShare` of the total validators.
 
-b. the number of validators affected by the critical alert is greater than the `minAffectedCount` or the share of node
-operator's validators affected by the critical alert is greater than `affectedShare`.
+For modules that don't have keys in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` the rules defined in the previous steps
+are applied.
 
-For those modules that don't have keys in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` value the rules defined in the
-previous steps are applied.
-
-5.  (highest priority) Value(s) for specific module(s) in the `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT ` variable is set.
+5. **Per-Module Rules for Affected Validators** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`). If specific module keys are
+   defined, those values override all other rules for the module.
 ```
 CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT = {
    "n": <integer>
 }
 ```
-A Critical alert is triggered for the specified module(s) if the number of node operator's validators affected by the
-critical alert is greater than the specified value for the module.
+A critical alert is triggered if the number of affected validators exceeds or equal to the specified value.
 
-For those modules that don't have keys in the `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` value the rules defined in the
-previous steps are applied.
+To illustrate these rules let's consider the following sample config:
+```
+CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT = {
+  "0": {
+      "minActiveCount": 100,
+      "affectedShare": 0.3,
+      "minAffectedCount": 1000,
+   },
+  "3": {
+      "minActiveCount": 10,
+      "affectedShare": 0.5,
+      "minAffectedCount": 200,
+   },
+};
+CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT = {
+   "2": 30
+};
+```
+In this case, critical alerts for any modules except 2 and 3 will be triggered for operators with at least 100 active
+validators and only if either at least 1000 or 30% of active validators are affected by a critical alert (depending on
+what number is less). However, for operators from the 3-rd module, these rules are weakened: a critical alert will be
+triggered for operators with at least 10 active validators and only if either 200 or 50% of validators are affected.
+
+These rules are not applied to the 2-nd module. For this module, critical alerts will be triggered for all operators
+with at least 30 affected validators (no matter how many active validators they have).
 
 If `ethereum_validators_monitoring_data_actuality < 1h` alerts from table bellow are sent.
 

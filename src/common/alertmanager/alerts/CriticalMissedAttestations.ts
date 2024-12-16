@@ -30,6 +30,9 @@ export class CriticalMissedAttestations extends Alert {
     const result: AlertRuleResult = {};
 
     const activeOngoingThreshold = alertParams.affectedValCount ?? alertParams.activeValCount.minActiveCount;
+
+    // If affectedValCount is set, we're not interested in NOs with a number of validators less than this value
+    // (because for these NOs it is not possible to have a number of affected validators greater than this value).
     const filteredNosStats = this.nosStats.filter((o) => o.active_ongoing >= activeOngoingThreshold);
 
     for (const noStats of filteredNosStats) {

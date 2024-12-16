@@ -44,6 +44,7 @@ export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
       };
     }
 
+    // default values if the only CRITICAL_ALERTS_MIN_VAL_COUNT is set
     return {
       activeValCount: {
         minActiveCount: minValCount,
