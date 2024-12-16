@@ -30,6 +30,10 @@ export class KeysapiSourceService implements RegistrySource {
     }
   }
 
+  public getModuleIndexes(): number[] {
+    return [...this.modules.values()];
+  }
+
   public getOperatorsMap(): Map<string, RegistrySourceOperator> {
     return this.operatorsMap;
   }

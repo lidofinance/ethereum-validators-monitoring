@@ -262,7 +262,8 @@ Holesky) this value should be omitted.
 * **Default:** ./docker/validators/lido_mainnet.db
 * **Note:** it makes sense to change default value if `VALIDATOR_REGISTRY_SOURCE` is set to "lido"
 ---
-`VALIDATOR_REGISTRY_KEYSAPI_SOURCE_URLS` - Comma-separated list of URLs to [Lido Keys API service](https://github.com/lidofinance/lido-keys-api).
+`VALIDATOR_REGISTRY_KEYSAPI_SOURCE_URLS` - Comma-separated list of URLs to
+[Lido Keys API service](https://github.com/lidofinance/lido-keys-api).
 * **Required:** false
 * **Note:** will be used only if `VALIDATOR_REGISTRY_SOURCE` is set to "keysapi"
 ---
@@ -278,21 +279,25 @@ Holesky) this value should be omitted.
 * **Required:** false
 * **Default:** 2
 ---
-`VALIDATOR_USE_STUCK_KEYS_FILE` - Use a file with list of validators that are stuck and should be excluded from the monitoring metrics.
+`VALIDATOR_USE_STUCK_KEYS_FILE` - Use a file with list of validators that are stuck and should be excluded from the
+monitoring metrics.
 * **Required:** false
 * **Values:** true / false
 * **Default:** false
 ---
-`VALIDATOR_STUCK_KEYS_FILE_PATH` - Path to file with list of validators that are stuck and should be excluded from the monitoring metrics.
+`VALIDATOR_STUCK_KEYS_FILE_PATH` - Path to file with list of validators that are stuck and should be excluded from the
+monitoring metrics.
 * **Required:** false
 * **Default:** ./docker/validators/stuck_keys.yaml
 * **Note:** will be used only if `VALIDATOR_USE_STUCK_KEYS_FILE` is true
 ---
-`SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG` - Distance (down) from Blockchain Sync Participation average after which we think that our sync participation is bad.
+`SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG` - Distance (down) from Blockchain Sync Participation average after
+which we think that our sync participation is bad.
 * **Required:** false
 * **Default:** 0
 ---
-`SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` - Number epochs after which we think that our sync participation is bad and alert about that.
+`SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` - Number epochs after which we think that our sync participation is bad
+and alert about that.
 * **Required:** false
 * **Default:** 3
 ---
@@ -300,33 +305,160 @@ Holesky) this value should be omitted.
 * **Required:** false
 * **Default:** 3
 ---
-`CRITICAL_ALERTS_ALERTMANAGER_URL` - If passed, application sends additional critical alerts about validators performance to Alertmanager.
+`CRITICAL_ALERTS_ALERTMANAGER_URL` - If passed, application sends additional critical alerts about validators
+performance to Alertmanager.
 * **Required:** false
 ---
-`CRITICAL_ALERTS_MIN_VAL_COUNT` - Critical alerts will be sent for Node Operators with validators count greater this value.
+`CRITICAL_ALERTS_MIN_VAL_COUNT` - Critical alerts will be sent for Node Operators with validators count greater or equal
+to this value.
 * **Required:** false
 * **Default:** 100
 ---
+`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` - Specifies the minimal threshold of active validators for node operators in the
+specific module for critical alerts. If the number of validators for a node operator in the specified module is greater
+or equal to the `minActiveCount` value of the variable and the number of node operator's validators affected by the
+critical alert is greater or equal to the total number of node operator's validators multiplied by the `affectedShare`
+value of the variable or greater or equal to the `minAffectedCount` value of the variable, and variable's values for the
+particular module are not overridden by the `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` value, the critical alert will be
+sent.
+
+It must be in JSON string format. Example:
+`{ "0": { "minActiveCount": 100, "affectedShare": 0.33, "minAffectedCount": 1000 }}`.
+
+The numeric key in this structure defines module ID. Values specified for zero key are applied to all modules. Values
+specified for non-zero keys of this structure are applied only to the specified module and have priority over values,
+specified for the zero key.
+
+If this variable doesn't have values for the particular module and no values for the zero key are set, then the rule is
+applied like if the following values are set:
+`{ "minActiveCount": CRITICAL_ALERTS_MIN_VAL_COUNT, "affectedShare": 0.33, "minAffectedCount": 1000 }`.
+* **Required:** false
+* **Default:** {}
+---
+`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` - If the number of validators for a node operator in the specified module
+affected by the critical alert is greater or equal to this value, the critical alert will be sent.
+
+It must be in JSON string format. Example: `{ "0": 100, "3": 50 }`.
+
+The numeric key in this structure defines module ID. Values specified for zero key are applied to all modules. Values
+specified for non-zero keys of this structure are applied only to the specified module and have priority over values,
+specified for the zero key.
+
+This variable has priority over the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and `CRITICAL_ALERTS_MIN_VAL_COUNT` values.
+If this variable doesn't have values for the particular module and no values for the zero key are set, rules defined in
+the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and `CRITICAL_ALERTS_MIN_VAL_COUNT` variables are applied.
+* **Required:** false
+* **Default:** {}
+---
 `CRITICAL_ALERTS_ALERTMANAGER_LABELS` - Additional labels for critical alerts.
-Must be in JSON string format. Example - '{"a":"valueA","b":"valueB"}'.
+Must be in JSON string format. Example: `{ "a": "valueA", "b": "valueB" }`.
 * **Required:** false
 * **Default:** {}
 ---
 
 ## Application critical alerts (via Alertmanager)
 
-In addition to alerts based on Prometheus metrics you can receive special critical alerts based on beaconchain aggregates from app.
+In addition to alerts based on Prometheus metrics you can receive special critical alerts based on Beacon Chain
+aggregates from app.
 
 You should pass env var `CRITICAL_ALERTS_ALERTMANAGER_URL=http://<alertmanager_host>:<alertmanager_port>`.
 
-And if `ethereum_validators_monitoring_data_actuality < 1h` it allows you to receive alerts from table bellow
+There are 3 environmental variables that control how critical alerts are sent for certain modules:
+```
+CRITICAL_ALERTS_MIN_VAL_COUNT: number;
+CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT: {
+  <moduleIndex>: {
+      minActiveCount: number,
+      affectedShare: number,
+      minAffectedCount: number,
+   }
+};
+CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT: {
+   <moduleIndex>: number
+};
+```
 
-| Alert name                 | Description                                                                                                     | If fired repeat | If value increased repeat |
-|----------------------------|-----------------------------------------------------------------------------------------------------------------|-----------------|---------------------------|
-| CriticalSlashing           | At least one validator was slashed                                                                              | instant         | -                         |
-| CriticalMissedProposes     | More than 1/3 blocks from Node Operator duties was missed in the last 12 hours                                  | every 6h        | -                         |
-| CriticalNegativeDelta      | More than 1/3 or more than 1000 Node Operator validators with negative balance delta (between current and 6 epochs ago)           | every 6h        | every 1h                  |
-| CriticalMissedAttestations | More than 1/3 or more than 1000 Node Operator validators with missed attestations in the last {{ BAD_ATTESTATION_EPOCHS }} epochs | every 6h        | every 1h                  |
+The following rules are applied (listed in order of increasing priority, the next rule overrides the previous one).
+
+1. (lowest priority) `CRITICAL_ALERTS_MIN_VAL_COUNT`. If only this variable is set, the app behaves as if the
+   `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` has the following value:
+```
+{
+   "0": {
+      "minActiveCount": CRITICAL_ALERTS_MIN_VAL_COUNT,
+      "affectedShare": 0.33,
+      "minAffectedCount": 1000
+   }
+}
+```
+
+2. Default rules for the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` variable are set.
+```
+CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT = {
+   "0": {
+      "minActiveCount": <integer>,
+      "affectedShare": <0.xx>,
+      "minAffectedCount": <integer>,
+   }
+}
+```
+Values specified for the zero key are applied to all modules. A Critical alert is triggered for the particular module if
+both conditions are met:
+
+a. the number of active validators for the given node operator is greater than `minActiveCount`;
+
+b. the number of validators affected by the critical alert is greater than the `minAffectedCount` or the share of node
+operator's validators affected by the critical alert is greater than `affectedShare`.
+
+3. Default rules for the `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` variable are set.
+```
+CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT = {
+   "0": <integer>
+}
+```
+The value specified for the zero key is applied to all modules. A Critical alert is triggered for the particular module
+if the number of node operator's validators affected by the critical alert is greater than the specified value.
+
+4. Value(s) for specific module(s) in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` variable is set.
+```
+CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT = {
+   "n": {
+      "minActiveCount": <integer>,
+      "affectedShare": <0.xx>,
+      "minAffectedCount": <integer>,
+   }
+}
+```
+A Critical alert is triggered for the specified module(s) if both conditions are met:
+
+a. the number of active validators for the given node operator is greater than `minActiveCount`;
+
+b. the number of validators affected by the critical alert is greater than the `minAffectedCount` or the share of node
+operator's validators affected by the critical alert is greater than `affectedShare`.
+
+For those modules that don't have keys in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` value the rules defined in the
+previous steps are applied.
+
+5.  (highest priority) Value(s) for specific module(s) in the `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT ` variable is set.
+```
+CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT = {
+   "n": <integer>
+}
+```
+A Critical alert is triggered for the specified module(s) if the number of node operator's validators affected by the
+critical alert is greater than the specified value for the module.
+
+For those modules that don't have keys in the `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` value the rules defined in the
+previous steps are applied.
+
+If `ethereum_validators_monitoring_data_actuality < 1h` alerts from table bellow are sent.
+
+| Alert name                 | Description                                                                                             | If fired repeat | If value increased repeat |
+|----------------------------|---------------------------------------------------------------------------------------------------------|-----------------|---------------------------|
+| CriticalSlashing           | At least one validator was slashed                                                                      | instant         | -                         |
+| CriticalMissedProposes     | More than 1/3 blocks from Node Operator duties was missed in the last 12 hours                          | every 6h        | -                         |
+| CriticalNegativeDelta      | A certain number of validators with negative balance delta (between current and 6 epochs ago)           | every 6h        | every 1h                  |
+| CriticalMissedAttestations | A certain number of validators with missed attestations in the last `{{BAD_ATTESTATION_EPOCHS}}` epochs | every 6h        | every 1h                  |
 
 
 ## Application metrics
