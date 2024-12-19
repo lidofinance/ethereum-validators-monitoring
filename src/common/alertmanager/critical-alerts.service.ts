@@ -55,11 +55,12 @@ export class CriticalAlertsService {
         this.storage.getUserNodeOperatorsStats(epoch - 1),
       ]);
 
-      const alerts = moduleIndexes.reduce((totalAlerts, moduleIndex) => {
+      const alerts = [];
+      for (const moduleIndex of moduleIndexes) {
         const nosStatsForModule = nosStats.filter((o) => +o.val_nos_module_id === moduleIndex);
         const operatorsForModule = this.operators.filter((o) => o.module === moduleIndex);
 
-        totalAlerts.push(
+        alerts.push(
           ...[
             new CriticalMissedAttestations(
               this.config,
@@ -81,9 +82,7 @@ export class CriticalAlertsService {
             new CriticalSlashing(this.config, this.storage, operatorsForModule, moduleIndex, nosStatsForModule, prevNosStats),
           ],
         );
-
-        return totalAlerts;
-      }, []);
+      }
 
       for (const alert of alerts) {
         const toSend = await alert.toSend(epoch);
