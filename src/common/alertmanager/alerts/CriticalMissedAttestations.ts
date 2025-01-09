@@ -2,35 +2,57 @@ import { join } from 'lodash';
 
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/consensus-provider/types';
 import { ClickhouseService } from 'storage';
+import { NOsValidatorsByConditionAttestationCount, NOsValidatorsStatusStats } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
-const validatorsWithMissedAttestationCountThreshold = (quantity: number) => {
-  return Math.min(quantity / 3, 1000);
-};
-
 export class CriticalMissedAttestations extends Alert {
-  constructor(config: ConfigService, storage: ClickhouseService, operators: RegistrySourceOperator[]) {
-    super(CriticalMissedAttestations.name, config, storage, operators);
+  protected readonly missedAttValidatorsCount: NOsValidatorsByConditionAttestationCount[];
+
+  constructor(
+    config: ConfigService,
+    storage: ClickhouseService,
+    operators: RegistrySourceOperator[],
+    moduleIndex: number,
+    nosStats: NOsValidatorsStatusStats[],
+    missedAttValidatorsCount: NOsValidatorsByConditionAttestationCount[],
+  ) {
+    const name = CriticalMissedAttestations.name + 'Module' + moduleIndex;
+    super(name, config, storage, operators, moduleIndex, nosStats);
+
+    this.missedAttValidatorsCount = missedAttValidatorsCount;
   }
 
-  async alertRule(epoch: Epoch): Promise<AlertRuleResult> {
+  alertRule(): AlertRuleResult {
+    const alertParams = this.config.getCriticalAlertParamForModule(this.moduleIndex);
     const result: AlertRuleResult = {};
-    const nosStats = await this.storage.getUserNodeOperatorsStats(epoch);
-    const missedAttValidatorsCount = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(epoch);
-    for (const noStats of nosStats.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
-      const operator = this.operators.find((o) => +noStats.val_nos_module_id == o.module && +noStats.val_nos_id == o.index);
-      const missedAtt = missedAttValidatorsCount.find(
-        (a) => a.val_nos_id != null && +a.val_nos_module_id == operator.module && +a.val_nos_id == operator.index,
+
+    const activeOngoingThreshold = alertParams.affectedValCount ?? alertParams.activeValCount.minActiveCount;
+
+    // If affectedValCount is set, we're not interested in NOs with a number of validators less than this value
+    // (because for these NOs it is not possible to have a number of affected validators greater than this value).
+    const filteredNosStats = this.nosStats.filter((o) => o.active_ongoing >= activeOngoingThreshold);
+
+    for (const noStats of filteredNosStats) {
+      const operator = this.operators.find((o) => +noStats.val_nos_id === o.index);
+      const missedAtt = this.missedAttValidatorsCount.find(
+        (a) => a.val_nos_id != null && +a.val_nos_module_id === operator.module && +a.val_nos_id === operator.index,
       );
-      if (!missedAtt) continue;
-      if (missedAtt.amount > validatorsWithMissedAttestationCountThreshold(noStats.active_ongoing)) {
+
+      if (missedAtt == null) continue;
+
+      const includeToResult =
+        alertParams.affectedValCount != null
+          ? missedAtt.amount >= alertParams.affectedValCount
+          : missedAtt.amount >=
+            Math.min(noStats.active_ongoing * alertParams.activeValCount.affectedShare, alertParams.activeValCount.minAffectedCount);
+      if (includeToResult) {
         result[operator.name] = { ongoing: noStats.active_ongoing, missedAtt: missedAtt.amount };
       }
     }
+
     return result;
   }
 
@@ -54,12 +76,16 @@ export class CriticalMissedAttestations extends Alert {
   }
 
   alertBody(ruleResult: AlertRuleResult): AlertRequestBody {
+    const timestampDate = new Date(this.sendTimestamp);
+    const timestampDatePlusTwoMins = new Date(this.sendTimestamp).setMinutes(timestampDate.getMinutes() + 2);
+
     return {
-      startsAt: new Date(this.sendTimestamp).toISOString(),
-      endsAt: new Date(new Date(this.sendTimestamp).setMinutes(new Date(this.sendTimestamp).getMinutes() + 2)).toISOString(),
+      startsAt: timestampDate.toISOString(),
+      endsAt: new Date(timestampDatePlusTwoMins).toISOString(),
       labels: {
         alertname: this.alertname,
         severity: 'critical',
+        nos_module_id: this.moduleIndex,
         ...this.config.get('CRITICAL_ALERTS_ALERTMANAGER_LABELS'),
       },
       annotations: {
@@ -67,7 +93,7 @@ export class CriticalMissedAttestations extends Alert {
           Object.values(ruleResult).length
         } Node Operators with CRITICAL count of validators with missed attestations in the last ${this.config.get(
           'BAD_ATTESTATION_EPOCHS',
-        )} epoch`,
+        )} epoch in module ${this.moduleIndex}`,
         description: join(
           Object.entries(ruleResult).map(([o, r]) => `${o}: ${r.missedAtt} of ${r.ongoing}`),
           '\n',
