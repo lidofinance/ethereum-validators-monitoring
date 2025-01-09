@@ -46,55 +46,27 @@ export class CriticalAlertsService {
       return;
     }
     try {
-      const moduleIndexes = this.registryService.getModuleIndexes();
-      const [nosStats, missedAttValidatorsCount, proposes, negativeValidatorsCount, prevNosStats] = await Promise.all([
-        this.storage.getUserNodeOperatorsStats(epoch),
-        this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(epoch),
-        this.storage.getUserNodeOperatorsProposesStats(epoch), // ~12h range
-        this.storage.getValidatorsCountWithNegativeDelta(epoch),
-        this.storage.getUserNodeOperatorsStats(epoch - 1),
-      ]);
-
-      const alerts = [];
-      for (const moduleIndex of moduleIndexes) {
-        const nosStatsForModule = nosStats.filter((o) => +o.val_nos_module_id === moduleIndex);
-        const operatorsForModule = this.operators.filter((o) => o.module === moduleIndex);
-
-        alerts.push(
-          ...[
-            new CriticalMissedAttestations(
-              this.config,
-              this.storage,
-              operatorsForModule,
-              moduleIndex,
-              nosStatsForModule,
-              missedAttValidatorsCount,
-            ),
-            new CriticalMissedProposes(this.config, this.storage, operatorsForModule, moduleIndex, nosStatsForModule, proposes),
-            new CriticalNegativeDelta(
-              this.config,
-              this.storage,
-              operatorsForModule,
-              moduleIndex,
-              nosStatsForModule,
-              negativeValidatorsCount,
-            ),
-            new CriticalSlashing(this.config, this.storage, operatorsForModule, moduleIndex, nosStatsForModule, prevNosStats),
-          ],
-        );
-      }
-
-      for (const alert of alerts) {
+      let count = 0;
+      for (const alert of this.alerts) {
         const toSend = await alert.toSend(epoch);
-        if (toSend == null) continue;
-
+        if (!toSend) continue;
+        count++;
         await this.fire(toSend.body).then(() => (sentAlerts[alert.alertname] = toSend));
-        this.logger.log(`Sent ${alert.alertname} alert`);
       }
+      this.logger.log(`Sent critical alerts: ${count}`);
     } catch (e) {
       this.logger.error(`Error when trying to processing critical alerts`);
       this.logger.error(e as Error);
     }
+  }
+
+  private get alerts() {
+    return [
+      new CriticalNegativeDelta(this.config, this.storage, this.operators),
+      new CriticalMissedProposes(this.config, this.storage, this.operators),
+      new CriticalMissedAttestations(this.config, this.storage, this.operators),
+      new CriticalSlashing(this.config, this.storage, this.operators),
+    ];
   }
 
   private async fire(alert: AlertRequestBody) {

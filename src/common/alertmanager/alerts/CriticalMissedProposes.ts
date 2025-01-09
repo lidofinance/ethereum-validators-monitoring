@@ -2,8 +2,8 @@ import { join } from 'lodash';
 
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
+import { Epoch } from 'common/consensus-provider/types';
 import { ClickhouseService } from 'storage';
-import { NOsProposesStats, NOsValidatorsStatusStats } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
@@ -11,42 +11,24 @@ import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 const VALIDATORS_WITH_MISSED_PROPOSALS_COUNT_THRESHOLD = 1 / 3;
 
 export class CriticalMissedProposes extends Alert {
-  protected readonly proposes: NOsProposesStats[];
-
-  constructor(
-    config: ConfigService,
-    storage: ClickhouseService,
-    operators: RegistrySourceOperator[],
-    moduleIndex: number,
-    nosStats: NOsValidatorsStatusStats[],
-    proposes: NOsProposesStats[],
-  ) {
-    const name = CriticalMissedProposes.name + 'Module' + moduleIndex;
-    super(name, config, storage, operators, moduleIndex, nosStats);
-
-    this.proposes = proposes;
+  constructor(config: ConfigService, storage: ClickhouseService, operators: RegistrySourceOperator[]) {
+    super(CriticalMissedProposes.name, config, storage, operators);
   }
 
-  alertRule(): AlertRuleResult {
-    const alertParams = this.config.getCriticalAlertParamForModule(this.moduleIndex);
+  async alertRule(epoch: Epoch): Promise<AlertRuleResult> {
     const result: AlertRuleResult = {};
-
-    const activeOngoingThreshold = alertParams.affectedValCount ?? alertParams.activeValCount.minActiveCount;
-    const filteredNosStats = this.nosStats.filter((o) => o.active_ongoing >= activeOngoingThreshold);
-
-    for (const noStats of filteredNosStats) {
-      const operator = this.operators.find((o) => +noStats.val_nos_id === o.index);
-      const proposeStats = this.proposes.find(
-        (a) => a.val_nos_id != null && +a.val_nos_module_id === operator.module && +a.val_nos_id === operator.index,
+    const nosStats = await this.storage.getUserNodeOperatorsStats(epoch);
+    const proposes = await this.storage.getUserNodeOperatorsProposesStats(epoch); // ~12h range
+    for (const noStats of nosStats.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
+      const operator = this.operators.find((o) => +noStats.val_nos_module_id == o.module && +noStats.val_nos_id == o.index);
+      const proposeStats = proposes.find(
+        (a) => a.val_nos_id != null && +a.val_nos_module_id == operator.module && +a.val_nos_id == operator.index,
       );
-
-      if (proposeStats == null) continue;
-
-      if (proposeStats.missed >= proposeStats.all * VALIDATORS_WITH_MISSED_PROPOSALS_COUNT_THRESHOLD) {
+      if (!proposeStats) continue;
+      if (proposeStats.missed > proposeStats.all * VALIDATORS_WITH_MISSED_PROPOSALS_COUNT_THRESHOLD) {
         result[operator.name] = { all: proposeStats.all, missed: proposeStats.missed };
       }
     }
-
     return result;
   }
 
@@ -69,22 +51,12 @@ export class CriticalMissedProposes extends Alert {
   }
 
   alertBody(ruleResult: AlertRuleResult): AlertRequestBody {
-    const timestampDate = new Date(this.sendTimestamp);
-    const timestampDatePlusTwoMins = new Date(this.sendTimestamp).setMinutes(timestampDate.getMinutes() + 2);
-
     return {
-      startsAt: timestampDate.toISOString(),
-      endsAt: new Date(timestampDatePlusTwoMins).toISOString(),
-      labels: {
-        alertname: this.alertname,
-        severity: 'critical',
-        nos_module_id: this.moduleIndex,
-        ...this.config.get('CRITICAL_ALERTS_ALERTMANAGER_LABELS'),
-      },
+      startsAt: new Date(this.sendTimestamp).toISOString(),
+      endsAt: new Date(new Date(this.sendTimestamp).setMinutes(new Date(this.sendTimestamp).getMinutes() + 2)).toISOString(),
+      labels: { alertname: this.alertname, severity: 'critical', ...this.config.get('CRITICAL_ALERTS_ALERTMANAGER_LABELS') },
       annotations: {
-        summary: `${
-          Object.values(ruleResult).length
-        } Node Operators with CRITICAL count of missed proposes in the last 12 hours in module ${this.moduleIndex}`,
+        summary: `${Object.values(ruleResult).length} Node Operators with CRITICAL count of missed proposes in the last 12 hours`,
         description: join(
           Object.entries(ruleResult).map(([o, r]) => `${o}: ${r.missed} of ${r.all} proposes`),
           '\n',
