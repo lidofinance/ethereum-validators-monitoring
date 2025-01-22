@@ -18,3 +18,12 @@ export enum LogFormat {
   json = 'json',
   simple = 'simple',
 }
+
+export interface CriticalAlertParamsForModule {
+  activeValCount?: {
+    minActiveCount: number;
+    affectedShare: number;
+    minAffectedCount: number;
+  };
+  affectedValCount?: number;
+}

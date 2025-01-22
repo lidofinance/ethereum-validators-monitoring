@@ -37,6 +37,10 @@ export class LidoSourceService implements RegistrySource {
     }
   }
 
+  public getModuleIndexes(): number[] {
+    return [this.registryModuleId];
+  }
+
   public getOperatorsMap() {
     return this.operatorsMap;
   }
