@@ -9,7 +9,7 @@ groups:
         annotations:
           emoji: 🔪
           summary: "Operators have slashed validators"
-          description: 'Number of slashed validators per operator'
+          description: 'Number of slashed validators per operator.'
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
@@ -17,16 +17,16 @@ groups:
           footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
 
       - alert: DataActuality
-        expr: absent(ethereum_validators_monitoring_data_actuality) OR (ethereum_validators_monitoring_data_actuality / 1000 > 3600)
+        expr: ethereum_validators_monitoring_data_actuality > 3600000 OR absent(ethereum_validators_monitoring_data_actuality)
         for: 1m
         labels:
           severity: critical
         annotations:
           emoji: ⏳
           summary: "Data actuality greater then 1 hour"
-          resolved_summary: "Data actuality is back to normal and now less then 1 hour"
-          description: "({{ humanizeDuration $value }}) It's not OK. Please, check app health"
-          resolved_description: "It's OK"
+          resolved_summary: "Data actuality is back to normal and now less then 1 hour."
+          description: "({{ humanizeDuration $value }}) It's not OK. Please, check app health."
+          resolved_description: "It's OK."
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
           footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -38,7 +38,7 @@ groups:
         annotations:
           emoji: 💸
           summary: 'Operators have a negative balance delta'
-          resolved_summary: 'Operators have a positive balance delta'
+          resolved_summary: 'Operators have a positive balance delta.'
           description: 'Number of validators per operator who have a negative balance delta.'
           resolved_description: 'Number of validators per operator who recovered.'
           field_name: '{{ $labels.nos_name }}'
@@ -54,7 +54,7 @@ groups:
         annotations:
           emoji: 📝❌
           summary: 'Operators have missed attestation in last {{ $labels.epoch_interval }} finalized epochs'
-          resolved_summary: 'Operators not have missed attestation in last {{ $labels.epoch_interval }} finalized epochs'
+          resolved_summary: 'Operators not have missed attestation in last {{ $labels.epoch_interval }} finalized epochs.'
           description: 'Number of validators per operator who have missed attestations.'
           resolved_description: 'Number of validators per operator who recovered.'
           field_name: '{{ $labels.nos_name }}'
@@ -98,7 +98,7 @@ groups:
         annotations:
           emoji: 📥
           summary: 'Operators missed block propose in the last finalized epoch'
-          resolved_summary: 'Operators not missed block propose in the last finalized epoch'
+          resolved_summary: 'Operators not missed block propose in the last finalized epoch.'
           description: 'Number of validators per operator who missed block propose.'
           resolved_description: 'Number of validators per operator who recovered.'
           field_name: '{{ $labels.nos_name }}'
@@ -114,7 +114,7 @@ groups:
         annotations:
           emoji: 🔄
           summary: 'Operators sync participation less than average in last {{ $labels.epoch_interval }} finalized epochs'
-          resolved_summary: 'Operators sync participation higher or equal than average in last {{ $labels.epoch_interval }} finalized epochs'
+          resolved_summary: 'Operators sync participation higher or equal than average in last {{ $labels.epoch_interval }} finalized epochs.'
           description: 'Number of validators per operator whose sync participation less than average.'
           resolved_description: 'Number of validators per operator who recovered.'
           field_name: '{{ $labels.nos_name }}'
@@ -129,7 +129,7 @@ groups:
           severity: critical
         annotations:
           emoji: '📈🔄'
-          summary: 'Operators may get high rewards in the future, but sync participation less than average in last {{ $labels.epoch_interval }} finalized epochs!'
+          summary: 'Operators may get high rewards in the future, but sync participation less than average in last {{ $labels.epoch_interval }} finalized epochs'
           resolved_summary: 'Operators sync participation higher or equal than average in last {{ $labels.epoch_interval }} finalized epoch. Now may get high rewards in the future!'
           description: 'Number of validators per operator whose sync participation less than average.'
           resolved_description: 'Number of validators per operator who recovered.'
@@ -145,7 +145,7 @@ groups:
           severity: critical
         annotations:
           emoji: '📈📝❌'
-          summary: 'Operators may get high rewards in the future, but missed attestation in last {{ $labels.epoch_interval }} finalized epochs!'
+          summary: 'Operators may get high rewards in the future, but missed attestation in last {{ $labels.epoch_interval }} finalized epochs'
           resolved_summary: 'Operators not have missed attestation in last {{ $labels.epoch_interval }} finalized epochs. Now may get high rewards in the future!'
           description: 'Number of validators per operator who have missed attestations.'
           resolved_description: 'Number of validators per operator who recovered.'
@@ -161,7 +161,7 @@ groups:
           severity: critical
         annotations:
           emoji: '📈📥'
-          summary: 'Operators may get high rewards in the future, but missed block propose in the last finalized epoch!'
+          summary: 'Operators may get high rewards in the future, but missed block propose in the last finalized epoch'
           resolved_summary: 'Operators not missed block propose in the last finalized epoch. Now may get high rewards in the future!'
           description: 'Number of validators per operator who missed block propose.'
           resolved_description: 'Number of validators per operator who recovered.'

@@ -54,7 +54,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256m
+          memory: 512m
     volumes:
       - ./.volumes/prometheus/:/prometheus
       - ./docker/prometheus/:/etc/prometheus/
@@ -75,7 +75,7 @@ services:
       - '8083:8080'
 
   alertmanager:
-    image: prom/alertmanager:latest
+    image: prom/alertmanager:v0.24.0
     container_name: alertmanager
     restart: unless-stopped
     deploy:
