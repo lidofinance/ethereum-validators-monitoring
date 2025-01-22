@@ -78,7 +78,7 @@ export class CriticalMissedProposes extends Alert {
       labels: {
         alertname: this.alertname,
         severity: 'critical',
-        nos_module_id: this.moduleIndex,
+        nos_module_id: this.moduleIndex.toString(),
         ...this.config.get('CRITICAL_ALERTS_ALERTMANAGER_LABELS'),
       },
       annotations: {
