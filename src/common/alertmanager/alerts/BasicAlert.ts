@@ -6,8 +6,13 @@ import { RegistrySourceOperator } from 'validators-registry';
 export interface AlertRequestBody {
   startsAt: string;
   endsAt: string;
-  labels: any;
-  annotations: any;
+  labels: {
+    [key: string]: string;
+  };
+  annotations: {
+    summary: string;
+    description: string;
+  };
 }
 
 export interface PreparedToSendAlert {
