@@ -12,25 +12,6 @@ export enum ValStatus {
   WithdrawalDone = 'withdrawal_done',
 }
 
-export interface AttesterDutyInfo {
-  pubkey: string;
-  validator_index: string;
-  committee_index: string;
-  committee_length: string;
-  committees_at_slot: string;
-  validator_committee_index: string;
-  slot: string;
-}
-
-export interface CheckedAttesterDutyInfo extends AttesterDutyInfo {
-  attested: boolean;
-  valid_head: boolean;
-  valid_target: boolean;
-  valid_source: boolean;
-  inclusion_delay: number;
-  in_block: string | undefined;
-}
-
 export interface BlockHeaderResponse {
   root: RootHex;
   canonical: boolean;
@@ -112,6 +93,7 @@ export interface BeaconBlockAttestation {
       root: RootHex;
     };
   };
+  committee_bits: string;
 }
 
 export interface StateValidatorResponse {

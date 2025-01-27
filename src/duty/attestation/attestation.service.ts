@@ -19,15 +19,15 @@ import { SummaryService } from 'duty/summary';
 import { getFlags } from './attestation.constants';
 
 interface SlotAttestation {
-  included_in_block: number;
-  bits: BitArray;
+  includedInBlock: number;
+  aggregationBits: BitArray;
+  committeeIndexes: number[];
   head: string;
-  target_root: string;
-  target_epoch: Epoch;
-  source_root: string;
-  source_epoch: Epoch;
+  targetRoot: string;
+  targetEpoch: Epoch;
+  sourceRoot: string;
+  sourceEpoch: Epoch;
   slot: number;
-  committee_index: number;
 }
 
 @Injectable()
@@ -59,12 +59,7 @@ export class AttestationService {
     const maxBatchSize = 5;
     let index = 0;
     for (const attestation of attestations) {
-      // Each attestation corresponds to committee. Committee may have several aggregate attestations
-      const committee = committees.get(`${attestation.committee_index}_${attestation.slot}`);
-      if (!committee) {
-        continue;
-      }
-      await this.processAttestation(epoch, attestation, committee);
+      await this.processAttestation(epoch, attestation, committees);
       // Long loop (2048 committees will be checked by ~7k attestations).
       // We need to unblock event loop immediately after each iteration
       // It makes this cycle slower but safer (but since it is executed async, impact will be minimal)
@@ -76,48 +71,67 @@ export class AttestationService {
     }
   }
 
-  protected async processAttestation(epoch: Epoch, attestation: SlotAttestation, committee: number[]) {
+  protected async processAttestation(epoch: Epoch, attestation: SlotAttestation, committees: Map<string, number[]>) {
     const attestationFlags = { source: [], target: [], head: [] };
     const [canonHead, canonTarget, canonSource] = await allSettled([
       this.getCanonSlotRoot(attestation.slot),
-      this.getCanonSlotRoot(attestation.target_epoch * this.slotsInEpoch),
-      this.getCanonSlotRoot(attestation.source_epoch * this.slotsInEpoch),
+      this.getCanonSlotRoot(attestation.targetEpoch * this.slotsInEpoch),
+      this.getCanonSlotRoot(attestation.sourceEpoch * this.slotsInEpoch),
     ]);
-    const attValidHead = attestation.head == canonHead;
-    const attValidTarget = attestation.target_root == canonTarget;
-    const attValidSource = attestation.source_root == canonSource;
-    const attIncDelay = Number(attestation.included_in_block - attestation.slot);
+    const attValidHead = attestation.head === canonHead;
+    const attValidTarget = attestation.targetRoot === canonTarget;
+    const attValidSource = attestation.sourceRoot === canonSource;
+    const attIncDelay = Number(attestation.includedInBlock - attestation.slot);
     const isDencunFork = epoch >= this.dencunEpoch;
     const flags = getFlags(attIncDelay, attValidSource, attValidTarget, attValidHead, isDencunFork);
-    for (const [valCommIndex, validatorIndex] of committee.entries()) {
-      const attHappened = attestation.bits.get(valCommIndex);
-      if (!attHappened) {
-        continue;
+
+    let committeeOffset = 0;
+    for (const committeeIndex of attestation.committeeIndexes) {
+      // Each attestation corresponds to committee. Committee may have several aggregate attestations
+      const committee = committees.get(`${committeeIndex}_${attestation.slot}`);
+
+      /**
+       * @todo Decide what to do in this case. Now behavior of the algorithm in case of a non-existent committee is
+       * stricter than in the previous version.
+       */
+      if (committee == null) {
+        // return;
+        throw Error(`Committee ${committeeIndex} in slot ${attestation.slot} does not exist`);
       }
-      const processed = this.summary.epoch(attestation.target_epoch).get(validatorIndex);
-      if (!processed?.att_valid_source && flags.source) {
-        attestationFlags.source.push(validatorIndex);
+
+      for (const [valCommIndex, validatorIndex] of committee.entries()) {
+        const attHappened = attestation.aggregationBits.get(committeeOffset + valCommIndex);
+        if (!attHappened) {
+          continue;
+        }
+        const processed = this.summary.epoch(attestation.targetEpoch).get(validatorIndex);
+        if (!processed?.att_valid_source && flags.source) {
+          attestationFlags.source.push(validatorIndex);
+        }
+        if (!processed?.att_valid_target && flags.target) {
+          attestationFlags.target.push(validatorIndex);
+        }
+        if (!processed?.att_valid_head && flags.head) {
+          attestationFlags.head.push(validatorIndex);
+        }
+        this.summary.epoch(attestation.targetEpoch).set({
+          val_id: validatorIndex,
+          epoch: attestation.targetEpoch,
+          att_happened: attHappened,
+          att_inc_delay: processed?.att_inc_delay || attIncDelay,
+          att_valid_source: processed?.att_valid_source || flags.source,
+          att_valid_target: processed?.att_valid_target || flags.target,
+          att_valid_head: processed?.att_valid_head || flags.head,
+        });
       }
-      if (!processed?.att_valid_target && flags.target) {
-        attestationFlags.target.push(validatorIndex);
-      }
-      if (!processed?.att_valid_head && flags.head) {
-        attestationFlags.head.push(validatorIndex);
-      }
-      this.summary.epoch(attestation.target_epoch).set({
-        val_id: validatorIndex,
-        epoch: attestation.target_epoch,
-        att_happened: attHappened,
-        att_inc_delay: processed?.att_inc_delay || attIncDelay,
-        att_valid_source: processed?.att_valid_source || flags.source,
-        att_valid_target: processed?.att_valid_target || flags.target,
-        att_valid_head: processed?.att_valid_head || flags.head,
-      });
+
+      committeeOffset += committee.length;
     }
+
     const blocksAttestations = this.summary.epoch(epoch).getMeta().attestation.blocks_attestations;
-    const blockMeta = blocksAttestations.get(attestation.included_in_block);
+    const blockMeta = blocksAttestations.get(attestation.includedInBlock);
     blockMeta.push(attestationFlags);
-    blocksAttestations.set(attestation.included_in_block, blockMeta);
+    blocksAttestations.set(attestation.includedInBlock, blockMeta);
     this.summary.epoch(epoch).setMeta({ attestation: { blocks_attestations: blocksAttestations } });
   }
 
@@ -134,7 +148,8 @@ export class AttestationService {
   @TrackTask('process-chain-attestations')
   protected async getProcessedAttestations() {
     this.logger.log(`Processing attestations from blocks info`);
-    const bitsMap = new Map<string, BitArray>();
+    const aggregationBitsMap = new Map<string, BitArray>();
+    const committeeIndexesMap = new Map<string, number[]>();
     const attestations: SlotAttestation[] = [];
     const allMissedSlots: number[] = [];
     // Check all slots from previous epoch start to current epoch last slot
@@ -147,23 +162,37 @@ export class AttestationService {
         continue;
       }
       for (const att of block.message.body.attestations) {
-        let bits = bitsMap.get(att.aggregation_bits);
-        if (!bits) {
+        let aggregationBits = aggregationBitsMap.get(att.aggregation_bits);
+        let committeeIndexes = committeeIndexesMap.get(att.committee_bits);
+
+        if (aggregationBits == null) {
           const bytesArray = fromHexString(att.aggregation_bits);
-          const CommitteeBits = new BitVectorType(bytesArray.length * 8);
-          bits = CommitteeBits.deserialize(bytesArray);
-          bitsMap.set(att.aggregation_bits, bits);
+          const aggregationBitsVector = new BitVectorType(bytesArray.length * 8);
+          aggregationBits = aggregationBitsVector.deserialize(bytesArray);
+          aggregationBitsMap.set(att.aggregation_bits, aggregationBits);
         }
+        if (committeeIndexes == null) {
+          const bytesArray = fromHexString(att.committee_bits);
+          const committeeBitsVector = new BitVectorType(bytesArray.length * 8);
+          const committeeBitsArray = committeeBitsVector.deserialize(bytesArray);
+          committeeIndexes = committeeBitsArray.getTrueBitIndexes();
+          committeeIndexesMap.set(att.committee_bits, committeeIndexes);
+
+          if (committeeIndexes.length > 1) {
+            this.logger.debug(`Attestation was aggregated by more than two committees. Slot: ${att.data.slot}, committee bits: ${att.committee_bits}`);
+          }
+        }
+
         attestations.push({
-          included_in_block: Number(block.message.slot),
-          bits: bits,
+          includedInBlock: Number(block.message.slot),
+          aggregationBits,
+          committeeIndexes,
           head: att.data.beacon_block_root,
-          target_root: att.data.target.root,
-          target_epoch: Number(att.data.target.epoch),
-          source_root: att.data.source.root,
-          source_epoch: Number(att.data.source.epoch),
+          targetRoot: att.data.target.root,
+          targetEpoch: Number(att.data.target.epoch),
+          sourceRoot: att.data.source.root,
+          sourceEpoch: Number(att.data.source.epoch),
           slot: Number(att.data.slot),
-          committee_index: Number(att.data.index),
         });
       }
     }
