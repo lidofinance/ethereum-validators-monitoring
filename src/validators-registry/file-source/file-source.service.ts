@@ -16,11 +16,23 @@ interface FileContent {
 }
 
 const isValid = (data) => {
-  let valid = false;
-  data?.operators?.map((o) => {
-    o.name && o.keys?.length ? (valid = true) : (valid = false);
-  });
-  return valid;
+  if (data == null || typeof data !== 'object') {
+    return false;
+  }
+
+  for (const m of Object.values(data)) {
+    if (!Array.isArray(m) || m.length === 0) {
+      return false;
+    }
+
+    for (const o of m) {
+      if (o.name == null || !Array.isArray(o.keys) || o.keys.length === 0) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 };
 
 @Injectable()
@@ -30,6 +42,7 @@ export class FileSourceService implements RegistrySource {
   protected data: FileContent;
   protected lastSuccessDataReadTimestamp: number;
 
+  protected moduleIndexes = new Set<number>();
   protected operatorsMap = new Map<string, RegistrySourceOperator>();
 
   protected keysMap = new Map<string, RegistrySourceKey>();
@@ -49,6 +62,10 @@ export class FileSourceService implements RegistrySource {
     this.updateKeysMap();
   }
 
+  public getModuleIndexes(): number[] {
+    return [...this.moduleIndexes];
+  }
+
   public getOperatorsMap() {
     return this.operatorsMap;
   }
@@ -64,6 +81,8 @@ export class FileSourceService implements RegistrySource {
   protected updateOperatorsMap() {
     this.operatorsMap = new Map<string, RegistrySourceOperator>();
     Object.values(this.data).forEach((m, moduleIndex) => {
+      this.moduleIndexes.add(moduleIndex + 1);
+
       m.forEach((o, operatorIndex) => {
         this.operatorsMap.set(`${moduleIndex + 1}_${operatorIndex}`, { index: operatorIndex, module: moduleIndex + 1, name: o.name });
       });

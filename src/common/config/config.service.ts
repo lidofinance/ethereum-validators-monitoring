@@ -1,6 +1,7 @@
 import { ConfigService as ConfigServiceSource } from '@nestjs/config';
 
 import { EnvironmentVariables } from './env.validation';
+import { CriticalAlertParamsForModule } from './interfaces';
 
 export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
   /**
@@ -12,5 +13,44 @@ export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
 
   public get<T extends keyof EnvironmentVariables>(key: T): EnvironmentVariables[T] {
     return super.get(key, { infer: true }) as EnvironmentVariables[T];
+  }
+
+  public getCriticalAlertParamForModule(moduleIndex: number): CriticalAlertParamsForModule {
+    const minValCount = this.get('CRITICAL_ALERTS_MIN_VAL_COUNT');
+    const minActiveValCount = this.get('CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT');
+    const minAffectedValCount = this.get('CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT');
+
+    if (minAffectedValCount[moduleIndex] != null) {
+      return {
+        affectedValCount: minAffectedValCount[moduleIndex],
+      };
+    }
+
+    if (minActiveValCount[moduleIndex] != null) {
+      return {
+        activeValCount: minActiveValCount[moduleIndex],
+      };
+    }
+
+    if (minAffectedValCount[0] != null) {
+      return {
+        affectedValCount: minAffectedValCount[0],
+      };
+    }
+
+    if (minActiveValCount[0] != null) {
+      return {
+        activeValCount: minActiveValCount[0],
+      };
+    }
+
+    // default values if the only CRITICAL_ALERTS_MIN_VAL_COUNT is set
+    return {
+      activeValCount: {
+        minActiveCount: minValCount,
+        affectedShare: 0.33,
+        minAffectedCount: 1000,
+      },
+    };
   }
 }

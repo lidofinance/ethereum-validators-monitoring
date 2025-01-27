@@ -18,6 +18,7 @@ export interface RegistrySourceOperator {
 
 export interface RegistrySource {
   update(...args): Promise<void>;
+  getModuleIndexes(): number[];
   getOperatorsMap(): Map<string, RegistrySourceOperator>;
   getOperatorKey(pubKey: string): RegistrySourceKey | null;
   sourceTimestamp(): Promise<number>;

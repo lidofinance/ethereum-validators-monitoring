@@ -24,6 +24,7 @@ export class RegistryService {
 
   protected lastTimestamp = 0;
 
+  protected moduleIndexes: number[] = [];
   protected operators = [];
   protected stuckKeys = [];
 
@@ -41,6 +42,7 @@ export class RegistryService {
       throw Error(`Validators registry data is too old. Last update - ${lastUpdateTime}`);
     }
     this.operators = [...this.source.getOperatorsMap().values()];
+    this.moduleIndexes = this.source.getModuleIndexes();
   }
 
   public getOperatorKey(pubKey: string): RegistrySourceKeyWithOperatorName {
@@ -48,6 +50,10 @@ export class RegistryService {
     if (!key) return null;
     const operator = this.source.getOperatorsMap().get(`${key.moduleIndex}_${key.operatorIndex}`);
     return { ...key, operatorName: operator.name };
+  }
+
+  public getModuleIndexes() {
+    return this.moduleIndexes;
   }
 
   public getOperators() {
