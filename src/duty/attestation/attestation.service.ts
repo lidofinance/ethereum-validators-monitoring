@@ -56,9 +56,16 @@ export class AttestationService {
     this.logger.log(`Getting attestations and duties info`);
     const [attestations, committees] = await allSettled([this.getProcessedAttestations(), this.getAttestationCommittees(stateSlot)]);
     this.logger.log(`Processing attestation duty info`);
+
+    const firstSlotInPreviousEpoch = (epoch - 1) * this.slotsInEpoch;
     const maxBatchSize = 5;
     let index = 0;
     for (const attestation of attestations) {
+      // These attestations have been processed in previous cycles
+      if (attestation.slot <= firstSlotInPreviousEpoch - 1) {
+        continue;
+      }
+
       await this.processAttestation(epoch, attestation, committees);
       // Long loop (2048 committees will be checked by ~7k attestations).
       // We need to unblock event loop immediately after each iteration
@@ -90,13 +97,8 @@ export class AttestationService {
       // Each attestation corresponds to committee. Committee may have several aggregate attestations
       const committee = committees.get(`${committeeIndex}_${attestation.slot}`);
 
-      /**
-       * @todo Decide what to do in this case. Now behavior of the algorithm in case of a non-existent committee is
-       * stricter than in the previous version.
-       */
       if (committee == null) {
-        // return;
-        throw Error(`Committee ${committeeIndex} in slot ${attestation.slot} does not exist`);
+        throw Error(`Committee ${committeeIndex} for attestation in slot ${attestation.slot} does not exist`);
       }
 
       for (const [valCommIndex, validatorIndex] of committee.entries()) {
@@ -177,10 +179,6 @@ export class AttestationService {
           const committeeBitsArray = committeeBitsVector.deserialize(bytesArray);
           committeeIndexes = committeeBitsArray.getTrueBitIndexes();
           committeeIndexesMap.set(att.committee_bits, committeeIndexes);
-
-          if (committeeIndexes.length > 1) {
-            this.logger.debug(`Attestation was aggregated by more than two committees. Slot: ${att.data.slot}, committee bits: ${att.committee_bits}`);
-          }
         }
 
         attestations.push({
