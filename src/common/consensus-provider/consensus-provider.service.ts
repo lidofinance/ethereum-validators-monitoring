@@ -15,7 +15,15 @@ import { EpochProcessingState } from 'storage/clickhouse';
 
 import { BlockCache, BlockCacheService } from './block-cache';
 import { MaxDeepError, ResponseError, errCommon, errRequest } from './errors';
-import { BlockHeaderResponse, BlockInfoResponse, GenesisResponse, ProposerDutyInfo, SyncCommitteeInfo, VersionResponse, SpecResponse } from './intefaces';
+import {
+  BlockHeaderResponse,
+  BlockInfoResponse,
+  GenesisResponse,
+  ProposerDutyInfo,
+  SpecResponse,
+  SyncCommitteeInfo,
+  VersionResponse,
+} from './intefaces';
 import { BlockId, Epoch, Slot, StateId } from './types';
 
 let ssz: typeof import('@lodestar/types').ssz;

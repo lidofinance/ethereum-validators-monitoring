@@ -43,7 +43,6 @@ interface AttestationFlags {
   head: boolean;
 }
 
-
 @Injectable()
 export class AttestationService {
   private processedEpoch: number;
@@ -278,7 +277,7 @@ export class AttestationService {
     attIncDelay: number,
     validatorIndex: number,
     attestationFlags: AttestationFlags,
-    attestationValidators: AttestationValidators
+    attestationValidators: AttestationValidators,
   ) {
     const processed = this.summary.epoch(attestation.targetEpoch).get(validatorIndex);
 
