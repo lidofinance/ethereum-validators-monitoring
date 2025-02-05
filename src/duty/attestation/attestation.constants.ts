@@ -20,7 +20,7 @@ const timelyHead = (attIncDelay: number, attValidSource: boolean, attValidTarget
   return attValidSource && attValidTarget && attValidHead && attIncDelay === 1;
 };
 
-export const getFlags = (
+export const getAttestationFlags = (
   attIncDelay: number,
   attValidSource: boolean,
   attValidTarget: boolean,

@@ -80,6 +80,7 @@ export interface ProposerDutyInfo {
 
 export interface BeaconBlockAttestation {
   aggregation_bits: string;
+  committee_bits?: string;
   data: {
     slot: string;
     index: string;
@@ -93,33 +94,6 @@ export interface BeaconBlockAttestation {
       root: RootHex;
     };
   };
-  committee_bits: string;
-}
-
-export interface StateValidatorResponse {
-  index: string;
-  balance: string;
-  status: (typeof ValStatus)[keyof typeof ValStatus];
-  validator: {
-    pubkey: string;
-    withdrawal_credentials: string;
-    effective_balance: string;
-    slashed: boolean;
-    activation_eligibility_epoch: string;
-    activation_epoch: string;
-    exit_epoch: string;
-    withdrawable_epoch: string;
-  };
-}
-
-export interface SyncCommitteeDutyInfo {
-  pubkey: string;
-  validator_index: ValidatorIndex;
-  validator_sync_committee_indices: string[];
-  results: {
-    block: string;
-    sync: boolean;
-  }[];
 }
 
 export interface SyncCommitteeInfo {
@@ -140,4 +114,9 @@ export interface SyncCommitteeValidator {
 
 export interface VersionResponse {
   version: string;
+}
+
+export interface SpecResponse {
+  DENEB_FORK_EPOCH?: string;
+  ELECTRA_FORK_EPOCH?: string;
 }

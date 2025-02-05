@@ -15,7 +15,7 @@ import { EpochProcessingState } from 'storage/clickhouse';
 
 import { BlockCache, BlockCacheService } from './block-cache';
 import { MaxDeepError, ResponseError, errCommon, errRequest } from './errors';
-import { BlockHeaderResponse, BlockInfoResponse, GenesisResponse, ProposerDutyInfo, SyncCommitteeInfo, VersionResponse } from './intefaces';
+import { BlockHeaderResponse, BlockInfoResponse, GenesisResponse, ProposerDutyInfo, SyncCommitteeInfo, VersionResponse, SpecResponse } from './intefaces';
 import { BlockId, Epoch, Slot, StateId } from './types';
 
 let ssz: typeof import('@lodestar/types').ssz;
@@ -29,6 +29,11 @@ interface RequestRetryOptions {
   useFallbackOnResolved?: (r: any) => boolean;
 }
 
+export interface ForkEpochs {
+  dencun: number;
+  pectra: number;
+}
+
 @Injectable()
 export class ConsensusProviderService {
   protected apiUrls: string[];
@@ -37,10 +42,12 @@ export class ConsensusProviderService {
   protected genesisTime = 0;
   protected defaultMaxSlotDeepCount = 32;
   protected latestSlot = { slot: 0, fetchTime: 0 };
+  protected forkEpochs: ForkEpochs;
 
   protected endpoints = {
     version: 'eth/v1/node/version',
     genesis: 'eth/v1/beacon/genesis',
+    spec: 'eth/v1/config/spec',
     blockInfo: (blockId: BlockId): string => `eth/v2/beacon/blocks/${blockId}`,
     beaconHeaders: (blockId: BlockId): string => `eth/v1/beacon/headers/${blockId}`,
     attestationCommittees: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/committees?epoch=${epoch}`,
@@ -66,6 +73,23 @@ export class ConsensusProviderService {
     const version = (await this.retryRequest<VersionResponse>(async (apiURL: string) => this.apiGet(apiURL, this.endpoints.version)))
       .version;
     return (this.version = version);
+  }
+
+  public async getForkEpochs(): Promise<ForkEpochs> {
+    if (this.forkEpochs != null) {
+      return this.forkEpochs;
+    }
+
+    const spec = await this.retryRequest<SpecResponse>(async (apiURL: string) => this.apiGet(apiURL, this.endpoints.spec));
+    this.forkEpochs = {
+      dencun: spec.DENEB_FORK_EPOCH != null ? parseInt(spec.DENEB_FORK_EPOCH, 10) : Number.MAX_SAFE_INTEGER,
+      pectra: spec.ELECTRA_FORK_EPOCH != null ? parseInt(spec.ELECTRA_FORK_EPOCH, 10) : Number.MAX_SAFE_INTEGER,
+    };
+
+    this.logger.log(`Dencun fork epoch: ${this.forkEpochs.dencun}`);
+    this.logger.log(`Pectra fork epoch: ${this.forkEpochs.pectra}`);
+
+    return this.forkEpochs;
   }
 
   public async getGenesisTime(): Promise<number> {

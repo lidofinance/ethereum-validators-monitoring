@@ -16,25 +16,38 @@ import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { SummaryService } from 'duty/summary';
 
-import { getFlags } from './attestation.constants';
+import { getAttestationFlags } from './attestation.constants';
 
 interface SlotAttestation {
   includedInBlock: number;
   aggregationBits: BitArray;
-  committeeIndexes: number[];
+  committeeIndexes: number[] | null;
   head: string;
   targetRoot: string;
   targetEpoch: Epoch;
   sourceRoot: string;
   sourceEpoch: Epoch;
   slot: number;
+  committeeIndex: number;
 }
+
+interface AttestationValidators {
+  source: number[];
+  target: number[];
+  head: number[];
+}
+
+interface AttestationFlags {
+  source: boolean;
+  target: boolean;
+  head: boolean;
+}
+
 
 @Injectable()
 export class AttestationService {
   private processedEpoch: number;
   private readonly slotsInEpoch: number;
-  private readonly dencunEpoch: Epoch;
   private readonly savedCanonSlotsAttProperties: Map<number, string>;
 
   public constructor(
@@ -45,7 +58,6 @@ export class AttestationService {
     protected readonly summary: SummaryService,
   ) {
     this.slotsInEpoch = this.config.get('FETCH_INTERVAL_SLOTS');
-    this.dencunEpoch = this.config.get('DENCUN_FORK_EPOCH');
     this.savedCanonSlotsAttProperties = new Map<number, string>();
   }
 
@@ -79,60 +91,64 @@ export class AttestationService {
   }
 
   protected async processAttestation(epoch: Epoch, attestation: SlotAttestation, committees: Map<string, number[]>) {
-    const attestationFlags = { source: [], target: [], head: [] };
+    const attestationValidators: AttestationValidators = { source: [], target: [], head: [] };
     const [canonHead, canonTarget, canonSource] = await allSettled([
       this.getCanonSlotRoot(attestation.slot),
       this.getCanonSlotRoot(attestation.targetEpoch * this.slotsInEpoch),
       this.getCanonSlotRoot(attestation.sourceEpoch * this.slotsInEpoch),
     ]);
+
+    const forkEpochs = await this.clClient.getForkEpochs();
+    const isDencunFork = epoch >= forkEpochs.dencun;
+    const isPectraFork = epoch >= forkEpochs.pectra;
+
     const attValidHead = attestation.head === canonHead;
     const attValidTarget = attestation.targetRoot === canonTarget;
     const attValidSource = attestation.sourceRoot === canonSource;
     const attIncDelay = Number(attestation.includedInBlock - attestation.slot);
-    const isDencunFork = epoch >= this.dencunEpoch;
-    const flags = getFlags(attIncDelay, attValidSource, attValidTarget, attValidHead, isDencunFork);
+    const flags = getAttestationFlags(attIncDelay, attValidSource, attValidTarget, attValidHead, isDencunFork);
 
-    let committeeOffset = 0;
-    for (const committeeIndex of attestation.committeeIndexes) {
-      // Each attestation corresponds to committee. Committee may have several aggregate attestations
-      const committee = committees.get(`${committeeIndex}_${attestation.slot}`);
+    if (isPectraFork) {
+      let committeeOffset = 0;
+      for (const committeeIndex of attestation.committeeIndexes) {
+        // Each attestation corresponds to committee. Committee may have several aggregate attestations
+        const committee = committees.get(`${committeeIndex}_${attestation.slot}`);
+
+        if (committee == null) {
+          throw Error(`Committee ${committeeIndex} for attestation in slot ${attestation.slot} does not exist`);
+        }
+
+        for (const [valCommIndex, validatorIndex] of committee.entries()) {
+          const attHappened = attestation.aggregationBits.get(committeeOffset + valCommIndex);
+          if (!attHappened) {
+            continue;
+          }
+
+          this.processAttestationValidator(attestation, attIncDelay, validatorIndex, flags, attestationValidators);
+        }
+
+        committeeOffset += committee.length;
+      }
+    } else {
+      const committee = committees.get(`${attestation.committeeIndex}_${attestation.slot}`);
 
       if (committee == null) {
-        throw Error(`Committee ${committeeIndex} for attestation in slot ${attestation.slot} does not exist`);
+        throw Error(`Committee ${attestation.committeeIndex} for attestation in slot ${attestation.slot} does not exist`);
       }
 
       for (const [valCommIndex, validatorIndex] of committee.entries()) {
-        const attHappened = attestation.aggregationBits.get(committeeOffset + valCommIndex);
+        const attHappened = attestation.aggregationBits.get(valCommIndex);
         if (!attHappened) {
           continue;
         }
-        const processed = this.summary.epoch(attestation.targetEpoch).get(validatorIndex);
-        if (!processed?.att_valid_source && flags.source) {
-          attestationFlags.source.push(validatorIndex);
-        }
-        if (!processed?.att_valid_target && flags.target) {
-          attestationFlags.target.push(validatorIndex);
-        }
-        if (!processed?.att_valid_head && flags.head) {
-          attestationFlags.head.push(validatorIndex);
-        }
-        this.summary.epoch(attestation.targetEpoch).set({
-          val_id: validatorIndex,
-          epoch: attestation.targetEpoch,
-          att_happened: attHappened,
-          att_inc_delay: processed?.att_inc_delay || attIncDelay,
-          att_valid_source: processed?.att_valid_source || flags.source,
-          att_valid_target: processed?.att_valid_target || flags.target,
-          att_valid_head: processed?.att_valid_head || flags.head,
-        });
-      }
 
-      committeeOffset += committee.length;
+        this.processAttestationValidator(attestation, attIncDelay, validatorIndex, flags, attestationValidators);
+      }
     }
 
     const blocksAttestations = this.summary.epoch(epoch).getMeta().attestation.blocks_attestations;
     const blockMeta = blocksAttestations.get(attestation.includedInBlock);
-    blockMeta.push(attestationFlags);
+    blockMeta.push(attestationValidators);
     blocksAttestations.set(attestation.includedInBlock, blockMeta);
     this.summary.epoch(epoch).setMeta({ attestation: { blocks_attestations: blocksAttestations } });
   }
@@ -150,6 +166,9 @@ export class AttestationService {
   @TrackTask('process-chain-attestations')
   protected async getProcessedAttestations() {
     this.logger.log(`Processing attestations from blocks info`);
+    const forkEpochs = await this.clClient.getForkEpochs();
+    const isPectraFork = this.processedEpoch >= forkEpochs.pectra;
+
     const aggregationBitsMap = new Map<string, BitArray>();
     const committeeIndexesMap = new Map<string, number[]>();
     const attestations: SlotAttestation[] = [];
@@ -165,32 +184,36 @@ export class AttestationService {
       }
       for (const att of block.message.body.attestations) {
         let aggregationBits = aggregationBitsMap.get(att.aggregation_bits);
-        let committeeIndexes = committeeIndexesMap.get(att.committee_bits);
-
         if (aggregationBits == null) {
           const bytesArray = fromHexString(att.aggregation_bits);
           const aggregationBitsVector = new BitVectorType(bytesArray.length * 8);
           aggregationBits = aggregationBitsVector.deserialize(bytesArray);
           aggregationBitsMap.set(att.aggregation_bits, aggregationBits);
         }
-        if (committeeIndexes == null) {
-          const bytesArray = fromHexString(att.committee_bits);
-          const committeeBitsVector = new BitVectorType(bytesArray.length * 8);
-          const committeeBitsArray = committeeBitsVector.deserialize(bytesArray);
-          committeeIndexes = committeeBitsArray.getTrueBitIndexes();
-          committeeIndexesMap.set(att.committee_bits, committeeIndexes);
+
+        let committeeIndexes: number[] | null;
+        if (isPectraFork) {
+          committeeIndexes = committeeIndexesMap.get(att.committee_bits);
+          if (committeeIndexes == null) {
+            const bytesArray = fromHexString(att.committee_bits);
+            const committeeBitsVector = new BitVectorType(bytesArray.length * 8);
+            const committeeBitsArray = committeeBitsVector.deserialize(bytesArray);
+            committeeIndexes = committeeBitsArray.getTrueBitIndexes();
+            committeeIndexesMap.set(att.committee_bits, committeeIndexes);
+          }
         }
 
         attestations.push({
           includedInBlock: Number(block.message.slot),
           aggregationBits,
-          committeeIndexes,
+          committeeIndexes: isPectraFork ? committeeIndexes : null,
           head: att.data.beacon_block_root,
           targetRoot: att.data.target.root,
           targetEpoch: Number(att.data.target.epoch),
           sourceRoot: att.data.source.root,
           sourceEpoch: Number(att.data.source.epoch),
           slot: Number(att.data.slot),
+          committeeIndex: Number(att.data.index),
         });
       }
     }
@@ -248,5 +271,35 @@ export class AttestationService {
     await allSettled([pipelineFinish(prevPipeline), pipelineFinish(currPipeline)]);
 
     return committees;
+  }
+
+  private processAttestationValidator(
+    attestation: SlotAttestation,
+    attIncDelay: number,
+    validatorIndex: number,
+    attestationFlags: AttestationFlags,
+    attestationValidators: AttestationValidators
+  ) {
+    const processed = this.summary.epoch(attestation.targetEpoch).get(validatorIndex);
+
+    if (!processed?.att_valid_source && attestationFlags.source) {
+      attestationValidators.source.push(validatorIndex);
+    }
+    if (!processed?.att_valid_target && attestationFlags.target) {
+      attestationValidators.target.push(validatorIndex);
+    }
+    if (!processed?.att_valid_head && attestationFlags.head) {
+      attestationValidators.head.push(validatorIndex);
+    }
+
+    this.summary.epoch(attestation.targetEpoch).set({
+      val_id: validatorIndex,
+      epoch: attestation.targetEpoch,
+      att_happened: true,
+      att_inc_delay: processed?.att_inc_delay || attIncDelay,
+      att_valid_source: processed?.att_valid_source || attestationFlags.source,
+      att_valid_target: processed?.att_valid_target || attestationFlags.target,
+      att_valid_head: processed?.att_valid_head || attestationFlags.head,
+    });
   }
 }

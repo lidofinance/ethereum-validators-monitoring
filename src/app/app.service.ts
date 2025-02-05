@@ -30,7 +30,6 @@ export class AppService implements OnModuleInit, OnApplicationBootstrap {
     this.logger.log(`DRY RUN ${this.configService.get('DRY_RUN') ? 'enabled' : 'disabled'}`);
     this.logger.log(`Slot time: ${this.configService.get('CHAIN_SLOT_TIME_SECONDS')} seconds`);
     this.logger.log(`Epoch size: ${this.configService.get('FETCH_INTERVAL_SLOTS')} slots`);
-    this.logger.log(`Dencun fork epoch: ${this.configService.get('DENCUN_FORK_EPOCH')}`);
   }
 
   public async onApplicationBootstrap(): Promise<void> {
