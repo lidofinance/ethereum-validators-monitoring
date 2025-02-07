@@ -98,8 +98,9 @@ export class AttestationService {
     ]);
 
     const forkEpochs = await this.clClient.getForkEpochs();
-    const isDencunFork = epoch >= forkEpochs.dencun;
-    const isPectraFork = epoch >= forkEpochs.pectra;
+    const attestationEpoch = attestation.includedInBlock / this.slotsInEpoch;
+    const isDencunFork = attestationEpoch >= forkEpochs.dencun;
+    const isPectraFork = attestationEpoch >= forkEpochs.pectra;
 
     const attValidHead = attestation.head === canonHead;
     const attValidTarget = attestation.targetRoot === canonTarget;
@@ -166,7 +167,6 @@ export class AttestationService {
   protected async getProcessedAttestations() {
     this.logger.log(`Processing attestations from blocks info`);
     const forkEpochs = await this.clClient.getForkEpochs();
-    const isPectraFork = this.processedEpoch >= forkEpochs.pectra;
 
     const aggregationBitsMap = new Map<string, BitArray>();
     const committeeIndexesMap = new Map<string, number[]>();
@@ -190,6 +190,8 @@ export class AttestationService {
           aggregationBitsMap.set(att.aggregation_bits, aggregationBits);
         }
 
+        const includedInBlock = Number(block.message.slot);
+        const isPectraFork = includedInBlock / this.slotsInEpoch >= forkEpochs.pectra;
         let committeeIndexes: number[] | null;
         if (isPectraFork) {
           committeeIndexes = committeeIndexesMap.get(att.committee_bits);
@@ -203,7 +205,7 @@ export class AttestationService {
         }
 
         attestations.push({
-          includedInBlock: Number(block.message.slot),
+          includedInBlock: includedInBlock,
           aggregationBits,
           committeeIndexes: isPectraFork ? committeeIndexes : null,
           head: att.data.beacon_block_root,
