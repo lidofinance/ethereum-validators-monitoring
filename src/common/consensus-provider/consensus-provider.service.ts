@@ -38,8 +38,8 @@ interface RequestRetryOptions {
 }
 
 export interface ForkEpochs {
-  dencun: number;
-  pectra: number;
+  deneb: number;
+  electra: number;
 }
 
 @Injectable()
@@ -90,12 +90,12 @@ export class ConsensusProviderService {
 
     const spec = await this.retryRequest<SpecResponse>(async (apiURL: string) => this.apiGet(apiURL, this.endpoints.spec));
     this.forkEpochs = {
-      dencun: spec.DENEB_FORK_EPOCH != null ? parseInt(spec.DENEB_FORK_EPOCH, 10) : Number.MAX_SAFE_INTEGER,
-      pectra: spec.ELECTRA_FORK_EPOCH != null ? parseInt(spec.ELECTRA_FORK_EPOCH, 10) : Number.MAX_SAFE_INTEGER,
+      deneb: spec.DENEB_FORK_EPOCH != null ? parseInt(spec.DENEB_FORK_EPOCH, 10) : Number.MAX_SAFE_INTEGER,
+      electra: spec.ELECTRA_FORK_EPOCH != null ? parseInt(spec.ELECTRA_FORK_EPOCH, 10) : Number.MAX_SAFE_INTEGER,
     };
 
-    this.logger.log(`Dencun fork epoch: ${this.forkEpochs.dencun}`);
-    this.logger.log(`Pectra fork epoch: ${this.forkEpochs.pectra}`);
+    this.logger.log(`Deneb fork epoch: ${this.forkEpochs.deneb}`);
+    this.logger.log(`Electra fork epoch: ${this.forkEpochs.electra}`);
 
     return this.forkEpochs;
   }

@@ -99,16 +99,17 @@ export class AttestationService {
 
     const forkEpochs = await this.clClient.getForkEpochs();
     const attestationEpoch = attestation.includedInBlock / this.slotsInEpoch;
-    const isDencunFork = attestationEpoch >= forkEpochs.dencun;
-    const isPectraFork = attestationEpoch >= forkEpochs.pectra;
+    const isDenebFork = attestationEpoch >= forkEpochs.deneb;
+    const isElectraFork = attestationEpoch >= forkEpochs.electra;
+
 
     const attValidHead = attestation.head === canonHead;
     const attValidTarget = attestation.targetRoot === canonTarget;
     const attValidSource = attestation.sourceRoot === canonSource;
     const attIncDelay = Number(attestation.includedInBlock - attestation.slot);
-    const flags = getAttestationFlags(attIncDelay, attValidSource, attValidTarget, attValidHead, isDencunFork);
+    const flags = getAttestationFlags(attIncDelay, attValidSource, attValidTarget, attValidHead, isDenebFork);
 
-    if (isPectraFork) {
+    if (isElectraFork) {
       let committeeOffset = 0;
       for (const committeeIndex of attestation.committeeIndexes) {
         // Each attestation corresponds to committee. Committee may have several aggregate attestations
@@ -191,9 +192,9 @@ export class AttestationService {
         }
 
         const includedInBlock = Number(block.message.slot);
-        const isPectraFork = includedInBlock / this.slotsInEpoch >= forkEpochs.pectra;
+        const isElectraFork = includedInBlock / this.slotsInEpoch >= forkEpochs.electra;
         let committeeIndexes: number[] | null;
-        if (isPectraFork) {
+        if (isElectraFork) {
           committeeIndexes = committeeIndexesMap.get(att.committee_bits);
           if (committeeIndexes == null) {
             const bytesArray = fromHexString(att.committee_bits);
@@ -207,7 +208,7 @@ export class AttestationService {
         attestations.push({
           includedInBlock: includedInBlock,
           aggregationBits,
-          committeeIndexes: isPectraFork ? committeeIndexes : null,
+          committeeIndexes: isElectraFork ? committeeIndexes : null,
           head: att.data.beacon_block_root,
           targetRoot: att.data.target.root,
           targetEpoch: Number(att.data.target.epoch),
