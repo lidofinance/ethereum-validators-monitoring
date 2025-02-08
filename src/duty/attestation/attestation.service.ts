@@ -102,7 +102,6 @@ export class AttestationService {
     const isDenebFork = attestationEpoch >= forkEpochs.deneb;
     const isElectraFork = attestationEpoch >= forkEpochs.electra;
 
-
     const attValidHead = attestation.head === canonHead;
     const attValidTarget = attestation.targetRoot === canonTarget;
     const attValidSource = attestation.sourceRoot === canonSource;
@@ -112,39 +111,22 @@ export class AttestationService {
     if (isElectraFork) {
       let committeeOffset = 0;
       for (const committeeIndex of attestation.committeeIndexes) {
-        // Each attestation corresponds to committee. Committee may have several aggregate attestations
         const committee = committees.get(`${committeeIndex}_${attestation.slot}`);
-
-        if (committee == null) {
-          throw Error(`Committee ${committeeIndex} for attestation in slot ${attestation.slot} does not exist`);
-        }
-
-        for (const [valCommIndex, validatorIndex] of committee.entries()) {
-          const attHappened = attestation.aggregationBits.get(committeeOffset + valCommIndex);
-          if (!attHappened) {
-            continue;
-          }
-
-          this.processAttestationValidator(attestation, attIncDelay, validatorIndex, flags, attestationValidators);
-        }
-
+        this.processAttestationCommittee(
+          attestation,
+          committee,
+          committeeIndex,
+          committeeOffset,
+          attIncDelay,
+          flags,
+          attestationValidators,
+        );
         committeeOffset += committee.length;
       }
     } else {
+      // Each attestation corresponds to committee. Committee may have several aggregate attestations
       const committee = committees.get(`${attestation.committeeIndex}_${attestation.slot}`);
-
-      if (committee == null) {
-        throw Error(`Committee ${attestation.committeeIndex} for attestation in slot ${attestation.slot} does not exist`);
-      }
-
-      for (const [valCommIndex, validatorIndex] of committee.entries()) {
-        const attHappened = attestation.aggregationBits.get(valCommIndex);
-        if (!attHappened) {
-          continue;
-        }
-
-        this.processAttestationValidator(attestation, attIncDelay, validatorIndex, flags, attestationValidators);
-      }
+      this.processAttestationCommittee(attestation, committee, attestation.committeeIndex, 0, attIncDelay, flags, attestationValidators);
     }
 
     const blocksAttestations = this.summary.epoch(epoch).getMeta().attestation.blocks_attestations;
@@ -275,33 +257,46 @@ export class AttestationService {
     return committees;
   }
 
-  private processAttestationValidator(
+  private processAttestationCommittee(
     attestation: SlotAttestation,
+    committee: number[],
+    committeeIndex: number,
+    committeeOffset: number,
     attIncDelay: number,
-    validatorIndex: number,
     attestationFlags: AttestationFlags,
     attestationValidators: AttestationValidators,
   ) {
-    const processed = this.summary.epoch(attestation.targetEpoch).get(validatorIndex);
-
-    if (!processed?.att_valid_source && attestationFlags.source) {
-      attestationValidators.source.push(validatorIndex);
-    }
-    if (!processed?.att_valid_target && attestationFlags.target) {
-      attestationValidators.target.push(validatorIndex);
-    }
-    if (!processed?.att_valid_head && attestationFlags.head) {
-      attestationValidators.head.push(validatorIndex);
+    if (committee == null) {
+      throw Error(`Committee ${committeeIndex} for attestation in slot ${attestation.slot} does not exist`);
     }
 
-    this.summary.epoch(attestation.targetEpoch).set({
-      val_id: validatorIndex,
-      epoch: attestation.targetEpoch,
-      att_happened: true,
-      att_inc_delay: processed?.att_inc_delay || attIncDelay,
-      att_valid_source: processed?.att_valid_source || attestationFlags.source,
-      att_valid_target: processed?.att_valid_target || attestationFlags.target,
-      att_valid_head: processed?.att_valid_head || attestationFlags.head,
-    });
+    for (const [valCommIndex, validatorIndex] of committee.entries()) {
+      const attHappened = attestation.aggregationBits.get(committeeOffset + valCommIndex);
+      if (!attHappened) {
+        continue;
+      }
+
+      const processed = this.summary.epoch(attestation.targetEpoch).get(validatorIndex);
+
+      if (!processed?.att_valid_source && attestationFlags.source) {
+        attestationValidators.source.push(validatorIndex);
+      }
+      if (!processed?.att_valid_target && attestationFlags.target) {
+        attestationValidators.target.push(validatorIndex);
+      }
+      if (!processed?.att_valid_head && attestationFlags.head) {
+        attestationValidators.head.push(validatorIndex);
+      }
+
+      this.summary.epoch(attestation.targetEpoch).set({
+        val_id: validatorIndex,
+        epoch: attestation.targetEpoch,
+        att_happened: true,
+        att_inc_delay: processed?.att_inc_delay || attIncDelay,
+        att_valid_source: processed?.att_valid_source || attestationFlags.source,
+        att_valid_target: processed?.att_valid_target || attestationFlags.target,
+        att_valid_head: processed?.att_valid_head || attestationFlags.head,
+      });
+    }
   }
 }
