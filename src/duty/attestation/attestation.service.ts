@@ -98,7 +98,7 @@ export class AttestationService {
     ]);
 
     const forkEpochs = await this.clClient.getForkEpochs();
-    const attestationEpoch = attestation.includedInBlock / this.slotsInEpoch;
+    const attestationEpoch = Math.floor(attestation.includedInBlock / this.slotsInEpoch);
     const isDenebFork = attestationEpoch >= forkEpochs.deneb;
     const isElectraFork = attestationEpoch >= forkEpochs.electra;
 
