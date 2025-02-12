@@ -37,8 +37,8 @@ export interface ValidatorDutySummary {
   att_valid_source?: boolean;
   // Metadata. Necessary for calculating rewards and will not be stored in DB
   sync_meta?: {
-    synced_blocks?: number[];
-  };
+    synced_blocks: number[];
+  }[];
   // Rewards
   att_earned_reward?: number;
   att_missed_reward?: number;
