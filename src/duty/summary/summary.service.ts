@@ -100,7 +100,7 @@ export class SummaryService {
         const curr = epochStorageData.summary.get(val.val_id) ?? {};
         epochStorageData.summary.set(val.val_id, merge(curr, val));
       },
-      get: (val_id: ValidatorId): ValidatorDutySummary => {
+      get: (val_id: ValidatorId): ValidatorDutySummary | undefined => {
         return epochStorageData.summary.get(val_id);
       },
       values: () => {

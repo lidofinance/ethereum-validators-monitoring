@@ -60,7 +60,7 @@ export class SyncService {
       const index = Number(indexedValidator.validator_index);
       const summaryValidator = this.summary.epoch(epoch).get(index);
 
-      if (summaryValidator.is_sync) {
+      if (summaryValidator?.is_sync) {
         let percentSum = 0;
         for (const syncMetaItem of summaryValidator.sync_meta) {
           percentSum += (syncMetaItem.synced_blocks.length / epochBlocksBits.length) * 100;
