@@ -174,7 +174,7 @@ export class AttestationService {
         }
 
         const includedInBlock = Number(block.message.slot);
-        const isElectraFork = includedInBlock / this.slotsInEpoch >= forkEpochs.electra;
+        const isElectraFork = Math.floor(includedInBlock / this.slotsInEpoch) >= forkEpochs.electra;
         let committeeIndexes: number[] | null;
         if (isElectraFork) {
           committeeIndexes = committeeIndexesMap.get(att.committee_bits);
