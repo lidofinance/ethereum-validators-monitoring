@@ -1,12 +1,13 @@
 import { BitVectorType, fromHexString } from '@chainsafe/ssz';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { concat, sumBy } from 'lodash';
 
 import { ConfigService } from 'common/config';
 import { BlockInfoResponse, ConsensusProviderService, SyncCommitteeValidator } from 'common/consensus-provider';
 import { Epoch, Slot, StateId } from 'common/consensus-provider/types';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-import { SummaryService } from 'duty/summary';
+import { SummaryService, ValidatorDutySummary } from 'duty/summary';
 
 import { SYNC_COMMITTEE_SIZE } from './sync.constants';
 
@@ -40,7 +41,8 @@ export class SyncService {
 
     this.logger.debug(`All missed slots in getting sync committee info process: ${missedSlots}`);
     /**
-     * @todo is it possible to have all missed slots in an epoch (and so, zero epoch blocks)?
+     * @todo We should investigate what happens in this and other places of the code if this array is empty,
+     * and fix all possible issues.
      */
     const epochBlocksBits = epochBlocks.map((block) => {
       return {
@@ -59,34 +61,26 @@ export class SyncService {
 
       const index = Number(indexedValidator.validator_index);
       const summaryValidator = this.summary.epoch(epoch).get(index);
+      const newSummaryValidator: ValidatorDutySummary = summaryValidator?.is_sync
+        ? {
+            epoch,
+            val_id: index,
+            sync_meta: concat(summaryValidator.sync_meta, {
+              synced_blocks: syncedBlocks,
+            }),
+          }
+        : {
+            epoch,
+            val_id: index,
+            is_sync: true,
+            sync_meta: [{ synced_blocks: syncedBlocks }],
+          };
 
-      if (summaryValidator?.is_sync) {
-        let percentSum = 0;
-        for (const syncMetaItem of summaryValidator.sync_meta) {
-          percentSum += (syncMetaItem.synced_blocks.length / epochBlocksBits.length) * 100;
-        }
-        percentSum += (syncedBlocks.length / epochBlocksBits.length) * 100;
+      newSummaryValidator.sync_percent =
+        (sumBy(newSummaryValidator.sync_meta, (blocks) => blocks.synced_blocks.length) * 100) /
+        (epochBlocksBits.length * newSummaryValidator.sync_meta.length);
 
-        const newSyncMeta = [...summaryValidator.sync_meta];
-        newSyncMeta.push({
-          synced_blocks: syncedBlocks,
-        });
-
-        this.summary.epoch(epoch).set({
-          epoch,
-          val_id: index,
-          sync_percent: percentSum / (summaryValidator.sync_meta.length + 1),
-          sync_meta: newSyncMeta,
-        });
-      } else {
-        this.summary.epoch(epoch).set({
-          epoch,
-          val_id: index,
-          is_sync: true,
-          sync_percent: (syncedBlocks.length / epochBlocksBits.length) * 100,
-          sync_meta: [{ synced_blocks: syncedBlocks }],
-        });
-      }
+      this.summary.epoch(epoch).set(newSummaryValidator);
     }
 
     this.summary.epoch(epoch).setMeta({
