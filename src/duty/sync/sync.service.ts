@@ -76,9 +76,9 @@ export class SyncService {
             sync_meta: [{ synced_blocks: syncedBlocks }],
           };
 
-      newSummaryValidator.sync_percent =
-        (sumBy(newSummaryValidator.sync_meta, (blocks) => blocks.synced_blocks.length) * 100) /
-        (epochBlocksBits.length * newSummaryValidator.sync_meta.length);
+      const totalSyncedBlocks = sumBy(newSummaryValidator.sync_meta, (blocks) => blocks.synced_blocks.length);
+      const totalBlocksToSync = epochBlocksBits.length * newSummaryValidator.sync_meta.length;
+      newSummaryValidator.sync_percent = (totalSyncedBlocks / totalBlocksToSync) * 100;
 
       this.summary.epoch(epoch).set(newSummaryValidator);
     }
