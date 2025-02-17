@@ -11,6 +11,7 @@ import { ConfigService } from 'common/config';
 import { AttestationCommitteeInfo, ConsensusProviderService } from 'common/consensus-provider';
 import { Epoch, Slot } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
+import { makeDefaultMap } from 'common/functions/makeDefaultMap';
 import { range } from 'common/functions/range';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
@@ -151,8 +152,18 @@ export class AttestationService {
     this.logger.log(`Processing attestations from blocks info`);
     const forkEpochs = await this.clClient.getForkEpochs();
 
-    const aggregationBitsMap = new Map<string, BitArray>();
-    const committeeIndexesMap = new Map<string, number[]>();
+    const aggregationBitsMap = makeDefaultMap<string, BitArray>((key: string) => {
+      const bytesArray = fromHexString(key);
+      const aggregationBitsVector = new BitVectorType(bytesArray.length * 8);
+      return aggregationBitsVector.deserialize(bytesArray);
+    });
+    const committeeIndexesMap = makeDefaultMap<string, number[]>((key: string) => {
+      const bytesArray = fromHexString(key);
+      const committeeBitsVector = new BitVectorType(bytesArray.length * 8);
+      const committeeBitsArray = committeeBitsVector.deserialize(bytesArray);
+      return committeeBitsArray.getTrueBitIndexes();
+    });
+
     const attestations: SlotAttestation[] = [];
     const allMissedSlots: number[] = [];
     // Check all slots from previous epoch start to current epoch last slot
@@ -165,32 +176,15 @@ export class AttestationService {
         continue;
       }
       for (const att of block.message.body.attestations) {
-        let aggregationBits = aggregationBitsMap.get(att.aggregation_bits);
-        if (aggregationBits == null) {
-          const bytesArray = fromHexString(att.aggregation_bits);
-          const aggregationBitsVector = new BitVectorType(bytesArray.length * 8);
-          aggregationBits = aggregationBitsVector.deserialize(bytesArray);
-          aggregationBitsMap.set(att.aggregation_bits, aggregationBits);
-        }
-
+        const aggregationBits = aggregationBitsMap.getOrCreate(att.aggregation_bits);
         const includedInBlock = Number(block.message.slot);
         const isElectraFork = Math.floor(includedInBlock / this.slotsInEpoch) >= forkEpochs.electra;
-        let committeeIndexes: number[] | null;
-        if (isElectraFork) {
-          committeeIndexes = committeeIndexesMap.get(att.committee_bits);
-          if (committeeIndexes == null) {
-            const bytesArray = fromHexString(att.committee_bits);
-            const committeeBitsVector = new BitVectorType(bytesArray.length * 8);
-            const committeeBitsArray = committeeBitsVector.deserialize(bytesArray);
-            committeeIndexes = committeeBitsArray.getTrueBitIndexes();
-            committeeIndexesMap.set(att.committee_bits, committeeIndexes);
-          }
-        }
+        const committeeIndexes = isElectraFork ? committeeIndexesMap.getOrCreate(att.committee_bits) : null;
 
         attestations.push({
           includedInBlock: includedInBlock,
           aggregationBits,
-          committeeIndexes: isElectraFork ? committeeIndexes : null,
+          committeeIndexes: committeeIndexes,
           head: att.data.beacon_block_root,
           targetRoot: att.data.target.root,
           targetEpoch: Number(att.data.target.epoch),
