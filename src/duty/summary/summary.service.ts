@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { merge } from 'lodash';
+import { assignIn, merge } from 'lodash';
 
 import { ValStatus } from 'common/consensus-provider';
 import { Epoch } from 'common/consensus-provider/types';
@@ -98,7 +98,7 @@ export class SummaryService {
       },
       set: (val: ValidatorDutySummary) => {
         const curr = epochStorageData.summary.get(val.val_id) ?? {};
-        epochStorageData.summary.set(val.val_id, merge(curr, val));
+        epochStorageData.summary.set(val.val_id, assignIn(curr, val));
       },
       get: (val_id: ValidatorId): ValidatorDutySummary => {
         return epochStorageData.summary.get(val_id);
