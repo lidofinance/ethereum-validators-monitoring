@@ -117,6 +117,7 @@ export class DutyService {
     const perSyncProposerReward = Math.floor((meta.sync.per_block_reward * PROPOSER_WEIGHT) / (WEIGHT_DENOMINATOR - PROPOSER_WEIGHT));
     const maxBatchSize = 1000;
     let index = 0;
+
     for (const v of this.summary.epoch(epoch).values()) {
       const effectiveBalance = v.val_effective_balance;
       const increments = Number(effectiveBalance / BigInt(10 ** 9));
@@ -135,8 +136,11 @@ export class DutyService {
         }
       }
       if (v.is_sync) {
-        for (const block of v.sync_meta.synced_blocks) {
-          meta.sync.blocks_rewards.set(block, meta.sync.blocks_rewards.get(block) + BigInt(perSyncProposerReward));
+        for (const syncMetaItem of v.sync_meta) {
+          for (const block of syncMetaItem.synced_blocks) {
+            const blockRewards = meta.sync.blocks_rewards.get(block);
+            meta.sync.blocks_rewards.set(block, blockRewards + BigInt(perSyncProposerReward));
+          }
         }
       }
       index++;
@@ -144,6 +148,7 @@ export class DutyService {
         await unblock();
       }
     }
+
     this.summary.epoch(epoch).setMeta(meta);
   }
 
