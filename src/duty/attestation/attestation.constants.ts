@@ -12,7 +12,7 @@ const timelyTarget = (attIncDelay: number, attValidSource: boolean, attValidTarg
   return attValidSource && attValidTarget && attIncDelay <= 32;
 };
 
-const timelyTargetDencun = (attValidSource: boolean, attValidTarget: boolean): boolean => {
+const timelyTargetDeneb = (attValidSource: boolean, attValidTarget: boolean): boolean => {
   return attValidSource && attValidTarget;
 };
 
@@ -20,16 +20,16 @@ const timelyHead = (attIncDelay: number, attValidSource: boolean, attValidTarget
   return attValidSource && attValidTarget && attValidHead && attIncDelay === 1;
 };
 
-export const getFlags = (
+export const getAttestationFlags = (
   attIncDelay: number,
   attValidSource: boolean,
   attValidTarget: boolean,
   attValidHead: boolean,
-  isDencunFork: boolean,
+  isDenebFork: boolean,
 ) => {
   return {
     source: timelySource(attIncDelay, attValidSource),
-    target: isDencunFork ? timelyTargetDencun(attValidSource, attValidTarget) : timelyTarget(attIncDelay, attValidSource, attValidTarget),
+    target: isDenebFork ? timelyTargetDeneb(attValidSource, attValidTarget) : timelyTarget(attIncDelay, attValidSource, attValidTarget),
     head: timelyHead(attIncDelay, attValidSource, attValidTarget, attValidHead),
   };
 };

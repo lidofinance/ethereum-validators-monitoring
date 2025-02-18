@@ -12,25 +12,6 @@ export enum ValStatus {
   WithdrawalDone = 'withdrawal_done',
 }
 
-export interface AttesterDutyInfo {
-  pubkey: string;
-  validator_index: string;
-  committee_index: string;
-  committee_length: string;
-  committees_at_slot: string;
-  validator_committee_index: string;
-  slot: string;
-}
-
-export interface CheckedAttesterDutyInfo extends AttesterDutyInfo {
-  attested: boolean;
-  valid_head: boolean;
-  valid_target: boolean;
-  valid_source: boolean;
-  inclusion_delay: number;
-  in_block: string | undefined;
-}
-
 export interface BlockHeaderResponse {
   root: RootHex;
   canonical: boolean;
@@ -99,6 +80,7 @@ export interface ProposerDutyInfo {
 
 export interface BeaconBlockAttestation {
   aggregation_bits: string;
+  committee_bits?: string;
   data: {
     slot: string;
     index: string;
@@ -112,32 +94,6 @@ export interface BeaconBlockAttestation {
       root: RootHex;
     };
   };
-}
-
-export interface StateValidatorResponse {
-  index: string;
-  balance: string;
-  status: (typeof ValStatus)[keyof typeof ValStatus];
-  validator: {
-    pubkey: string;
-    withdrawal_credentials: string;
-    effective_balance: string;
-    slashed: boolean;
-    activation_eligibility_epoch: string;
-    activation_epoch: string;
-    exit_epoch: string;
-    withdrawable_epoch: string;
-  };
-}
-
-export interface SyncCommitteeDutyInfo {
-  pubkey: string;
-  validator_index: ValidatorIndex;
-  validator_sync_committee_indices: string[];
-  results: {
-    block: string;
-    sync: boolean;
-  }[];
 }
 
 export interface SyncCommitteeInfo {
@@ -158,4 +114,9 @@ export interface SyncCommitteeValidator {
 
 export interface VersionResponse {
   version: string;
+}
+
+export interface SpecResponse {
+  DENEB_FORK_EPOCH?: string;
+  ELECTRA_FORK_EPOCH?: string;
 }

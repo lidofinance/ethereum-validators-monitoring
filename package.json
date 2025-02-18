@@ -35,7 +35,7 @@
     "@lido-nestjs/execution": "^1.11.1",
     "@lido-nestjs/logger": "^1.3.2",
     "@lido-nestjs/registry": "^7.4.0",
-    "@lodestar/types": "^1.15.1",
+    "@lodestar/types": "^1.24.0",
     "@mikro-orm/core": "^5.3.1",
     "@mikro-orm/knex": "^5.3.1",
     "@mikro-orm/nestjs": "^5.1.0",
