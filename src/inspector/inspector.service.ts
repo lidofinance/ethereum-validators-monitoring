@@ -80,6 +80,10 @@ export class InspectorService implements OnModuleInit {
   protected async getEpochDataToProcess(): Promise<EpochProcessingState & { slot: Slot }> {
     const chosen = await this.chooseEpochToProcess();
     const latestBeaconBlock = Number((<BlockHeaderResponse>await this.clClient.getLatestBlockHeader(chosen)).header.message.slot);
+    this.logger.debug(
+      `getEpochDataToProcess: latest block [${latestBeaconBlock}], chosen epoch [${chosen.epoch}], chosen slot [${chosen.slot}]`,
+    );
+
     let latestEpoch = Math.trunc(latestBeaconBlock / this.config.get('FETCH_INTERVAL_SLOTS'));
     if (latestEpoch * this.config.get('FETCH_INTERVAL_SLOTS') == latestBeaconBlock) {
       // if it's the first slot of epoch, it makes checkpoint for previous epoch

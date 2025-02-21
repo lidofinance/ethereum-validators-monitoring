@@ -6,8 +6,8 @@ import { LoggerModule } from 'common/logger';
 import { PrometheusModule } from 'common/prometheus';
 import { ClickhouseModule } from 'storage/clickhouse';
 
-import { InspectorModule } from '../inspector';
 import { AppService } from './app.service';
+import { InspectorModule } from '../inspector';
 
 @Module({
   imports: [LoggerModule, HealthModule, ConfigModule, PrometheusModule, ClickhouseModule, InspectorModule],

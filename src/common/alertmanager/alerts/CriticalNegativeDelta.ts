@@ -2,33 +2,57 @@ import { join } from 'lodash';
 
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/consensus-provider/types';
 import { ClickhouseService } from 'storage';
+import { NOsValidatorsNegDeltaCount, NOsValidatorsStatusStats } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
-const validatorsWithNegativeDeltaCountThreshold = (quantity: number) => {
-  return Math.min(quantity / 3, 1000);
-};
-
 export class CriticalNegativeDelta extends Alert {
-  constructor(config: ConfigService, storage: ClickhouseService, operators: RegistrySourceOperator[]) {
-    super(CriticalNegativeDelta.name, config, storage, operators);
+  protected readonly negativeValidatorsCount: NOsValidatorsNegDeltaCount[];
+
+  constructor(
+    config: ConfigService,
+    storage: ClickhouseService,
+    operators: RegistrySourceOperator[],
+    moduleIndex: number,
+    nosStats: NOsValidatorsStatusStats[],
+    negativeValidatorsCount: NOsValidatorsNegDeltaCount[],
+  ) {
+    const name = CriticalNegativeDelta.name + 'Module' + moduleIndex;
+    super(name, config, storage, operators, moduleIndex, nosStats);
+
+    this.negativeValidatorsCount = negativeValidatorsCount;
   }
 
-  async alertRule(epoch: Epoch): Promise<AlertRuleResult> {
+  alertRule(): AlertRuleResult {
+    const alertParams = this.config.getCriticalAlertParamForModule(this.moduleIndex);
     const result: AlertRuleResult = {};
-    const nosStats = await this.storage.getUserNodeOperatorsStats(epoch);
-    const negativeValidatorsCount = await this.storage.getValidatorsCountWithNegativeDelta(epoch);
-    for (const noStats of nosStats.filter((o) => o.active_ongoing > this.config.get('CRITICAL_ALERTS_MIN_VAL_COUNT'))) {
-      const operator = this.operators.find((o) => +noStats.val_nos_module_id == o.module && +noStats.val_nos_id == o.index);
-      const negDelta = negativeValidatorsCount.find((a) => +a.val_nos_module_id == operator.module && +a.val_nos_id == operator.index);
-      if (!negDelta) continue;
-      if (negDelta.amount > validatorsWithNegativeDeltaCountThreshold(noStats.active_ongoing)) {
+
+    const activeOngoingThreshold = alertParams.affectedValCount ?? alertParams.activeValCount.minActiveCount;
+
+    // If affectedValCount is set, we're not interested in NOs with a number of validators less than this value
+    // (because for these NOs it is not possible to have a number of affected validators greater than this value).
+    const filteredNosStats = this.nosStats.filter((o) => o.active_ongoing >= activeOngoingThreshold);
+
+    for (const noStats of filteredNosStats) {
+      const operator = this.operators.find((o) => +noStats.val_nos_id === o.index);
+      const negDelta = this.negativeValidatorsCount.find(
+        (a) => +a.val_nos_module_id === operator.module && +a.val_nos_id === operator.index,
+      );
+
+      if (negDelta == null) continue;
+
+      const includeToResult =
+        alertParams.affectedValCount != null
+          ? negDelta.amount >= alertParams.affectedValCount
+          : negDelta.amount >=
+            Math.min(noStats.active_ongoing * alertParams.activeValCount.affectedShare, alertParams.activeValCount.minAffectedCount);
+      if (includeToResult) {
         result[operator.name] = { ongoing: noStats.active_ongoing, negDelta: negDelta.amount };
       }
     }
+
     return result;
   }
 
@@ -52,12 +76,22 @@ export class CriticalNegativeDelta extends Alert {
   }
 
   alertBody(ruleResult: AlertRuleResult): AlertRequestBody {
+    const timestampDate = new Date(this.sendTimestamp);
+    const timestampDatePlusTwoMins = new Date(this.sendTimestamp).setMinutes(timestampDate.getMinutes() + 2);
+
     return {
-      startsAt: new Date(this.sendTimestamp).toISOString(),
-      endsAt: new Date(new Date(this.sendTimestamp).setMinutes(new Date(this.sendTimestamp).getMinutes() + 2)).toISOString(),
-      labels: { alertname: this.alertname, severity: 'critical', ...this.config.get('CRITICAL_ALERTS_ALERTMANAGER_LABELS') },
+      startsAt: timestampDate.toISOString(),
+      endsAt: new Date(timestampDatePlusTwoMins).toISOString(),
+      labels: {
+        alertname: this.alertname,
+        severity: 'critical',
+        nos_module_id: this.moduleIndex.toString(),
+        ...this.config.get('CRITICAL_ALERTS_ALERTMANAGER_LABELS'),
+      },
       annotations: {
-        summary: `${Object.values(ruleResult).length} Node Operators with CRITICAL count of validators with negative delta`,
+        summary: `${Object.values(ruleResult).length} Node Operators with CRITICAL count of validators with negative delta in module ${
+          this.moduleIndex
+        }`,
         description: join(
           Object.entries(ruleResult).map(([o, r]) => `${o}: ${r.negDelta} of ${r.ongoing}`),
           '\n',
