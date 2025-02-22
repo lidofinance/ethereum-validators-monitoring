@@ -4168,144 +4168,8 @@
       {
         "current": {
           "selected": false,
-          "text": "222178",
-          "value": "222178"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
-        },
-        "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
-        "description": "Last epoch number",
-        "hide": 2,
-        "includeAll": false,
-        "label": "Epoch number",
-        "multi": false,
-        "name": "epoch_number_var",
-        "options": [],
-        "query": {
-          "query": "query_result(ethereum_validators_monitoring_epoch_number)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "regex": "/.* ([^\\ ]*) .*/",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "0",
-          "value": "0"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
-        },
-        "definition": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
-        "description": "Sync participation distance down from Blockchain average",
-        "hide": 2,
-        "includeAll": false,
-        "label": "Sync participation distance down from chain avg",
-        "multi": false,
-        "name": "sync_participation_distance_var",
-        "options": [],
-        "query": {
-          "query": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "regex": "/.* ([^\\ ]*) .*/",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "3",
-          "value": "3"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
-        },
-        "definition": "label_values(ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch, epoch_interval)",
-        "hide": 2,
-        "includeAll": false,
-        "multi": false,
-        "name": "att_epochs_var",
-        "options": [],
-        "query": {
-          "query": "label_values(ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch, epoch_interval)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "3",
-          "value": "3"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
-        },
-        "definition": "label_values(ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch, epoch_interval)",
-        "hide": 2,
-        "includeAll": false,
-        "multi": false,
-        "name": "sync_epochs_var",
-        "options": [],
-        "query": {
-          "query": "label_values(ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch, epoch_interval)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "99.03564453125",
-          "value": "99.03564453125"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "PBFA97CFB590B2093"
-        },
-        "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
-        "description": "Chain sync participation average value",
-        "hide": 2,
-        "includeAll": false,
-        "label": "Chain sync participation avg",
-        "multi": false,
-        "name": "chain_sync_avg_participation",
-        "options": [],
-        "query": {
-          "query": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "regex": "/.* ([^\\ ]*) .*/",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "19",
-          "value": "19"
+          "text": "9",
+          "value": "9"
         },
         "datasource": {
           "type": "prometheus",
@@ -4330,6 +4194,7 @@
         "type": "query"
       },
       {
+        "allValue": ".+",
         "current": {
           "selected": true,
           "text": [
@@ -4348,7 +4213,7 @@
         "includeAll": true,
         "label": "Node Operator",
         "multi": true,
-        "name": "nos_name_var",
+        "name": "nos_name_array_var",
         "options": [],
         "query": {
           "query": "query_result(ethereum_validators_monitoring_user_validators)",
@@ -4358,31 +4223,6 @@
         "regex": "/nos_name=\"(?<text>[^\"]+)/",
         "skipUrlSync": false,
         "sort": 1,
-        "type": "query"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "DVT_Cluster_1|DVT_Cluster_2|DVT_Cluster_3|DVT_Cluster_4|Operator_1|Operator_2|Operator_3",
-          "value": "DVT_Cluster_1|DVT_Cluster_2|DVT_Cluster_3|DVT_Cluster_4|Operator_1|Operator_2|Operator_3"
-        },
-        "datasource": {
-          "type": "vertamedia-clickhouse-datasource",
-          "uid": "PDEE91DDB90597936"
-        },
-        "definition": "SELECT arrayStringConcat(\n arrayMap(x -> regexpQuoteMeta(x),  array(${nos_name_var})\n), '|')",
-        "description": "Selected",
-        "hide": 2,
-        "includeAll": false,
-        "label": "Node operators names",
-        "multi": false,
-        "name": "nos_name_array_var",
-        "options": [],
-        "query": "SELECT arrayStringConcat(\n arrayMap(x -> regexpQuoteMeta(x),  array(${nos_name_var})\n), '|')",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       }
     ]
@@ -4405,6 +4245,6 @@
   "timezone": "",
   "title": "Rewards & Penalties",
   "uid": "poBeaLaRD",
-  "version": 10,
+  "version": 11,
   "weekStart": ""
 }
