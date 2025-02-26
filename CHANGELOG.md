@@ -1,3 +1,25 @@
+# [4.8.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.7.0...4.8.0) (2025-02-26)
+
+
+### Bug Fixes
+
+* add more memory to app container ([473b807](https://github.com/lidofinance/ethereum-validators-monitoring/commit/473b807e202065b6faa16cddba8a2dbc3e9efd6a))
+* bug in Critical Missed Proposes alert ([81b76a3](https://github.com/lidofinance/ethereum-validators-monitoring/commit/81b76a35cdbb136b8b4c73fd9c1087a6cbd91ed8))
+* convert numeric labels to strings ([c5253ab](https://github.com/lidofinance/ethereum-validators-monitoring/commit/c5253ab145c0dc5a845e33f4611788b142afec80))
+* link fork epoch processing to attestation ([1c8f697](https://github.com/lidofinance/ethereum-validators-monitoring/commit/1c8f697c34aca5aa0b47795fde8da18a175d561e))
+* lint issues ([44ba1e2](https://github.com/lidofinance/ethereum-validators-monitoring/commit/44ba1e21f1a993e5d4c520f290f0047f28b5121b))
+* skip attestations from slots in previous epochs ([fade6ae](https://github.com/lidofinance/ethereum-validators-monitoring/commit/fade6ae63a0b19f5b4bacd6b777df9966a796fca))
+* update alert rules in README ([479049e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/479049edebb0cc4ff3f74f658f3ab29bec0136b6))
+
+
+### Features
+
+* add compatibility with pre-Pectra forks ([2573c4d](https://github.com/lidofinance/ethereum-validators-monitoring/commit/2573c4d22705bbe5e601cb74be2e57904293f428))
+* critical alerts by modules ([54377a0](https://github.com/lidofinance/ethereum-validators-monitoring/commit/54377a0964fac75cca550afe913f2c4692d56e10))
+* new attestations calculation algorithm ([877c161](https://github.com/lidofinance/ethereum-validators-monitoring/commit/877c161c9551a7cb6f43f768638bb2a742446edc))
+
+
+
 # [4.7.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.6.0...4.7.0) (2024-08-12)
 
 
@@ -157,15 +179,6 @@
 * change dashboards for withdrawals ([#137](https://github.com/lidofinance/ethereum-validators-monitoring/issues/137)) ([0961ffd](https://github.com/lidofinance/ethereum-validators-monitoring/commit/0961ffd4e279c4afb0ce04050eb7077740fc6638))
 * throw last error ([#145](https://github.com/lidofinance/ethereum-validators-monitoring/issues/145)) ([21bf527](https://github.com/lidofinance/ethereum-validators-monitoring/commit/21bf5279d933f88faf85b28f004dc8ca3aec8444))
 * withdrawals ([#133](https://github.com/lidofinance/ethereum-validators-monitoring/issues/133)) ([e724d06](https://github.com/lidofinance/ethereum-validators-monitoring/commit/e724d06715646cad8f1ce7b5f46965435a463af4))
-
-
-
-## [4.2.2](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.2.1...4.2.2) (2023-01-30)
-
-
-### Bug Fixes
-
-* get balance diff in rewards query ([#125](https://github.com/lidofinance/ethereum-validators-monitoring/issues/125)) ([222ff20](https://github.com/lidofinance/ethereum-validators-monitoring/commit/222ff2065ccaf31e39a107f4c383318f02c27261))
 
 
 
