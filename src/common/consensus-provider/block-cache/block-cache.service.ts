@@ -29,7 +29,7 @@ export class BlockCacheService {
     this.cache.set(String(blockId), { ...existing, ...data });
   }
 
-  public get(blockId: BlockCacheId): BlockCache {
+  public get(blockId: BlockCacheId): BlockCache | undefined {
     return this.cache.get(String(blockId));
   }
 

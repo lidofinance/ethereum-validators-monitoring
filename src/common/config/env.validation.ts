@@ -156,6 +156,11 @@ export class EnvironmentVariables {
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public CL_API_GET_BLOCK_INFO_MAX_RETRIES = 1;
 
+  @IsInt()
+  @Min(1)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public CL_API_MAX_SLOT_DEEP_COUNT = 32;
+
   @IsNumber()
   @Min(74240) // Altair
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
