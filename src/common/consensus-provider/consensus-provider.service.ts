@@ -418,7 +418,7 @@ export class ConsensusProviderService {
       }
 
       if (res == null) {
-        this.logger.warn(`Error while doing CL API request. Will try to switch to another API URL. ${err.message}`);
+        this.logger.warn(`Error while doing CL API request. Will try to switch to another API URL.\n${err.message}`);
       }
     }
 
