@@ -18,7 +18,6 @@ import {
   avgChainRewardsAndPenaltiesStats,
   avgValidatorBalanceDelta,
   chainSyncParticipationAvgPercentQuery,
-  epochMetadata,
   epochProcessing,
   operatorBalance24hDifferenceQuery,
   operatorsSyncParticipationAvgPercentsQuery,
@@ -33,7 +32,6 @@ import {
   userSyncParticipationAvgPercentQuery,
   userValidatorsSummaryStatsQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
-  validatorCountHighAvgIncDelayAttestationOfNEpochQuery,
   validatorQuantile0001BalanceDeltasQuery,
   validatorsCountByConditionMissProposeQuery,
   validatorsCountWithNegativeDeltaQuery,
@@ -133,8 +131,12 @@ export class ClickhouseService implements OnModuleInit {
   @TrackTask('write-summary')
   public async writeSummary(summary: IterableIterator<ValidatorDutySummary>): Promise<void> {
     const runWriteTasks = (stream: Readable): Promise<any>[] => {
-      const indexes = this.retry(async () =>
-        this.db.insert({
+      const indexes = this.retry(async () => {
+        if (stream.destroyed || !stream.readable) {
+          throw Error('Error when trying to write to "validators_index" table via already closed stream');
+        }
+
+        return this.db.insert({
           table: 'validators_index',
           values: stream.pipe(
             new Transform({
@@ -145,10 +147,15 @@ export class ClickhouseService implements OnModuleInit {
             }),
           ),
           format: 'JSONEachRow',
-        }),
-      );
-      const summaries = this.retry(async () =>
-        this.db.insert({
+        });
+      });
+
+      const summaries = this.retry(async () => {
+        if (stream.destroyed || !stream.readable) {
+          throw Error('Error when trying to write to "validators_summary" table via already closed stream');
+        }
+
+        return this.db.insert({
           table: 'validators_summary',
           values: stream.pipe(
             new Transform({
@@ -169,8 +176,8 @@ export class ClickhouseService implements OnModuleInit {
             }),
           ),
           format: 'JSONEachRow',
-        }),
-      );
+        });
+      });
 
       return [indexes, summaries];
     };
@@ -465,21 +472,6 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  /**
-   * Send query to Clickhouse and receives information about
-   * how many User Node Operator validators have high avg inc. delay (>2) last N epoch
-   */
-  public async getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(epoch: Epoch): Promise<NOsValidatorsByConditionAttestationCount[]> {
-    return (
-      await this.select<NOsValidatorsByConditionAttestationCount[]>(
-        validatorCountHighAvgIncDelayAttestationOfNEpochQuery(epoch, this.config.get('BAD_ATTESTATION_EPOCHS')),
-      )
-    ).map((v) => ({
-      ...v,
-      amount: Number(v.amount),
-    }));
-  }
-
   public async getValidatorsCountWithGoodProposes(
     epoch: Epoch,
     validatorIndexes: string[] = [],
@@ -584,31 +576,6 @@ export class ClickhouseService implements OnModuleInit {
       all: Number(v.all),
       missed: Number(v.missed),
     }));
-  }
-
-  async getEpochMetadata(epoch: Epoch): Promise<EpochMeta> {
-    const ret = (await this.select(epochMetadata(epoch)))[0];
-    const metadata = {};
-    if (ret) {
-      metadata['state'] = {
-        active_validators: Number(ret['active_validators']),
-        active_validators_total_increments: BigInt(ret['active_validators_total_increments']),
-        base_reward: Number(ret['base_reward']),
-      };
-      metadata['attestation'] = {
-        blocks_rewards: new Map(ret['att_blocks_rewards'].map(([b, r]) => [Number(b), BigInt(r)])),
-        participation: {
-          source: BigInt(ret['att_source_participation']),
-          target: BigInt(ret['att_target_participation']),
-          head: BigInt(ret['att_head_participation']),
-        },
-      };
-      metadata['sync'] = {
-        blocks_rewards: new Map(ret['sync_blocks_rewards'].map(([b, r]) => [Number(b), BigInt(r)])),
-        blocks_to_sync: ret['sync_blocks_to_sync'].map((b) => Number(b)),
-      };
-    }
-    return metadata;
   }
 
   public async getOrInitEpochProcessing(epoch: Epoch): Promise<EpochProcessingState> {
