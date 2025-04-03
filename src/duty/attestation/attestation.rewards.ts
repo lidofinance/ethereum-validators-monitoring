@@ -39,6 +39,9 @@ export class AttestationRewards {
         .toString(),
     );
 
+    // Perfect attestation (with multipliers). Need for calculating missed reward
+    const perfect = getRewards({ source: true, target: true, head: true });
+
     const maxBatchSize = 1000;
     let index = 0;
     for (const v of this.summary.epoch(epoch).values()) {
@@ -66,8 +69,6 @@ export class AttestationRewards {
       const targetParticipationBaseRewardIncrements = baseRewardIncrements * targetParticipation;
       const headParticipationBaseRewardIncrements = baseRewardIncrements * headParticipation;
 
-      // Perfect attestation (with multipliers). Need for calculating missed reward
-      const perfect = getRewards({ source: true, target: true, head: true });
       const perfectAttestationRewards =
         Math.trunc(perfect.source * sourceParticipationBaseRewardIncrements) +
         Math.trunc(perfect.target * targetParticipationBaseRewardIncrements) +
