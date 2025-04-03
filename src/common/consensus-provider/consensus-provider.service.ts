@@ -44,11 +44,11 @@ export interface ForkEpochs {
 
 @Injectable()
 export class ConsensusProviderService {
-  protected apiUrls: string[];
-  protected workingMode: string;
+  protected readonly apiUrls: string[];
+  protected readonly workingMode: string;
+  protected readonly defaultMaxSlotDeepCount: number;
   protected version = '';
   protected genesisTime = 0;
-  protected defaultMaxSlotDeepCount: number;
   protected latestSlot = { slot: 0, fetchTime: 0 };
   protected forkEpochs: ForkEpochs;
 
@@ -219,22 +219,23 @@ export class ConsensusProviderService {
   public async getNextNotMissedBlockHeader(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
     const initialMaxDeep = maxDeep;
 
-    const get = async (slot: Slot, maxDeep: number) => {
+    while (maxDeep >= 0) {
       const header = await this.getBlockHeader(slot);
 
-      if (header == null) {
-        if (maxDeep < 1) {
-          throw new MaxDeepError(`Error when trying to get next not missed block header. From ${slot - initialMaxDeep} to ${slot}`);
-        }
-
-        this.logger.log(`Try to get next header from ${slot + 1} slot because ${slot} is missing`);
-        return await get(slot + 1, maxDeep - 1);
+      if (header) {
+        return header;
       }
 
-      return header;
-    };
+      if (maxDeep > 0) {
+        this.logger.log(`Try to get next header from ${slot + 1} slot because ${slot} is missing`);
+      }
 
-    return get(slot, maxDeep);
+      slot++;
+      maxDeep--;
+    }
+
+    slot--;
+    throw new MaxDeepError(`Error when trying to get next not missed block header. From ${slot - initialMaxDeep} to ${slot}`);
   }
 
   public async getPreviousNotMissedBlockHeader(
@@ -244,22 +245,23 @@ export class ConsensusProviderService {
   ): Promise<BlockHeaderResponse> {
     const initialMaxDeep = maxDeep;
 
-    const get = async (slot: Slot, maxDeep: number, ignoreCache: boolean) => {
+    while (maxDeep >= 0) {
       const header = await this.getBlockHeader(slot, ignoreCache);
 
-      if (header == null) {
-        if (maxDeep < 1) {
-          throw new MaxDeepError(`Error when trying to get previous not missed block header. From ${slot} to ${slot - initialMaxDeep}`);
-        }
-
-        this.logger.log(`Try to get previous header from ${slot - 1} slot because ${slot} is missing`);
-        return await get(slot - 1, maxDeep - 1, ignoreCache);
+      if (header) {
+        return header;
       }
 
-      return header;
-    };
+      if (maxDeep > 0) {
+        this.logger.log(`Try to get previous header from ${slot - 1} slot because ${slot} is missing`);
+      }
 
-    return get(slot, maxDeep, ignoreCache);
+      slot--;
+      maxDeep--;
+    }
+
+    slot++;
+    throw new MaxDeepError(`Error when trying to get previous not missed block header. From ${slot + initialMaxDeep} to ${slot}`);
   }
 
   /**
