@@ -3,8 +3,8 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { ConsensusProviderService } from 'common/consensus-provider';
-import { Epoch } from 'common/consensus-provider/types';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { Epoch } from 'common/types/types';
 import { SummaryService } from 'duty/summary';
 
 @Injectable()

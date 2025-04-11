@@ -4,11 +4,11 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService, WorkingMode } from 'common/config';
 import { BlockHeaderResponse, ConsensusProviderService } from 'common/consensus-provider';
 import { BlockCacheService } from 'common/consensus-provider/block-cache';
-import { Epoch, Slot } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { range } from 'common/functions/range';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { Epoch, Slot } from 'common/types/types';
 import { ClickhouseService } from 'storage';
 
 import { AttestationService } from './attestation';

@@ -11,6 +11,7 @@ import { rejectDelay } from 'common/functions/rejectDelay';
 import { retrier } from 'common/functions/retrier';
 import { urljoin } from 'common/functions/urljoin';
 import { PrometheusService, TrackCLRequest } from 'common/prometheus';
+import { Epoch, RootHex, Slot, StateId } from 'common/types/types';
 import { EpochProcessingState } from 'storage/clickhouse';
 
 import { BlockCacheService } from './block-cache';
@@ -24,7 +25,8 @@ import {
   SyncCommitteeInfo,
   VersionResponse,
 } from './intefaces';
-import { BlockId, Epoch, Slot, StateId } from './types';
+
+type BlockId = RootHex | Slot | 'head' | 'genesis' | 'finalized';
 
 let ssz: typeof import('@lodestar/types').ssz;
 let anySsz: typeof ssz.phase0 | typeof ssz.altair | typeof ssz.bellatrix | typeof ssz.capella | typeof ssz.deneb;

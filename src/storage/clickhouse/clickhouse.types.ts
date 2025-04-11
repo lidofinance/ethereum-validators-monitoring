@@ -1,4 +1,4 @@
-import { Epoch } from 'common/consensus-provider/types';
+import { Epoch } from 'common/types/types';
 
 export interface ValidatorsStatusStats {
   val_nos_module_id?: string;

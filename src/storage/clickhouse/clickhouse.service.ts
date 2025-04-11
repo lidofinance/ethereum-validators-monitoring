@@ -7,11 +7,11 @@ import { chain } from 'stream-chain';
 import { batch } from 'stream-json/utils/Batch';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { retrier } from 'common/functions/retrier';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { Epoch } from 'common/types/types';
 import { EpochMeta, ValidatorDutySummary } from 'duty/summary';
 
 import {

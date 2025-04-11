@@ -1,16 +1,7 @@
-import { BLSSignature, RootHex, Slot, ValidatorIndex } from '../types';
+import { RootHex, Slot } from 'common/types/types';
 
-export enum ValStatus {
-  ActiveOngoing = 'active_ongoing',
-  ActiveExiting = 'active_exiting',
-  PendingQueued = 'pending_queued',
-  PendingInitialized = 'pending_initialized',
-  ActiveSlashed = 'active_slashed',
-  ExitedSlashed = 'exited_slashed',
-  ExitedUnslashed = 'exited_unslashed',
-  WithdrawalPossible = 'withdrawal_possible',
-  WithdrawalDone = 'withdrawal_done',
-}
+type BLSSignature = string;
+type ValidatorIndex = string;
 
 export interface BlockHeaderResponse {
   root: RootHex;

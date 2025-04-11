@@ -9,12 +9,12 @@ import { batch } from 'stream-json/utils/Batch';
 
 import { ConfigService } from 'common/config';
 import { AttestationCommitteeInfo, ConsensusProviderService } from 'common/consensus-provider';
-import { Epoch, Slot } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { makeDefaultMap } from 'common/functions/makeDefaultMap';
 import { range } from 'common/functions/range';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { Epoch, Slot } from 'common/types/types';
 import { SummaryService } from 'duty/summary';
 
 import { getAttestationFlags } from './attestation.constants';
