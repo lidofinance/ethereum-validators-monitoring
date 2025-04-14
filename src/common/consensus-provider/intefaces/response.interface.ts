@@ -28,6 +28,7 @@ export interface BlockInfoResponse {
         sync_committee_bits: string;
       };
       execution_payload: {
+        block_number: number;
         withdrawals: Withdrawal[];
       };
     };

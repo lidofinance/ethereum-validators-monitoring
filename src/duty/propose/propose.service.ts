@@ -20,7 +20,8 @@ export class ProposeService {
   @TrackTask('check-proposer-duties')
   public async check(epoch: Epoch): Promise<void> {
     this.logger.log(`Start getting proposers duties info`);
-    const proposersDutyInfo = await this.clClient.getCanonicalProposerDuties(epoch);
+    const sparseMode = this.config.get('SPARSE_NETWORK_MODE');
+    const proposersDutyInfo = await this.clClient.getCanonicalProposerDuties(epoch, sparseMode);
     this.logger.log(`Processing proposers duties info`);
     for (const prop of proposersDutyInfo) {
       const index = Number(prop.validator_index);

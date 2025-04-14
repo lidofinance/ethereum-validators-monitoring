@@ -55,7 +55,7 @@ export class DutyService {
       // it's nice to have but not critical
       workingMode == WorkingMode.Finalized ? this.getPossibleHighRewardValidators().catch(() => []) : [],
     ]);
-    await allSettled([this.writeEpochMeta(epoch), this.writeSummary(epoch)]);
+    await allSettled([this.writeEpochMeta(epoch, stateSlot), this.writeSummary(epoch)]);
     this.summary.clear();
     await this.storage.updateEpochProcessing({ epoch, is_stored: true });
     return possibleHighRewardVals;
@@ -99,7 +99,7 @@ export class DutyService {
     this.logger.log('Getting possible high reward validator indexes');
     const [sync, prop] = await allSettled([
       this.clClient.getSyncCommitteeInfo('finalized', headEpoch),
-      this.clClient.getCanonicalProposerDuties(headEpoch, 3, true),
+      this.clClient.getCanonicalProposerDuties(headEpoch, false, 3, true),
     ]);
     return [...new Set([...prop.map((v) => v.validator_index), ...sync.validators])];
   }
@@ -187,9 +187,9 @@ export class DutyService {
     await this.storage.writeSummary(this.summary.epoch(epoch).values());
   }
 
-  protected async writeEpochMeta(epoch: Epoch): Promise<any> {
+  protected async writeEpochMeta(epoch: Epoch, stateSlot: Slot): Promise<any> {
     this.logger.log('Writing epoch metadata into DB');
     const meta = this.summary.epoch(epoch).getMeta();
-    await this.storage.writeEpochMeta(epoch, meta);
+    await this.storage.writeEpochMeta(epoch, stateSlot, meta);
   }
 }

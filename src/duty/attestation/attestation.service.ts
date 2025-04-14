@@ -46,9 +46,9 @@ interface AttestationFlags {
 
 @Injectable()
 export class AttestationService {
-  private processedEpoch: number;
   private readonly slotsInEpoch: number;
   private readonly savedCanonSlotsAttProperties: Map<number, string>;
+  private processedEpoch: number;
 
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
@@ -142,7 +142,8 @@ export class AttestationService {
     if (cached) {
       return cached;
     }
-    const root = (await this.clClient.getBeaconBlockHeaderOrPreviousIfMissed(slot)).root;
+
+    const root = (await this.clClient.getSlotHeaderOrPreviousIfMissedByParentRootHash(slot)).root;
     this.savedCanonSlotsAttProperties.set(slot, root);
     return root;
   }

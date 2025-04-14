@@ -12,7 +12,8 @@ import { retrier } from 'common/functions/retrier';
 import { urljoin } from 'common/functions/urljoin';
 import { PrometheusService, TrackCLRequest } from 'common/prometheus';
 import { Epoch, RootHex, Slot, StateId } from 'common/types/types';
-import { EpochProcessingState } from 'storage/clickhouse';
+import { ExecutionProviderService } from 'common/execution-provider';
+import { ClickhouseService } from 'storage';
 
 import { BlockCacheService } from './block-cache';
 import { MaxDeepError, ResponseError, errCommon, errRequest } from './errors';
@@ -71,6 +72,8 @@ export class ConsensusProviderService {
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
     protected readonly cache: BlockCacheService,
+    protected readonly storage: ClickhouseService,
+    protected readonly executionProvider: ExecutionProviderService,
   ) {
     this.apiUrls = config.get('CL_API_URLS') as NonEmptyArray<string>;
     this.workingMode = config.get('WORKING_MODE');
@@ -115,14 +118,14 @@ export class ConsensusProviderService {
     return (this.genesisTime = genesisTime);
   }
 
-  public async getLatestBlockHeader(processingState: EpochProcessingState): Promise<BlockHeaderResponse | void> {
+  public async getLatestSlotHeader(epoch: Epoch): Promise<BlockHeaderResponse> {
     return await this.retryRequest<BlockHeaderResponse>(
       async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(this.workingMode)),
       {
         maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
         useFallbackOnResolved: (r) => {
           if (this.workingMode === WorkingMode.Finalized && r.finalized != null && !r.finalized) {
-            this.logger.error(`getLatestBlockHeader: slot [${r.data.header.message.slot}] is not finalized`);
+            this.logger.error(`getLatestSlotHeader: slot [${r.data.header.message.slot}] is not finalized`);
             return true;
           }
 
@@ -138,7 +141,7 @@ export class ConsensusProviderService {
           if (nodeLatestSlot > this.latestSlot.slot) {
             this.latestSlot = { slot: nodeLatestSlot, fetchTime: Number(Date.now()) };
           }
-          if (processingState.epoch < Math.trunc(this.latestSlot.slot / this.config.get('FETCH_INTERVAL_SLOTS'))) {
+          if (epoch < Math.trunc(this.latestSlot.slot / this.config.get('FETCH_INTERVAL_SLOTS'))) {
             // if our last processed epoch is less than last, we shouldn't use fallback
             return false;
           } else if (Number(Date.now()) - this.latestSlot.fetchTime > 420 * 1000) {
@@ -151,10 +154,8 @@ export class ConsensusProviderService {
         },
       },
     ).catch((e) => {
-      if (e.$httpCode !== 404) {
-        this.logger.error('Unexpected status code while fetching block header');
-        throw e;
-      }
+      this.logger.error('Unexpected status code while fetching latest slot header');
+      throw e;
     });
   }
 
@@ -195,9 +196,8 @@ export class ConsensusProviderService {
   /**
    * Get block header or previous head if missed.
    * Since missed block has no header, we must get block header from the next block by its parent_root
-   * @param slot
    */
-  public async getBeaconBlockHeaderOrPreviousIfMissed(slot: Slot): Promise<BlockHeaderResponse> {
+  public async getSlotHeaderOrPreviousIfMissedByParentRootHash(slot: Slot): Promise<BlockHeaderResponse> {
     const header = await this.getBlockHeader(slot);
 
     if (header) {
@@ -205,7 +205,7 @@ export class ConsensusProviderService {
     }
 
     // if block is missed, try to get next not missed block header
-    const nextNotMissedHeader = await this.getNextNotMissedBlockHeader(slot + 1);
+    const nextNotMissedHeader = await this.getNextNotMissedBlockHeader(slot, this.config.get('SPARSE_NETWORK_MODE'));
 
     this.logger.log(
       `Found next not missed slot [${nextNotMissedHeader.header.message.slot}] root [${nextNotMissedHeader.root}] after slot [${slot}]`,
@@ -218,61 +218,13 @@ export class ConsensusProviderService {
     return previousBlockHeader;
   }
 
-  public async getNextNotMissedBlockHeader(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
-    const initialMaxDeep = maxDeep;
-
-    while (maxDeep >= 0) {
-      const header = await this.getBlockHeader(slot);
-
-      if (header) {
-        return header;
-      }
-
-      if (maxDeep > 0) {
-        this.logger.log(`Try to get next header from ${slot + 1} slot because ${slot} is missing`);
-      }
-
-      slot++;
-      maxDeep--;
-    }
-
-    slot--;
-    throw new MaxDeepError(`Error when trying to get next not missed block header. From ${slot - initialMaxDeep} to ${slot}`);
-  }
-
-  public async getPreviousNotMissedBlockHeader(
-    slot: Slot,
-    maxDeep = this.defaultMaxSlotDeepCount,
-    ignoreCache = false,
-  ): Promise<BlockHeaderResponse> {
-    const initialMaxDeep = maxDeep;
-
-    while (maxDeep >= 0) {
-      const header = await this.getBlockHeader(slot, ignoreCache);
-
-      if (header) {
-        return header;
-      }
-
-      if (maxDeep > 0) {
-        this.logger.log(`Try to get previous header from ${slot - 1} slot because ${slot} is missing`);
-      }
-
-      slot--;
-      maxDeep--;
-    }
-
-    slot++;
-    throw new MaxDeepError(`Error when trying to get previous not missed block header. From ${slot + initialMaxDeep} to ${slot}`);
-  }
-
   /**
    * Trying to get attester or proposer duty dependent block root
    */
-  public async getDutyDependentRoot(epoch: Epoch, ignoreCache = false): Promise<string> {
-    this.logger.log(`Getting duty dependent root for epoch ${epoch}`);
+  public async getDutyDependentRoot(epoch: Epoch, sparseMode = false, ignoreCache = false): Promise<string> {
+    this.logger.log(`Getting duty dependent root for epoch [${epoch}]`);
     const dutyRootSlot = epoch * this.config.get('FETCH_INTERVAL_SLOTS') - 1;
-    return (await this.getPreviousNotMissedBlockHeader(dutyRootSlot, this.defaultMaxSlotDeepCount, ignoreCache)).root;
+    return (await this.getCurrentOrPreviousNotMissedBlockHeader(dutyRootSlot, sparseMode, this.defaultMaxSlotDeepCount, ignoreCache)).root;
   }
 
   public async getState(stateId: StateId): Promise<ContainerTreeViewType<typeof anySsz.BeaconState.fields>> {
@@ -343,7 +295,7 @@ export class ConsensusProviderService {
     return await this.retryRequest(async (apiURL: string) => this.apiGet(apiURL, this.endpoints.syncCommittee(stateId, epoch)), {
       useFallbackOnResolved: (r) => {
         if (this.workingMode === WorkingMode.Finalized && stateId !== 'head' && r.finalized != null && !r.finalized) {
-          this.logger.error(`getSyncCommitteeInfo: state ${stateId} for epoch ${epoch} is not finalized`);
+          this.logger.error(`getSyncCommitteeInfo: state ${stateId} for epoch [${epoch}] is not finalized`);
           return true;
         }
 
@@ -352,10 +304,15 @@ export class ConsensusProviderService {
     });
   }
 
-  public async getCanonicalProposerDuties(epoch: Epoch, maxRetriesForGetCanonical = 3, ignoreCache = false): Promise<ProposerDutyInfo[]> {
+  public async getCanonicalProposerDuties(
+    epoch: Epoch,
+    sparseMode = false,
+    maxRetriesForGetCanonical = 3,
+    ignoreCache = false
+  ): Promise<ProposerDutyInfo[]> {
     const retry = retrier(this.logger, maxRetriesForGetCanonical, 100, 10000, true);
     const request = async () => {
-      const dependentRoot = await this.getDutyDependentRoot(epoch, ignoreCache);
+      const dependentRoot = await this.getDutyDependentRoot(epoch, sparseMode, ignoreCache);
       this.logger.log(`Proposer Duty root: ${dependentRoot}`);
       const res = <{ dependent_root: string; data: ProposerDutyInfo[] }>await this.retryRequest(
         async (apiURL: string) => this.apiGet(apiURL, this.endpoints.proposerDuties(epoch)),
@@ -478,5 +435,171 @@ export class ConsensusProviderService {
     }
 
     return { body, headers };
+  }
+
+  private async getNextNotMissedBlockHeader(
+    slot: Slot,
+    sparseMode = false,
+    maxDeep = this.defaultMaxSlotDeepCount,
+  ): Promise<BlockHeaderResponse> {
+    if (sparseMode) {
+      const epoch = Math.trunc(slot / 32);
+      const lastNotMissedSlot = (await this.storage.getLastNotMissedSlotForEpoch(epoch - 1)).slot;
+      this.logger.debug(`getNextNotMissedBlockHeader: Last known not missed slot before slot [${slot}] is [${lastNotMissedSlot}]`);
+
+      return (await this.getSurroundingNotMissedBlockHeadersInSparseNetwork(slot, lastNotMissedSlot, maxDeep)).next;
+    }
+
+    return await this.getNextNotMissedBlockHeaderInDenseNetwork(slot, maxDeep);
+  }
+
+  private async getCurrentOrPreviousNotMissedBlockHeader(
+    slot: Slot,
+    sparseMode = false,
+    maxDeep = this.defaultMaxSlotDeepCount,
+    ignoreCache = false,
+  ): Promise<BlockHeaderResponse> {
+    if (sparseMode) {
+      const epoch = Math.trunc(slot / 32);
+      const lastNotMissedSlot = (await this.storage.getLastNotMissedSlotForEpoch(epoch - 1)).slot;
+      this.logger.debug(`getCurrentOrPreviousNotMissedBlockHeader: Last known not missed slot before slot [${slot}] is [${lastNotMissedSlot}]`);
+
+      return (await this.getSurroundingNotMissedBlockHeadersInSparseNetwork(slot, lastNotMissedSlot, maxDeep)).previous;
+    }
+
+    return await this.getCurrentOrPreviousNotMissedBlockHeaderInDenseNetwork(slot, maxDeep, ignoreCache);
+  }
+
+  private async getNextNotMissedBlockHeaderInDenseNetwork(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
+    const initialMaxDeep = maxDeep;
+    slot++;
+
+    while (maxDeep >= 0) {
+      const header = await this.getBlockHeader(slot);
+
+      if (header) {
+        return header;
+      }
+
+      if (maxDeep > 0) {
+        this.logger.log(`Try to get next header from [${slot + 1}] slot because [${slot}] is missing`);
+      }
+
+      slot++;
+      maxDeep--;
+    }
+
+    slot--;
+    throw new MaxDeepError(`Error when trying to get next not missed block header. From ${slot - initialMaxDeep} to ${slot}`);
+  }
+
+  private async getCurrentOrPreviousNotMissedBlockHeaderInDenseNetwork(
+    slot: Slot,
+    maxDeep = this.defaultMaxSlotDeepCount,
+    ignoreCache = false,
+  ): Promise<BlockHeaderResponse> {
+    const initialMaxDeep = maxDeep;
+
+    while (maxDeep >= 0) {
+      const header = await this.getBlockHeader(slot, ignoreCache);
+
+      if (header) {
+        return header;
+      }
+
+      if (maxDeep > 0) {
+        this.logger.log(`Try to get previous header from [${slot - 1}] slot because [${slot}] is missing`);
+      }
+
+      slot--;
+      maxDeep--;
+    }
+
+    slot++;
+    throw new MaxDeepError(`Error when trying to get previous not missed block header. From ${slot + initialMaxDeep} to ${slot}`);
+  }
+
+  private async getSurroundingNotMissedBlockHeadersInSparseNetwork(targetSlot: Slot, previousKnownNotMissedSlot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<{next: BlockHeaderResponse, previous: BlockHeaderResponse}> {
+    if (previousKnownNotMissedSlot > targetSlot) {
+      throw new Error(`Previous known not missed slot ${previousKnownNotMissedSlot} is greater than the target slot [${targetSlot}]`);
+    }
+
+    if (previousKnownNotMissedSlot == null || previousKnownNotMissedSlot === 0) {
+      this.logger.warn(`Last not missed slot before slot [${targetSlot}] is unknown`);
+
+      const next = await this.getNextNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
+      const previous = await this.getCurrentOrPreviousNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
+
+      this.logger.log(`Surrounding not missed slots for slot [${targetSlot}] are [${previous.header.message.slot}, ${next.header.message.slot}]`);
+      return { next, previous };
+    }
+
+    let slot = previousKnownNotMissedSlot;
+    let previousSlot = previousKnownNotMissedSlot;
+    while (slot <= targetSlot) {
+      this.logger.log(`Try to get next not missed slot after slot [${slot}]`);
+
+      previousSlot = slot;
+      const slotInfo = await this.getBlockInfo(slot);
+      if (!slotInfo) {
+        this.logger.warn(`Got [${slot}] as latest known not missed slot, but it is missing`);
+
+        const next = await this.getNextNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
+        const previous = await this.getCurrentOrPreviousNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
+
+        this.logger.log(`Surrounding not missed slots for slot [${targetSlot}] are [${previous.header.message.slot}, ${next.header.message.slot}]`);
+        return { next, previous };
+      }
+
+      const slotTime = await this.getSlotTime(slot);
+      const blockNumber = Number(slotInfo.message.body.execution_payload.block_number);
+      const nextBlockTime = await this.executionProvider.getBlockTimestamp(blockNumber + 1);
+      const nextSlot = slot + (nextBlockTime - slotTime) / 12;
+
+      if (await this.isNextSlot(blockNumber, nextSlot)) {
+        slot = nextSlot;
+      } else if (await this.isNextSlot(blockNumber, nextSlot - 1)) {
+        this.logger.warn(`Incorrect next slot calculation. Assumed slot next to the slot ${slot} is ${nextSlot} but real next slot is ${nextSlot - 1}.`);
+        slot = nextSlot - 1;
+      } else if (await this.isNextSlot(blockNumber, nextSlot + 1)) {
+        this.logger.warn(`Incorrect next slot calculation. Assumed slot next to the slot ${slot} is ${nextSlot} but real next slot is ${nextSlot + 1}.`);
+        slot = nextSlot + 1;
+      } else {
+        const nextSlotTimeMs = await this.getSlotTime(nextSlot);
+        const nextSlotTime = new Date(nextSlotTimeMs).toLocaleDateString();
+        this.logger.warn(`Failed to get slot around the time [${nextSlotTime}] next to the slot [${slot}] using EL blocks data. Tried slots around slot [${nextSlot}]. Trying to get the next slot in dense mode from slot [${slot}].`);
+
+        const newNextSlotHeader = await this.getNextNotMissedBlockHeaderInDenseNetwork(slot, maxDeep);
+        if (newNextSlotHeader) {
+          slot = Number(newNextSlotHeader.header.message.slot);
+        } else {
+          this.logger.warn(`Failed to get slot next to the slot [${slot}] in dense mode. Trying to get the next slot in dense mode from target slot [${targetSlot}].`);
+
+          const next = await this.getNextNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
+          const previous = await this.getCurrentOrPreviousNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
+
+          this.logger.log(`Surrounding not missed slots for slot [${targetSlot}] are [${previous.header.message.slot}, ${next.header.message.slot}]`);
+          return { next, previous };
+        }
+      }
+    }
+
+    const nextHeader = await this.getBlockHeader(slot);
+    if (!nextHeader) {
+      throw new Error(`Slot [${slot}] is missing, but shouldn't`);
+    }
+
+    const previousHeader = await this.getBlockHeader(previousSlot);
+    if (!previousHeader) {
+      throw new Error(`Slot [${previousHeader}] is missing, but shouldn't`);
+    }
+
+    this.logger.log(`Surrounding not missed slots for slot [${targetSlot}] are [${previousHeader.header.message.slot}, ${nextHeader.header.message.slot}]`);
+    return { next: nextHeader, previous: previousHeader };
+  }
+
+  private async isNextSlot(previousBlockNumber: number, nextSlot: Slot): Promise<boolean> {
+    const nextSlotInfo = await this.getBlockInfo(nextSlot);
+    return nextSlotInfo && previousBlockNumber + 1 === Number(nextSlotInfo.message.body.execution_payload.block_number);
   }
 }
