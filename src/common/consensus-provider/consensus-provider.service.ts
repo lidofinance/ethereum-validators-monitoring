@@ -27,7 +27,7 @@ import {
 import { BlockId, Epoch, Slot, StateId } from './types';
 
 let ssz: typeof import('@lodestar/types').ssz;
-let anySsz: typeof ssz.phase0 | typeof ssz.altair | typeof ssz.bellatrix | typeof ssz.capella | typeof ssz.deneb;
+let anySsz: typeof ssz.phase0 | typeof ssz.altair | typeof ssz.bellatrix | typeof ssz.capella | typeof ssz.deneb | typeof ssz.electra;
 let ForkName: typeof import('@lodestar/params').ForkName;
 
 interface RequestRetryOptions {
