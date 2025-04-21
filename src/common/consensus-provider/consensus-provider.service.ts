@@ -7,12 +7,12 @@ import { IncomingHttpHeaders } from 'undici/types/header';
 import BodyReadable from 'undici/types/readable';
 
 import { ConfigService, WorkingMode } from 'common/config';
+import { ExecutionProviderService } from 'common/execution-provider';
 import { rejectDelay } from 'common/functions/rejectDelay';
 import { retrier } from 'common/functions/retrier';
 import { urljoin } from 'common/functions/urljoin';
 import { PrometheusService, TrackCLRequest } from 'common/prometheus';
 import { Epoch, RootHex, Slot, StateId } from 'common/types/types';
-import { ExecutionProviderService } from 'common/execution-provider';
 import { ClickhouseService } from 'storage';
 
 import { BlockCacheService } from './block-cache';
@@ -166,6 +166,7 @@ export class ConsensusProviderService {
       return cached.missed ? undefined : cached.header;
     }
 
+    this.logger.debug(`Header for ${blockId} not found in blocks cache`);
     const blockHeader = await this.retryRequest<BlockHeaderResponse>(
       async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(blockId)),
       {
@@ -248,6 +249,7 @@ export class ConsensusProviderService {
       return cached.missed ? undefined : cached.info;
     }
 
+    this.logger.debug(`Info for ${blockId} not found in blocks cache`);
     const blockInfo = await this.retryRequest<BlockInfoResponse>(
       async (apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(blockId)),
       {
@@ -308,7 +310,7 @@ export class ConsensusProviderService {
     epoch: Epoch,
     sparseMode = false,
     maxRetriesForGetCanonical = 3,
-    ignoreCache = false
+    ignoreCache = false,
   ): Promise<ProposerDutyInfo[]> {
     const retry = retrier(this.logger, maxRetriesForGetCanonical, 100, 10000, true);
     const request = async () => {
@@ -462,7 +464,9 @@ export class ConsensusProviderService {
     if (sparseMode) {
       const epoch = Math.trunc(slot / 32);
       const lastNotMissedSlot = (await this.storage.getLastNotMissedSlotForEpoch(epoch - 1)).slot;
-      this.logger.debug(`getCurrentOrPreviousNotMissedBlockHeader: Last known not missed slot before slot [${slot}] is [${lastNotMissedSlot}]`);
+      this.logger.debug(
+        `getCurrentOrPreviousNotMissedBlockHeader: Last known not missed slot before slot [${slot}] is [${lastNotMissedSlot}]`,
+      );
 
       return (await this.getSurroundingNotMissedBlockHeadersInSparseNetwork(slot, lastNotMissedSlot, maxDeep)).previous;
     }
@@ -470,7 +474,10 @@ export class ConsensusProviderService {
     return await this.getCurrentOrPreviousNotMissedBlockHeaderInDenseNetwork(slot, maxDeep, ignoreCache);
   }
 
-  private async getNextNotMissedBlockHeaderInDenseNetwork(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockHeaderResponse> {
+  private async getNextNotMissedBlockHeaderInDenseNetwork(
+    slot: Slot,
+    maxDeep = this.defaultMaxSlotDeepCount,
+  ): Promise<BlockHeaderResponse> {
     const initialMaxDeep = maxDeep;
     slot++;
 
@@ -519,7 +526,11 @@ export class ConsensusProviderService {
     throw new MaxDeepError(`Error when trying to get previous not missed block header. From ${slot + initialMaxDeep} to ${slot}`);
   }
 
-  private async getSurroundingNotMissedBlockHeadersInSparseNetwork(targetSlot: Slot, previousKnownNotMissedSlot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<{next: BlockHeaderResponse, previous: BlockHeaderResponse}> {
+  private async getSurroundingNotMissedBlockHeadersInSparseNetwork(
+    targetSlot: Slot,
+    previousKnownNotMissedSlot: Slot,
+    maxDeep = this.defaultMaxSlotDeepCount,
+  ): Promise<{ next: BlockHeaderResponse; previous: BlockHeaderResponse }> {
     if (previousKnownNotMissedSlot > targetSlot) {
       throw new Error(`Previous known not missed slot ${previousKnownNotMissedSlot} is greater than the target slot [${targetSlot}]`);
     }
@@ -530,7 +541,9 @@ export class ConsensusProviderService {
       const next = await this.getNextNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
       const previous = await this.getCurrentOrPreviousNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
 
-      this.logger.log(`Surrounding not missed slots for slot [${targetSlot}] are [${previous.header.message.slot}, ${next.header.message.slot}]`);
+      this.logger.log(
+        `Surrounding not missed slots for slot [${targetSlot}] are [${previous.header.message.slot}, ${next.header.message.slot}]`,
+      );
       return { next, previous };
     }
 
@@ -547,40 +560,24 @@ export class ConsensusProviderService {
         const next = await this.getNextNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
         const previous = await this.getCurrentOrPreviousNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
 
-        this.logger.log(`Surrounding not missed slots for slot [${targetSlot}] are [${previous.header.message.slot}, ${next.header.message.slot}]`);
+        this.logger.log(
+          `Surrounding not missed slots for slot [${targetSlot}] are [${previous.header.message.slot}, ${next.header.message.slot}]`,
+        );
         return { next, previous };
       }
 
       const slotTime = await this.getSlotTime(slot);
       const blockNumber = Number(slotInfo.message.body.execution_payload.block_number);
       const nextBlockTime = await this.executionProvider.getBlockTimestamp(blockNumber + 1);
-      const nextSlot = slot + (nextBlockTime - slotTime) / 12;
 
-      if (await this.isNextSlot(blockNumber, nextSlot)) {
-        slot = nextSlot;
-      } else if (await this.isNextSlot(blockNumber, nextSlot - 1)) {
-        this.logger.warn(`Incorrect next slot calculation. Assumed slot next to the slot ${slot} is ${nextSlot} but real next slot is ${nextSlot - 1}.`);
-        slot = nextSlot - 1;
-      } else if (await this.isNextSlot(blockNumber, nextSlot + 1)) {
-        this.logger.warn(`Incorrect next slot calculation. Assumed slot next to the slot ${slot} is ${nextSlot} but real next slot is ${nextSlot + 1}.`);
-        slot = nextSlot + 1;
-      } else {
-        const nextSlotTimeMs = await this.getSlotTime(nextSlot);
-        const nextSlotTime = new Date(nextSlotTimeMs).toLocaleDateString();
-        this.logger.warn(`Failed to get slot around the time [${nextSlotTime}] next to the slot [${slot}] using EL blocks data. Tried slots around slot [${nextSlot}]. Trying to get the next slot in dense mode from slot [${slot}].`);
+      slot = slot + (nextBlockTime - slotTime) / 12;
 
-        const newNextSlotHeader = await this.getNextNotMissedBlockHeaderInDenseNetwork(slot, maxDeep);
-        if (newNextSlotHeader) {
-          slot = Number(newNextSlotHeader.header.message.slot);
-        } else {
-          this.logger.warn(`Failed to get slot next to the slot [${slot}] in dense mode. Trying to get the next slot in dense mode from target slot [${targetSlot}].`);
-
-          const next = await this.getNextNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
-          const previous = await this.getCurrentOrPreviousNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
-
-          this.logger.log(`Surrounding not missed slots for slot [${targetSlot}] are [${previous.header.message.slot}, ${next.header.message.slot}]`);
-          return { next, previous };
-        }
+      for (let i = previousSlot + 1; i < slot; i++) {
+        this.cache.set(String(i), {
+          missed: true,
+          header: undefined,
+          info: undefined,
+        });
       }
     }
 
@@ -594,12 +591,9 @@ export class ConsensusProviderService {
       throw new Error(`Slot [${previousHeader}] is missing, but shouldn't`);
     }
 
-    this.logger.log(`Surrounding not missed slots for slot [${targetSlot}] are [${previousHeader.header.message.slot}, ${nextHeader.header.message.slot}]`);
+    this.logger.log(
+      `Surrounding not missed slots for slot [${targetSlot}] are [${previousHeader.header.message.slot}, ${nextHeader.header.message.slot}]`,
+    );
     return { next: nextHeader, previous: previousHeader };
-  }
-
-  private async isNextSlot(previousBlockNumber: number, nextSlot: Slot): Promise<boolean> {
-    const nextSlotInfo = await this.getBlockInfo(nextSlot);
-    return nextSlotInfo && previousBlockNumber + 1 === Number(nextSlotInfo.message.body.execution_payload.block_number);
   }
 }

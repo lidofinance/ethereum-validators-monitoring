@@ -132,9 +132,11 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async getLastNotMissedSlotForEpoch(epoch: Epoch): Promise<{ slot: Slot }> {
-    const data = (await this.select<{ last_not_missed_slot }[]>(`SELECT last_not_missed_slot FROM epochs_metadata WHERE epoch = ${epoch}`))[0];
+    const data = (
+      await this.select<{ last_not_missed_slot }[]>(`SELECT last_not_missed_slot FROM epochs_metadata WHERE epoch = ${epoch}`)
+    )[0];
     if (data) {
-      return { slot: data.last_not_missed_slot != null ? Number(data.last_not_missed_slot) : 0};
+      return { slot: data.last_not_missed_slot != null ? Number(data.last_not_missed_slot) : 0 };
     }
 
     return { slot: 0 };
