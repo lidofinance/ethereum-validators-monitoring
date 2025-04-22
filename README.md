@@ -229,6 +229,13 @@ Independent of `CL_API_MAX_RETRIES`.
 * **Required:** false
 * **Default:** 1 (means that request will be executed once)
 ---
+`CL_API_MAX_SLOT_DEEP_COUNT` - Maximum number of slots that the application uses to find a not missed consensus-layer
+slot. The application will use this value to find the next (or previous) not-missed slot next to (or behind) the
+specific slot. If the processed slot and all next (or previous) `CL_API_MAX_SLOT_DEEP_COUNT` slots are missed, the app
+will throw an error.
+* **Required:** false
+* **Default:** 32
+---
 `FETCH_INTERVAL_SLOTS` - Count of slots in Ethereum consensus layer epoch.
 * **Required:** false
 * **Default:** 32

@@ -611,7 +611,10 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     FROM (
       SELECT val_nos_module_id, val_nos_id, att_earned_reward, att_missed_reward, att_penalty
       FROM validators_summary
-      WHERE val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch} - 1
+      WHERE val_nos_id IS NOT NULL AND
+      val_stuck = 0 AND
+      val_status != '${ValStatus.PendingInitialized}' AND
+      epoch = ${epoch} - 1
       LIMIT 1 BY val_id
     )
     GROUP BY val_nos_module_id, val_nos_id
@@ -626,7 +629,11 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     FROM (
       SELECT val_nos_module_id, val_nos_id, propose_earned_reward, propose_missed_reward, propose_penalty
       FROM validators_summary
-      WHERE val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch} and is_proposer = 1
+      WHERE val_nos_id IS NOT NULL AND
+      val_stuck = 0 AND
+      val_status != '${ValStatus.PendingInitialized}' AND
+      epoch = ${epoch} AND
+      is_proposer = 1
       LIMIT 1 BY val_id
     )
     GROUP BY val_nos_module_id, val_nos_id
@@ -644,7 +651,11 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     FROM (
       SELECT val_nos_module_id, val_nos_id, sync_earned_reward, sync_missed_reward, sync_penalty
       FROM validators_summary
-      WHERE val_nos_id IS NOT NULL AND val_stuck = 0 AND epoch = ${epoch} and is_sync = 1
+      WHERE val_nos_id IS NOT NULL AND
+      val_stuck = 0 AND
+      val_status != '${ValStatus.PendingInitialized}' AND
+      epoch = ${epoch} AND
+      is_sync = 1
       LIMIT 1 BY val_id
     )
     GROUP BY val_nos_module_id, val_nos_id
@@ -663,6 +674,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
       WHERE
         val_nos_id IS NOT NULL AND
         val_stuck = 0 AND
+        val_status != '${ValStatus.PendingInitialized}' AND
         epoch = ${epoch}
       LIMIT 1 BY val_id
     ) AS current
@@ -672,6 +684,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
       WHERE
         val_nos_id IS NOT NULL AND
         val_stuck = 0 AND
+        val_status != '${ValStatus.PendingInitialized}' AND
         epoch = (${epoch} - 1)
       LIMIT 1 BY val_id
     ) AS previous ON previous.val_id = current.val_id
@@ -684,6 +697,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
         WHERE
           val_nos_id IS NOT NULL AND
           val_status != '${ValStatus.WithdrawalDone}' AND
+          val_status != '${ValStatus.PendingInitialized}' AND
           val_balance_withdrawn > 0 AND
           val_stuck = 0 AND
           epoch = ${epoch}
