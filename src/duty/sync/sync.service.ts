@@ -48,7 +48,7 @@ export class SyncService {
         }
       }
       const index = Number(indexedValidator.validator_index);
-      const percent = (synced_blocks.length / epochBlocksBits.length) * 100;
+      const percent = epochBlocksBits.length === 0 ? 100 : (synced_blocks.length / epochBlocksBits.length) * 100;
       this.summary.epoch(epoch).set({
         epoch,
         val_id: index,
