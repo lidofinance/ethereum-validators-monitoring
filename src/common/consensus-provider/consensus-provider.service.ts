@@ -283,9 +283,19 @@ export class ConsensusProviderService {
     return blockInfo;
   }
 
-  public async getAttestationCommitteesInfo(stateId: StateId, epoch: Epoch): Promise<BodyReadable> {
+  public async getAttestationCommitteesInfo(slot: Slot, epoch: Epoch): Promise<BodyReadable> {
+    const slotEpoch = Math.trunc(slot / 32);
+    if (epoch > slotEpoch + 1) {
+      this.logger.warn(
+        `getAttestationCommitteesInfo: got epoch [${epoch}] which is too far from target slot [${slot}]. Using epoch [${
+          slotEpoch + 1
+        }] instead.`,
+      );
+      epoch = slotEpoch + 1;
+    }
+
     const { body }: BodyReadable = await this.retryRequest(
-      async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.attestationCommittees(stateId, epoch)),
+      async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.attestationCommittees(slot, epoch)),
       {
         dataOnly: false,
       },
