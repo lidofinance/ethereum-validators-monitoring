@@ -8,8 +8,8 @@ import { PrometheusModule } from 'common/prometheus/prometheus.module';
 import { ClickhouseService } from 'storage';
 import { RegistryModule, RegistryService } from 'validators-registry';
 
-import { ValStatus } from '../src/common/consensus-provider';
 import { allSettled } from '../src/common/functions/allSettled';
+import { ValStatus } from '../src/common/types/types';
 import { DutyModule, DutyService } from '../src/duty';
 
 const testSyncMember = {

@@ -3,9 +3,9 @@ import { RegistryOperator } from '@lido-nestjs/registry';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { Owner, PrometheusService, PrometheusValStatus, TrackTask, setUserOperatorsMetric } from 'common/prometheus';
+import { Epoch } from 'common/types/types';
 import { ClickhouseService } from 'storage/clickhouse';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 import { LidoSourceService } from 'validators-registry/lido-source';

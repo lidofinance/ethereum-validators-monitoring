@@ -4,11 +4,11 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService } from 'common/config';
 import { allSettled } from 'common/functions/allSettled';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { Epoch } from 'common/types/types';
 
 import { AttestationRewards } from './attestation';
 import { ProposeRewards } from './propose';
 import { SyncRewards } from './sync';
-import { Epoch } from '../common/consensus-provider/types';
 
 @Injectable()
 export class DutyRewards {

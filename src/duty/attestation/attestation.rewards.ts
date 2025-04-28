@@ -3,9 +3,9 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/consensus-provider/types';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService } from 'common/prometheus';
+import { Epoch } from 'common/types/types';
 import { SummaryService } from 'duty/summary';
 
 import { getPenalties, getRewards } from './attestation.constants';
@@ -87,6 +87,15 @@ export class AttestationRewards {
       att_earned_reward = rewardSource + rewardTarget + rewardHead;
       att_missed_reward = perfectAttestationRewards - att_earned_reward;
       att_penalty = penaltySource + penaltyTarget + penaltyHead;
+
+      /**
+       * @todo @hack If max effective balance of the validator is greater than 32, don't calculate missed rewards for
+       * attestations. We need to figure out how to calculate missed rewards for validators of 0x02 type.
+       */
+      if (increments > 32 || att_missed_reward < 0) {
+        att_missed_reward = 0;
+      }
+
       // And save it to summary of current epoch
       this.summary.epoch(epoch).set({
         epoch,

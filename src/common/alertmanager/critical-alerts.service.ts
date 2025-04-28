@@ -3,8 +3,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { got } from 'got-cjs';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/consensus-provider/types';
 import { PrometheusService } from 'common/prometheus';
+import { Epoch } from 'common/types/types';
 import { ClickhouseService } from 'storage';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 

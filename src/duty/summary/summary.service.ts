@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { merge } from 'lodash';
 
-import { ValStatus } from 'common/consensus-provider';
-import { Epoch } from 'common/consensus-provider/types';
 import { range } from 'common/functions/range';
+import { Epoch, ValStatus } from 'common/types/types';
 
 type BlockNumber = number;
 type ValidatorId = number;

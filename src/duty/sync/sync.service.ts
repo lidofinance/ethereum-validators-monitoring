@@ -4,8 +4,8 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { BlockInfoResponse, ConsensusProviderService, SyncCommitteeValidator } from 'common/consensus-provider';
-import { Epoch, Slot, StateId } from 'common/consensus-provider/types';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { Epoch, Slot, StateId } from 'common/types/types';
 import { SummaryService } from 'duty/summary';
 
 import { SYNC_COMMITTEE_SIZE } from './sync.constants';
@@ -48,7 +48,7 @@ export class SyncService {
         }
       }
       const index = Number(indexedValidator.validator_index);
-      const percent = (synced_blocks.length / epochBlocksBits.length) * 100;
+      const percent = epochBlocksBits.length === 0 ? 100 : (synced_blocks.length / epochBlocksBits.length) * 100;
       this.summary.epoch(epoch).set({
         epoch,
         val_id: index,

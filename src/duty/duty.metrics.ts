@@ -4,6 +4,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService } from 'common/config';
 import { allSettled } from 'common/functions/allSettled';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { Epoch } from 'common/types/types';
 
 import { AttestationMetrics } from './attestation';
 import { ProposeMetrics } from './propose';
@@ -11,7 +12,6 @@ import { StateMetrics } from './state';
 import { SummaryMetrics } from './summary';
 import { SyncMetrics } from './sync';
 import { WithdrawalsMetrics } from './withdrawal';
-import { Epoch } from '../common/consensus-provider/types';
 import { ClickhouseService } from '../storage';
 
 @Injectable()

@@ -3,10 +3,10 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { BlockInfoResponse, ConsensusProviderService } from 'common/consensus-provider';
-import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { range } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { Epoch } from 'common/types/types';
 import { SummaryService } from 'duty/summary';
 import { ClickhouseService } from 'storage/clickhouse';
 import { RegistryService } from 'validators-registry';
