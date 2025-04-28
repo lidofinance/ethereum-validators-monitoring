@@ -547,14 +547,7 @@ export class ConsensusProviderService {
 
     if (previousKnownNotMissedSlot == null || previousKnownNotMissedSlot === 0) {
       this.logger.warn(`Last not missed slot before slot [${targetSlot}] is unknown`);
-
-      const next = await this.getNextNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
-      const previous = await this.getCurrentOrPreviousNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
-
-      this.logger.log(
-        `Surrounding not missed slots for slot [${targetSlot}] are [${previous.header.message.slot}, ${next.header.message.slot}]`,
-      );
-      return { next, previous };
+      return await this.getSurroundingNotMissedBlockHeadersInDenseNetwork(targetSlot, maxDeep);
     }
 
     let slot = previousKnownNotMissedSlot;
@@ -566,14 +559,7 @@ export class ConsensusProviderService {
       const slotInfo = await this.getBlockInfo(slot);
       if (!slotInfo) {
         this.logger.warn(`Got [${slot}] as latest known not missed slot, but it is missing`);
-
-        const next = await this.getNextNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
-        const previous = await this.getCurrentOrPreviousNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
-
-        this.logger.log(
-          `Surrounding not missed slots for slot [${targetSlot}] are [${previous.header.message.slot}, ${next.header.message.slot}]`,
-        );
-        return { next, previous };
+        return await this.getSurroundingNotMissedBlockHeadersInDenseNetwork(targetSlot, maxDeep);
       }
 
       const slotTime = await this.getSlotTime(slot);
@@ -605,5 +591,19 @@ export class ConsensusProviderService {
       `Surrounding not missed slots for slot [${targetSlot}] are [${previousHeader.header.message.slot}, ${nextHeader.header.message.slot}]`,
     );
     return { next: nextHeader, previous: previousHeader };
+  }
+
+  private async getSurroundingNotMissedBlockHeadersInDenseNetwork(
+    targetSlot: Slot,
+    maxDeep = this.defaultMaxSlotDeepCount,
+  ): Promise<{ next: BlockHeaderResponse; previous: BlockHeaderResponse }> {
+    const next = await this.getNextNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
+    const previous = await this.getCurrentOrPreviousNotMissedBlockHeaderInDenseNetwork(targetSlot, maxDeep);
+
+    this.logger.log(
+      `Surrounding not missed slots for slot [${targetSlot}] are [${previous.header.message.slot}, ${next.header.message.slot}]`,
+    );
+
+    return { next, previous };
   }
 }
