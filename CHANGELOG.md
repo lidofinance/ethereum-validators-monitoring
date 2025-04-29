@@ -1,3 +1,23 @@
+# [4.9.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.8.0...4.9.0) (2025-04-29)
+
+
+### Bug Fixes
+
+* exclude pending initialized validators ([5634c74](https://github.com/lidofinance/ethereum-validators-monitoring/commit/5634c74930ac5c902afb6ba9cc030b411b085379))
+* missed rewards for attestations ([cbffa07](https://github.com/lidofinance/ethereum-validators-monitoring/commit/cbffa07189fdee8b5b95c18e5c1d60f2cdf80a40))
+* missed rewards for attestations - 2 ([02104a2](https://github.com/lidofinance/ethereum-validators-monitoring/commit/02104a22ea8e684555babab79c64c973dc77c748))
+* property of null object ([bc8a541](https://github.com/lidofinance/ethereum-validators-monitoring/commit/bc8a541fba41f3c08e7c5b4190415c5c37626101))
+* sync committee accounting ([3ce09b4](https://github.com/lidofinance/ethereum-validators-monitoring/commit/3ce09b49b10f31476e07abf13f47e57e706a27b0))
+
+
+### Features
+
+* configurable max slot deep count ([49f4c33](https://github.com/lidofinance/ethereum-validators-monitoring/commit/49f4c336f7cdd0ef99d6089a68e9631a2f9cc737))
+* EVM workflows adjustments ([9480778](https://github.com/lidofinance/ethereum-validators-monitoring/commit/94807782de851898fa4bff11184b076f30509438))
+* workflows adjustments for hoodi/holesky deployments ([211ea06](https://github.com/lidofinance/ethereum-validators-monitoring/commit/211ea0659d6563ae54f8a5c6f149677ae86caa6c))
+
+
+
 # [4.8.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.7.0...4.8.0) (2025-02-26)
 
 
@@ -156,29 +176,6 @@
 ### Bug Fixes
 
 * too wide queries with withdrawals ([#150](https://github.com/lidofinance/ethereum-validators-monitoring/issues/150)) ([d674e03](https://github.com/lidofinance/ethereum-validators-monitoring/commit/d674e03ae201618c6ad970fb2e8c166eb624e3aa))
-
-
-
-# [4.3.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.2.2...4.3.0) (2023-04-05)
-
-
-### Bug Fixes
-
-* double accounting ([#138](https://github.com/lidofinance/ethereum-validators-monitoring/issues/138)) ([e85d73e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/e85d73e46ac26c0b5e488825092d9f2945004e79)), closes [#139](https://github.com/lidofinance/ethereum-validators-monitoring/issues/139)
-* fix get committees streams ([#143](https://github.com/lidofinance/ethereum-validators-monitoring/issues/143)) ([b0442e9](https://github.com/lidofinance/ethereum-validators-monitoring/commit/b0442e9946d0bf266708f8e326b91adb571872f1))
-* remove 'finalized' condition ([#135](https://github.com/lidofinance/ethereum-validators-monitoring/issues/135)) ([ef94603](https://github.com/lidofinance/ethereum-validators-monitoring/commit/ef94603eca5b138287490365b91994e36644011d))
-* tune butches size ([#140](https://github.com/lidofinance/ethereum-validators-monitoring/issues/140)) ([06202bb](https://github.com/lidofinance/ethereum-validators-monitoring/commit/06202bb1d0635cce85c2dbc3be4f068e833b2e7c))
-* tune chunks size ([#142](https://github.com/lidofinance/ethereum-validators-monitoring/issues/142)) ([e9168ab](https://github.com/lidofinance/ethereum-validators-monitoring/commit/e9168ab57918b04466c14965714e6b66534a49e8))
-* tune finalized condition ([#136](https://github.com/lidofinance/ethereum-validators-monitoring/issues/136)) ([353d81d](https://github.com/lidofinance/ethereum-validators-monitoring/commit/353d81dd9c681c7c9ec13aebafc243fbf8f4a278))
-* tune getAttestationCommittees ([#141](https://github.com/lidofinance/ethereum-validators-monitoring/issues/141)) ([5caf4e1](https://github.com/lidofinance/ethereum-validators-monitoring/commit/5caf4e119894cfb7aa8dfd402c0edcdf0e7ba5dc))
-* withdrawal status ([#147](https://github.com/lidofinance/ethereum-validators-monitoring/issues/147)) ([f6806db](https://github.com/lidofinance/ethereum-validators-monitoring/commit/f6806dbeb514d96fe8349b1da4312bba5e1b854d))
-
-
-### Features
-
-* change dashboards for withdrawals ([#137](https://github.com/lidofinance/ethereum-validators-monitoring/issues/137)) ([0961ffd](https://github.com/lidofinance/ethereum-validators-monitoring/commit/0961ffd4e279c4afb0ce04050eb7077740fc6638))
-* throw last error ([#145](https://github.com/lidofinance/ethereum-validators-monitoring/issues/145)) ([21bf527](https://github.com/lidofinance/ethereum-validators-monitoring/commit/21bf5279d933f88faf85b28f004dc8ca3aec8444))
-* withdrawals ([#133](https://github.com/lidofinance/ethereum-validators-monitoring/issues/133)) ([e724d06](https://github.com/lidofinance/ethereum-validators-monitoring/commit/e724d06715646cad8f1ce7b5f46965435a463af4))
 
 
 
