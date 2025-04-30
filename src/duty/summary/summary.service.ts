@@ -36,8 +36,8 @@ export interface ValidatorDutySummary {
   att_valid_source?: boolean;
   // Metadata. Necessary for calculating rewards and will not be stored in DB
   sync_meta?: {
-    synced_blocks?: number[];
-  };
+    synced_blocks: number[];
+  }[];
   // Rewards
   att_earned_reward?: number;
   att_missed_reward?: number;
@@ -99,7 +99,7 @@ export class SummaryService {
         const curr = epochStorageData.summary.get(val.val_id) ?? {};
         epochStorageData.summary.set(val.val_id, merge(curr, val));
       },
-      get: (val_id: ValidatorId): ValidatorDutySummary => {
+      get: (val_id: ValidatorId): ValidatorDutySummary | undefined => {
         return epochStorageData.summary.get(val_id);
       },
       values: () => {
