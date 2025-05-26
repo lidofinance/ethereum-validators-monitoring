@@ -274,7 +274,7 @@ export class PrometheusService implements OnApplicationBootstrap {
   public validatorsCountWithNegativeBalanceDelta = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_WITH_NEGATIVE_BALANCES_DELTA,
     help: 'number of validators with negative balances delta',
-    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'val_ids'],
   });
 
   public otherValidatorsCountWithGoodSyncParticipation = this.getOrCreateMetric('Gauge', {
@@ -340,7 +340,7 @@ export class PrometheusService implements OnApplicationBootstrap {
   public validatorsCountMissAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
     help: 'number of validators miss attestation last N epoch',
-    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'val_ids', 'epoch_interval'],
   });
 
   public validatorsCountInvalidAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
@@ -352,31 +352,31 @@ export class PrometheusService implements OnApplicationBootstrap {
   public validatorsCountHighIncDelayAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
     help: 'number of validators with high inc. delay last N epochs',
-    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'val_ids', 'epoch_interval'],
   });
 
   public validatorsCountInvalidAttestationPropertyLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_PROPERTY_LAST_N_EPOCH,
     help: 'number of validators with two invalid attestation property (head, target, source) last N epochs',
-    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'val_ids', 'epoch_interval'],
   });
 
   public highRewardValidatorsCountMissAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
     help: 'number of validators miss attestation last N epoch (with possible high reward in the future)',
-    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'val_ids', 'epoch_interval'],
   });
 
   public validatorsCountWithSyncParticipationLessAvgLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
     help: 'number of validators with sync participation less than avg last N epoch',
-    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'val_ids', 'epoch_interval'],
   });
 
   public highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
     help: 'number of validators with sync participation less than avg last N epoch (with possible high reward in the future)',
-    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'val_ids', 'epoch_interval'],
   });
 
   public otherValidatorsCountGoodPropose = this.getOrCreateMetric('Gauge', {
@@ -400,13 +400,13 @@ export class PrometheusService implements OnApplicationBootstrap {
   public validatorsCountMissPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_MISS_PROPOSE,
     help: 'number of validators miss propose',
-    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'val_ids'],
   });
 
   public highRewardValidatorsCountMissPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
     help: 'number of validators miss propose (with possible high reward in the future)',
-    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'val_ids'],
   });
 
   public userSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
@@ -528,19 +528,23 @@ export const setUserOperatorsMetric = (
   metric: Metric<'Gauge', any>,
   data: any[],
   operators: RegistrySourceOperator[],
-  labels: ((o: RegistrySourceOperator) => LabelValues<string>) | LabelValues<string> = {},
+  labels: ((operator: RegistrySourceOperator, operatorData?: any) => LabelValues<string>) | LabelValues<string> = {},
   value: (dataItem: any) => number = (dataItem) => dataItem.amount,
 ) => {
   operators.forEach((operator) => {
+    const operatorResult = data.find(
+      (p) => p.val_nos_id != null && +p.val_nos_module_id === operator.module && +p.val_nos_id === operator.index,
+    );
     const _labels =
       typeof labels == 'function'
-        ? labels(operator)
+        ? labels(operator, operatorResult)
         : { nos_module_id: operator.module, nos_id: operator.index, nos_name: operator.name, ...labels };
-    const operatorResult = data.find(
-      (p) => p.val_nos_id != null && +p.val_nos_module_id == operator.module && +p.val_nos_id == operator.index,
-    );
-    if (operatorResult) metric.set(_labels, value(operatorResult));
-    else metric.set(_labels, 0);
+
+    if (operatorResult != null) {
+      metric.set(_labels, value(operatorResult));
+    } else {
+      metric.set(_labels, 0);
+    }
   });
   // we should remove 'outdated' metrics (operator renaming or deleting case, for example)
   const registry = Object.values(metric['hashMap']).map((m: any) => m.labels);
@@ -551,9 +555,38 @@ export const setUserOperatorsMetric = (
 
 export const setOtherOperatorsMetric = (metric: Metric<'Gauge', any>, data: any[], labels: LabelValues<string> = {}) => {
   const other = data.find((p) => p.val_nos_id == null);
-  if (other) metric.set(labels, other.amount);
-  else metric.set(labels, 0);
+
+  if (other != null) {
+    metric.set(labels, other.amount);
+  } else {
+    metric.set(labels, 0);
+  }
 };
+
+export const getLabelsForMetricWithValIDs = (
+  operator: RegistrySourceOperator,
+  operatorData: any,
+  fullCLExplorerUrl: string,
+  labels: LabelValues<string> = {},
+) => {
+  let valIds: string;
+
+  if (operatorData == null) {
+    valIds = ''
+  } else if (fullCLExplorerUrl === '') {
+    valIds = operatorData.val_ids;
+  } else {
+    valIds = operatorData.val_ids.split(',').map((valId) => `[${valId}](${fullCLExplorerUrl + valId})`).join(', ');
+  }
+
+  return {
+    nos_module_id: operator.module,
+    nos_id: operator.index,
+    nos_name: operator.name,
+    val_ids: valIds,
+    ...labels
+  };
+}
 
 export function TrackCLRequest(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
   const originalValue = descriptor.value;

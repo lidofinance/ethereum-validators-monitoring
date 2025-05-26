@@ -306,6 +306,14 @@ and alert about that.
 * **Required:** false
 * **Default:** 3
 ---
+`CL_EXPLORER_URL` - URL of an Ethereum consensus layer explorer (such as "beaconcha.in", "beaconscan.com", etc.).
+* **Required:** false
+---
+`CL_EXPLORER_VALIDATORS_URL_SUFFIX` - URL address of the specific validator page in the CL explorer (without the
+explorer domain). If concatenated with the value of `CL_EXPLORER_URL`, it provides the full link to the validator page
+in the CL explorer. For example, for "beaconcha.in" this value should be `/validator/`.
+* **Required:** false
+---
 `CRITICAL_ALERTS_ALERTMANAGER_URL` - If passed, application sends additional critical alerts about validators
 performance to Alertmanager.
 * **Required:** false

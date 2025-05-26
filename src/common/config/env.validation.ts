@@ -8,6 +8,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsObject,
+  IsOptional,
   IsPort,
   IsString,
   Max,
@@ -259,6 +260,24 @@ export class EnvironmentVariables {
   @Max(10)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public BAD_ATTESTATION_EPOCHS = 3;
+
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => value.replace(/\/$/, ''))
+  public CL_EXPLORER_URL!: string;
+
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => {
+    if (!value.startsWith('/')) {
+      value = `/${value}`;
+    }
+    if (!value.endsWith('/')) {
+      value = `${value}/`
+    }
+    return value;
+  })
+  public CL_EXPLORER_VALIDATORS_URL_SUFFIX!: string;
 
   /**
    * Critical alerts will be sent for NOs with validators count greater this value
