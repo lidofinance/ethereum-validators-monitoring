@@ -2798,7 +2798,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "`Bad` is considered when validator's sync is less than chain avg value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
+          "description": "`Bad` is considered when validator's sync is less than chain average value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -2936,7 +2936,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "`Bad` is considered when validator's sync is less than chain avg value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
+          "description": "`Bad` is considered when validator's sync is less than chain average value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -3072,7 +3072,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "`Bad` is considered when validator's sync is less than chain avg value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
+          "description": "`Bad` is considered when validator's sync is less than chain average value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -3275,7 +3275,7 @@
               "instant": true,
               "interval": "",
               "legendFormat": "{{nos_name}}",
-              "refId": "avg participation rate"
+              "refId": "average participation rate"
             }
           ],
           "title": "Sync summary (${epochs_range} epochs range)",
@@ -3302,7 +3302,7 @@
                     ],
                     "operation": "aggregate"
                   },
-                  "Value #Total high inc.delay": {
+                  "Value #Total high inclusion delay": {
                     "aggregations": [
                       "sum"
                     ],
@@ -3314,7 +3314,7 @@
                     ],
                     "operation": "aggregate"
                   },
-                  "Value #avg participation rate": {
+                  "Value #average participation rate": {
                     "aggregations": [
                       "mean"
                     ],
@@ -3332,7 +3332,7 @@
                     ],
                     "operation": "aggregate"
                   },
-                  "Value #high inc.delay": {
+                  "Value #high inclusion delay": {
                     "aggregations": [
                       "sum"
                     ],
@@ -3393,18 +3393,18 @@
                   "Value #ongoing (sum)": true
                 },
                 "indexByName": {
-                  "Value #avg participation rate (mean)": 1,
+                  "Value #average participation rate (mean)": 1,
                   "Value #bad (sum)": 3,
                   "Value #good (sum)": 2,
                   "nos_name": 0
                 },
                 "renameByName": {
                   "Perfect": "",
-                  "Value #avg participation rate (mean)": "Avg participation",
-                  "Value #avg participation rate (sum)": "",
+                  "Value #average participation rate (mean)": "Avg participation",
+                  "Value #average participation rate (sum)": "",
                   "Value #bad (sum)": "Bad",
                   "Value #good (sum)": "Good",
-                  "Value #high inc.delay (sum)": "High inc.delay",
+                  "Value #high inclusion delay (sum)": "High inclusion delay",
                   "Value #invalid head (sum)": "Bad head",
                   "Value #invalid source (sum)": "Bad source",
                   "Value #invalid target (sum)": "Bad target",
@@ -3680,7 +3680,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "High inc.delay"
+                  "options": "High inclusion delay"
                 },
                 "properties": [
                   {
@@ -3739,7 +3739,7 @@
               "instant": true,
               "interval": "",
               "legendFormat": "{{nos_name}}",
-              "refId": "high inc.delay"
+              "refId": "high inclusion delay"
             },
             {
               "datasource": {
@@ -3831,7 +3831,7 @@
                   "Max bad": 1,
                   "Perfect": 0,
                   "Time": 2,
-                  "Value #high inc.delay": 4,
+                  "Value #high inclusion delay": 4,
                   "Value #invalid head": 5,
                   "Value #invalid source": 7,
                   "Value #invalid target": 6,
@@ -3841,8 +3841,8 @@
                 "renameByName": {
                   "Perfect": "Perfect",
                   "Value": "Perfect",
-                  "Value #high inc.delay": "High inc.delay",
-                  "Value #high inc.delay (sum)": "High inc.delay",
+                  "Value #high inclusion delay": "High inclusion delay",
+                  "Value #high inclusion delay (sum)": "High inclusion delay",
                   "Value #invalid head": "Bad head",
                   "Value #invalid head (sum)": "Bad head",
                   "Value #invalid source": "Bad source",
@@ -4017,7 +4017,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "High inc.delay"
+                  "options": "High inclusion delay"
                 },
                 "properties": [
                   {
@@ -4096,7 +4096,7 @@
               "instant": true,
               "interval": "",
               "legendFormat": "{{nos_name}}",
-              "refId": "high inc.delay"
+              "refId": "high inclusion delay"
             },
             {
               "datasource": {
@@ -4197,7 +4197,7 @@
                     ],
                     "operation": "aggregate"
                   },
-                  "Value #Total high inc.delay": {
+                  "Value #Total high inclusion delay": {
                     "aggregations": [
                       "sum"
                     ],
@@ -4209,7 +4209,7 @@
                     ],
                     "operation": "aggregate"
                   },
-                  "Value #high inc.delay": {
+                  "Value #high inclusion delay": {
                     "aggregations": [
                       "sum"
                     ],
@@ -4270,7 +4270,7 @@
                   "Value #ongoing (sum)": true
                 },
                 "indexByName": {
-                  "Value #high inc.delay (sum)": 2,
+                  "Value #high inclusion delay (sum)": 2,
                   "Value #invalid head (sum)": 3,
                   "Value #invalid source (sum)": 5,
                   "Value #invalid target (sum)": 4,
@@ -4280,7 +4280,7 @@
                 },
                 "renameByName": {
                   "Perfect": "",
-                  "Value #high inc.delay (sum)": "High inc.delay",
+                  "Value #high inclusion delay (sum)": "High inclusion delay",
                   "Value #invalid head (sum)": "Bad head",
                   "Value #invalid source (sum)": "Bad source",
                   "Value #invalid target (sum)": "Bad target",
@@ -4416,7 +4416,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "High inc.delay"
+                  "options": "High inclusion delay"
                 },
                 "properties": [
                   {
@@ -4475,7 +4475,7 @@
               "instant": true,
               "interval": "",
               "legendFormat": "{{nos_name}}",
-              "refId": "high inc.delay"
+              "refId": "high inclusion delay"
             },
             {
               "datasource": {
@@ -4562,7 +4562,7 @@
                   "Max bad": 1,
                   "Perfect": 0,
                   "Time": 2,
-                  "Value #high inc.delay": 4,
+                  "Value #high inclusion delay": 4,
                   "Value #invalid head": 5,
                   "Value #invalid source": 7,
                   "Value #invalid target": 6,
@@ -4572,8 +4572,8 @@
                 "renameByName": {
                   "Perfect": "Perfect",
                   "Value": "Perfect",
-                  "Value #high inc.delay": "High inc.delay",
-                  "Value #high inc.delay (sum)": "High inc.delay",
+                  "Value #high inclusion delay": "High inclusion delay",
+                  "Value #high inclusion delay (sum)": "High inclusion delay",
                   "Value #invalid head": "Bad head",
                   "Value #invalid head (sum)": "Bad head",
                   "Value #invalid source": "Bad source",
@@ -5639,7 +5639,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "AVG.\n`Bad` is considered when validator's sync is less than chain avg value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
+          "description": "AVG.\n`Bad` is considered when validator's sync is less than chain average value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -6217,7 +6217,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "TOP 100 (inc. delay > 1)",
+          "description": "TOP 100 (inclusion delay > 1)",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -7527,7 +7527,7 @@
         "description": "Sync participation distance down from Blockchain average",
         "hide": 2,
         "includeAll": false,
-        "label": "Sync participation distance down from chain avg",
+        "label": "Sync participation distance down from chain average",
         "multi": false,
         "name": "sync_participation_distance_var",
         "options": [],
@@ -7555,7 +7555,7 @@
         "description": "Chain sync participation average value",
         "hide": 2,
         "includeAll": false,
-        "label": "Chain sync participation avg",
+        "label": "Chain sync participation average",
         "multi": false,
         "name": "chain_sync_avg_participation",
         "options": [],

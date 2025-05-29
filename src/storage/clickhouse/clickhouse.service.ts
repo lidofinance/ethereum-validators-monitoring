@@ -280,7 +280,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   /**
-   * Send query to Clickhouse and receives information about Other Sync Committee avg percent
+   * Send query to Clickhouse and receives information about Other Sync Committee average percent
    */
   public async getOtherSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
     const ret = await this.select(otherSyncParticipationAvgPercentQuery(epoch));

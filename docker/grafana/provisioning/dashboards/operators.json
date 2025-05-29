@@ -2591,7 +2591,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "inc. delay > 1",
+      "description": "inclusion delay > 1",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -4115,7 +4115,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "AVG.\n`Bad` is considered when validator's sync is less than chain avg value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
+          "description": "AVG.\n`Bad` is considered when validator's sync is less than chain average value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -4713,7 +4713,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "inc. delay > 1",
+          "description": "inclusion delay > 1",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -5981,7 +5981,7 @@
         "description": "Sync participation distance down from Blockchain average",
         "hide": 2,
         "includeAll": false,
-        "label": "Sync participation distance down from chain avg",
+        "label": "Sync participation distance down from chain average",
         "multi": false,
         "name": "sync_participation_distance_var",
         "options": [],
@@ -6081,7 +6081,7 @@
         "description": "Chain sync participation average value",
         "hide": 2,
         "includeAll": false,
-        "label": "Chain sync participation avg",
+        "label": "Chain sync participation average",
         "multi": false,
         "name": "chain_sync_avg_participation",
         "options": [],
