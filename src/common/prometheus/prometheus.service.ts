@@ -327,13 +327,13 @@ export class PrometheusService implements OnApplicationBootstrap {
 
   public otherValidatorsCountInvalidAttestation = this.getOrCreateMetric('Gauge', {
     name: METRIC_OTHER_VALIDATOR_COUNT_INVALID_ATTESTATION,
-    help: 'number of other validators with invalid properties or high inc. delay in attestation',
+    help: 'number of other validators with invalid properties or high inclusion delay in attestation',
     labelNames: ['reason'],
   });
 
   public validatorsCountInvalidAttestation = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
-    help: 'number of validators with invalid properties or high inc. delay in attestation',
+    help: 'number of validators with invalid properties or high inclusion delay in attestation',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'reason'],
   });
 
@@ -345,13 +345,13 @@ export class PrometheusService implements OnApplicationBootstrap {
 
   public validatorsCountInvalidAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_LAST_N_EPOCH,
-    help: 'number of validators with invalid properties or high inc. delay in attestation last N epoch',
+    help: 'number of validators with invalid properties or high inclusion delay in attestation last N epoch',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'reason', 'epoch_interval'],
   });
 
   public validatorsCountHighIncDelayAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
-    help: 'number of validators with high inc. delay last N epochs',
+    help: 'number of validators with high inclusion delay last N epochs',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 

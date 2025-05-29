@@ -254,8 +254,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: 📝🐢
-              summary: "Operators have attestation inc. delay greater than 2 in last 3 finalized epochs"
-              description: "Number of validators per operator who have attestation with high inc. delay."
+              summary: "Operators have attestation inclusion delay greater than 2 in last 3 finalized epochs"
+              description: "Number of validators per operator who have attestation with high inclusion delay."
               field_name: "Operator 1"
               field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
@@ -272,8 +272,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: 📝🐢
-              summary: "Operators have attestation inc. delay greater than 2 in last 3 finalized epochs"
-              description: "Number of validators per operator who have attestation with high inc. delay."
+              summary: "Operators have attestation inclusion delay greater than 2 in last 3 finalized epochs"
+              description: "Number of validators per operator who have attestation with high inclusion delay."
               field_name: "Operator 1"
               field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
@@ -290,8 +290,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: 📝🐢
-              summary: "Operators have attestation inc. delay greater than 2 in last 3 finalized epochs"
-              description: "Number of validators per operator who have attestation with high inc. delay."
+              summary: "Operators have attestation inclusion delay greater than 2 in last 3 finalized epochs"
+              description: "Number of validators per operator who have attestation with high inclusion delay."
               field_name: "Operator 1"
               field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
