@@ -385,9 +385,9 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: 📥
-              summary: "Operators missed block propose in the last finalized epoch"
-              description: "Number of validators per operator who missed block propose."
-              resolved_summary: "Operators not missed block propose in the last finalized epoch"
+              summary: "Operators missed block proposal in the last finalized epoch"
+              description: "Number of validators per operator who missed block proposal."
+              resolved_summary: "Operators not missed block proposal in the last finalized epoch"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
               field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
@@ -404,9 +404,9 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: 📥
-              summary: "Operators missed block propose in the last finalized epoch"
-              description: "Number of validators per operator who missed block propose."
-              resolved_summary: "Operators not missed block propose in the last finalized epoch"
+              summary: "Operators missed block proposal in the last finalized epoch"
+              description: "Number of validators per operator who missed block proposal."
+              resolved_summary: "Operators not missed block proposal in the last finalized epoch"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
               field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
@@ -423,9 +423,9 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: 📥
-              summary: "Operators missed block propose in the last finalized epoch"
-              description: "Number of validators per operator who missed block propose."
-              resolved_summary: "Operators not missed block propose in the last finalized epoch"
+              summary: "Operators missed block proposal in the last finalized epoch"
+              description: "Number of validators per operator who missed block proposal."
+              resolved_summary: "Operators not missed block proposal in the last finalized epoch"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
               field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
@@ -671,9 +671,9 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: 📈📥
-              summary: "Operators may get high rewards in the future, but missed block propose in the last finalized epoch!"
-              description: "Number of validators per operator who missed block propose."
-              resolved_summary: "Operators not missed block propose in the last finalized epoch. Now may get high rewards in the future!"
+              summary: "Operators may get high rewards in the future, but missed block proposal in the last finalized epoch!"
+              description: "Number of validators per operator who missed block proposal."
+              resolved_summary: "Operators not missed block proposal in the last finalized epoch. Now may get high rewards in the future!"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
               field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
@@ -690,9 +690,9 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: 📈📥
-              summary: "Operators may get high rewards in the future, but missed block propose in the last finalized epoch!"
-              description: "Number of validators per operator who missed block propose."
-              resolved_summary: "Operators not missed block propose in the last finalized epoch. Now may get high rewards in the future!"
+              summary: "Operators may get high rewards in the future, but missed block proposal in the last finalized epoch!"
+              description: "Number of validators per operator who missed block proposal."
+              resolved_summary: "Operators not missed block proposal in the last finalized epoch. Now may get high rewards in the future!"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
               field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
@@ -709,9 +709,9 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: 📈📥
-              summary: "Operators may get high rewards in the future, but missed block propose in the last finalized epoch!"
-              description: "Number of validators per operator who missed block propose."
-              resolved_summary: "Operators not missed block propose in the last finalized epoch. Now may get high rewards in the future!"
+              summary: "Operators may get high rewards in the future, but missed block proposal in the last finalized epoch!"
+              description: "Number of validators per operator who missed block proposal."
+              resolved_summary: "Operators not missed block proposal in the last finalized epoch. Now may get high rewards in the future!"
               resolved_description: "Number of validators per operator who recovered."
               field_name: "Operator 1"
               field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"

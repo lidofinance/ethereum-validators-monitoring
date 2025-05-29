@@ -22,7 +22,7 @@ export class ProposeMetrics {
 
   @TrackTask('calc-propose-metrics')
   public async calculate(epoch: Epoch, possibleHighRewardValidators: string[]) {
-    this.logger.log('Calculating propose metrics');
+    this.logger.log('Calculating proposal metrics');
     this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();
     await allSettled([this.goodProposes(), this.missProposes(), this.highRewardMissProposes(possibleHighRewardValidators)]);
