@@ -25,7 +25,7 @@ groups:
           emoji: ⏳
           summary: "Data actuality greater then 1 hour"
           resolved_summary: "Data actuality is back to normal and now less then 1 hour."
-          description: "({{ humanizeDuration $value }}) It's not OK. Please, check app health."
+          description: "It's not OK. Please, check app health."
           resolved_description: "It's OK."
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
