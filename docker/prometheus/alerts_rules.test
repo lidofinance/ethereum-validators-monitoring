@@ -24,7 +24,7 @@ tests:
             exp_annotations:
               emoji: 🔪
               summary: "Operators have slashed validators"
-              description: "Number of slashed validators per operator"
+              description: "Number of slashed validators per operator."
               field_name: "Operator 1"
               field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
@@ -38,7 +38,7 @@ tests:
             exp_annotations:
               emoji: 🔪
               summary: "Operators have slashed validators"
-              description: "Number of slashed validators per operator"
+              description: "Number of slashed validators per operator."
               field_name: "Operator 2"
               field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=-660000.000000&to=540000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
@@ -56,7 +56,7 @@ tests:
             exp_annotations:
               emoji: 🔪
               summary: "Operators have slashed validators"
-              description: "Number of slashed validators per operator"
+              description: "Number of slashed validators per operator."
               field_name: "Operator 1"
               field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
@@ -69,7 +69,7 @@ tests:
             exp_annotations:
               emoji: 🔪
               summary: "Operators have slashed validators"
-              description: "Number of slashed validators per operator"
+              description: "Number of slashed validators per operator."
               field_name: "Operator 2"
               field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=-180000.000000&to=1020000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
@@ -85,7 +85,7 @@ tests:
             exp_annotations:
               emoji: 🔪
               summary: "Operators have slashed validators"
-              description: "Number of slashed validators per operator"
+              description: "Number of slashed validators per operator."
               field_name: "Operator 2"
               field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+2&from=300000.000000&to=1500000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
@@ -108,7 +108,7 @@ tests:
               emoji: ⏳
               summary: "Data actuality is greater than 1 hour"
               resolved_summary: "Data actuality got back to normal and now it is less than 1 hour."
-              description: "(1h 1m 40s) Data are not up to date. Check the app health."
+              description: "Data are not up to date. Check the app health."
               resolved_description: "Data actuality is normal."
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 0'
@@ -122,8 +122,6 @@ tests:
         values: 0+0x48 1+0x48 2+0x48 0+0x48
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
-      - series: ethereum_validators_monitoring_validator_count_with_negative_balances_delta_alert{nos_name="Operator 1"}
-        values: 0+0x48 1+0x6 0+0x41 2+0x48 0+0x48
     alert_rule_test:
       - alertname: NumValidatorsWithNegativeDelta
         eval_time: 5m
@@ -136,7 +134,7 @@ tests:
             exp_annotations:
               emoji: 💸
               summary: "Operators have a negative balance delta"
-              resolved_summary: "Operators have a positive balance delta"
+              resolved_summary: "Operators have a positive balance delta."
               description: "Number of validators per operator that have a negative balance delta."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
@@ -153,7 +151,7 @@ tests:
             exp_annotations:
               emoji: 💸
               summary: "Operators have a negative balance delta"
-              resolved_summary: "Operators have a positive balance delta"
+              resolved_summary: "Operators have a positive balance delta."
               description: "Number of validators per operator that have a negative balance delta."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
@@ -508,7 +506,6 @@ tests:
         eval_time: 33m
       - alertname: NumValidatorsWithSyncParticipationLessAvgLastNEpoch
         eval_time: 41m
-
 
   - interval: 10s
     input_series:
