@@ -118,8 +118,10 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name="Operator 1"}
-        values: 0+0x48 1+0x48 2+0x48 0+0x48
+      - series: ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name="Operator 1", val_ids="1085850"}
+        values: 0+0x48 1+0x48 0+0x48 0+0x48
+      - series: ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name="Operator 1", val_ids="1085850, 1085855"}
+        values: 0+0x48 0+0x48 2+0x48 0+0x48
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
     alert_rule_test:
@@ -131,6 +133,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850
             exp_annotations:
               emoji: 💸
               summary: "Operators have a negative balance delta"
@@ -138,7 +141,7 @@ tests:
               description: "Number of validators per operator that have a negative balance delta."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
+              field_value: "[[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)]: 1085850"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: "Epoch • 1"
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -148,6 +151,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
             exp_annotations:
               emoji: 💸
               summary: "Operators have a negative balance delta"
@@ -155,7 +159,7 @@ tests:
               description: "Number of validators per operator that have a negative balance delta."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: "Epoch • 2"
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -164,8 +168,10 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+      - series: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch{nos_name="Operator 1", val_ids="1085850", epoch_interval="3"}
+        values: 0+0x48 1+0x48 0+0x48 0+0x48 0+0x48 0+0x48
+      - series: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch{nos_name="Operator 1", val_ids="1085850, 1085855", epoch_interval="3"}
+        values: 0+0x48 0+0x48 2+0x48 2+0x48 2+0x48 0+0x48
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
     alert_rule_test:
@@ -177,6 +183,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850
               epoch_interval: 3
             exp_annotations:
               emoji: 📝❌
@@ -185,7 +192,7 @@ tests:
               description: "Number of validators per operator that have missed attestations."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
+              field_value: "[[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)]: 1085850"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 1'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -197,6 +204,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
               epoch_interval: 3
             exp_annotations:
               emoji: 📝❌
@@ -205,7 +213,7 @@ tests:
               description: "Number of validators per operator that have missed attestations."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 2'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -217,6 +225,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
               epoch_interval: 3
             exp_annotations:
               emoji: 📝❌
@@ -225,7 +234,7 @@ tests:
               description: "Number of validators per operator that have missed attestations."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 3'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -236,8 +245,10 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+      - series: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch{nos_name="Operator 1", val_ids="1085850", epoch_interval="3"}
+        values: 0+0x48 1+0x48 0+0x48 0+0x48 0+0x48 0+0x48
+      - series: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch{nos_name="Operator 1", val_ids="1085850, 1085855", epoch_interval="3"}
+        values: 0+0x48 0+0x48 2+0x48 2+0x48 2+0x48 0+0x48
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
     alert_rule_test:
@@ -249,13 +260,14 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850
               epoch_interval: 3
             exp_annotations:
               emoji: 📝🐢
               summary: "Operators have attestation inc. delay greater than 2 in the last 3 finalized epochs"
               description: "Number of validators per operator that have attestations with high inc. delay."
               field_name: "Operator 1"
-              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
+              field_value: "[[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)]: 1085850"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 1'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -267,13 +279,14 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
               epoch_interval: 3
             exp_annotations:
               emoji: 📝🐢
               summary: "Operators have attestation inc. delay greater than 2 in the last 3 finalized epochs"
               description: "Number of validators per operator that have attestations with high inc. delay."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 2'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -285,13 +298,14 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
               epoch_interval: 3
             exp_annotations:
               emoji: 📝🐢
               summary: "Operators have attestation inc. delay greater than 2 in the last 3 finalized epochs"
               description: "Number of validators per operator that have attestations with high inc. delay."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 3'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -302,8 +316,10 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+      - series: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch{nos_name="Operator 1", val_ids="1085850", epoch_interval="3"}
+        values: 0+0x48 1+0x48 0+0x48 0+0x48 0+0x48 0+0x48
+      - series: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch{nos_name="Operator 1", val_ids="1085850, 1085855", epoch_interval="3"}
+        values: 0+0x48 0+0x48 2+0x48 2+0x48 2+0x48 0+0x48
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
     alert_rule_test:
@@ -315,13 +331,14 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850
               epoch_interval: 3
             exp_annotations:
               emoji: '📝🏷️'
               summary: 'Operators have invalid attestation property in the last 3 finalized epochs'
               description: 'Number of validators per operator that have invalid attestation property.'
               field_name: "Operator 1"
-              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
+              field_value: "[[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)]: 1085850"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 1'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -333,13 +350,14 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
               epoch_interval: 3
             exp_annotations:
               emoji: '📝🏷️'
               summary: 'Operators have invalid attestation property in the last 3 finalized epochs'
               description: 'Number of validators per operator that have invalid attestation property.'
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 2'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -351,13 +369,14 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
               epoch_interval: 3
             exp_annotations:
               emoji: '📝🏷️'
               summary: 'Operators have invalid attestation property in the last 3 finalized epochs'
               description: 'Number of validators per operator that have invalid attestation property.'
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 3'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -368,8 +387,10 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_miss_propose{nos_name="Operator 1"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+      - series: ethereum_validators_monitoring_validator_count_miss_propose{nos_name="Operator 1", val_ids="1085850"}
+        values: 0+0x48 1+0x48 0+0x48 0+0x48 0+0x48 0+0x48
+      - series: ethereum_validators_monitoring_validator_count_miss_propose{nos_name="Operator 1", val_ids="1085850, 1085855"}
+        values: 0+0x48 0+0x48 2+0x48 2+0x48 2+0x48 0+0x48
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
     alert_rule_test:
@@ -381,6 +402,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850
             exp_annotations:
               emoji: 📥
               summary: "Operators that missed block propose in the last finalized epoch"
@@ -388,7 +410,7 @@ tests:
               description: "Number of validators per operator that missed block propose."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
+              field_value: "[[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)]: 1085850"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 1'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -400,6 +422,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
             exp_annotations:
               emoji: 📥
               summary: "Operators that missed block propose in the last finalized epoch"
@@ -407,7 +430,7 @@ tests:
               description: "Number of validators per operator that missed block propose."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 2'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -419,6 +442,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
             exp_annotations:
               emoji: 📥
               summary: "Operators that missed block propose in the last finalized epoch"
@@ -426,7 +450,7 @@ tests:
               description: "Number of validators per operator that missed block propose."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 3'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -437,8 +461,10 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+      - series: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_name="Operator 1", val_ids="1085850", epoch_interval="3"}
+        values: 0+0x48 1+0x48 0+0x48 0+0x48 0+0x48 0+0x48
+      - series: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_name="Operator 1", val_ids="1085850, 1085855", epoch_interval="3"}
+        values: 0+0x48 0+0x48 2+0x48 2+0x48 2+0x48 0+0x48
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
     alert_rule_test:
@@ -450,6 +476,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850
               epoch_interval: 3
             exp_annotations:
               emoji: 🔄
@@ -458,7 +485,7 @@ tests:
               description: "Number of validators per operator which sync committee participation is less than average."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
+              field_value: "[[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)]: 1085850"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 1'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -470,6 +497,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
               epoch_interval: 3
             exp_annotations:
               emoji: 🔄
@@ -478,7 +506,7 @@ tests:
               description: "Number of validators per operator which sync committee participation is less than average."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 2'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -490,6 +518,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
               epoch_interval: 3
             exp_annotations:
               emoji: 🔄
@@ -498,7 +527,7 @@ tests:
               description: "Number of validators per operator which sync committee participation is less than average."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 3'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -509,8 +538,10 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+      - series: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_name="Operator 1", val_ids="1085850", epoch_interval="3"}
+        values: 0+0x48 1+0x48 0+0x48 0+0x48 0+0x48 0+0x48
+      - series: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_name="Operator 1", val_ids="1085850, 1085855", epoch_interval="3"}
+        values: 0+0x48 0+0x48 2+0x48 2+0x48 2+0x48 0+0x48
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
     alert_rule_test:
@@ -522,6 +553,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850
               epoch_interval: 3
             exp_annotations:
               emoji: 📈🔄
@@ -530,7 +562,7 @@ tests:
               description: "Number of validators per operator that may get high future rewards, but their sync committee participation is less than average."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
+              field_value: "[[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)]: 1085850"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 1'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -542,6 +574,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
               epoch_interval: 3
             exp_annotations:
               emoji: 📈🔄
@@ -550,7 +583,7 @@ tests:
               description: "Number of validators per operator that may get high future rewards, but their sync committee participation is less than average."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 2'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -562,6 +595,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
               epoch_interval: 3
             exp_annotations:
               emoji: 📈🔄
@@ -570,7 +604,7 @@ tests:
               description: "Number of validators per operator that may get high future rewards, but their sync committee participation is less than average."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 3'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -581,8 +615,10 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+      - series: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch{nos_name="Operator 1", val_ids="1085850", epoch_interval="3"}
+        values: 0+0x48 1+0x48 0+0x48 0+0x48 0+0x48 0+0x48
+      - series: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch{nos_name="Operator 1", val_ids="1085850, 1085855", epoch_interval="3"}
+        values: 0+0x48 0+0x48 2+0x48 2+0x48 2+0x48 0+0x48
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
     alert_rule_test:
@@ -594,6 +630,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850
               epoch_interval: 3
             exp_annotations:
               emoji: 📈📝❌
@@ -602,7 +639,7 @@ tests:
               description: "Number of validators per operator that may get high future rewards, but have missed attestations."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
+              field_value: "[[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)]: 1085850"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 1'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -614,6 +651,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
               epoch_interval: 3
             exp_annotations:
               emoji: 📈📝❌
@@ -622,7 +660,7 @@ tests:
               description: "Number of validators per operator that may get high future rewards, but have missed attestations."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 2'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -634,6 +672,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
               epoch_interval: 3
             exp_annotations:
               emoji: 📈📝❌
@@ -642,7 +681,7 @@ tests:
               description: "Number of validators per operator that may get high future rewards, but have missed attestations."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 3'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -653,8 +692,10 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_high_reward_validator_count_miss_propose{nos_name="Operator 1"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+      - series: ethereum_validators_monitoring_high_reward_validator_count_miss_propose{nos_name="Operator 1", val_ids="1085850"}
+        values: 0+0x48 1+0x48 0+0x48 0+0x48 0+0x48 0+0x48
+      - series: ethereum_validators_monitoring_high_reward_validator_count_miss_propose{nos_name="Operator 1", val_ids="1085850, 1085855"}
+        values: 0+0x48 0+0x48 2+0x48 2+0x48 2+0x48 0+0x48
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
     alert_rule_test:
@@ -666,6 +707,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850
             exp_annotations:
               emoji: 📈📥
               summary: "Operators may get high future rewards, but missed block propose in the last finalized epoch"
@@ -673,7 +715,7 @@ tests:
               description: "Number of validators per operator that may get high future rewards, but missed block propose."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
+              field_value: "[[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)]: 1085850"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 1'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -685,6 +727,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
             exp_annotations:
               emoji: 📈📥
               summary: "Operators may get high future rewards, but missed block propose in the last finalized epoch"
@@ -692,7 +735,7 @@ tests:
               description: "Number of validators per operator that may get high future rewards, but missed block propose."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 2'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -704,6 +747,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_name: Operator 1
+              val_ids: 1085850, 1085855
             exp_annotations:
               emoji: 📈📥
               summary: "Operators may get high future rewards, but missed block propose in the last finalized epoch"
@@ -711,7 +755,7 @@ tests:
               description: "Number of validators per operator that may get high future rewards, but missed block propose."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
-              field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
+              field_value: "[[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)]: 1085850, 1085855"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
               footer_text: 'Epoch • 3'
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"

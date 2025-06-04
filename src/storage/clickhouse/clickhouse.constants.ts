@@ -103,8 +103,8 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string =>
 
 export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
   SELECT
-    current.val_nos_module_id as val_nos_module_id,
-    current.val_nos_id as val_nos_id,
+    current.val_nos_module_id AS val_nos_module_id,
+    current.val_nos_id AS val_nos_id,
     count(current.val_id) AS amount
   FROM (
       SELECT val_balance, val_id, val_nos_module_id, val_nos_id, val_slashed
@@ -130,7 +130,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
     previous.val_id = current.val_id
   LEFT JOIN (
     SELECT
-      sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_module_id, val_nos_id
+      sum(val_balance_withdrawn) AS withdrawn, val_id, val_nos_module_id, val_nos_id
     FROM (
       SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id
       FROM validators_summary
@@ -139,7 +139,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
         val_status in [${perfStatuses}] AND
         val_balance_withdrawn > 0 AND
         val_stuck = 0 AND
-        epoch > (${epoch} - 6) AND epoch <= ${epoch}
+        (${epoch} - 6) < epoch AND epoch <= ${epoch}
       LIMIT 1 BY epoch, val_id
     )
     GROUP BY val_id, val_nos_id, val_nos_module_id
@@ -148,6 +148,83 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
     withdrawals.val_id = current.val_id
   GROUP BY current.val_nos_module_id, current.val_nos_id
   HAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0
+`;
+
+export const validatorsWithNegativeDeltaQuery = (epoch: Epoch): string => `
+  WITH validators_summary_current AS (
+    SELECT val_balance, val_id, val_nos_module_id, val_nos_id, val_slashed
+    FROM validators_summary
+    WHERE
+      val_status in [${perfStatuses}] AND
+      val_nos_id IS NOT NULL AND
+      val_stuck = 0 AND
+      epoch = ${epoch}
+    LIMIT 1 BY val_id
+  ),
+  validators_summary_previous AS (
+    SELECT val_balance, val_id, val_nos_id
+    FROM validators_summary
+    WHERE
+      val_status in [${perfStatuses}] AND
+      val_nos_id IS NOT NULL AND
+      val_stuck = 0 AND
+      epoch = (${epoch} - 6)
+    LIMIT 1 BY val_id
+  ),
+  validators_summary_withdrawals AS (
+    SELECT
+      sum(val_balance_withdrawn) AS withdrawn, val_id, val_nos_module_id, val_nos_id
+    FROM (
+      SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id
+      FROM validators_summary
+      WHERE
+        val_nos_id IS NOT NULL AND
+        val_status in [${perfStatuses}] AND
+        val_balance_withdrawn > 0 AND
+        val_stuck = 0 AND
+        (${epoch} - 6) < epoch AND epoch <= ${epoch}
+      LIMIT 1 BY epoch, val_id
+    )
+    GROUP BY val_id, val_nos_id, val_nos_module_id
+  )
+
+  SELECT
+    val_id,
+    val_nos_module_id,
+    val_nos_id,
+    amount
+  FROM (
+    SELECT
+      current.val_id AS val_id,
+      current.val_nos_module_id AS val_nos_module_id,
+      current.val_nos_id AS val_nos_id
+    FROM validators_summary_current AS current
+    INNER JOIN validators_summary_previous AS previous
+    ON
+      previous.val_id = current.val_id
+    LEFT JOIN validators_summary_withdrawals AS withdrawals
+    ON
+      withdrawals.val_id = current.val_id
+    WHERE (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0
+    LIMIT 20 BY current.val_nos_module_id, current.val_nos_id
+  ) AS primary
+  INNER JOIN (
+    SELECT
+      current.val_nos_module_id AS val_nos_module_id,
+      current.val_nos_id AS val_nos_id,
+      count(current.val_id) AS amount
+    FROM validators_summary_current AS current
+    INNER JOIN validators_summary_previous AS previous
+    ON
+      previous.val_id = current.val_id
+    LEFT JOIN validators_summary_withdrawals AS withdrawals
+    ON
+      withdrawals.val_id = current.val_id
+    GROUP BY current.val_nos_module_id, current.val_nos_id
+    HAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0
+  ) AS secondary
+  ON (primary.val_nos_module_id = secondary.val_nos_module_id AND primary.val_nos_id = secondary.val_nos_id)
+    OR (primary.val_nos_module_id = secondary.val_nos_module_id AND primary.val_nos_id IS NULL AND secondary.val_nos_id IS NULL)
 `;
 
 export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
@@ -164,7 +241,7 @@ export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
     SELECT
       val_nos_module_id,
       val_nos_id,
-      count() as amount
+      count() AS amount
     FROM (
       SELECT
         val_nos_module_id,
@@ -177,7 +254,7 @@ export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
           is_sync = 1 AND
           ${condition} AND
           val_stuck = 0 AND
-          (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
+          (${epoch} - ${epochInterval}) < epoch AND epoch <= ${epoch}
           ${strFilterValIndexes}
         LIMIT 1 BY epoch, val_id
       )
@@ -185,6 +262,66 @@ export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
     )
     WHERE count_fail = ${epochInterval}
     GROUP BY val_nos_module_id, val_nos_id
+  `;
+};
+
+export const validatorsWithSyncParticipationByConditionLastNEpochQuery = (
+  epoch: Epoch,
+  epochInterval: number,
+  validatorIndexes: string[] = [],
+  condition: string,
+): string => {
+  let strFilterValIndexes = '';
+  if (validatorIndexes.length > 0) {
+    strFilterValIndexes = `AND val_id in [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
+  }
+
+  return `
+    WITH validators_in_epoch AS (
+      SELECT
+        val_id,
+        val_nos_module_id,
+        val_nos_id,
+        count() AS count_fail
+      FROM (
+        SELECT val_id, val_nos_module_id, val_nos_id
+        FROM validators_summary
+        WHERE
+          is_sync = 1 AND
+          ${condition} AND
+          val_stuck = 0 AND
+          (${epoch} - ${epochInterval}) < epoch AND epoch <= ${epoch}
+          ${strFilterValIndexes}
+        LIMIT 1 BY epoch, val_id
+      )
+      GROUP BY val_id, val_nos_module_id, val_nos_id
+    )
+
+    SELECT
+      val_id,
+      val_nos_module_id,
+      val_nos_id,
+      amount
+    FROM (
+      SELECT
+        val_id,
+        val_nos_module_id,
+        val_nos_id
+      FROM validators_in_epoch
+      WHERE count_fail = ${epochInterval}
+      LIMIT 20 BY val_nos_module_id, val_nos_id
+    ) AS primary
+    INNER JOIN (
+      SELECT
+        val_nos_module_id,
+        val_nos_id,
+        count() AS amount
+      FROM validators_in_epoch
+      WHERE count_fail = ${epochInterval}
+      GROUP BY val_nos_module_id, val_nos_id
+    ) AS secondary
+    ON (primary.val_nos_module_id = secondary.val_nos_module_id AND primary.val_nos_id = secondary.val_nos_id)
+      OR (primary.val_nos_module_id = secondary.val_nos_module_id AND primary.val_nos_id IS NULL AND secondary.val_nos_id IS NULL)
   `;
 };
 
@@ -198,23 +335,24 @@ export const validatorCountByConditionAttestationLastNEpochQuery = (
   if (validatorIndexes.length > 0) {
     strFilterValIndexes = `AND val_id in [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
   }
+
   return `
     SELECT
       val_nos_module_id,
       val_nos_id,
-      count() as amount
+      count() AS amount
     FROM (
       SELECT
         val_nos_module_id,
         val_nos_id,
-        count() as count_fail
+        count() AS count_fail
       FROM (
         SELECT val_id, val_nos_module_id, val_nos_id
         FROM validators_summary
         WHERE
-          ${condition}
-          AND val_stuck = 0
-          AND (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
+          ${condition} AND
+          val_stuck = 0 AND
+          (${epoch} - ${epochInterval}) < epoch AND epoch <= ${epoch}
           ${strFilterValIndexes}
         LIMIT 1 BY epoch, val_id
       )
@@ -225,31 +363,62 @@ export const validatorCountByConditionAttestationLastNEpochQuery = (
   `;
 };
 
-export const validatorCountHighAvgIncDelayAttestationOfNEpochQuery = (epoch: Epoch, epochInterval: number): string => {
+export const validatorsByConditionAttestationLastNEpochQuery = (
+  epoch: Epoch,
+  epochInterval: number,
+  validatorIndexes: string[] = [],
+  condition: string,
+): string => {
+  let strFilterValIndexes = '';
+  if (validatorIndexes.length > 0) {
+    strFilterValIndexes = `AND val_id in [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
+  }
+
   return `
-    SELECT
-      val_nos_module_id,
-      val_nos_id,
-      count() as amount
-    FROM (
+    WITH validators_in_epoch AS (
       SELECT
+        val_id,
         val_nos_module_id,
         val_nos_id,
-        avg(att_inc_delay) as avg_inclusion_delay
+        count() AS count_fail
       FROM (
-        SELECT val_id, val_nos_module_id, val_nos_id, att_inc_delay
+        SELECT val_id, val_nos_module_id, val_nos_id
         FROM validators_summary
         WHERE
-          att_happened = 1 AND
-          val_status in [${perfStatuses}] AND
+          ${condition} AND
           val_stuck = 0 AND
-          (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
+          (${epoch} - ${epochInterval}) < epoch AND epoch <= ${epoch}
+          ${strFilterValIndexes}
         LIMIT 1 BY epoch, val_id
       )
       GROUP BY val_id, val_nos_module_id, val_nos_id
     )
-    WHERE avg_inclusion_delay > 2
-    GROUP BY val_nos_id, val_nos_module_id
+
+    SELECT
+      val_id,
+      val_nos_module_id,
+      val_nos_id,
+      amount
+    FROM (
+      SELECT
+        val_id,
+        val_nos_module_id,
+        val_nos_id
+      FROM validators_in_epoch
+      WHERE count_fail = ${epochInterval}
+      LIMIT 20 BY val_nos_module_id, val_nos_id
+    ) AS primary
+    INNER JOIN (
+      SELECT
+        val_nos_module_id,
+        val_nos_id,
+        count() AS amount
+      FROM validators_in_epoch
+      WHERE count_fail = ${epochInterval}
+      GROUP BY val_nos_module_id, val_nos_id
+    ) AS secondary
+    ON (primary.val_nos_module_id = secondary.val_nos_module_id AND primary.val_nos_id = secondary.val_nos_id)
+      OR (primary.val_nos_module_id = secondary.val_nos_module_id AND primary.val_nos_id IS NULL AND secondary.val_nos_id IS NULL)
   `;
 };
 
@@ -262,7 +431,7 @@ export const validatorsCountByConditionMissProposeQuery = (epoch: Epoch, validat
     SELECT
       val_nos_module_id,
       val_nos_id,
-      count() as amount
+      count() AS amount
     FROM (
       SELECT val_nos_module_id, val_nos_id
       FROM validators_summary
@@ -270,11 +439,59 @@ export const validatorsCountByConditionMissProposeQuery = (epoch: Epoch, validat
         is_proposer = 1 AND
         ${condition} AND
         val_stuck = 0 AND
-        (epoch <= ${epoch} AND epoch > (${epoch} - 1))
+        (${epoch} - 1) < epoch AND epoch <= ${epoch}
         ${strFilterValIndexes}
       LIMIT 1 BY epoch, val_id
     )
     GROUP BY val_nos_module_id, val_nos_id
+  `;
+};
+
+export const validatorsByConditionMissProposeQuery = (epoch: Epoch, validatorIndexes: string[] = [], condition: string): string => {
+  let strFilterValIndexes = '';
+  if (validatorIndexes.length > 0) {
+    strFilterValIndexes = `AND val_id in [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
+  }
+
+  return `
+    WITH validators_in_epoch AS (
+      SELECT
+        val_id,
+        val_nos_module_id,
+        val_nos_id
+      FROM validators_summary
+      WHERE
+        is_proposer = 1 AND
+        ${condition} AND
+        val_stuck = 0 AND
+        (${epoch} - 1) < epoch AND epoch <= ${epoch}
+        ${strFilterValIndexes}
+      LIMIT 1 BY epoch, val_id
+    )
+
+    SELECT
+      val_id,
+      val_nos_module_id,
+      val_nos_id,
+      amount
+    FROM (
+      SELECT
+        val_id,
+        val_nos_module_id,
+        val_nos_id
+      FROM validators_in_epoch
+      LIMIT 20 BY val_nos_module_id, val_nos_id
+    ) AS primary
+    INNER JOIN (
+      SELECT
+        val_nos_module_id,
+        val_nos_id,
+        count() AS amount
+      FROM validators_in_epoch
+      GROUP BY val_nos_module_id, val_nos_id
+    ) AS secondary
+    ON (primary.val_nos_module_id = secondary.val_nos_module_id AND primary.val_nos_id = secondary.val_nos_id)
+      OR (primary.val_nos_module_id = secondary.val_nos_module_id AND primary.val_nos_id IS NULL AND secondary.val_nos_id IS NULL)
   `;
 };
 
