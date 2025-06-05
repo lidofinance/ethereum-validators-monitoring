@@ -383,9 +383,9 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: 📥
-              summary: "Operators that missed block propose in the last finalized epoch"
-              resolved_summary: "Operators did not miss block propose in the last finalized epoch."
-              description: "Number of validators per operator that missed block propose."
+              summary: "Operators that missed block proposal in the last finalized epoch"
+              resolved_summary: "Operators did not miss block proposal in the last finalized epoch."
+              description: "Number of validators per operator that missed block proposal."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
               field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
@@ -402,9 +402,9 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: 📥
-              summary: "Operators that missed block propose in the last finalized epoch"
-              resolved_summary: "Operators did not miss block propose in the last finalized epoch."
-              description: "Number of validators per operator that missed block propose."
+              summary: "Operators that missed block proposal in the last finalized epoch"
+              resolved_summary: "Operators did not miss block proposal in the last finalized epoch."
+              description: "Number of validators per operator that missed block proposal."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
               field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
@@ -421,9 +421,9 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: 📥
-              summary: "Operators that missed block propose in the last finalized epoch"
-              resolved_summary: "Operators did not miss block propose in the last finalized epoch."
-              description: "Number of validators per operator that missed block propose."
+              summary: "Operators that missed block proposal in the last finalized epoch"
+              resolved_summary: "Operators did not miss block proposal in the last finalized epoch."
+              description: "Number of validators per operator that missed block proposal."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
               field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
@@ -668,9 +668,9 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: 📈📥
-              summary: "Operators may get high future rewards, but missed block propose in the last finalized epoch"
-              resolved_summary: "Operators did not miss block propose in the last finalized epoch and now they may get high future rewards."
-              description: "Number of validators per operator that may get high future rewards, but missed block propose."
+              summary: "Operators may get high future rewards, but missed block proposal in the last finalized epoch"
+              resolved_summary: "Operators did not miss block proposal in the last finalized epoch and now they may get high future rewards."
+              description: "Number of validators per operator that may get high future rewards, but missed block proposal."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
               field_value: "[1](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
@@ -687,9 +687,9 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: 📈📥
-              summary: "Operators may get high future rewards, but missed block propose in the last finalized epoch"
-              resolved_summary: "Operators did not miss block propose in the last finalized epoch and now they may get high future rewards."
-              description: "Number of validators per operator that may get high future rewards, but missed block propose."
+              summary: "Operators may get high future rewards, but missed block proposal in the last finalized epoch"
+              resolved_summary: "Operators did not miss block proposal in the last finalized epoch and now they may get high future rewards."
+              description: "Number of validators per operator that may get high future rewards, but missed block proposal."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
               field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
@@ -706,9 +706,9 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: 📈📥
-              summary: "Operators may get high future rewards, but missed block propose in the last finalized epoch"
-              resolved_summary: "Operators did not miss block propose in the last finalized epoch and now they may get high future rewards."
-              description: "Number of validators per operator that may get high future rewards, but missed block propose."
+              summary: "Operators may get high future rewards, but missed block proposal in the last finalized epoch"
+              resolved_summary: "Operators did not miss block proposal in the last finalized epoch and now they may get high future rewards."
+              description: "Number of validators per operator that may get high future rewards, but missed block proposal."
               resolved_description: "Number of recovered validators per operator."
               field_name: "Operator 1"
               field_value: "[2](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"

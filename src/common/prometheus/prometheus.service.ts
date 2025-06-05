@@ -381,31 +381,31 @@ export class PrometheusService implements OnApplicationBootstrap {
 
   public otherValidatorsCountGoodPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_OTHER_VALIDATOR_COUNT_GOOD_PROPOSE,
-    help: 'number of other validators good propose',
+    help: 'number of other validators with good proposals',
     labelNames: [],
   });
 
   public validatorsCountGoodPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_GOOD_PROPOSE,
-    help: 'number of validators good propose',
+    help: 'number of validators with good proposals',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public otherValidatorsCountMissPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_OTHER_VALIDATOR_COUNT_MISS_PROPOSE,
-    help: 'number of other validators miss propose',
+    help: 'number of other validators with missed proposals',
     labelNames: [],
   });
 
   public validatorsCountMissPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_MISS_PROPOSE,
-    help: 'number of validators miss propose',
+    help: 'number of validators with missed proposals',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public highRewardValidatorsCountMissPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
-    help: 'number of validators miss propose (with possible high reward in the future)',
+    help: 'number of validators with missed proposals (with possible high reward in the future)',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 

@@ -97,9 +97,9 @@ groups:
           severity: critical
         annotations:
           emoji: 📥
-          summary: 'Operators that missed block propose in the last finalized epoch'
-          resolved_summary: 'Operators did not miss block propose in the last finalized epoch.'
-          description: 'Number of validators per operator that missed block propose.'
+          summary: 'Operators that missed block proposal in the last finalized epoch'
+          resolved_summary: 'Operators did not miss block proposal in the last finalized epoch.'
+          description: 'Number of validators per operator that missed block proposal.'
           resolved_description: 'Number of recovered validators per operator.'
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
@@ -161,9 +161,9 @@ groups:
           severity: critical
         annotations:
           emoji: '📈📥'
-          summary: 'Operators may get high future rewards, but missed block propose in the last finalized epoch'
-          resolved_summary: 'Operators did not miss block propose in the last finalized epoch and now they may get high future rewards.'
-          description: 'Number of validators per operator that may get high future rewards, but missed block propose.'
+          summary: 'Operators may get high future rewards, but missed block proposal in the last finalized epoch'
+          resolved_summary: 'Operators did not miss block proposal in the last finalized epoch and now they may get high future rewards.'
+          description: 'Number of validators per operator that may get high future rewards, but missed block proposal.'
           resolved_description: 'Number of recovered validators per operator.'
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
