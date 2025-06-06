@@ -33,7 +33,6 @@ import {
   userSyncParticipationAvgPercentQuery,
   userValidatorsSummaryStatsQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
-  validatorCountHighAvgIncDelayAttestationOfNEpochQuery,
   validatorQuantile0001BalanceDeltasQuery,
   validatorsCountByConditionMissProposeQuery,
   validatorsCountWithNegativeDeltaQuery,
@@ -281,7 +280,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   /**
-   * Send query to Clickhouse and receives information about Other Sync Committee avg percent
+   * Send query to Clickhouse and receives information about Other Sync Committee average percent
    */
   public async getOtherSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
     const ret = await this.select(otherSyncParticipationAvgPercentQuery(epoch));
@@ -458,21 +457,6 @@ export class ClickhouseService implements OnModuleInit {
     return (
       await this.select<NOsValidatorsByConditionAttestationCount[]>(
         validatorCountByConditionAttestationLastNEpochQuery(epoch, epochInterval, validatorIndexes, condition),
-      )
-    ).map((v) => ({
-      ...v,
-      amount: Number(v.amount),
-    }));
-  }
-
-  /**
-   * Send query to Clickhouse and receives information about
-   * how many User Node Operator validators have high avg inc. delay (>2) last N epoch
-   */
-  public async getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(epoch: Epoch): Promise<NOsValidatorsByConditionAttestationCount[]> {
-    return (
-      await this.select<NOsValidatorsByConditionAttestationCount[]>(
-        validatorCountHighAvgIncDelayAttestationOfNEpochQuery(epoch, this.config.get('BAD_ATTESTATION_EPOCHS')),
       )
     ).map((v) => ({
       ...v,

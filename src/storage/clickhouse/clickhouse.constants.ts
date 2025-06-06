@@ -225,34 +225,6 @@ export const validatorCountByConditionAttestationLastNEpochQuery = (
   `;
 };
 
-export const validatorCountHighAvgIncDelayAttestationOfNEpochQuery = (epoch: Epoch, epochInterval: number): string => {
-  return `
-    SELECT
-      val_nos_module_id,
-      val_nos_id,
-      count() as amount
-    FROM (
-      SELECT
-        val_nos_module_id,
-        val_nos_id,
-        avg(att_inc_delay) as avg_inclusion_delay
-      FROM (
-        SELECT val_id, val_nos_module_id, val_nos_id, att_inc_delay
-        FROM validators_summary
-        WHERE
-          att_happened = 1 AND
-          val_status in [${perfStatuses}] AND
-          val_stuck = 0 AND
-          (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
-        LIMIT 1 BY epoch, val_id
-      )
-      GROUP BY val_id, val_nos_module_id, val_nos_id
-    )
-    WHERE avg_inclusion_delay > 2
-    GROUP BY val_nos_id, val_nos_module_id
-  `;
-};
-
 export const validatorsCountByConditionMissProposeQuery = (epoch: Epoch, validatorIndexes: string[] = [], condition: string): string => {
   let strFilterValIndexes = '';
   if (validatorIndexes.length > 0) {

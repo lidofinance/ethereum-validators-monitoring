@@ -291,13 +291,13 @@ export class PrometheusService implements OnApplicationBootstrap {
 
   public otherValidatorsCountWithSyncParticipationLessAvg = this.getOrCreateMetric('Gauge', {
     name: METRIC_OTHER_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG,
-    help: 'number of other validators with sync committee participation less avg',
+    help: 'number of other validators with sync committee participation less than average',
     labelNames: [],
   });
 
   public validatorsCountWithSyncParticipationLessAvg = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG,
-    help: 'number of validators with sync committee participation less avg',
+    help: 'number of validators with sync committee participation less than average',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
@@ -327,13 +327,13 @@ export class PrometheusService implements OnApplicationBootstrap {
 
   public otherValidatorsCountInvalidAttestation = this.getOrCreateMetric('Gauge', {
     name: METRIC_OTHER_VALIDATOR_COUNT_INVALID_ATTESTATION,
-    help: 'number of other validators with invalid properties or high inc. delay in attestation',
+    help: 'number of other validators with invalid properties or high inclusion delay in attestation',
     labelNames: ['reason'],
   });
 
   public validatorsCountInvalidAttestation = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
-    help: 'number of validators with invalid properties or high inc. delay in attestation',
+    help: 'number of validators with invalid properties or high inclusion delay in attestation',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'reason'],
   });
 
@@ -345,13 +345,13 @@ export class PrometheusService implements OnApplicationBootstrap {
 
   public validatorsCountInvalidAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_LAST_N_EPOCH,
-    help: 'number of validators with invalid properties or high inc. delay in attestation last N epoch',
+    help: 'number of validators with invalid properties or high inclusion delay in attestation last N epoch',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'reason', 'epoch_interval'],
   });
 
   public validatorsCountHighIncDelayAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
-    help: 'number of validators with high inc. delay last N epochs',
+    help: 'number of validators with high inclusion delay last N epochs',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
@@ -369,13 +369,13 @@ export class PrometheusService implements OnApplicationBootstrap {
 
   public validatorsCountWithSyncParticipationLessAvgLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
-    help: 'number of validators with sync participation less than avg last N epoch',
+    help: 'number of validators with sync participation less than average last N epoch',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
   public highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
-    help: 'number of validators with sync participation less than avg last N epoch (with possible high reward in the future)',
+    help: 'number of validators with sync participation less than average last N epoch (with possible high reward in the future)',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
@@ -411,25 +411,25 @@ export class PrometheusService implements OnApplicationBootstrap {
 
   public userSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
     name: METRIC_USER_SYNC_PARTICIPATION_AVG_PERCENT,
-    help: 'User sync committee validators participation avg percent',
+    help: 'User sync committee validators participation average percent',
     labelNames: ['nos_module_id'],
   });
 
   public operatorSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
     name: METRIC_OPERATOR_SYNC_PARTICIPATION_AVG_PERCENT,
-    help: 'Operator sync committee validators participation avg percent',
+    help: 'Operator sync committee validators participation average percent',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
   public otherSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
     name: METRIC_OTHER_SYNC_PARTICIPATION_AVG_PERCENT,
-    help: 'Other sync committee validators participation avg percent',
+    help: 'Other sync committee validators participation average percent',
     labelNames: [],
   });
 
   public chainSyncParticipationAvgPercent = this.getOrCreateMetric('Gauge', {
     name: METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
-    help: 'Chain sync committee validators participation avg percent',
+    help: 'Chain sync committee validators participation average percent',
     labelNames: [],
   });
 
@@ -453,7 +453,7 @@ export class PrometheusService implements OnApplicationBootstrap {
 
   public avgChainReward = this.getOrCreateMetric('Gauge', {
     name: METRIC_AVG_CHAIN_REWARD,
-    help: 'avg rewards for each duty',
+    help: 'average rewards for each duty',
     labelNames: ['duty'],
   });
 
@@ -465,7 +465,7 @@ export class PrometheusService implements OnApplicationBootstrap {
 
   public avgChainMissedReward = this.getOrCreateMetric('Gauge', {
     name: METRIC_AVG_CHAIN_MISSED_REWARD,
-    help: 'avg missed rewards for each duty',
+    help: 'average missed rewards for each duty',
     labelNames: ['duty'],
   });
 
@@ -477,7 +477,7 @@ export class PrometheusService implements OnApplicationBootstrap {
 
   public avgChainPenalty = this.getOrCreateMetric('Gauge', {
     name: METRIC_AVG_CHAIN_PENALTY,
-    help: 'avg penalty for each duty',
+    help: 'average penalty for each duty',
     labelNames: ['duty'],
   });
 

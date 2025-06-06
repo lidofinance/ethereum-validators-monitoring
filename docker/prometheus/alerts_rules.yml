@@ -69,8 +69,8 @@ groups:
           severity: critical
         annotations:
           emoji: 📝🐢
-          summary: 'Operators have attestation inc. delay greater than 2 in the last {{ $labels.epoch_interval }} finalized epochs'
-          description: 'Number of validators per operator that have attestations with high inc. delay.'
+          summary: 'Operators have attestation inclusion delay greater than 2 in the last {{ $labels.epoch_interval }} finalized epochs'
+          description: 'Number of validators per operator that have attestations with high inclusion delay.'
           field_name: '{{ $labels.nos_name }}'
           field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 10800) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
