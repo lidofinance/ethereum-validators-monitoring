@@ -6,11 +6,11 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_user_validators{nos_name="Operator 1", status="slashed"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_user_validators{nos_name="Operator 2", status="slashed"}
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 4+0x48 5+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 4+0x47 5+0x47
     alert_rule_test:
       - eval_time: 5m
         alertname: UserSlashedValidators
@@ -96,8 +96,6 @@ tests:
     input_series:
       - series: ethereum_validators_monitoring_data_actuality
         values: 3700000+0x180 3300000+0x180
-      - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x180 1+0x180
     alert_rule_test:
       - alertname: DataActuality
         eval_time: 30m
@@ -111,7 +109,7 @@ tests:
               description: "Data are not up to date. Check the app health."
               resolved_description: "Data actuality is normal."
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
-              footer_text: 'Epoch • 0'
+              footer_text: 'Epoch • '
               footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
       - alertname: DataActuality
         eval_time: 35m
@@ -119,9 +117,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_name="Operator 1"}
-        values: 0+0x48 1+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: NumValidatorsWithNegativeDelta
         eval_time: 5m
@@ -165,9 +163,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: NumValidatorsWithMissAttestationLastNEpoch
         eval_time: 5m
@@ -237,9 +235,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: NumValidatorsWithHighIncDelayAttestationLastNEpoch
         eval_time: 5m
@@ -303,9 +301,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: NumValidatorsWithInvalidPropertyAttestationLastNEpoch
         eval_time: 5m
@@ -369,9 +367,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_validator_count_miss_propose{nos_name="Operator 1"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: NumValidatorsWithMissPropose
         eval_time: 5m
@@ -438,9 +436,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: NumValidatorsWithSyncParticipationLessAvgLastNEpoch
         eval_time: 5m
@@ -510,9 +508,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: HighRewardNumValidatorsWithSyncParticipationLessAvgLastNEpoch
         eval_time: 5m
@@ -582,9 +580,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch{nos_name="Operator 1", epoch_interval="3"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: HighRewardNumValidatorsWithMissAttestationLastNEpoch
         eval_time: 5m
@@ -654,9 +652,9 @@ tests:
   - interval: 10s
     input_series:
       - series: ethereum_validators_monitoring_high_reward_validator_count_miss_propose{nos_name="Operator 1"}
-        values: 0+0x48 1+0x48 2+0x48 2+0x48 2+0x48 0+0x48
+        values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
-        values: 0+0x48 1+0x48 2+0x48 3+0x48 3+0x48 4+0x48
+        values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
     alert_rule_test:
       - alertname: HighRewardNumValidatorsWithMissPropose
         eval_time: 5m
