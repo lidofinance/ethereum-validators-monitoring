@@ -3172,7 +3172,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Avg participation"
+                  "options": "Average participation"
                 },
                 "properties": [
                   {
@@ -3400,7 +3400,7 @@
                 },
                 "renameByName": {
                   "Perfect": "",
-                  "Value #average participation rate (mean)": "Avg participation",
+                  "Value #average participation rate (mean)": "Average participation",
                   "Value #average participation rate (sum)": "",
                   "Value #bad (sum)": "Bad",
                   "Value #good (sum)": "Good",
@@ -5639,7 +5639,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "AVG.\n`Bad` is considered when validator's sync is less than chain average value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
+          "description": "AVERAGE.\n`Bad` is considered when validator's sync is less than chain average value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -6394,7 +6394,7 @@
               "skip_comments": true
             }
           ],
-          "title": "Validators with high INC. DELAY attestation",
+          "title": "Validators with high INCLUSION DELAY attestation",
           "type": "table"
         },
         {
@@ -6489,7 +6489,7 @@
               "refId": "A"
             }
           ],
-          "title": "Number of validators with high attestation INC. DELAY",
+          "title": "Number of validators with high attestation INCLUSION DELAY",
           "type": "timeseries"
         },
         {
