@@ -92,6 +92,7 @@ export interface NOsProposesStats {
   val_nos_module_id: string;
   val_nos_id: string;
   all: number;
+  proposed: number;
   missed: number;
 }
 

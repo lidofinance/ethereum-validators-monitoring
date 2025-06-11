@@ -34,7 +34,6 @@ import {
   userValidatorsSummaryStatsQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
   validatorQuantile0001BalanceDeltasQuery,
-  validatorsCountByConditionMissProposeQuery,
   validatorsCountWithNegativeDeltaQuery,
   validatorsCountWithSyncParticipationByConditionLastNEpochQuery,
 } from './clickhouse.constants';
@@ -64,6 +63,7 @@ import migration_000004_epoch_processing from './migrations/migration_000004_epo
 import migration_000005_withdrawals from './migrations/migration_000005_withdrawals';
 import migration_000006_stuck_validators from './migrations/migration_000006_stuck_validators';
 import migration_000007_module_id from './migrations/migration_000007_module_id';
+import migration_000007_n_proposals from './migrations/migration_000007_n_proposals';
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -241,10 +241,34 @@ export class ClickhouseService implements OnModuleInit {
       migration_000004_epoch_processing,
       migration_000005_withdrawals,
       migration_000006_stuck_validators,
+      migration_000007_n_proposals,
       migration_000007_module_id,
     ];
     for (const query of migrations) {
       await this.db.exec({ query });
+    }
+
+    const { blockToProposeIsExist, blockProposedIsExist } = (
+      await this.select(`SELECT
+        hasColumnInTable(currentDatabase(), 'validators_summary', 'block_to_propose') as blockToProposeIsExist,
+        hasColumnInTable(currentDatabase(), 'validators_summary', 'block_proposed') as blockProposedIsExist
+        `)
+    )[0];
+    if (blockToProposeIsExist != blockProposedIsExist) {
+      throw Error(
+        'Corrupted `validators_summary` table. ' +
+          "There shouldn't be `block_to_propose` and `block_proposed` columns after migration. " +
+          'Please, resolve this manually.',
+      );
+    }
+    if (blockToProposeIsExist && blockProposedIsExist) {
+      await this.db.exec({
+        query: `ALTER TABLE validators_summary
+            UPDATE block_proposals = [(block_to_propose, block_proposed)]
+            WHERE block_to_propose IS NOT NULL AND block_proposals = []`,
+      });
+      await this.db.exec({ query: `ALTER TABLE validators_summary DROP COLUMN block_to_propose` });
+      await this.db.exec({ query: `ALTER TABLE validators_summary DROP COLUMN block_proposed` });
     }
   }
 
@@ -468,13 +492,9 @@ export class ClickhouseService implements OnModuleInit {
     epoch: Epoch,
     validatorIndexes: string[] = [],
   ): Promise<NOsValidatorsByConditionProposeCount[]> {
-    return (
-      await this.select<NOsValidatorsByConditionProposeCount[]>(
-        validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 1'),
-      )
-    ).map((v) => ({
+    return (await this.select<NOsProposesStats[]>(userNodeOperatorsProposesStatsLastNEpochQuery(epoch, 1, validatorIndexes))).map((v) => ({
       ...v,
-      amount: Number(v.amount),
+      amount: Number(v.proposed),
     }));
   }
 
@@ -486,13 +506,9 @@ export class ClickhouseService implements OnModuleInit {
     epoch: Epoch,
     validatorIndexes: string[] = [],
   ): Promise<NOsValidatorsByConditionProposeCount[]> {
-    return (
-      await this.select<NOsValidatorsByConditionProposeCount[]>(
-        validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 0'),
-      )
-    ).map((v) => ({
+    return (await this.select<NOsProposesStats[]>(userNodeOperatorsProposesStatsLastNEpochQuery(epoch, 1, validatorIndexes))).map((v) => ({
       ...v,
-      amount: Number(v.amount),
+      amount: Number(v.missed),
     }));
   }
 
@@ -566,6 +582,7 @@ export class ClickhouseService implements OnModuleInit {
     return (await this.select<NOsProposesStats[]>(userNodeOperatorsProposesStatsLastNEpochQuery(epoch, epochInterval))).map((v) => ({
       ...v,
       all: Number(v.all),
+      proposed: Number(v.proposed),
       missed: Number(v.missed),
     }));
   }
