@@ -100,6 +100,8 @@ services:
     environment:
       - WORKING_MODE=alternative
       - PORT=9094
+      - MAX_EMBEDS_LENGTH=2
+      - MAX_FIELDS_LENGTH=18
     expose:
       - 9094
     ports:
