@@ -516,29 +516,39 @@ export const otherValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
   )
 `;
 
-export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: Epoch, epochInterval = 120): string => `
+export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: Epoch, epochInterval = 120, validatorIndexes = []): string => {
+  let strFilterValIndexes = '';
+  if (validatorIndexes.length > 0) {
+    strFilterValIndexes = `AND val_id in [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
+  }
+  return `
   SELECT
     val_nos_module_id,
     val_nos_id,
-    SUM(a) as all,
+    SUM(p + m) as all,
+    SUM(p) as proposed,
     SUM(m) as missed
   FROM (
     SELECT
       val_nos_module_id,
       val_nos_id,
-      COUNT(block_proposed) as a,
-      IF(block_proposed = 0, count(block_proposed), 0) as m
+      arrayCount(proposal -> tupleElement(proposal, 2) == 1, block_proposals) as p,
+      arrayCount(proposal -> tupleElement(proposal, 2) == 0, block_proposals) as m
     FROM (
-      SELECT val_nos_module_id, val_nos_id, block_proposed
+      SELECT val_nos_module_id, val_nos_id, block_proposals
       FROM validators_summary
       WHERE
-        is_proposer = 1 AND val_stuck = 0 AND (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
+        is_proposer = 1 AND
+        val_stuck = 0 AND
+        (epoch <= ${epoch} AND epoch > (${epoch} - ${epochInterval}))
+        ${strFilterValIndexes}
       LIMIT 1 BY epoch, val_id
     )
-    GROUP BY val_nos_module_id, val_nos_id, block_proposed
+    GROUP BY val_nos_module_id, val_nos_id, block_proposals
   )
   GROUP BY val_nos_module_id, val_nos_id
 `;
+};
 
 export const epochMetadata = (epoch: Epoch): string => `
   SELECT *
