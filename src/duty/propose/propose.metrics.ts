@@ -4,7 +4,13 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
-import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric, getLabelsForMetricWithValIDs } from 'common/prometheus';
+import {
+  PrometheusService,
+  TrackTask,
+  getLabelsForMetricWithValIDs,
+  setOtherOperatorsMetric,
+  setUserOperatorsMetric,
+} from 'common/prometheus';
 import { ClickhouseService } from 'storage';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
@@ -52,7 +58,7 @@ export class ProposeMetrics {
 
       const getLabels = (operator: RegistrySourceOperator, operatorData: any) => {
         return getLabelsForMetricWithValIDs(operator, operatorData, fullExplorerUrl);
-      }
+      };
 
       const data = await this.storage.getValidatorsWithMissedProposes(this.processedEpoch, possibleHighRewardValidators);
       setUserOperatorsMetric(this.prometheus.highRewardValidatorsCountMissPropose, data, this.operators, getLabels);

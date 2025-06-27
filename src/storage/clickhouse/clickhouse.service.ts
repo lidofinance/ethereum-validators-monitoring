@@ -1,9 +1,9 @@
-import { xorWith } from 'lodash';
 import { Readable, Transform } from 'stream';
 
 import { ClickHouseClient, createClient } from '@clickhouse/client';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
+import { xorWith } from 'lodash';
 import { chain } from 'stream-chain';
 import { batch } from 'stream-json/utils/Batch';
 
@@ -34,13 +34,13 @@ import {
   userSyncParticipationAvgPercentQuery,
   userValidatorsSummaryStatsQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
-  validatorsByConditionAttestationLastNEpochQuery,
   validatorQuantile0001BalanceDeltasQuery,
-  validatorsCountByConditionMissProposeQuery,
+  validatorsByConditionAttestationLastNEpochQuery,
   validatorsByConditionMissProposeQuery,
+  validatorsCountByConditionMissProposeQuery,
   validatorsCountWithNegativeDeltaQuery,
-  validatorsWithNegativeDeltaQuery,
   validatorsCountWithSyncParticipationByConditionLastNEpochQuery,
+  validatorsWithNegativeDeltaQuery,
   validatorsWithSyncParticipationByConditionLastNEpochQuery,
 } from './clickhouse.constants';
 import {
@@ -49,20 +49,20 @@ import {
   NOsBalance24hDiff,
   NOsDelta,
   NOsProposesStats,
-  NOsValidatorsByConditionAttestationCount,
   NOsValidatorsByConditionAttestation,
+  NOsValidatorsByConditionAttestationCount,
   NOsValidatorsByConditionAttestationWithValIDs,
-  NOsValidatorsByConditionProposeCount,
   NOsValidatorsByConditionPropose,
+  NOsValidatorsByConditionProposeCount,
   NOsValidatorsByConditionProposeWithValIDs,
-  NOsValidatorsNegDeltaCount,
   NOsValidatorsNegDelta,
+  NOsValidatorsNegDeltaCount,
   NOsValidatorsNegDeltaWithValIDs,
   NOsValidatorsRewardsStats,
   NOsValidatorsStatusStats,
   NOsValidatorsSyncAvgPercent,
-  NOsValidatorsSyncByConditionCount,
   NOsValidatorsSyncByCondition,
+  NOsValidatorsSyncByConditionCount,
   NOsValidatorsSyncByConditionWithValIDs,
   NOsWithdrawalsStats,
   SyncCommitteeParticipationAvgPercents,
@@ -284,19 +284,23 @@ export class ClickhouseService implements OnModuleInit {
 
   public async getValidatorsWithNegativeDelta(epoch: Epoch): Promise<NOsValidatorsNegDeltaWithValIDs[]> {
     const queryResult = await this.select<NOsValidatorsNegDelta[]>(
-      validatorsWithNegativeDeltaQuery(epoch)
+      validatorsWithNegativeDeltaQuery(epoch, this.config.get('VAL_COUNT_IN_ALERT_BODY')),
     );
 
-    const oldQueryResult = await this.select<NOsValidatorsNegDeltaCount[]>(
-      validatorsCountWithNegativeDeltaQuery(epoch)
-    );
+    const oldQueryResult = await this.select<NOsValidatorsNegDeltaCount[]>(validatorsCountWithNegativeDeltaQuery(epoch));
 
     const result = getQueryResultWithGroupedValIDs(queryResult);
 
     if (oldQueryResult.length !== result.length) {
-      this.logger.error(`getValidatorsWithNegativeDelta: Incorrect data fetched from the DB. Old query result length: ${oldQueryResult.length}, new query result length: ${result.length}`);
+      this.logger.error(
+        `getValidatorsWithNegativeDelta: Incorrect data fetched from the DB. Old query result length: ${oldQueryResult.length}, new query result length: ${result.length}`,
+      );
     } else {
-      const diff = xorWith(oldQueryResult, result, (l, r) => l.val_nos_module_id === r.val_nos_module_id && l.val_nos_id === r.val_nos_id && Number(l.amount) === Number(r.amount));
+      const diff = xorWith(
+        oldQueryResult,
+        result,
+        (l, r) => l.val_nos_module_id === r.val_nos_module_id && l.val_nos_id === r.val_nos_id && Number(l.amount) === Number(r.amount),
+      );
 
       if (diff.length !== 0) {
         this.logger.error(`getValidatorsWithNegativeDelta: Incorrect data fetched from the DB. Mismatch in ${diff.length} objects.`);
@@ -400,6 +404,7 @@ export class ClickhouseService implements OnModuleInit {
         epochInterval,
         validatorIndexes,
         `sync_percent < abs(${chainAvg} - ${this.config.get('SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG')})`,
+        this.config.get('VAL_COUNT_IN_ALERT_BODY'),
       ),
     );
 
@@ -415,12 +420,20 @@ export class ClickhouseService implements OnModuleInit {
     const result = getQueryResultWithGroupedValIDs(queryResult);
 
     if (oldQueryResult.length !== result.length) {
-      this.logger.error(`getValidatorsWithBadSyncParticipationLastNEpoch: Incorrect data fetched from the DB. Old query result length: ${oldQueryResult.length}, new query result length: ${result.length}`);
+      this.logger.error(
+        `getValidatorsWithBadSyncParticipationLastNEpoch: Incorrect data fetched from the DB. Old query result length: ${oldQueryResult.length}, new query result length: ${result.length}`,
+      );
     } else {
-      const diff = xorWith(oldQueryResult, result, (l, r) => l.val_nos_module_id === r.val_nos_module_id && l.val_nos_id === r.val_nos_id && Number(l.amount) === Number(r.amount));
+      const diff = xorWith(
+        oldQueryResult,
+        result,
+        (l, r) => l.val_nos_module_id === r.val_nos_module_id && l.val_nos_id === r.val_nos_id && Number(l.amount) === Number(r.amount),
+      );
 
       if (diff.length !== 0) {
-        this.logger.error(`getValidatorsWithBadSyncParticipationLastNEpoch: Incorrect data fetched from the DB. Mismatch in ${diff.length} objects.`);
+        this.logger.error(
+          `getValidatorsWithBadSyncParticipationLastNEpoch: Incorrect data fetched from the DB. Mismatch in ${diff.length} objects.`,
+        );
       }
     }
 
@@ -464,11 +477,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async getValidatorsWithMissedAttestationsLastNEpoch(epoch: Epoch) {
-    return await this.getValidatorsByConditionAttestationsLastNEpoch(
-      epoch,
-      this.config.get('BAD_ATTESTATION_EPOCHS'),
-      'att_happened = 0',
-    );
+    return await this.getValidatorsByConditionAttestationsLastNEpoch(epoch, this.config.get('BAD_ATTESTATION_EPOCHS'), 'att_happened = 0');
   }
 
   public async getValidatorsWithHighRewardMissedAttestationsLastNEpoch(epoch: Epoch, possibleHighRewardValidators: string[]) {
@@ -555,7 +564,13 @@ export class ClickhouseService implements OnModuleInit {
     validatorIndexes: string[] = [],
   ): Promise<NOsValidatorsByConditionAttestationWithValIDs[]> {
     const queryResult = await this.select<NOsValidatorsByConditionAttestation[]>(
-      validatorsByConditionAttestationLastNEpochQuery(epoch, epochInterval, validatorIndexes, condition),
+      validatorsByConditionAttestationLastNEpochQuery(
+        epoch,
+        epochInterval,
+        validatorIndexes,
+        condition,
+        this.config.get('VAL_COUNT_IN_ALERT_BODY'),
+      ),
     );
 
     /**
@@ -569,12 +584,20 @@ export class ClickhouseService implements OnModuleInit {
     const result = getQueryResultWithGroupedValIDs(queryResult);
 
     if (oldQueryResult.length !== result.length) {
-      this.logger.error(`getValidatorsByConditionAttestationsLastNEpoch: Incorrect data fetched from the DB. Old query result length: ${oldQueryResult.length}, new query result length: ${result.length}`);
+      this.logger.error(
+        `getValidatorsByConditionAttestationsLastNEpoch: Incorrect data fetched from the DB. Old query result length: ${oldQueryResult.length}, new query result length: ${result.length}`,
+      );
     } else {
-      const diff = xorWith(oldQueryResult, result, (l, r) => l.val_nos_module_id === r.val_nos_module_id && l.val_nos_id === r.val_nos_id && Number(l.amount) === Number(r.amount));
+      const diff = xorWith(
+        oldQueryResult,
+        result,
+        (l, r) => l.val_nos_module_id === r.val_nos_module_id && l.val_nos_id === r.val_nos_id && Number(l.amount) === Number(r.amount),
+      );
 
       if (diff.length !== 0) {
-        this.logger.error(`getValidatorsByConditionAttestationsLastNEpoch: Incorrect data fetched from the DB. Mismatch in ${diff.length} objects.`);
+        this.logger.error(
+          `getValidatorsByConditionAttestationsLastNEpoch: Incorrect data fetched from the DB. Mismatch in ${diff.length} objects.`,
+        );
       }
     }
 
@@ -600,7 +623,7 @@ export class ClickhouseService implements OnModuleInit {
     validatorIndexes: string[] = [],
   ): Promise<NOsValidatorsByConditionProposeWithValIDs[]> {
     const queryResult = await this.select<NOsValidatorsByConditionPropose[]>(
-      validatorsByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 0'),
+      validatorsByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 0', this.config.get('VAL_COUNT_IN_ALERT_BODY')),
     );
 
     const oldQueryResult = await this.select<NOsValidatorsByConditionProposeCount[]>(
@@ -610,9 +633,15 @@ export class ClickhouseService implements OnModuleInit {
     const result = getQueryResultWithGroupedValIDs(queryResult);
 
     if (oldQueryResult.length !== result.length) {
-      this.logger.error(`getValidatorsWithMissedProposes: Incorrect data fetched from the DB. Old query result length: ${oldQueryResult.length}, new query result length: ${result.length}`);
+      this.logger.error(
+        `getValidatorsWithMissedProposes: Incorrect data fetched from the DB. Old query result length: ${oldQueryResult.length}, new query result length: ${result.length}`,
+      );
     } else {
-      const diff = xorWith(oldQueryResult, result, (l, r) => l.val_nos_module_id === r.val_nos_module_id && l.val_nos_id === r.val_nos_id && Number(l.amount) === Number(r.amount));
+      const diff = xorWith(
+        oldQueryResult,
+        result,
+        (l, r) => l.val_nos_module_id === r.val_nos_module_id && l.val_nos_id === r.val_nos_id && Number(l.amount) === Number(r.amount),
+      );
 
       if (diff.length !== 0) {
         this.logger.error(`getValidatorsWithMissedProposes: Incorrect data fetched from the DB. Mismatch in ${diff.length} objects.`);
@@ -806,7 +835,7 @@ function getQueryResultWithGroupedValIDs(
     val_nos_module_id: string;
     val_nos_id: string;
     amount: string;
-  }[]
+  }[],
 ): {
   val_ids: string;
   val_nos_module_id: string;
@@ -824,7 +853,7 @@ function getQueryResultWithGroupedValIDs(
         val_nos_module_id: qrItem.val_nos_module_id,
         val_nos_id: qrItem.val_nos_id,
         amount: Number(qrItem.amount),
-      })
+      });
     } else {
       res.val_ids += `,${qrItem.val_id}`;
     }

@@ -4,7 +4,13 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
-import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric, getLabelsForMetricWithValIDs } from 'common/prometheus';
+import {
+  PrometheusService,
+  TrackTask,
+  getLabelsForMetricWithValIDs,
+  setOtherOperatorsMetric,
+  setUserOperatorsMetric,
+} from 'common/prometheus';
 import { ClickhouseService } from 'storage/clickhouse';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 

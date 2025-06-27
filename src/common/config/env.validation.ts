@@ -273,11 +273,17 @@ export class EnvironmentVariables {
       value = `/${value}`;
     }
     if (!value.endsWith('/')) {
-      value = `${value}/`
+      value = `${value}/`;
     }
     return value;
   })
   public CL_EXPLORER_VALIDATORS_URL_SUFFIX!: string;
+
+  @IsNumber()
+  @Min(1)
+  @Max(50)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public VAL_COUNT_IN_ALERT_BODY = 20;
 
   /**
    * Critical alerts will be sent for NOs with validators count greater this value

@@ -150,7 +150,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
   HAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0
 `;
 
-export const validatorsWithNegativeDeltaQuery = (epoch: Epoch): string => `
+export const validatorsWithNegativeDeltaQuery = (epoch: Epoch, valCount: number): string => `
   WITH validators_summary_current AS (
     SELECT val_balance, val_id, val_nos_module_id, val_nos_id, val_slashed
     FROM validators_summary
@@ -206,7 +206,7 @@ export const validatorsWithNegativeDeltaQuery = (epoch: Epoch): string => `
     ON
       withdrawals.val_id = current.val_id
     WHERE (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0
-    LIMIT 20 BY current.val_nos_module_id, current.val_nos_id
+    LIMIT ${valCount} BY current.val_nos_module_id, current.val_nos_id
   ) AS primary
   INNER JOIN (
     SELECT
@@ -270,6 +270,7 @@ export const validatorsWithSyncParticipationByConditionLastNEpochQuery = (
   epochInterval: number,
   validatorIndexes: string[] = [],
   condition: string,
+  valCount: number,
 ): string => {
   let strFilterValIndexes = '';
   if (validatorIndexes.length > 0) {
@@ -309,7 +310,7 @@ export const validatorsWithSyncParticipationByConditionLastNEpochQuery = (
         val_nos_id
       FROM validators_in_epoch
       WHERE count_fail = ${epochInterval}
-      LIMIT 20 BY val_nos_module_id, val_nos_id
+      LIMIT ${valCount} BY val_nos_module_id, val_nos_id
     ) AS primary
     INNER JOIN (
       SELECT
@@ -368,6 +369,7 @@ export const validatorsByConditionAttestationLastNEpochQuery = (
   epochInterval: number,
   validatorIndexes: string[] = [],
   condition: string,
+  valCount: number,
 ): string => {
   let strFilterValIndexes = '';
   if (validatorIndexes.length > 0) {
@@ -406,7 +408,7 @@ export const validatorsByConditionAttestationLastNEpochQuery = (
         val_nos_id
       FROM validators_in_epoch
       WHERE count_fail = ${epochInterval}
-      LIMIT 20 BY val_nos_module_id, val_nos_id
+      LIMIT ${valCount} BY val_nos_module_id, val_nos_id
     ) AS primary
     INNER JOIN (
       SELECT
@@ -447,7 +449,12 @@ export const validatorsCountByConditionMissProposeQuery = (epoch: Epoch, validat
   `;
 };
 
-export const validatorsByConditionMissProposeQuery = (epoch: Epoch, validatorIndexes: string[] = [], condition: string): string => {
+export const validatorsByConditionMissProposeQuery = (
+  epoch: Epoch,
+  validatorIndexes: string[] = [],
+  condition: string,
+  valCount: number,
+): string => {
   let strFilterValIndexes = '';
   if (validatorIndexes.length > 0) {
     strFilterValIndexes = `AND val_id in [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
@@ -480,7 +487,7 @@ export const validatorsByConditionMissProposeQuery = (epoch: Epoch, validatorInd
         val_nos_module_id,
         val_nos_id
       FROM validators_in_epoch
-      LIMIT 20 BY val_nos_module_id, val_nos_id
+      LIMIT ${valCount} BY val_nos_module_id, val_nos_id
     ) AS primary
     INNER JOIN (
       SELECT

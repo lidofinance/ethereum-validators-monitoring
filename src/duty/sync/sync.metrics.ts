@@ -3,7 +3,13 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { allSettled } from 'common/functions/allSettled';
-import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric, getLabelsForMetricWithValIDs } from 'common/prometheus';
+import {
+  PrometheusService,
+  TrackTask,
+  getLabelsForMetricWithValIDs,
+  setOtherOperatorsMetric,
+  setUserOperatorsMetric,
+} from 'common/prometheus';
 import { ClickhouseService } from 'storage';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
@@ -117,7 +123,12 @@ export class SyncMetrics {
         chainAvgSyncPercent,
         possibleHighRewardValidators,
       );
-      setUserOperatorsMetric(this.prometheus.highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch, data, this.operators, getLabels);
+      setUserOperatorsMetric(
+        this.prometheus.highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch,
+        data,
+        this.operators,
+        getLabels,
+      );
     }
   }
 }

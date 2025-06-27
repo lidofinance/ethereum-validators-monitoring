@@ -572,11 +572,14 @@ export const getLabelsForMetricWithValIDs = (
   let valIds: string;
 
   if (operatorData == null) {
-    valIds = ''
+    valIds = '';
   } else if (fullCLExplorerUrl === '') {
     valIds = operatorData.val_ids;
   } else {
-    valIds = operatorData.val_ids.split(',').map((valId) => `[${valId}](${fullCLExplorerUrl + valId})`).join(', ');
+    const valIdsList = operatorData.val_ids.split(',');
+    const remainingValidators = operatorData.amount != null ? operatorData.amount - valIdsList.length : 0;
+    const suffix = remainingValidators > 0 ? `, ... more ${remainingValidators}` : '';
+    valIds = valIdsList.map((valId) => `[${valId}](${fullCLExplorerUrl + valId})`).join(', ') + suffix;
   }
 
   return {
@@ -584,9 +587,9 @@ export const getLabelsForMetricWithValIDs = (
     nos_id: operator.index,
     nos_name: operator.name,
     val_ids: valIds,
-    ...labels
+    ...labels,
   };
-}
+};
 
 export function TrackCLRequest(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
   const originalValue = descriptor.value;

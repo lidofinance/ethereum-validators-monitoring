@@ -19,8 +19,7 @@ export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
     const explorerDomain = this.get('CL_EXPLORER_URL');
     const explorerUrlSuffix = this.get('CL_EXPLORER_VALIDATORS_URL_SUFFIX');
 
-    return explorerDomain != null && explorerDomain !== '' && explorerUrlSuffix != null
-      ? explorerDomain + explorerUrlSuffix : '';
+    return explorerDomain != null && explorerDomain !== '' && explorerUrlSuffix != null ? explorerDomain + explorerUrlSuffix : '';
   }
 
   public getCriticalAlertParamForModule(moduleIndex: number): CriticalAlertParamsForModule {
