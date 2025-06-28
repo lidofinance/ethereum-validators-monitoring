@@ -30,7 +30,7 @@ export class SummaryMetrics {
 
   @TrackTask('calc-summary-metrics')
   public async calculate(epoch: Epoch) {
-    this.logger.log('Calculating propose metrics');
+    this.logger.log('Calculating summary metrics');
     this.processedEpoch = epoch;
     this.operators = this.registryService.getOperators();
     await allSettled([this.userRewards(), this.avgChainRewards(), this.common()]);

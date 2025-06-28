@@ -321,7 +321,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   /**
-   * Send query to Clickhouse and receives information about Other Sync Committee avg percent
+   * Send query to Clickhouse and receives information about Other Sync Committee average percent
    */
   public async getOtherSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
     const ret = await this.select(otherSyncParticipationAvgPercentQuery(epoch));
@@ -715,7 +715,7 @@ export class ClickhouseService implements OnModuleInit {
 
   /**
    * Send query to Clickhouse and receives information about
-   * User Node Operator proposes stats in the last N epochs
+   * User Node Operator proposals stats in the last N epochs
    */
   public async getUserNodeOperatorsProposesStats(epoch: Epoch, epochInterval = 120): Promise<NOsProposesStats[]> {
     return (await this.select<NOsProposesStats[]>(userNodeOperatorsProposesStatsLastNEpochQuery(epoch, epochInterval))).map((v) => ({

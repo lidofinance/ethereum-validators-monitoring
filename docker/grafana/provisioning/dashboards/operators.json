@@ -2591,7 +2591,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "inc. delay > 1",
+      "description": "inclusion delay > 1",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -3258,7 +3258,7 @@
               "refId": "A"
             }
           ],
-          "title": "Avg validator balances delta",
+          "title": "Average validator balances delta",
           "type": "timeseries"
         },
         {
@@ -4115,7 +4115,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "AVG.\n`Bad` is considered when validator's sync is less than chain avg value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
+          "description": "AVERAGE.\n`Bad` is considered when validator's sync is less than chain average value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -4713,7 +4713,7 @@
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
-          "description": "inc. delay > 1",
+          "description": "inclusion delay > 1",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -4902,7 +4902,7 @@
               "skip_comments": true
             }
           ],
-          "title": "Validators with high INC. DELAY attestation",
+          "title": "Validators with high INCLUSION DELAY attestation",
           "type": "table"
         },
         {
@@ -4996,7 +4996,7 @@
               "refId": "A"
             }
           ],
-          "title": "Number of validators with high attestation INC. DELAY",
+          "title": "Number of validators with high attestation INCLUSION DELAY",
           "type": "timeseries"
         },
         {
@@ -5893,7 +5893,7 @@
           "type": "prometheus",
           "uid": "PBFA97CFB590B2093"
         },
-        "definition": "query_result(ethereum_validators_monitoring_user_validators)",
+        "definition": "query_result(last_over_time(ethereum_validators_monitoring_user_validators[28h]))",
         "description": "",
         "hide": 0,
         "includeAll": false,
@@ -5902,7 +5902,7 @@
         "name": "nos_name_var",
         "options": [],
         "query": {
-          "query": "query_result(ethereum_validators_monitoring_user_validators)",
+          "query": "query_result(last_over_time(ethereum_validators_monitoring_user_validators[28h]))",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
@@ -5949,7 +5949,7 @@
           "type": "prometheus",
           "uid": "PBFA97CFB590B2093"
         },
-        "definition": "query_result(ethereum_validators_monitoring_epoch_number)",
+        "definition": "query_result(last_over_time(ethereum_validators_monitoring_epoch_number[28h]))",
         "description": "Last epoch number",
         "hide": 2,
         "includeAll": false,
@@ -5958,7 +5958,7 @@
         "name": "epoch_number_var",
         "options": [],
         "query": {
-          "query": "query_result(ethereum_validators_monitoring_epoch_number)",
+          "query": "query_result(last_over_time(ethereum_validators_monitoring_epoch_number[28h]))",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -5977,16 +5977,16 @@
           "type": "prometheus",
           "uid": "PBFA97CFB590B2093"
         },
-        "definition": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
+        "definition": "query_result(last_over_time(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg[28h]))",
         "description": "Sync participation distance down from Blockchain average",
         "hide": 2,
         "includeAll": false,
-        "label": "Sync participation distance down from chain avg",
+        "label": "Sync participation distance down from chain average",
         "multi": false,
         "name": "sync_participation_distance_var",
         "options": [],
         "query": {
-          "query": "query_result(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg)",
+          "query": "query_result(last_over_time(ethereum_validators_monitoring_sync_participation_distance_down_from_chain_avg[28h]))",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -6077,16 +6077,16 @@
           "type": "prometheus",
           "uid": "PBFA97CFB590B2093"
         },
-        "definition": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
+        "definition": "query_result(last_over_time(ethereum_validators_monitoring_chain_sync_participation_avg_percent[28h]))",
         "description": "Chain sync participation average value",
         "hide": 2,
         "includeAll": false,
-        "label": "Chain sync participation avg",
+        "label": "Chain sync participation average",
         "multi": false,
         "name": "chain_sync_avg_participation",
         "options": [],
         "query": {
-          "query": "query_result(ethereum_validators_monitoring_chain_sync_participation_avg_percent)",
+          "query": "query_result(last_over_time(ethereum_validators_monitoring_chain_sync_participation_avg_percent[28h]))",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -6133,7 +6133,7 @@
           "type": "prometheus",
           "uid": "PBFA97CFB590B2093"
         },
-        "definition": "query_result(label_join(ethereum_validators_monitoring_user_validators{nos_name='${nos_name_var}'}, \"nos_global_index\", \";\", \"nos_module_id\", \"nos_id\"))",
+        "definition": "query_result(label_join(last_over_time(ethereum_validators_monitoring_user_validators{nos_name='${nos_name_var}'}[28h]), \"nos_global_index\", \";\", \"nos_module_id\", \"nos_id\"))",
         "description": "",
         "hide": 2,
         "includeAll": false,
@@ -6142,7 +6142,7 @@
         "name": "nos_global_index_var",
         "options": [],
         "query": {
-          "query": "query_result(label_join(ethereum_validators_monitoring_user_validators{nos_name='${nos_name_var}'}, \"nos_global_index\", \";\", \"nos_module_id\", \"nos_id\"))",
+          "query": "query_result(label_join(last_over_time(ethereum_validators_monitoring_user_validators{nos_name='${nos_name_var}'}[28h]), \"nos_global_index\", \";\", \"nos_module_id\", \"nos_id\"))",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -6161,7 +6161,7 @@
           "type": "prometheus",
           "uid": "PBFA97CFB590B2093"
         },
-        "definition": "query_result(operators_indexes_map{main_global_index='${nos_global_index_var}'} == ${show_dvts_var})",
+        "definition": "query_result(last_over_time(operators_indexes_map{main_global_index='${nos_global_index_var}'}[28h]) == ${show_dvts_var})",
         "description": "",
         "hide": 2,
         "includeAll": false,
@@ -6170,7 +6170,7 @@
         "name": "dvt_nos_global_indexes_var",
         "options": [],
         "query": {
-          "query": "query_result(operators_indexes_map{main_global_index='${nos_global_index_var}'} == ${show_dvts_var})",
+          "query": "query_result(last_over_time(operators_indexes_map{main_global_index='${nos_global_index_var}'}[28h]) == ${show_dvts_var})",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -6189,7 +6189,7 @@
           "type": "prometheus",
           "uid": "PBFA97CFB590B2093"
         },
-        "definition": "query_result(ethereum_validators_monitoring_user_operators_identifies{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var}'})",
+        "definition": "query_result(last_over_time(ethereum_validators_monitoring_user_operators_identifies{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var}'}[28h]))",
         "description": "",
         "hide": 2,
         "includeAll": true,
@@ -6198,7 +6198,7 @@
         "name": "mapped_nos_names_var",
         "options": [],
         "query": {
-          "query": "query_result(ethereum_validators_monitoring_user_operators_identifies{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var}'})",
+          "query": "query_result(last_over_time(ethereum_validators_monitoring_user_operators_identifies{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var}'}[28h]))",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -6219,6 +6219,6 @@
   "timezone": "",
   "title": "NodeOperators",
   "uid": "3wimU2H7h",
-  "version": 26,
+  "version": 27,
   "weekStart": ""
 }

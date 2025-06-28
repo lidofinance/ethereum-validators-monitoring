@@ -128,7 +128,7 @@ export class KeysapiSourceClient {
         throw err;
       }
       if (!res) {
-        this.logger.warn(`${err.message}. Error while doing KeysAPI request. Will try to switch to another API URL`);
+        this.logger.warn(`Error while doing KeysAPI request. Will try to switch to another API URL.\n${err.message}`);
       }
     }
 
