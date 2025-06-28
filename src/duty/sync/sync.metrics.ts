@@ -3,7 +3,13 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { allSettled } from 'common/functions/allSettled';
-import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric } from 'common/prometheus';
+import {
+  PrometheusService,
+  TrackTask,
+  getLabelsForMetricWithValIDs,
+  setOtherOperatorsMetric,
+  setUserOperatorsMetric,
+} from 'common/prometheus';
 import { ClickhouseService } from 'storage';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
@@ -85,27 +91,44 @@ export class SyncMetrics {
   }
 
   private async badSyncParticipationLastNEpoch(chainAvgSyncPercent: number) {
-    const data = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(
+    const fullExplorerUrl = this.config.getFullCLExplorerUrl();
+
+    const getLabels = (operator: RegistrySourceOperator, operatorData: any) => {
+      return getLabelsForMetricWithValIDs(operator, operatorData, fullExplorerUrl, {
+        epoch_interval: this.epochInterval,
+      });
+    };
+
+    const data = await this.storage.getValidatorsWithBadSyncParticipationLastNEpoch(
       this.processedEpoch,
       this.epochInterval,
       chainAvgSyncPercent,
     );
-    setUserOperatorsMetric(this.prometheus.validatorsCountWithSyncParticipationLessAvgLastNEpoch, data, this.operators, {
-      epoch_interval: this.epochInterval,
-    });
+    setUserOperatorsMetric(this.prometheus.validatorsCountWithSyncParticipationLessAvgLastNEpoch, data, this.operators, getLabels);
   }
 
   private async highRewardSyncParticipationLastNEpoch(chainAvgSyncPercent: number, possibleHighRewardValidators: string[]) {
     if (possibleHighRewardValidators.length > 0) {
-      const data = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(
+      const fullExplorerUrl = this.config.getFullCLExplorerUrl();
+
+      const getLabels = (operator: RegistrySourceOperator, operatorData: any) => {
+        return getLabelsForMetricWithValIDs(operator, operatorData, fullExplorerUrl, {
+          epoch_interval: this.epochInterval,
+        });
+      };
+
+      const data = await this.storage.getValidatorsWithBadSyncParticipationLastNEpoch(
         this.processedEpoch,
         this.epochInterval,
         chainAvgSyncPercent,
         possibleHighRewardValidators,
       );
-      setUserOperatorsMetric(this.prometheus.highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch, data, this.operators, {
-        epoch_interval: this.epochInterval,
-      });
+      setUserOperatorsMetric(
+        this.prometheus.highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch,
+        data,
+        this.operators,
+        getLabels,
+      );
     }
   }
 }

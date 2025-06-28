@@ -15,6 +15,13 @@ export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
     return super.get(key, { infer: true }) as EnvironmentVariables[T];
   }
 
+  public getFullCLExplorerUrl(): string {
+    const explorerDomain = this.get('CL_EXPLORER_URL');
+    const explorerUrlSuffix = this.get('CL_EXPLORER_VALIDATORS_URL_SUFFIX');
+
+    return explorerDomain != null && explorerDomain !== '' && explorerUrlSuffix != null ? explorerDomain + explorerUrlSuffix : '';
+  }
+
   public getCriticalAlertParamForModule(moduleIndex: number): CriticalAlertParamsForModule {
     const minValCount = this.get('CRITICAL_ALERTS_MIN_VAL_COUNT');
     const minActiveValCount = this.get('CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT');
