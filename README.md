@@ -316,7 +316,7 @@ in the CL explorer. For example, for "beaconcha.in" this value should be `/valid
 ---
 `VAL_COUNT_IN_ALERT_BODY` - Number of validators affected by the specific alert listed in the alert body.
 * **Required:** false
-* **Default:** 20
+* **Default:** 10
 ---
 `CRITICAL_ALERTS_ALERTMANAGER_URL` - If passed, application sends additional critical alerts about validators
 performance to Alertmanager.

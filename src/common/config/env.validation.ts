@@ -281,9 +281,9 @@ export class EnvironmentVariables {
 
   @IsNumber()
   @Min(1)
-  @Max(50)
+  @Max(20)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
-  public VAL_COUNT_IN_ALERT_BODY = 20;
+  public VAL_COUNT_IN_ALERT_BODY = 10;
 
   /**
    * Critical alerts will be sent for NOs with validators count greater this value
