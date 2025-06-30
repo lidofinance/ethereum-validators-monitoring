@@ -70,8 +70,7 @@ const testProposerMember = {
     val_stuck: false,
     ///
     is_proposer: true,
-    block_to_propose: 4895297,
-    block_proposed: true,
+    block_proposals: [[4895297, true]],
     ///
     att_happened: true,
     att_inc_delay: 1,

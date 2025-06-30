@@ -24,8 +24,7 @@ export interface ValidatorDutySummary {
   val_effective_balance?: bigint;
   ///
   is_proposer?: boolean;
-  block_to_propose?: number;
-  block_proposed?: boolean;
+  block_proposals?: [number, boolean][];
   ///
   is_sync?: boolean;
   sync_percent?: number;

@@ -22,16 +22,26 @@ export class ProposeService {
     this.logger.log(`Start getting proposers duties info`);
     const proposersDutyInfo = await this.clClient.getCanonicalProposerDuties(epoch);
     this.logger.log(`Processing proposers duties info`);
-    for (const prop of proposersDutyInfo) {
-      const index = Number(prop.validator_index);
-      const slot = Number(prop.slot);
-      const blockHeader = await this.clClient.getBlockHeader(prop.slot);
+    const proposersDutyInfoByIndex = proposersDutyInfo.reduce((acc, cur) => {
+      const index = cur.validator_index;
+      if (!acc[index]) {
+        acc[index] = [];
+      }
+      acc[index].push(cur);
+      return acc;
+    }, {});
+    for (const [index, props] of Object.entries(proposersDutyInfoByIndex)) {
+      const propsResults: [number, boolean][] = await Promise.all(
+        (<any[]>props).map(async (p) => {
+          const blockHeader = await this.clClient.getBlockHeader(p.slot);
+          return [Number(p.slot), !!blockHeader];
+        }),
+      );
       this.summary.epoch(epoch).set({
         epoch,
-        val_id: index,
+        val_id: Number(index),
         is_proposer: true,
-        block_to_propose: slot,
-        block_proposed: !!blockHeader,
+        block_proposals: propsResults,
       });
     }
   }
