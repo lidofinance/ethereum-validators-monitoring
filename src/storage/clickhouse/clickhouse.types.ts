@@ -22,20 +22,6 @@ export interface NOsValidatorsNegDeltaCount {
   amount: number;
 }
 
-export interface NOsValidatorsNegDelta {
-  val_id: string;
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: string;
-}
-
-export interface NOsValidatorsNegDeltaWithValIDs {
-  val_ids: string;
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
 export interface NOsValidatorsSyncAvgPercent {
   val_nos_module_id: string;
   val_nos_id: string;
@@ -48,55 +34,13 @@ export interface NOsValidatorsSyncByConditionCount {
   amount: number;
 }
 
-export interface NOsValidatorsSyncByCondition {
-  val_id: string;
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: string;
-}
-
-export interface NOsValidatorsSyncByConditionWithValIDs {
-  val_ids: string;
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
 export interface NOsValidatorsByConditionAttestationCount {
   val_nos_module_id: string;
   val_nos_id: string;
   amount: number;
 }
 
-export interface NOsValidatorsByConditionAttestation {
-  val_id: string;
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: string;
-}
-
-export interface NOsValidatorsByConditionAttestationWithValIDs {
-  val_ids: string;
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
 export interface NOsValidatorsByConditionProposeCount {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
-export interface NOsValidatorsByConditionPropose {
-  val_id: string;
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: string;
-}
-
-export interface NOsValidatorsByConditionProposeWithValIDs {
-  val_ids: string;
   val_nos_module_id: string;
   val_nos_id: string;
   amount: number;

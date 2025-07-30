@@ -5,14 +5,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
-import {
-  Owner,
-  PrometheusService,
-  PrometheusValStatus,
-  TrackTask,
-  getLabelsForMetricWithValIDs,
-  setUserOperatorsMetric,
-} from 'common/prometheus';
+import { Owner, PrometheusService, PrometheusValStatus, TrackTask, setUserOperatorsMetric } from 'common/prometheus';
 import { ClickhouseService } from 'storage/clickhouse';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 import { LidoSourceService } from 'validators-registry/lido-source';
@@ -56,6 +49,7 @@ export class StateMetrics {
       this.prometheus.operatorsIdentifies,
       this.operators.map((operator) => ({ val_nos_id: operator.index, amount: 1 })),
       this.operators,
+      (o) => ({ nos_module_id: o.module, nos_id: o.index, nos_name: o.name }),
     );
   }
 
@@ -223,14 +217,8 @@ export class StateMetrics {
   }
 
   private async negativeValidatorsCount() {
-    const fullExplorerUrl = this.config.getFullCLExplorerUrl();
-
-    const getLabels = (operator: RegistrySourceOperator, operatorData: any) => {
-      return getLabelsForMetricWithValIDs(operator, operatorData, fullExplorerUrl);
-    };
-
-    const data = await this.storage.getValidatorsWithNegativeDelta(this.processedEpoch);
-    setUserOperatorsMetric(this.prometheus.validatorsCountWithNegativeBalanceDelta, data, this.operators, getLabels);
+    const data = await this.storage.getValidatorsCountWithNegativeDelta(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.validatorsCountWithNegativeBalanceDelta, data, this.operators);
   }
 
   private async totalBalance24hDifference() {
