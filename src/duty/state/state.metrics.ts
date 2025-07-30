@@ -49,7 +49,6 @@ export class StateMetrics {
       this.prometheus.operatorsIdentifies,
       this.operators.map((operator) => ({ val_nos_id: operator.index, amount: 1 })),
       this.operators,
-      (o) => ({ nos_module_id: o.module, nos_id: o.index, nos_name: o.name }),
     );
   }
 
