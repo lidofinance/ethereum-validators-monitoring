@@ -4,13 +4,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
-import {
-  PrometheusService,
-  TrackTask,
-  getLabelsForMetricWithValIDs,
-  setOtherOperatorsMetric,
-  setUserOperatorsMetric,
-} from 'common/prometheus';
+import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric } from 'common/prometheus';
 import { ClickhouseService } from 'storage/clickhouse';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
@@ -106,16 +100,10 @@ export class AttestationMetrics {
   }
 
   private async missAttestationsLastNEpoch() {
-    const fullExplorerUrl = this.config.getFullCLExplorerUrl();
-
-    const getLabels = (operator: RegistrySourceOperator, operatorData: any) => {
-      return getLabelsForMetricWithValIDs(operator, operatorData, fullExplorerUrl, {
-        epoch_interval: this.epochInterval,
-      });
-    };
-
-    const data = await this.storage.getValidatorsWithMissedAttestationsLastNEpoch(this.processedEpoch);
-    setUserOperatorsMetric(this.prometheus.validatorsCountMissAttestationLastNEpoch, data, this.operators, getLabels);
+    const data = await this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.validatorsCountMissAttestationLastNEpoch, data, this.operators, {
+      epoch_interval: this.epochInterval,
+    });
   }
 
   private async highIncDelayAttestationsLastNEpoch() {
@@ -151,46 +139,28 @@ export class AttestationMetrics {
   }
 
   private async incDelayGtTwoAttestationsLastNEpoch() {
-    const fullExplorerUrl = this.config.getFullCLExplorerUrl();
-
-    const getLabels = (operator: RegistrySourceOperator, operatorData: any) => {
-      return getLabelsForMetricWithValIDs(operator, operatorData, fullExplorerUrl, {
-        epoch_interval: this.epochInterval,
-      });
-    };
-
-    const data = await this.storage.getValidatorsIncDelayGtTwoAttestationsLastNEpoch(this.processedEpoch);
-    setUserOperatorsMetric(this.prometheus.validatorsCountHighIncDelayAttestationLastNEpoch, data, this.operators, getLabels);
+    const data = await this.storage.getValidatorCountIncDelayGtTwoAttestationsLastNEpoch(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.validatorsCountHighIncDelayAttestationLastNEpoch, data, this.operators, {
+      epoch_interval: this.epochInterval,
+    });
   }
 
   private async invalidAttestationPropertyGtOneLastNEpoch() {
-    const fullExplorerUrl = this.config.getFullCLExplorerUrl();
-
-    const getLabels = (operator: RegistrySourceOperator, operatorData: any) => {
-      return getLabelsForMetricWithValIDs(operator, operatorData, fullExplorerUrl, {
-        epoch_interval: this.epochInterval,
-      });
-    };
-
-    const data = await this.storage.getValidatorsWithInvalidAttestationsPropertyGtOneLastNEpoch(this.processedEpoch);
-    setUserOperatorsMetric(this.prometheus.validatorsCountInvalidAttestationPropertyLastNEpoch, data, this.operators, getLabels);
+    const data = await this.storage.getValidatorCountWithInvalidAttestationsPropertyGtOneLastNEpoch(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.validatorsCountInvalidAttestationPropertyLastNEpoch, data, this.operators, {
+      epoch_interval: this.epochInterval,
+    });
   }
 
   private async highRewardMissAttestationsLastNEpoch(possibleHighRewardValidators: string[]) {
     if (possibleHighRewardValidators.length > 0) {
-      const fullExplorerUrl = this.config.getFullCLExplorerUrl();
-
-      const getLabels = (operator: RegistrySourceOperator, operatorData: any) => {
-        return getLabelsForMetricWithValIDs(operator, operatorData, fullExplorerUrl, {
-          epoch_interval: this.epochInterval,
-        });
-      };
-
-      const data = await this.storage.getValidatorsWithHighRewardMissedAttestationsLastNEpoch(
+      const data = await this.storage.getValidatorCountWithHighRewardMissedAttestationsLastNEpoch(
         this.processedEpoch,
         possibleHighRewardValidators,
       );
-      setUserOperatorsMetric(this.prometheus.highRewardValidatorsCountMissAttestationLastNEpoch, data, this.operators, getLabels);
+      setUserOperatorsMetric(this.prometheus.highRewardValidatorsCountMissAttestationLastNEpoch, data, this.operators, {
+        epoch_interval: this.epochInterval,
+      });
     }
   }
 }

@@ -3,7 +3,6 @@ import { Readable, Transform } from 'stream';
 import { ClickHouseClient, createClient } from '@clickhouse/client';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
-import { xorWith } from 'lodash';
 import { chain } from 'stream-chain';
 import { batch } from 'stream-json/utils/Batch';
 
@@ -35,13 +34,9 @@ import {
   userValidatorsSummaryStatsQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
   validatorQuantile0001BalanceDeltasQuery,
-  validatorsByConditionAttestationLastNEpochQuery,
-  validatorsByConditionMissProposeQuery,
   validatorsCountByConditionMissProposeQuery,
   validatorsCountWithNegativeDeltaQuery,
   validatorsCountWithSyncParticipationByConditionLastNEpochQuery,
-  validatorsWithNegativeDeltaQuery,
-  validatorsWithSyncParticipationByConditionLastNEpochQuery,
 } from './clickhouse.constants';
 import {
   AvgChainRewardsStats,
@@ -49,21 +44,13 @@ import {
   NOsBalance24hDiff,
   NOsDelta,
   NOsProposesStats,
-  NOsValidatorsByConditionAttestation,
   NOsValidatorsByConditionAttestationCount,
-  NOsValidatorsByConditionAttestationWithValIDs,
-  NOsValidatorsByConditionPropose,
   NOsValidatorsByConditionProposeCount,
-  NOsValidatorsByConditionProposeWithValIDs,
-  NOsValidatorsNegDelta,
   NOsValidatorsNegDeltaCount,
-  NOsValidatorsNegDeltaWithValIDs,
   NOsValidatorsRewardsStats,
   NOsValidatorsStatusStats,
   NOsValidatorsSyncAvgPercent,
-  NOsValidatorsSyncByCondition,
   NOsValidatorsSyncByConditionCount,
-  NOsValidatorsSyncByConditionWithValIDs,
   NOsWithdrawalsStats,
   SyncCommitteeParticipationAvgPercents,
   ValidatorsStatusStats,
@@ -282,34 +269,6 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  public async getValidatorsWithNegativeDelta(epoch: Epoch): Promise<NOsValidatorsNegDeltaWithValIDs[]> {
-    const queryResult = await this.select<NOsValidatorsNegDelta[]>(
-      validatorsWithNegativeDeltaQuery(epoch, this.config.get('VAL_COUNT_IN_ALERT_BODY')),
-    );
-
-    const oldQueryResult = await this.select<NOsValidatorsNegDeltaCount[]>(validatorsCountWithNegativeDeltaQuery(epoch));
-
-    const result = getQueryResultWithGroupedValIDs(queryResult);
-
-    if (oldQueryResult.length !== result.length) {
-      this.logger.error(
-        `getValidatorsWithNegativeDelta: Incorrect data fetched from the DB. Old query result length: ${oldQueryResult.length}, new query result length: ${result.length}`,
-      );
-    } else {
-      const diff = xorWith(
-        oldQueryResult,
-        result,
-        (l, r) => l.val_nos_module_id === r.val_nos_module_id && l.val_nos_id === r.val_nos_id && Number(l.amount) === Number(r.amount),
-      );
-
-      if (diff.length !== 0) {
-        this.logger.error(`getValidatorsWithNegativeDelta: Incorrect data fetched from the DB. Mismatch in ${diff.length} objects.`);
-      }
-    }
-
-    return result;
-  }
-
   /**
    * Send query to Clickhouse and receives information about User Sync Committee participants
    */
@@ -392,54 +351,6 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  public async getValidatorsWithBadSyncParticipationLastNEpoch(
-    epoch: Epoch,
-    epochInterval: number,
-    chainAvg: number,
-    validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsSyncByConditionWithValIDs[]> {
-    const queryResult = await this.select<NOsValidatorsSyncByCondition[]>(
-      validatorsWithSyncParticipationByConditionLastNEpochQuery(
-        epoch,
-        epochInterval,
-        validatorIndexes,
-        `sync_percent < abs(${chainAvg} - ${this.config.get('SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG')})`,
-        this.config.get('VAL_COUNT_IN_ALERT_BODY'),
-      ),
-    );
-
-    const oldQueryResult = await this.select<NOsValidatorsSyncByConditionCount[]>(
-      validatorsCountWithSyncParticipationByConditionLastNEpochQuery(
-        epoch,
-        epochInterval,
-        validatorIndexes,
-        `sync_percent < abs(${chainAvg} - ${this.config.get('SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG')})`,
-      ),
-    );
-
-    const result = getQueryResultWithGroupedValIDs(queryResult);
-
-    if (oldQueryResult.length !== result.length) {
-      this.logger.error(
-        `getValidatorsWithBadSyncParticipationLastNEpoch: Incorrect data fetched from the DB. Old query result length: ${oldQueryResult.length}, new query result length: ${result.length}`,
-      );
-    } else {
-      const diff = xorWith(
-        oldQueryResult,
-        result,
-        (l, r) => l.val_nos_module_id === r.val_nos_module_id && l.val_nos_id === r.val_nos_id && Number(l.amount) === Number(r.amount),
-      );
-
-      if (diff.length !== 0) {
-        this.logger.error(
-          `getValidatorsWithBadSyncParticipationLastNEpoch: Incorrect data fetched from the DB. Mismatch in ${diff.length} objects.`,
-        );
-      }
-    }
-
-    return result;
-  }
-
   public async getValidatorCountWithPerfectAttestationsLastEpoch(epoch: Epoch) {
     return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
@@ -476,12 +387,8 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
-  public async getValidatorsWithMissedAttestationsLastNEpoch(epoch: Epoch) {
-    return await this.getValidatorsByConditionAttestationsLastNEpoch(epoch, this.config.get('BAD_ATTESTATION_EPOCHS'), 'att_happened = 0');
-  }
-
-  public async getValidatorsWithHighRewardMissedAttestationsLastNEpoch(epoch: Epoch, possibleHighRewardValidators: string[]) {
-    return await this.getValidatorsByConditionAttestationsLastNEpoch(
+  public async getValidatorCountWithHighRewardMissedAttestationsLastNEpoch(epoch: Epoch, possibleHighRewardValidators: string[]) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
       'att_happened = 0',
@@ -497,8 +404,8 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
-  public async getValidatorsIncDelayGtTwoAttestationsLastNEpoch(epoch: Epoch) {
-    return await this.getValidatorsByConditionAttestationsLastNEpoch(
+  public async getValidatorCountIncDelayGtTwoAttestationsLastNEpoch(epoch: Epoch) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
       'att_happened = 1 AND att_inc_delay > 2',
@@ -529,8 +436,8 @@ export class ClickhouseService implements OnModuleInit {
     );
   }
 
-  public async getValidatorsWithInvalidAttestationsPropertyGtOneLastNEpoch(epoch: Epoch) {
-    return await this.getValidatorsByConditionAttestationsLastNEpoch(
+  public async getValidatorCountWithInvalidAttestationsPropertyGtOneLastNEpoch(epoch: Epoch) {
+    return await this.getValidatorCountByConditionAttestationsLastNEpoch(
       epoch,
       this.config.get('BAD_ATTESTATION_EPOCHS'),
       '(att_valid_head + att_valid_target + att_valid_source = 1)',
@@ -557,53 +464,6 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  private async getValidatorsByConditionAttestationsLastNEpoch(
-    epoch: Epoch,
-    epochInterval: number,
-    condition: string,
-    validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsByConditionAttestationWithValIDs[]> {
-    const queryResult = await this.select<NOsValidatorsByConditionAttestation[]>(
-      validatorsByConditionAttestationLastNEpochQuery(
-        epoch,
-        epochInterval,
-        validatorIndexes,
-        condition,
-        this.config.get('VAL_COUNT_IN_ALERT_BODY'),
-      ),
-    );
-
-    /**
-     * @todo Only for testing purposes. Remove once tests are finished. Also remove all unused symbols throughout
-     * the project.
-     */
-    const oldQueryResult = await this.select<NOsValidatorsByConditionAttestationCount[]>(
-      validatorCountByConditionAttestationLastNEpochQuery(epoch, epochInterval, validatorIndexes, condition),
-    );
-
-    const result = getQueryResultWithGroupedValIDs(queryResult);
-
-    if (oldQueryResult.length !== result.length) {
-      this.logger.error(
-        `getValidatorsByConditionAttestationsLastNEpoch: Incorrect data fetched from the DB. Old query result length: ${oldQueryResult.length}, new query result length: ${result.length}`,
-      );
-    } else {
-      const diff = xorWith(
-        oldQueryResult,
-        result,
-        (l, r) => l.val_nos_module_id === r.val_nos_module_id && l.val_nos_id === r.val_nos_id && Number(l.amount) === Number(r.amount),
-      );
-
-      if (diff.length !== 0) {
-        this.logger.error(
-          `getValidatorsByConditionAttestationsLastNEpoch: Incorrect data fetched from the DB. Mismatch in ${diff.length} objects.`,
-        );
-      }
-    }
-
-    return result;
-  }
-
   public async getValidatorsCountWithGoodProposes(
     epoch: Epoch,
     validatorIndexes: string[] = [],
@@ -618,37 +478,22 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  public async getValidatorsWithMissedProposes(
+  /**
+   * Send query to Clickhouse and receives information about
+   * how many User Node Operator validators miss proposals at our last processed epoch
+   */
+  public async getValidatorsCountWithMissedProposes(
     epoch: Epoch,
     validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsByConditionProposeWithValIDs[]> {
-    const queryResult = await this.select<NOsValidatorsByConditionPropose[]>(
-      validatorsByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 0', this.config.get('VAL_COUNT_IN_ALERT_BODY')),
-    );
-
-    const oldQueryResult = await this.select<NOsValidatorsByConditionProposeCount[]>(
-      validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 0'),
-    );
-
-    const result = getQueryResultWithGroupedValIDs(queryResult);
-
-    if (oldQueryResult.length !== result.length) {
-      this.logger.error(
-        `getValidatorsWithMissedProposes: Incorrect data fetched from the DB. Old query result length: ${oldQueryResult.length}, new query result length: ${result.length}`,
-      );
-    } else {
-      const diff = xorWith(
-        oldQueryResult,
-        result,
-        (l, r) => l.val_nos_module_id === r.val_nos_module_id && l.val_nos_id === r.val_nos_id && Number(l.amount) === Number(r.amount),
-      );
-
-      if (diff.length !== 0) {
-        this.logger.error(`getValidatorsWithMissedProposes: Incorrect data fetched from the DB. Mismatch in ${diff.length} objects.`);
-      }
-    }
-
-    return result;
+  ): Promise<NOsValidatorsByConditionProposeCount[]> {
+    return (
+      await this.select<NOsValidatorsByConditionProposeCount[]>(
+        validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 0'),
+      )
+    ).map((v) => ({
+      ...v,
+      amount: Number(v.amount),
+    }));
   }
 
   public async getTotalBalance24hDifference(epoch: Epoch): Promise<{ val_nos_module_id; amount }[]> {
@@ -827,37 +672,4 @@ export class ClickhouseService implements OnModuleInit {
       partial_withdrawn_count: +v.partial_withdrawn_count,
     }))[0];
   }
-}
-
-function getQueryResultWithGroupedValIDs(
-  queryResult: {
-    val_id: string;
-    val_nos_module_id: string;
-    val_nos_id: string;
-    amount: string;
-  }[],
-): {
-  val_ids: string;
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}[] {
-  const result = [];
-
-  queryResult.forEach((qrItem) => {
-    const res = result.find((i) => i.val_nos_module_id === qrItem.val_nos_module_id && i.val_nos_id === qrItem.val_nos_id);
-
-    if (res == null) {
-      result.push({
-        val_ids: qrItem.val_id,
-        val_nos_module_id: qrItem.val_nos_module_id,
-        val_nos_id: qrItem.val_nos_id,
-        amount: Number(qrItem.amount),
-      });
-    } else {
-      res.val_ids += `,${qrItem.val_id}`;
-    }
-  });
-
-  return result;
 }

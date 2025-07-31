@@ -4,13 +4,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigService } from 'common/config';
 import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
-import {
-  PrometheusService,
-  TrackTask,
-  getLabelsForMetricWithValIDs,
-  setOtherOperatorsMetric,
-  setUserOperatorsMetric,
-} from 'common/prometheus';
+import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric } from 'common/prometheus';
 import { ClickhouseService } from 'storage';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
@@ -41,27 +35,15 @@ export class ProposeMetrics {
   }
 
   private async missProposes() {
-    const fullExplorerUrl = this.config.getFullCLExplorerUrl();
-
-    const getLabels = (operator: RegistrySourceOperator, operatorData: any) => {
-      return getLabelsForMetricWithValIDs(operator, operatorData, fullExplorerUrl);
-    };
-
-    const data = await this.storage.getValidatorsWithMissedProposes(this.processedEpoch);
-    setUserOperatorsMetric(this.prometheus.validatorsCountMissPropose, data, this.operators, getLabels);
+    const data = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.validatorsCountMissPropose, data, this.operators);
     setOtherOperatorsMetric(this.prometheus.otherValidatorsCountMissPropose, data);
   }
 
   private async highRewardMissProposes(possibleHighRewardValidators: string[]) {
     if (possibleHighRewardValidators.length > 0) {
-      const fullExplorerUrl = this.config.getFullCLExplorerUrl();
-
-      const getLabels = (operator: RegistrySourceOperator, operatorData: any) => {
-        return getLabelsForMetricWithValIDs(operator, operatorData, fullExplorerUrl);
-      };
-
-      const data = await this.storage.getValidatorsWithMissedProposes(this.processedEpoch, possibleHighRewardValidators);
-      setUserOperatorsMetric(this.prometheus.highRewardValidatorsCountMissPropose, data, this.operators, getLabels);
+      const data = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch, possibleHighRewardValidators);
+      setUserOperatorsMetric(this.prometheus.highRewardValidatorsCountMissPropose, data, this.operators);
     }
   }
 }
