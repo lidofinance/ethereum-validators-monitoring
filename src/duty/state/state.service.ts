@@ -7,11 +7,11 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { ConsensusProviderService, ValStatus } from 'common/consensus-provider';
-import { Epoch, Slot } from 'common/consensus-provider/types';
+import { ConsensusProviderService } from 'common/consensus-provider';
 import { bigNumberSqrt } from 'common/functions/bigNumberSqrt';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { Epoch, Slot, ValStatus } from 'common/types/types';
 import { SummaryService } from 'duty/summary';
 import { ClickhouseService } from 'storage/clickhouse';
 import { RegistryService } from 'validators-registry';

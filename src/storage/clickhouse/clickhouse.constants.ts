@@ -1,5 +1,4 @@
-import { ValStatus } from 'common/consensus-provider';
-import { Epoch } from 'common/consensus-provider/types';
+import { Epoch, ValStatus } from 'common/types/types';
 
 const perfStatuses = [ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed, ValStatus.PendingInitialized]
   .map((s) => `'${s}'`)

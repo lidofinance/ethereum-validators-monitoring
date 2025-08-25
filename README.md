@@ -236,6 +236,16 @@ will throw an error.
 * **Required:** false
 * **Default:** 32
 ---
+`SPARSE_NETWORK_MODE` - Controls how the app searches previous and next not missing slots. If this mode is enabled, to
+find the next not missing CL slot, the app gets the number of the EL block next to the EL block corresponding to the
+latest known not missing slot, gets the timestamp of this block, and gets the CL slot that corresponds to this
+timestamp. If this mode is disabled, to find the next not missing CL slot the app iterates all next (or previous) CL
+slots one by one from the currently processed slot to find the not missing one up to the depth specified in the
+`CL_API_MAX_SLOT_DEEP_COUNT` variable. It is suggested to use the `SPARSE_NETWORK_MODE` mode only on networks with very
+many missed slots.
+* **Required:** false
+* **Default:** false
+---
 `FETCH_INTERVAL_SLOTS` - Count of slots in Ethereum consensus layer epoch.
 * **Required:** false
 * **Default:** 32
