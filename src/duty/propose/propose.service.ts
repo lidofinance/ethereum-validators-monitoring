@@ -22,6 +22,10 @@ export class ProposeService {
     this.logger.log(`Start getting proposers duties info`);
     const sparseMode = this.config.get('SPARSE_NETWORK_MODE');
     const proposersDutyInfo = await this.clClient.getCanonicalProposerDuties(epoch, sparseMode);
+    if (!proposersDutyInfo) {
+      throw new Error(`Cannot get proposer duties for the epoch ${epoch}`);
+    }
+
     this.logger.log(`Processing proposers duties info`);
     for (const prop of proposersDutyInfo) {
       const index = Number(prop.validator_index);

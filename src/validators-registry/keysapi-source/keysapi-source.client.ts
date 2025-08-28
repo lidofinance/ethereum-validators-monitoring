@@ -153,13 +153,13 @@ export class KeysapiSourceClient {
     }
     try {
       return JSON.parse(res.body);
-    } catch (e) {
+    } catch {
       throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
     }
   }
 
   @TrackKeysAPIRequest
-  protected async apiGetStream(apiURL: string, subUrl: string): Promise<Request> {
+  protected async apiGetStream(apiURL: string, subUrl: string): Promise<Request | void> {
     const readStream = got.stream.get(urljoin(apiURL, subUrl), {
       timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RESPONSE_TIMEOUT') },
     });

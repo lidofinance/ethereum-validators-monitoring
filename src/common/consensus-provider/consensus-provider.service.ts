@@ -30,8 +30,6 @@ import {
 type BlockId = RootHex | Slot | 'head' | 'genesis' | 'finalized';
 
 let ssz: typeof import('@lodestar/types').ssz;
-let anySsz: typeof ssz.phase0 | typeof ssz.altair | typeof ssz.bellatrix | typeof ssz.capella | typeof ssz.deneb | typeof ssz.electra;
-let ForkName: typeof import('@lodestar/params').ForkName;
 
 interface RequestRetryOptions {
   maxRetries?: number;
@@ -118,7 +116,7 @@ export class ConsensusProviderService {
     return (this.genesisTime = genesisTime);
   }
 
-  public async getLatestSlotHeader(epoch: Epoch): Promise<BlockHeaderResponse> {
+  public async getLatestSlotHeader(epoch: Epoch): Promise<BlockHeaderResponse | void> {
     return await this.retryRequest<BlockHeaderResponse>(
       async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(this.workingMode)),
       {
@@ -228,18 +226,18 @@ export class ConsensusProviderService {
     return (await this.getCurrentOrPreviousNotMissedBlockHeader(dutyRootSlot, sparseMode, this.defaultMaxSlotDeepCount, ignoreCache)).root;
   }
 
-  public async getState(stateId: StateId): Promise<ContainerTreeViewType<typeof anySsz.BeaconState.fields>> {
+  public async getState(stateId: StateId): Promise<ContainerTreeViewType<any>> {
     const { body, headers } = await this.retryRequest<{ body: BodyReadable; headers: IncomingHttpHeaders }>(
       async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.state(stateId), { accept: 'application/octet-stream' }),
       {
         dataOnly: false,
       },
     );
-    const forkName = headers['eth-consensus-version'] as keyof typeof ForkName;
+    const forkName = headers['eth-consensus-version'] as keyof typeof import('@lodestar/params').ForkName;
     const bodyBytes = new Uint8Array(await body.arrayBuffer());
     // ugly hack to import ESModule to CommonJS project
     ssz = await eval(`import('@lodestar/types').then((m) => m.ssz)`);
-    return ssz[forkName].BeaconState.deserializeToView(bodyBytes) as any as ContainerTreeViewType<typeof anySsz.BeaconState.fields>;
+    return ssz[forkName].BeaconState.deserializeToView(bodyBytes) as any as ContainerTreeViewType<any>;
   }
 
   public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse | void> {
@@ -321,7 +319,7 @@ export class ConsensusProviderService {
     sparseMode = false,
     maxRetriesForGetCanonical = 3,
     ignoreCache = false,
-  ): Promise<ProposerDutyInfo[]> {
+  ): Promise<ProposerDutyInfo[] | void> {
     const retry = retrier(this.logger, maxRetriesForGetCanonical, 100, 10000, true);
     const request = async () => {
       const dependentRoot = await this.getDutyDependentRoot(epoch, sparseMode, ignoreCache);

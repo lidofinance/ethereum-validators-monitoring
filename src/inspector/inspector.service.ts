@@ -3,7 +3,7 @@ import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common'
 
 import { CriticalAlertsService } from 'common/alertmanager';
 import { ConfigService, WorkingMode } from 'common/config';
-import { ConsensusProviderService } from 'common/consensus-provider';
+import { BlockHeaderResponse, ConsensusProviderService } from 'common/consensus-provider';
 import { BlockCacheService } from 'common/consensus-provider/block-cache';
 import { sleep } from 'common/functions/sleep';
 import { PrometheusService, TrackTask } from 'common/prometheus';
@@ -79,7 +79,7 @@ export class InspectorService implements OnModuleInit {
 
   protected async getEpochDataToProcess(): Promise<EpochProcessingState & { slot: Slot }> {
     const chosen = await this.chooseEpochToProcess();
-    const latestSlotHeaderResponse = await this.clClient.getLatestSlotHeader(chosen.epoch);
+    const latestSlotHeaderResponse = <BlockHeaderResponse>await this.clClient.getLatestSlotHeader(chosen.epoch);
     const latestBeaconSlot = Number(latestSlotHeaderResponse.header.message.slot);
     this.logger.debug(
       `getEpochDataToProcess: latest slot [${latestBeaconSlot}], chosen epoch [${chosen.epoch}], chosen slot [${chosen.slot}]`,
