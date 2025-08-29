@@ -159,7 +159,7 @@ export class KeysapiSourceClient {
   }
 
   @TrackKeysAPIRequest
-  protected async apiGetStream(apiURL: string, subUrl: string): Promise<Request | void> {
+  protected async apiGetStream(apiURL: string, subUrl: string): Promise<Request> {
     const readStream = got.stream.get(urljoin(apiURL, subUrl), {
       timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RESPONSE_TIMEOUT') },
     });
