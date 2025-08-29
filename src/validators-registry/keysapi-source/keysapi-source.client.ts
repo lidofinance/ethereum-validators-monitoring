@@ -153,7 +153,7 @@ export class KeysapiSourceClient {
     }
     try {
       return JSON.parse(res.body);
-    } catch (e) {
+    } catch {
       throw new ResponseError(`Error converting response body to JSON. Body: ${res.body}`);
     }
   }

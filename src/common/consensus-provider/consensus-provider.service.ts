@@ -30,8 +30,6 @@ import {
 type BlockId = RootHex | Slot | 'head' | 'genesis' | 'finalized';
 
 let ssz: typeof import('@lodestar/types').ssz;
-let anySsz: typeof ssz.phase0 | typeof ssz.altair | typeof ssz.bellatrix | typeof ssz.capella | typeof ssz.deneb | typeof ssz.electra;
-let ForkName: typeof import('@lodestar/params').ForkName;
 
 interface RequestRetryOptions {
   maxRetries?: number;
@@ -159,7 +157,7 @@ export class ConsensusProviderService {
     });
   }
 
-  public async getBlockHeader(blockId: BlockId, ignoreCache = false): Promise<BlockHeaderResponse | void> {
+  public async getBlockHeader(blockId: BlockId, ignoreCache = false): Promise<BlockHeaderResponse> {
     const cached = this.cache.get(String(blockId));
     if (!ignoreCache && cached != null && (cached.missed || cached.header)) {
       this.logger.debug(`Get ${blockId} header from blocks cache`);
@@ -167,31 +165,33 @@ export class ConsensusProviderService {
     }
 
     this.logger.debug(`Header for ${blockId} not found in blocks cache`);
-    const blockHeader = await this.retryRequest<BlockHeaderResponse>(
-      async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(blockId)),
-      {
-        maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
-        useFallbackOnRejected: (lastFallbackError, currFallbackError) => {
-          if (lastFallbackError != null && lastFallbackError.$httpCode === 404 && currFallbackError.$httpCode !== 404) {
-            this.logger.debug('Request error from last fallback was 404, but current is not. Will be used previous error');
-            throw lastFallbackError;
-          }
+    try {
+      const blockHeader = await this.retryRequest<BlockHeaderResponse>(
+        async (apiURL: string) => this.apiGet(apiURL, this.endpoints.beaconHeaders(blockId)),
+        {
+          maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
+          useFallbackOnRejected: (lastFallbackError, currFallbackError) => {
+            if (lastFallbackError != null && lastFallbackError.$httpCode === 404 && currFallbackError.$httpCode !== 404) {
+              this.logger.debug('Request error from last fallback was 404, but current is not. Will be used previous error');
+              throw lastFallbackError;
+            }
 
-          return true;
+            return true;
+          },
         },
-      },
-    ).catch((e) => {
-      if (e.$httpCode !== 404) {
-        this.logger.error('Unexpected status code while fetching block header');
-        throw e;
+      );
+
+      if (!ignoreCache) {
+        this.cache.set(String(blockId), { missed: !blockHeader, header: blockHeader });
       }
-    });
 
-    if (!ignoreCache) {
-      this.cache.set(String(blockId), { missed: !blockHeader, header: blockHeader });
+      return blockHeader;
+    } catch (error) {
+      if (error.$httpCode !== 404) {
+        this.logger.error('Unexpected status code while fetching block header');
+        throw error;
+      }
     }
-
-    return blockHeader;
   }
 
   /**
@@ -228,21 +228,21 @@ export class ConsensusProviderService {
     return (await this.getCurrentOrPreviousNotMissedBlockHeader(dutyRootSlot, sparseMode, this.defaultMaxSlotDeepCount, ignoreCache)).root;
   }
 
-  public async getState(stateId: StateId): Promise<ContainerTreeViewType<typeof anySsz.BeaconState.fields>> {
+  public async getState(stateId: StateId): Promise<ContainerTreeViewType<any>> {
     const { body, headers } = await this.retryRequest<{ body: BodyReadable; headers: IncomingHttpHeaders }>(
       async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.state(stateId), { accept: 'application/octet-stream' }),
       {
         dataOnly: false,
       },
     );
-    const forkName = headers['eth-consensus-version'] as keyof typeof ForkName;
+    const forkName = headers['eth-consensus-version'] as keyof typeof import('@lodestar/params').ForkName;
     const bodyBytes = new Uint8Array(await body.arrayBuffer());
     // ugly hack to import ESModule to CommonJS project
     ssz = await eval(`import('@lodestar/types').then((m) => m.ssz)`);
-    return ssz[forkName].BeaconState.deserializeToView(bodyBytes) as any as ContainerTreeViewType<typeof anySsz.BeaconState.fields>;
+    return ssz[forkName].BeaconState.deserializeToView(bodyBytes) as any as ContainerTreeViewType<any>;
   }
 
-  public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse | void> {
+  public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse> {
     const cached = this.cache.get(String(blockId));
     if (cached != null && (cached.missed || cached.info)) {
       this.logger.debug(`Get ${blockId} info from blocks cache`);
@@ -250,37 +250,39 @@ export class ConsensusProviderService {
     }
 
     this.logger.debug(`Info for ${blockId} not found in blocks cache`);
-    const blockInfo = await this.retryRequest<BlockInfoResponse>(
-      async (apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(blockId)),
-      {
-        maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
-        useFallbackOnResolved: (r) => {
-          if (this.workingMode === WorkingMode.Finalized && blockId !== 'head' && r.finalized != null && !r.finalized) {
-            this.logger.error(`getBlockInfo: slot [${r.data.message.slot}] is not finalized`);
+    try {
+      const blockInfo = await this.retryRequest<BlockInfoResponse>(
+        async (apiURL: string) => this.apiGet(apiURL, this.endpoints.blockInfo(blockId)),
+        {
+          maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
+          useFallbackOnResolved: (r) => {
+            if (this.workingMode === WorkingMode.Finalized && blockId !== 'head' && r.finalized != null && !r.finalized) {
+              this.logger.error(`getBlockInfo: slot [${r.data.message.slot}] is not finalized`);
+              return true;
+            }
+
+            return false;
+          },
+          useFallbackOnRejected: (lastFallbackError, currFallbackError) => {
+            if (lastFallbackError != null && lastFallbackError.$httpCode === 404 && currFallbackError.$httpCode !== 404) {
+              this.logger.debug('Request error from last fallback was 404, but current is not. Will be used previous error');
+              throw lastFallbackError;
+            }
+
             return true;
-          }
-
-          return false;
+          },
         },
-        useFallbackOnRejected: (lastFallbackError, currFallbackError) => {
-          if (lastFallbackError != null && lastFallbackError.$httpCode === 404 && currFallbackError.$httpCode !== 404) {
-            this.logger.debug('Request error from last fallback was 404, but current is not. Will be used previous error');
-            throw lastFallbackError;
-          }
+      );
 
-          return true;
-        },
-      },
-    ).catch((e) => {
-      if (e.$httpCode !== 404) {
+      this.cache.set(String(blockId), { missed: !blockInfo, info: blockInfo });
+
+      return blockInfo;
+    } catch (error) {
+      if (error.$httpCode !== 404) {
         this.logger.error('Unexpected status code while fetching block info');
-        throw e;
+        throw error;
       }
-    });
-
-    this.cache.set(String(blockId), { missed: !blockInfo, info: blockInfo });
-
-    return blockInfo;
+    }
   }
 
   public async getAttestationCommitteesInfo(slot: Slot, epoch: Epoch): Promise<BodyReadable> {
@@ -294,7 +296,7 @@ export class ConsensusProviderService {
       epoch = slotEpoch + 1;
     }
 
-    const { body }: BodyReadable = await this.retryRequest(
+    const { body } = await this.retryRequest(
       async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.attestationCommittees(slot, epoch)),
       {
         dataOnly: false,
@@ -350,7 +352,7 @@ export class ConsensusProviderService {
     return (await this.getGenesisTime()) + slot * this.config.get('CHAIN_SLOT_TIME_SECONDS');
   }
 
-  protected async retryRequest<T>(callback: (apiURL: string) => Promise<any>, options?: RequestRetryOptions): Promise<T> {
+  protected async retryRequest<T>(callback: (apiURL: string) => Promise<T>, options?: RequestRetryOptions): Promise<T> {
     options = {
       maxRetries: options?.maxRetries ?? this.config.get('CL_API_MAX_RETRIES'),
       dataOnly: options?.dataOnly ?? true,
