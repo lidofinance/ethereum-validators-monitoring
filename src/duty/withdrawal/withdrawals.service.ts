@@ -34,10 +34,13 @@ export class WithdrawalsService {
     for (const block of blocks) {
       const withdrawals = block.message.body.execution_payload.withdrawals ?? [];
       for (const withdrawal of withdrawals) {
+        const valId = Number(withdrawal.validator_index);
+        const valBalanceWithdrawn = this.summary.epoch(epoch).get(valId)?.val_balance_withdrawn ?? BigInt(0);
+
         this.summary.epoch(epoch).set({
           epoch,
-          val_id: Number(withdrawal.validator_index),
-          val_balance_withdrawn: BigInt(withdrawal.amount),
+          val_id: valId,
+          val_balance_withdrawn: valBalanceWithdrawn + BigInt(withdrawal.amount),
         });
       }
     }
