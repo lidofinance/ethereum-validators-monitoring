@@ -130,11 +130,11 @@ It can be changed by the TTL policy for Clickhouse:
 # Mainnet
 ALTER TABLE validators_summary MODIFY TTL toDateTime(1606824023 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
 
+# Hoodi
+ALTER TABLE validators_summary MODIFY TTL toDateTime(1742213400 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
+
 # Holesky
 ALTER TABLE validators_summary MODIFY TTL toDateTime(1695902400 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
-
-# Goerli
-ALTER TABLE validators_summary MODIFY TTL toDateTime(1616508000 + (epoch * 32 * 12)) + INTERVAL 3 MONTH;
 ```
 
 ## Application Env variables
