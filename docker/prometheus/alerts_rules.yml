@@ -7,11 +7,11 @@ groups:
         labels:
           severity: critical
         annotations:
-          emoji: 🔪
+          emoji: "🔪"
           summary: "Operators have slashed validators"
           description: "Number of slashed validators per operator."
           field_name: "{{ $labels.nos_name }}"
-          field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          field_value: '[{{ $value }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
           footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -22,7 +22,7 @@ groups:
         labels:
           severity: critical
         annotations:
-          emoji: ⏳
+          emoji: "⏳"
           summary: "Data actuality is greater than 1 hour"
           resolved_summary: "Data actuality got back to normal and now it is less than 1 hour."
           description: "Data are not up to date. Check the app health."
@@ -36,13 +36,13 @@ groups:
         labels:
           severity: critical
         annotations:
-          emoji: 💸
+          emoji: "💸"
           summary: "Operators have a negative balance delta"
           resolved_summary: "Operators have a positive balance delta."
           description: "Number of validators per operator that have a negative balance delta."
           resolved_description: "Number of recovered validators per operator."
           field_name: "{{ $labels.nos_name }}"
-          field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 10800) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          field_value: '[{{ $value }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 10800) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
           footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -52,13 +52,13 @@ groups:
         labels:
           severity: critical
         annotations:
-          emoji: 📝❌
+          emoji: "📝❌"
           summary: "Operators have missed attestations in the last {{ $labels.epoch_interval }} finalized epochs"
           resolved_summary: "Operators do not have missed attestations in the last {{ $labels.epoch_interval }} finalized epochs."
           description: "Number of validators per operator that have missed attestations."
           resolved_description: "Number of recovered validators per operator."
           field_name: "{{ $labels.nos_name }}"
-          field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 10800) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          field_value: '[{{ $value }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 10800) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
           footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -68,11 +68,11 @@ groups:
         labels:
           severity: critical
         annotations:
-          emoji: 📝🐢
+          emoji: "📝🐢"
           summary: "Operators have attestation inclusion delay greater than 2 in the last {{ $labels.epoch_interval }} finalized epochs"
           description: "Number of validators per operator that have attestations with high inclusion delay."
           field_name: "{{ $labels.nos_name }}"
-          field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 10800) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          field_value: '[{{ $value }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 10800) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
           footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -82,11 +82,11 @@ groups:
         labels:
           severity: critical
         annotations:
-          emoji: '📝🏷️'
-          summary: 'Operators have invalid attestation property in the last {{ $labels.epoch_interval }} finalized epochs'
-          description: 'Number of validators per operator that have invalid attestation property.'
+          emoji: "📝🏷️"
+          summary: "Operators have invalid attestation property in the last {{ $labels.epoch_interval }} finalized epochs"
+          description: "Number of validators per operator that have invalid attestation property."
           field_name: "{{ $labels.nos_name }}"
-          field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 10800) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          field_value: '[{{ $value }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 10800) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
           footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -96,13 +96,13 @@ groups:
         labels:
           severity: critical
         annotations:
-          emoji: 📥
+          emoji: "📥"
           summary: "Operators that missed block proposal in the last finalized epoch"
           resolved_summary: "Operators did not miss block proposal in the last finalized epoch."
           description: "Number of validators per operator that missed block proposal."
           resolved_description: "Number of recovered validators per operator."
           field_name: "{{ $labels.nos_name }}"
-          field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          field_value: '[{{ $value }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
           footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -112,13 +112,13 @@ groups:
         labels:
           severity: critical
         annotations:
-          emoji: 🔄
+          emoji: "🔄"
           summary: "Operators that have sync committee participation less than average in the last {{ $labels.epoch_interval }} finalized epochs"
           resolved_summary: "Operators sync committee participation is higher or equal than average in the last {{ $labels.epoch_interval }} finalized epochs."
           description: "Number of validators per operator which sync committee participation is less than average."
           resolved_description: "Number of recovered validators per operator."
           field_name: "{{ $labels.nos_name }}"
-          field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 97200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          field_value: '[{{ $value }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 97200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
           footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -134,7 +134,7 @@ groups:
           description: "Number of validators per operator that may get high future rewards, but their sync committee participation is less than average."
           resolved_description: "Number of recovered validators per operator."
           field_name: "{{ $labels.nos_name }}"
-          field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 97200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          field_value: '[{{ $value }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 97200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
           footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -149,8 +149,8 @@ groups:
           resolved_summary: "Operators do not have missed attestations in the last {{ $labels.epoch_interval }} finalized epochs and now they may get high future rewards."
           description: "Number of validators per operator that may get high future rewards, but have missed attestations."
           resolved_description: "Number of recovered validators per operator."
-          field_name: '{{ $labels.nos_name }}'
-          field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 10800) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          field_name: "{{ $labels.nos_name }}"
+          field_value: '[{{ $value }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1440) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "(time() + 10800) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
           footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
@@ -166,7 +166,7 @@ groups:
           description: "Number of validators per operator that may get high future rewards, but missed block proposal."
           resolved_description: "Number of recovered validators per operator."
           field_name: "{{ $labels.nos_name }}"
-          field_value: '[{{ $value | printf "%.0f" }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
+          field_value: '[{{ $value }}](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var={{ urlquery $labels.nos_name }}&from={{ with query "(time() - 1200) * 1000" }}{{ . | first | value | printf "%f" }}{{ end }}&to={{ with query "time() * 1000" }}{{ . | first | value | printf "%f" }}{{ end }})'
           url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
           footer_text: 'Epoch • {{ with query "ethereum_validators_monitoring_epoch_number" }}{{ . | first | value | printf "%.0f" }}{{ end }}'
           footer_icon_url: "https://cryptologos.cc/logos/steth-steth-logo.png"
