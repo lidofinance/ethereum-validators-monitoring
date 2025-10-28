@@ -75,7 +75,7 @@ services:
       - '8083:8080'
 
   alertmanager:
-    image: prom/alertmanager:v0.26.0
+    image: prom/alertmanager:v0.28.1
     container_name: alertmanager
     restart: unless-stopped
     deploy:

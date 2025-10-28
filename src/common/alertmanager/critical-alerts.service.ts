@@ -99,7 +99,7 @@ export class CriticalAlertsService {
 
   private async fire(alert: AlertRequestBody) {
     got
-      .post(`${this.baseUrl}/api/v1/alerts`, { json: [alert] })
+      .post(`${this.baseUrl}/api/v2/alerts`, { json: [alert] })
       .then((r) => r.statusCode)
       .catch((error) => {
         this.logger.error(`Error when trying to send alert`);
