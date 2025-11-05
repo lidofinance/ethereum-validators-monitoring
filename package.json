@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@golevelup/ts-jest": "^0.3.7",
-    "@nestjs/cli": "^9.5.0",
+    "@nestjs/cli": "^10.4.9",
     "@nestjs/schematics": "^9.2.0",
     "@nestjs/testing": "^10.4.20",
     "@types/app-root-path": "^1.2.4",
@@ -86,7 +86,8 @@
     "ts-loader": "^9.2.6",
     "ts-node": "^10.4.0",
     "tsconfig-paths": "^3.12.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "webpack": "^5.102.1"
   },
   "jest": {
     "moduleFileExtensions": [
