@@ -335,9 +335,9 @@ export class ConsensusProviderService {
         this.logger.error('Unexpected status code while fetching proposer duties info');
         throw e;
       });
-      // if (res.dependent_root != dependentRoot) {
-      //   throw Error(`Proposer duty dependent root is not as expected. Actual: ${res.dependent_root} Expected: ${dependentRoot}`);
-      // }
+      if (res.dependent_root != dependentRoot) {
+        throw Error(`Proposer duty dependent root is not as expected. Actual: ${res.dependent_root} Expected: ${dependentRoot}`);
+      }
       return res.data;
     };
 
