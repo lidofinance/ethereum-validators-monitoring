@@ -44,7 +44,7 @@
     "@willsoto/nestjs-prometheus": "^5.5.1",
     "app-root-path": "^3.0.0",
     "class-transformer": "^0.4.0",
-    "class-validator": "^0.14.0",
+    "class-validator": "^0.14.2",
     "dotenv": "^10.0.0",
     "fp-ts": "^2.11.5",
     "got-cjs": "^12.5.4",
