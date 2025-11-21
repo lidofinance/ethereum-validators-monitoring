@@ -48,7 +48,7 @@
     "dotenv": "^10.0.0",
     "fp-ts": "^2.11.5",
     "got-cjs": "^12.5.4",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "lodash": "^4.17.21",
     "prom-client": "^14.2.0",
     "reflect-metadata": "^0.1.13",
