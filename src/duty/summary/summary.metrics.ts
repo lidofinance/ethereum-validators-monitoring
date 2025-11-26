@@ -3,9 +3,9 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { ConsensusProviderService } from 'common/consensus-provider';
-import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { PrometheusService, TrackTask, setUserOperatorsMetric } from 'common/prometheus';
+import { Epoch } from 'common/types/types';
 import { ClickhouseService } from 'storage';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
@@ -30,7 +30,7 @@ export class SummaryMetrics {
 
   @TrackTask('calc-summary-metrics')
   public async calculate(epoch: Epoch) {
-    this.logger.log('Calculating propose metrics');
+    this.logger.log('Calculating summary metrics');
     this.processedEpoch = epoch;
     this.operators = this.registryService.getOperators();
     await allSettled([this.userRewards(), this.avgChainRewards(), this.common()]);

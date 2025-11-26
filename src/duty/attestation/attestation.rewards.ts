@@ -3,9 +3,9 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/consensus-provider/types';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService } from 'common/prometheus';
+import { Epoch } from 'common/types/types';
 import { SummaryService } from 'duty/summary';
 
 import { getPenalties, getRewards } from './attestation.constants';

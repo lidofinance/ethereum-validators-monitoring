@@ -75,7 +75,7 @@ services:
       - '8083:8080'
 
   alertmanager:
-    image: prom/alertmanager:v0.26.0
+    image: prom/alertmanager:v0.28.1
     container_name: alertmanager
     restart: unless-stopped
     deploy:
@@ -100,6 +100,8 @@ services:
     environment:
       - WORKING_MODE=alternative
       - PORT=9094
+      - MAX_EMBEDS_LENGTH=2
+      - MAX_FIELDS_LENGTH=18
     expose:
       - 9094
     ports:
@@ -188,6 +190,7 @@ services:
       - CL_API_MAX_RETRIES=${CL_API_MAX_RETRIES:-1}
       - CL_API_GET_BLOCK_INFO_MAX_RETRIES=${CL_API_GET_BLOCK_INFO_MAX_RETRIES:-1}
       - CL_API_MAX_SLOT_DEEP_COUNT=${CL_API_MAX_SLOT_DEEP_COUNT:-32}
+      - SPARSE_NETWORK_MODE=${SPARSE_NETWORK_MODE:-false}
       - FETCH_INTERVAL_SLOTS=${FETCH_INTERVAL_SLOTS:-32}
       - CHAIN_SLOT_TIME_SECONDS=${CHAIN_SLOT_TIME_SECONDS:-12}
       - SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG=${SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG:-0}

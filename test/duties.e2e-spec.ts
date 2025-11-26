@@ -1,5 +1,6 @@
 import * as process from 'process';
 
+import { expect, jest } from '@jest/globals';
 import { LoggerModule, nullTransport } from '@lido-nestjs/logger';
 import { Test } from '@nestjs/testing';
 
@@ -8,8 +9,8 @@ import { PrometheusModule } from 'common/prometheus/prometheus.module';
 import { ClickhouseService } from 'storage';
 import { RegistryModule, RegistryService } from 'validators-registry';
 
-import { ValStatus } from '../src/common/consensus-provider';
 import { allSettled } from '../src/common/functions/allSettled';
+import { ValStatus } from '../src/common/types/types';
 import { DutyModule, DutyService } from '../src/duty';
 
 const testSyncMember = {
@@ -103,7 +104,7 @@ describe('Duties', () => {
 
   process.env['DB_HOST'] = 'http://localhost'; // stub to avoid lib validator
   const keysMap = new Map();
-  const updateKeysRegistryMock = jest.fn().mockImplementation(async () => {
+  const updateKeysRegistryMock = jest.fn<() => any>().mockImplementation(async () => {
     testValidators.forEach((v) =>
       keysMap.set(v.pubkey, {
         index: v.registry_index,
@@ -114,7 +115,7 @@ describe('Duties', () => {
       }),
     );
   });
-  const getOperatorKeyMock = jest.fn().mockImplementation((key: string) => {
+  const getOperatorKeyMock = jest.fn<(key: string) => any>().mockImplementation((key: string) => {
     return keysMap.get(key);
   });
   jest.spyOn(ClickhouseService.prototype, 'writeSummary');
@@ -132,9 +133,9 @@ describe('Duties', () => {
       ],
     }).compile();
 
-    dutyService = moduleRef.get<DutyService>(DutyService);
-    validatorsRegistryService = moduleRef.get<RegistryService>(RegistryService);
-    clickhouseService = moduleRef.get<ClickhouseService>(ClickhouseService);
+    dutyService = moduleRef.get(DutyService);
+    validatorsRegistryService = moduleRef.get(RegistryService);
+    clickhouseService = moduleRef.get(ClickhouseService);
     validatorsRegistryService.updateKeysRegistry = updateKeysRegistryMock;
     validatorsRegistryService.getOperatorKey = getOperatorKeyMock;
     // stub writing to db

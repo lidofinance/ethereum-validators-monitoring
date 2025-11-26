@@ -1,4 +1,4 @@
-FROM node:18.20.1-alpine as building
+FROM node:20.19.4-alpine AS building
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ COPY ./tsconfig*.json ./
 COPY ./src ./src
 RUN yarn build
 
-FROM node:18.20.1-alpine
+FROM node:20.19.4-alpine
 
 WORKDIR /app
 

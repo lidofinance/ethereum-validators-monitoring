@@ -2,14 +2,14 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
+import { Epoch, RootHex, Slot } from 'common/types/types';
 
 import { BlockHeaderResponse, BlockInfoResponse } from '../intefaces';
-import { Epoch, RootHex, Slot } from '../types';
 
 export interface BlockCache {
   missed: boolean;
-  header?: BlockHeaderResponse | void;
-  info?: BlockInfoResponse | void;
+  header?: BlockHeaderResponse;
+  info?: BlockInfoResponse;
 }
 
 type BlockCacheId = Slot | RootHex;

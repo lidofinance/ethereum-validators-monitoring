@@ -12,13 +12,10 @@
   "moduleNameMapper": {
     "^build-info$": "<rootDir>/build-info.json"
   },
-  "setupFiles": ["<rootDir>/test/jest.polyfills.js"],
+  "setupFiles": ["<rootDir>/test/jest.env.js"],
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "testEnvironment": "jest-environment-jsdom",
-  "testEnvironmentOptions": {
-    "customExportConditions": [""]
-  }
+  "testEnvironment": "node"
 }

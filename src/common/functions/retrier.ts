@@ -22,12 +22,12 @@ export const retrier = (
     logWarning = logWarning ?? defaultLogWarning;
     try {
       return await callback();
-    } catch (err: any) {
+    } catch (e) {
       if (maxRetryCount <= 1 || minBackoffMs >= maxBackoffMs) {
-        throw err;
+        throw e;
       }
       if (logWarning) {
-        logger.warn(err, `Retrying after (${minBackoffMs}ms). Remaining retries [${maxRetryCount}]`);
+        logger.warn(`${e.message} \nRetrying after (${minBackoffMs}ms). Remaining retries [${maxRetryCount}]`);
       }
       await sleep(minBackoffMs);
       return await retrier(logger)(callback, maxRetryCount - 1, minBackoffMs * 2, maxBackoffMs, logWarning);

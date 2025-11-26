@@ -7,11 +7,11 @@ import { chain } from 'stream-chain';
 import { batch } from 'stream-json/utils/Batch';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/consensus-provider/types';
 import { allSettled } from 'common/functions/allSettled';
 import { retrier } from 'common/functions/retrier';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { Epoch, Slot } from 'common/types/types';
 import { EpochMeta, ValidatorDutySummary } from 'duty/summary';
 
 import {
@@ -33,7 +33,6 @@ import {
   userSyncParticipationAvgPercentQuery,
   userValidatorsSummaryStatsQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
-  validatorCountHighAvgIncDelayAttestationOfNEpochQuery,
   validatorQuantile0001BalanceDeltasQuery,
   validatorsCountByConditionMissProposeQuery,
   validatorsCountWithNegativeDeltaQuery,
@@ -65,6 +64,7 @@ import migration_000004_epoch_processing from './migrations/migration_000004_epo
 import migration_000005_withdrawals from './migrations/migration_000005_withdrawals';
 import migration_000006_stuck_validators from './migrations/migration_000006_stuck_validators';
 import migration_000007_module_id from './migrations/migration_000007_module_id';
+import migration_000008_last_not_missed_slot from './migrations/migration_000008_last_not_missed_slot';
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -130,6 +130,17 @@ export class ClickhouseService implements OnModuleInit {
     return { max: 0 };
   }
 
+  public async getLastNotMissedSlotForEpoch(epoch: Epoch): Promise<{ slot: Slot }> {
+    const data = (
+      await this.select<{ last_not_missed_slot }[]>(`SELECT last_not_missed_slot FROM epochs_metadata WHERE epoch = ${epoch}`)
+    )[0];
+    if (data) {
+      return { slot: data.last_not_missed_slot != null ? Number(data.last_not_missed_slot) : 0 };
+    }
+
+    return { slot: 0 };
+  }
+
   @TrackTask('write-summary')
   public async writeSummary(summary: IterableIterator<ValidatorDutySummary>): Promise<void> {
     const runWriteTasks = (stream: Readable): Promise<any>[] => {
@@ -190,7 +201,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   @TrackTask('write-epoch-meta')
-  public async writeEpochMeta(epoch: Epoch, meta: EpochMeta): Promise<void> {
+  public async writeEpochMeta(epoch: Epoch, slot: Slot, meta: EpochMeta): Promise<void> {
     await this.retry(
       async () =>
         await this.db.insert({
@@ -198,6 +209,7 @@ export class ClickhouseService implements OnModuleInit {
           values: [
             {
               epoch,
+              last_not_missed_slot: slot,
               active_validators: meta.state.active_validators,
               active_validators_total_increments: meta.state.active_validators_total_increments.toString(),
               base_reward: meta.state.base_reward,
@@ -243,6 +255,7 @@ export class ClickhouseService implements OnModuleInit {
       migration_000005_withdrawals,
       migration_000006_stuck_validators,
       migration_000007_module_id,
+      migration_000008_last_not_missed_slot,
     ];
     for (const query of migrations) {
       await this.db.exec({ query });
@@ -281,7 +294,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   /**
-   * Send query to Clickhouse and receives information about Other Sync Committee avg percent
+   * Send query to Clickhouse and receives information about Other Sync Committee average percent
    */
   public async getOtherSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
     const ret = await this.select(otherSyncParticipationAvgPercentQuery(epoch));
@@ -465,21 +478,6 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  /**
-   * Send query to Clickhouse and receives information about
-   * how many User Node Operator validators have high avg inc. delay (>2) last N epoch
-   */
-  public async getValidatorCountHighAvgIncDelayAttestationOfNEpochQuery(epoch: Epoch): Promise<NOsValidatorsByConditionAttestationCount[]> {
-    return (
-      await this.select<NOsValidatorsByConditionAttestationCount[]>(
-        validatorCountHighAvgIncDelayAttestationOfNEpochQuery(epoch, this.config.get('BAD_ATTESTATION_EPOCHS')),
-      )
-    ).map((v) => ({
-      ...v,
-      amount: Number(v.amount),
-    }));
-  }
-
   public async getValidatorsCountWithGoodProposes(
     epoch: Epoch,
     validatorIndexes: string[] = [],
@@ -496,7 +494,7 @@ export class ClickhouseService implements OnModuleInit {
 
   /**
    * Send query to Clickhouse and receives information about
-   * how many User Node Operator validators miss proposes at our last processed epoch
+   * how many User Node Operator validators miss proposals at our last processed epoch
    */
   public async getValidatorsCountWithMissedProposes(
     epoch: Epoch,
@@ -576,7 +574,7 @@ export class ClickhouseService implements OnModuleInit {
 
   /**
    * Send query to Clickhouse and receives information about
-   * User Node Operator proposes stats in the last N epochs
+   * User Node Operator proposals stats in the last N epochs
    */
   public async getUserNodeOperatorsProposesStats(epoch: Epoch, epochInterval = 120): Promise<NOsProposesStats[]> {
     return (await this.select<NOsProposesStats[]>(userNodeOperatorsProposesStatsLastNEpochQuery(epoch, epochInterval))).map((v) => ({

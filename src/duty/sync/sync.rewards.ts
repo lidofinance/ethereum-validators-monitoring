@@ -2,8 +2,8 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/consensus-provider/types';
 import { PrometheusService } from 'common/prometheus';
+import { Epoch } from 'common/types/types';
 import { SummaryService } from 'duty/summary';
 
 @Injectable()

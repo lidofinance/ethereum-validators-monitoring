@@ -3,8 +3,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { got } from 'got-cjs';
 
 import { ConfigService } from 'common/config';
-import { Epoch } from 'common/consensus-provider/types';
 import { PrometheusService } from 'common/prometheus';
+import { Epoch } from 'common/types/types';
 import { ClickhouseService } from 'storage';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
@@ -99,7 +99,7 @@ export class CriticalAlertsService {
 
   private async fire(alert: AlertRequestBody) {
     got
-      .post(`${this.baseUrl}/api/v1/alerts`, { json: [alert] })
+      .post(`${this.baseUrl}/api/v2/alerts`, { json: [alert] })
       .then((r) => r.statusCode)
       .catch((error) => {
         this.logger.error(`Error when trying to send alert`);

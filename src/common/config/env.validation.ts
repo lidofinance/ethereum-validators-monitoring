@@ -161,6 +161,10 @@ export class EnvironmentVariables {
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public CL_API_MAX_SLOT_DEEP_COUNT = 32;
 
+  @IsBoolean()
+  @Transform(({ value }) => toBoolean(value), { toClassOnly: true })
+  public SPARSE_NETWORK_MODE = false;
+
   @IsNumber()
   @Min(74240) // Altair
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })

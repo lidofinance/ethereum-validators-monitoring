@@ -5,8 +5,8 @@ import { concat, sumBy } from 'lodash';
 
 import { ConfigService } from 'common/config';
 import { BlockInfoResponse, ConsensusProviderService, SyncCommitteeValidator } from 'common/consensus-provider';
-import { Epoch, Slot, StateId } from 'common/consensus-provider/types';
 import { PrometheusService, TrackTask } from 'common/prometheus';
+import { Epoch, Slot, StateId } from 'common/types/types';
 import { SummaryService, ValidatorDutySummary } from 'duty/summary';
 
 import { SYNC_COMMITTEE_SIZE } from './sync.constants';
@@ -40,10 +40,6 @@ export class SyncService {
     }
 
     this.logger.debug(`All missed slots in getting sync committee info process: ${missedSlots}`);
-    /**
-     * @todo We should investigate what happens in this and other places of the code if this array is empty,
-     * and fix all possible issues.
-     */
     const epochBlocksBits = epochBlocks.map((block) => {
       return {
         block: Number(block.message.slot),
@@ -78,7 +74,7 @@ export class SyncService {
 
       const totalSyncedBlocks = sumBy(newSummaryValidator.sync_meta, (blocks) => blocks.synced_blocks.length);
       const totalBlocksToSync = epochBlocksBits.length * newSummaryValidator.sync_meta.length;
-      newSummaryValidator.sync_percent = (totalSyncedBlocks / totalBlocksToSync) * 100;
+      newSummaryValidator.sync_percent = totalBlocksToSync === 0 ? 100 : (totalSyncedBlocks / totalBlocksToSync) * 100;
 
       this.summary.epoch(epoch).set(newSummaryValidator);
     }
