@@ -1,3 +1,43 @@
+# [4.10.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.9.0...4.10.0) (2025-11-27)
+
+
+### Bug Fixes
+
+* alert rules tests ([f3bd964](https://github.com/lidofinance/ethereum-validators-monitoring/commit/f3bd9645ea081bea8593c5095082aec2743558af))
+* batch size of Discord alerts ([ab96cfd](https://github.com/lidofinance/ethereum-validators-monitoring/commit/ab96cfda118f9c7cafed9114e73c26598d5a9583))
+* better warnings in logs ([9aaea2c](https://github.com/lidofinance/ethereum-validators-monitoring/commit/9aaea2ce210a63070171e5f9719269bce18c8c96))
+* broken e2e tests in new version of undici ([540e4ec](https://github.com/lidofinance/ethereum-validators-monitoring/commit/540e4ec216033a04266197341866f53b9f223382))
+* bug in withdrawal amount calculation ([199af30](https://github.com/lidofinance/ethereum-validators-monitoring/commit/199af30e78349b1106a5fb0bfff2316e0b424fda))
+* configure variable values ([c5f9531](https://github.com/lidofinance/ethereum-validators-monitoring/commit/c5f9531bf77b73d96a7e45fd40226311abc5a09c))
+* convert limit variable to int in "Node Operators" Grafana dashboard ([09b4e7e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/09b4e7e122a0512e50b85cc9cea31a24a1a46602))
+* e2e tests ([a0d1733](https://github.com/lidofinance/ethereum-validators-monitoring/commit/a0d1733e0563c002ee5d215fe1769711f30b329d))
+* enable checking of the `dependent_root` ([e6cb953](https://github.com/lidofinance/ethereum-validators-monitoring/commit/e6cb95349f972cf99b06edc2aac71dbb92c6ca1d))
+* fix missing "the" article in alert labels ([d687a89](https://github.com/lidofinance/ethereum-validators-monitoring/commit/d687a8988fcd9e26182e5435f5dc5a222cb381ae))
+* getting attestation committee info ([92b0ab5](https://github.com/lidofinance/ethereum-validators-monitoring/commit/92b0ab52a2849162ab594772157565050741afa0))
+* grammar issues in alert labels ([d44f1aa](https://github.com/lidofinance/ethereum-validators-monitoring/commit/d44f1aa6cba1719de1b98d66086a0dc027752ca0))
+* issues in test alert rules metadata strings ([4d641d3](https://github.com/lidofinance/ethereum-validators-monitoring/commit/4d641d34fcdb7ac402b52d49c89d32e6b8757737))
+* metrics table in Readme ([47fb60d](https://github.com/lidofinance/ethereum-validators-monitoring/commit/47fb60da3a52fc72d77f76d0ab72069313b88a81))
+* minor fixes in alertmanager tests and Grafana dashboards ([84d2635](https://github.com/lidofinance/ethereum-validators-monitoring/commit/84d2635eec188746ef748aa117026f6b3f6fd6f9))
+* minor grammar issues in docs ([3ca6f53](https://github.com/lidofinance/ethereum-validators-monitoring/commit/3ca6f53d1ef04132cea6b67351571e684fc1e758))
+* minor issues in alert rules tests ([f36a541](https://github.com/lidofinance/ethereum-validators-monitoring/commit/f36a541280b19767859b0b2d3262e0be7c913f39))
+* move second link to "Node Operators" dashboard to alert body ([50571d7](https://github.com/lidofinance/ethereum-validators-monitoring/commit/50571d7e6decc5c7dc1a0de4b48845b123a2dedf))
+* possible issues when no slots in epoch ([927f3f3](https://github.com/lidofinance/ethereum-validators-monitoring/commit/927f3f3ac52757f7e362ab1915eda8b1321130f8))
+* rename "propose" to "proposal" in all application labels ([c0667af](https://github.com/lidofinance/ethereum-validators-monitoring/commit/c0667afccad3f079e8364ea5c7105ab8c502bdde))
+* temporarily disable sanity check for dependent_root ([6c880ee](https://github.com/lidofinance/ethereum-validators-monitoring/commit/6c880eecd5c83cc0d76178966c95eb894cb899c0))
+* update dependencies to fix vulnerability in "elliptic" package ([20e414c](https://github.com/lidofinance/ethereum-validators-monitoring/commit/20e414c444dd299f3cc8b5df32dc8d44a2783d06))
+* update lodestar types ([201060a](https://github.com/lidofinance/ethereum-validators-monitoring/commit/201060a88400b9498d5445f280325b3387c89501))
+
+
+### Features
+
+* add link to alert statistics Grafana panel to alerts ([858f552](https://github.com/lidofinance/ethereum-validators-monitoring/commit/858f55293c7d3c25495210526baf063a8e7ab05a))
+* add validator IDs to alert metrics ([01cb16c](https://github.com/lidofinance/ethereum-validators-monitoring/commit/01cb16cf4728588e00f117fc439e34215c2c8c45))
+* new algorithm for sparse networks ([2a5288f](https://github.com/lidofinance/ethereum-validators-monitoring/commit/2a5288f53024c75d945f83968e8bbf80aec81147))
+* support end of time range from the future on "Node Operators" Grafana dashboard ([b5ff43b](https://github.com/lidofinance/ethereum-validators-monitoring/commit/b5ff43b8ae5447b69e2cc043f1708b0549b7ec32))
+* various improvements to validator IDs list in alert body ([4fdd26a](https://github.com/lidofinance/ethereum-validators-monitoring/commit/4fdd26a4bbd3a052f3533902bd16816af78273af))
+
+
+
 # [4.9.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.8.0...4.9.0) (2025-04-29)
 
 
@@ -167,15 +207,6 @@
 ### Bug Fixes
 
 * ignore cache while fetching data from head ([#155](https://github.com/lidofinance/ethereum-validators-monitoring/issues/155)) ([bddfdef](https://github.com/lidofinance/ethereum-validators-monitoring/commit/bddfdefcbb84171ba648f421bc03a7130289b397))
-
-
-
-## [4.3.1](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.3.0...4.3.1) (2023-04-05)
-
-
-### Bug Fixes
-
-* too wide queries with withdrawals ([#150](https://github.com/lidofinance/ethereum-validators-monitoring/issues/150)) ([d674e03](https://github.com/lidofinance/ethereum-validators-monitoring/commit/d674e03ae201618c6ad970fb2e8c166eb624e3aa))
 
 
 
