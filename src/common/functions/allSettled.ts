@@ -5,7 +5,7 @@ export async function allSettled(values: Promise<any>[] | any[]): Promise<any[]>
   if (failed.length > 0) {
     throw new global.AggregateError(
       failed.map((r: PromiseRejectedResult) => r.reason),
-      failed.flatMap((r: any) => Array.from(r.reason.message, r.reason.stack || '')).join('\n'),
+      failed.flatMap((r: any) => [r.reason.message, r.reason.stack || '']).join('\n'),
     );
   }
 
