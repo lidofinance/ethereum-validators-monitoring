@@ -1975,7 +1975,7 @@
                 "value": [
                   {
                     "targetBlank": true,
-                    "title": "blockcha.in",
+                    "title": "beaconcha.in",
                     "url": "https://beaconcha.in/validator/${__value.raw}"
                   }
                 ]
