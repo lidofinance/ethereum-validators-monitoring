@@ -1,4 +1,20 @@
-# [4.10.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.9.0...4.10.0) (2025-11-27)
+# [4.11.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.10.0...4.11.0) (2026-01-28)
+
+
+### Bug Fixes
+
+* incorrect stacktrace in logs ([006eabf](https://github.com/lidofinance/ethereum-validators-monitoring/commit/006eabf91201c231ab197011d1a05c212622f462))
+* minor changes in Grafana dashboard labels ([4fc6612](https://github.com/lidofinance/ethereum-validators-monitoring/commit/4fc66125a97c3254f13c1615f48f1594bf4f9324))
+* update Node.js ([507f908](https://github.com/lidofinance/ethereum-validators-monitoring/commit/507f908e4d69ccc7375a4c10142fcf9ead6a834c))
+
+
+### Features
+
+* new module selector in Rewards dashboard ([e0dcb75](https://github.com/lidofinance/ethereum-validators-monitoring/commit/e0dcb75263d2f801c6bc863518d878e95d54bb17))
+
+
+
+# [4.10.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.9.0...4.10.0) (2025-11-28)
 
 
 ### Bug Fixes
@@ -198,15 +214,6 @@
 
 * critical slashing alert ([#159](https://github.com/lidofinance/ethereum-validators-monitoring/issues/159)) ([006ec38](https://github.com/lidofinance/ethereum-validators-monitoring/commit/006ec380f56446e1c7e1f0770078a89e65bec27b))
 * penalty calculation for `active_slashed` ([#160](https://github.com/lidofinance/ethereum-validators-monitoring/issues/160)) ([46be064](https://github.com/lidofinance/ethereum-validators-monitoring/commit/46be064c612debd845337e47ca2be74818497999))
-
-
-
-## [4.3.2](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.3.1...4.3.2) (2023-04-11)
-
-
-### Bug Fixes
-
-* ignore cache while fetching data from head ([#155](https://github.com/lidofinance/ethereum-validators-monitoring/issues/155)) ([bddfdef](https://github.com/lidofinance/ethereum-validators-monitoring/commit/bddfdefcbb84171ba648f421bc03a7130289b397))
 
 
 
