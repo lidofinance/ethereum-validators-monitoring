@@ -7,6 +7,12 @@ import { PrometheusService } from 'common/prometheus';
 import { Epoch } from 'common/types/types';
 import { ClickhouseService } from 'storage';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
+import {
+  NOsProposesStats,
+  NOsValidatorsByConditionAttestationCount,
+  NOsValidatorsNegDeltaCount,
+  NOsValidatorsStatusStats
+} from '../../storage/clickhouse';
 
 import { AlertRequestBody, PreparedToSendAlert } from './alerts/BasicAlert';
 import { CriticalMissedAttestations } from './alerts/CriticalMissedAttestations';
@@ -53,7 +59,13 @@ export class CriticalAlertsService {
         this.storage.getUserNodeOperatorsProposesStats(epoch), // ~12h range
         this.storage.getValidatorsCountWithNegativeDelta(epoch),
         this.storage.getUserNodeOperatorsStats(epoch - 1),
-      ]);
+      ]) as [
+        NOsValidatorsStatusStats[],
+        NOsValidatorsByConditionAttestationCount[],
+        NOsProposesStats[],
+        NOsValidatorsNegDeltaCount[],
+        NOsValidatorsStatusStats[],
+      ];
 
       const alerts = [];
       for (const moduleIndex of moduleIndexes) {

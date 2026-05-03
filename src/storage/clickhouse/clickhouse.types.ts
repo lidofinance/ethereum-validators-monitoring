@@ -1,13 +1,16 @@
 import { Epoch } from 'common/types/types';
 
-export interface ValidatorsStatusStats {
-  val_nos_module_id?: string;
+export interface ValidatorsStatusBaseStats {
   active_ongoing: number;
   pending: number;
   slashed: number;
   withdraw_pending: number;
   withdrawn: number;
-  stuck?: number;
+}
+
+export interface ModuleValidatorsStatusStats extends ValidatorsStatusBaseStats {
+  val_nos_module_id: string;
+  stuck: number;
 }
 
 export interface NOsDelta {
@@ -20,6 +23,7 @@ export interface NOsValidatorsNegDeltaCount {
   val_nos_module_id: string;
   val_nos_id: string;
   amount: number;
+  balance: bigint;
 }
 
 export interface NOsValidatorsSyncAvgPercent {
@@ -36,8 +40,9 @@ export interface NOsValidatorsSyncByConditionCount {
 
 export interface NOsValidatorsByConditionAttestationCount {
   val_nos_module_id: string;
-  val_nos_id: string;
+  val_nos_id: string | null;
   amount: number;
+  balance: bigint;
 }
 
 export interface NOsValidatorsByConditionProposeCount {
@@ -52,8 +57,9 @@ export interface NOsBalance24hDiff {
   amount: number;
 }
 
-export interface NOsValidatorsStatusStats extends ValidatorsStatusStats {
+export interface NOsValidatorsStatusStats extends ModuleValidatorsStatusStats {
   val_nos_id: string;
+  balance: bigint;
 }
 
 export interface NOsValidatorsRewardsStats {

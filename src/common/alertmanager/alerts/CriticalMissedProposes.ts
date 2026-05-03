@@ -31,8 +31,14 @@ export class CriticalMissedProposes extends Alert {
     const alertParams = this.config.getCriticalAlertParamForModule(this.moduleIndex);
     const result: AlertRuleResult = {};
 
-    const activeOngoingThreshold = alertParams.affectedValCount ?? alertParams.activeValCount.minActiveCount;
-    const filteredNosStats = this.nosStats.filter((o) => o.active_ongoing >= activeOngoingThreshold);
+    let filteredNosStats: NOsValidatorsStatusStats[];
+    if (alertParams.affectedValBalance != null || alertParams.activeValBalance != null) {
+      const balanceThreshold = alertParams.affectedValBalance ?? alertParams.activeValBalance.minActiveBalance;
+      filteredNosStats = this.nosStats.filter((o) => o.balance >= balanceThreshold);
+    } else {
+      const activeOngoingThreshold = alertParams.affectedValCount ?? alertParams.activeValCount.minActiveCount;
+      filteredNosStats = this.nosStats.filter((o) => o.active_ongoing >= activeOngoingThreshold);
+    }
 
     for (const noStats of filteredNosStats) {
       const operator = this.operators.find((o) => +noStats.val_nos_id === o.index);
@@ -40,7 +46,9 @@ export class CriticalMissedProposes extends Alert {
         (a) => a.val_nos_id != null && +a.val_nos_module_id === operator.module && +a.val_nos_id === operator.index,
       );
 
-      if (proposeStats == null) continue;
+      if (proposeStats == null) {
+        continue;
+      }
 
       if (proposeStats.missed >= proposeStats.all * VALIDATORS_WITH_MISSED_PROPOSALS_COUNT_THRESHOLD) {
         result[operator.name] = { all: proposeStats.all, missed: proposeStats.missed };

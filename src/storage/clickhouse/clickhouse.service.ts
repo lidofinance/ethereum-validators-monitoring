@@ -53,7 +53,8 @@ import {
   NOsValidatorsSyncByConditionCount,
   NOsWithdrawalsStats,
   SyncCommitteeParticipationAvgPercents,
-  ValidatorsStatusStats,
+  ValidatorsStatusBaseStats,
+  ModuleValidatorsStatusStats,
   WithdrawalsStats,
 } from './clickhouse.types';
 import migration_000000_summary from './migrations/migration_000000_summary';
@@ -280,6 +281,7 @@ export class ClickhouseService implements OnModuleInit {
     return (await this.select<NOsValidatorsNegDeltaCount[]>(validatorsCountWithNegativeDeltaQuery(epoch))).map((v) => ({
       ...v,
       amount: Number(v.amount),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -475,6 +477,7 @@ export class ClickhouseService implements OnModuleInit {
     ).map((v) => ({
       ...v,
       amount: Number(v.amount),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -537,6 +540,7 @@ export class ClickhouseService implements OnModuleInit {
       withdraw_pending: Number(v.withdraw_pending),
       withdrawn: Number(v.withdrawn),
       stuck: Number(v.stuck),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -544,8 +548,8 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about summary
    * how many User Node Operator validators have active, slashed, pending status
    */
-  public async getUserValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats[]> {
-    return (await this.select<ValidatorsStatusStats[]>(userValidatorsSummaryStatsQuery(epoch))).map((v) => ({
+  public async getUserValidatorsSummaryStats(epoch: Epoch): Promise<ModuleValidatorsStatusStats[]> {
+    return (await this.select<ModuleValidatorsStatusStats[]>(userValidatorsSummaryStatsQuery(epoch))).map((v) => ({
       ...v,
       active_ongoing: Number(v.active_ongoing),
       pending: Number(v.pending),
@@ -560,8 +564,8 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about summary
    * how many other (not user) validators have active, slashed, pending status
    */
-  public async getOtherValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats> {
-    const ret = await this.select(otherValidatorsSummaryStatsQuery(epoch));
+  public async getOtherValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusBaseStats> {
+    const ret = await this.select(otherValidatorsSummaryStatsQuery(epoch)) as ValidatorsStatusBaseStats[];
     return {
       ...ret[0],
       active_ongoing: Number(ret[0].active_ongoing),

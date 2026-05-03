@@ -325,8 +325,8 @@ to this value.
 * **Required:** false
 * **Default:** 100
 ---
-`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` - Sets the minimum conditions for triggering critical alerts based on the number
-of active validators for node operators in a specific module.
+`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` - Sets the minimum conditions for triggering critical alerts based on the
+**number of active validators** for node operators in a specific module.
 
 The value must be in JSON format. Example:
 `{ "0": { "minActiveCount": 100, "affectedShare": 0.33, "minAffectedCount": 1000 } }`.
@@ -341,22 +341,59 @@ A critical alert is sent if:
   * Is at least `affectedShare` of the total validators for the node operator, OR
   * Exceeds or equal to `minAffectedCount`.
 * Value in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` for specific module is not overridden by
-  `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`.
+  `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` or `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` or
+  `CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`.
 
 If no settings are provided for a specific module or the 0 key, default values are used:
 `{ "minActiveCount": CRITICAL_ALERTS_MIN_VAL_COUNT, "affectedShare": 0.33, "minAffectedCount": 1000 }`.
 * **Required:** false
 * **Default:** {}
 ---
-`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` - Defines the minimum number of affected validators for a node operator in a
-specific module for which a critical alert should be sent.
+`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` - Defines the **minimum number** of affected validators for a node operator in
+a specific module for which a critical alert should be sent.
 
 The value must be in JSON format, for example: `{ "0": 100, "3": 50 }`.  The numeric key represents the module ID. The
 value for the key `0` applies to all modules. Values for non-zero keys apply only to the specified module and take
 precedence over the `0` key.
 
-This variable takes priority over `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and `CRITICAL_ALERTS_MIN_VAL_COUNT`. If no
-value is set for a specific module or the `0` key, the rules from the other two variables will apply instead.
+This variable takes priority over `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and `CRITICAL_ALERTS_MIN_VAL_COUNT` (but not
+over `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` and `CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`). If no value is set for a
+specific module, the rules from the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` or `CRITICAL_ALERTS_MIN_VAL_COUNT` variables
+will apply instead.
+* **Required:** false
+* **Default:** {}
+---
+`CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` - Sets the minimum conditions for triggering critical alerts based on the
+**total balance of all active validators** (in ETH) for node operators in a specific module.
+
+The value must be in JSON format. Example:
+`{ "0": { "minActiveBalance": 2048, "affectedShare": 0.33, "minAffectedBalance": 1024 } }`.
+
+The numeric key represents the module ID. Settings under the `0` key apply to all modules unless overridden by settings
+for specific module IDs. Settings for specific module IDs take precedence over the `0` key.
+
+A critical alert is sent if:
+
+* The total ETH balance of all active validators for a node operator meets or exceeds `minActiveBalance`.
+* The total ETH balance of all affected validators:
+  * Is at least `affectedShare` of the total ETH balance of all active validators for the node operator, OR
+  * Exceeds or equals to `minAffectedBalance`.
+* Value in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` for specific module is not overridden by
+  `CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`.
+
+* **Required:** false
+* **Default:** {}
+---
+`CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE` - Defines the minimum **total balance** (in ETH) of affected validators for
+a node operator in a specific module for which a critical alert should be sent.
+
+The value must be in JSON format, for example: `{ "0": 2048, "4": 4096 }`. The numeric key represents the module ID.
+The value for the key `0` applies to all modules. Values for non-zero keys apply only to the specified module and take
+precedence over the `0` key.
+
+This variable takes priority over `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE`, `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`,
+`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and `CRITICAL_ALERTS_MIN_VAL_COUNT`. If no value is set for a specific module,
+the rules from the other four variables will apply instead.
 * **Required:** false
 * **Default:** {}
 ---
@@ -373,19 +410,29 @@ aggregates from app.
 
 You should pass env var `CRITICAL_ALERTS_ALERTMANAGER_URL=http://<alertmanager_host>:<alertmanager_port>`.
 
-Critical alerts for modules are controlled by three environment variables, listed here with their priority (from lowest
+Critical alerts for modules are controlled by five environment variables, listed here with their priority (from lowest
 to highest):
 ```
 CRITICAL_ALERTS_MIN_VAL_COUNT: number;
 CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT: {
   <moduleIndex>: {
-      minActiveCount: number,
-      affectedShare: number,
-      minAffectedCount: number,
-   }
+    minActiveCount: number,
+    affectedShare: number,
+    minAffectedCount: number,
+  }
 };
 CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT: {
-   <moduleIndex>: number
+  <moduleIndex>: number
+};
+CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE: {
+  <moduleIndex>: {
+    minActiveBalance: number,
+    affectedShare: number,
+    minAffectedBalance: number,
+  };
+};
+CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE: {
+  <moduleIndex>: number
 };
 ```
 
@@ -395,66 +442,125 @@ The following rules are applied (listed in order of increasing priority, the nex
    creating an implicit rule:
 ```
 {
-   "0": {
-      "minActiveCount": CRITICAL_ALERTS_MIN_VAL_COUNT,
-      "affectedShare": 0.33,
-      "minAffectedCount": 1000
-   }
+  "0": {
+    "minActiveCount": CRITICAL_ALERTS_MIN_VAL_COUNT,
+    "affectedShare": 0.33,
+    "minAffectedCount": 1000
+  }
 }
 ```
 
-2. **Global Rules for Active Validators** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`). Default rules apply to all modules
-   (key `0`) unless overridden.
+2. **Global Rules for Active Validators Count** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`). Default rules apply to all
+   modules (key `0`) unless overridden.
 ```
 CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT = {
-   "0": {
-      "minActiveCount": <integer>,
-      "affectedShare": <0.xx>,
-      "minAffectedCount": <integer>,
-   }
+  "0": {
+    "minActiveCount": <integer>,
+    "affectedShare": <0.xx>,
+    "minAffectedCount": <integer>,
+  }
 }
 ```
 A critical alert is triggered for a module if **both** conditions are met:
-* Active validators exceed or equal to `minActiveCount`.
-* Affected validators exceed or equal to either `minAffectedCount` or `affectedShare` of the total active validators.
+* The number of active validators exceed or equal to `minActiveCount`.
+* The number of affected validators exceed or equal to either `minAffectedCount` or `affectedShare` of the total active
+  validators.
 
-3. **Global Rules for Affected Validators** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`). Default rules apply to all
+3. **Global Rules for Affected Validators Count** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`). Default rules apply to all
    modules (key `0`) unless overridden.
 ```
 CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT = {
-   "0": <integer>
+  "0": <integer>
 }
 ```
 A critical alert is triggered if the number of affected validators exceeds or equal to this value.
 
-4. **Per-Module Rules for Active Validators** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`). If specific module keys are
-   defined, those values override the global rules for `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and
-   `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`.
+4. **Global Rules for Active Validators Balance** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE`). Default rules apply to all
+   modules (key `0`) unless overridden.
+```
+CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE = {
+  "0": {
+    "minActiveBalance": <float>,
+    "affectedShare": <0.xx>,
+    "minAffectedBalance": <float>,
+  }
+}
+```
+A critical alert is triggered for a module if **both** conditions are met:
+* The total balance of all active validators exceed or equal to `minActiveBalance`.
+* The total balance of all affected validators exceed or equal to either `minAffectedBalance` or `affectedShare` of the
+  total balance of all active validators.
+
+5. **Global Rules for Affected Validators Balance** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`). Default rules apply to
+   all modules (key `0`) unless overridden.
+```
+CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE = {
+  "0": <float>
+}
+```
+A critical alert is triggered if the total balance of all affected validators exceeds or equal to this value.
+
+6. **Per-Module Rules for Active Validators Count** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`). If specific module keys
+   are defined, those values override the global rules for `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`,
+   `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`, `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` and
+   `CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`.
 ```
 CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT = {
-   "n": {
-      "minActiveCount": <integer>,
-      "affectedShare": <0.xx>,
-      "minAffectedCount": <integer>,
-   }
+  "n": {
+    "minActiveCount": <integer>,
+    "affectedShare": <0.xx>,
+    "minAffectedCount": <integer>,
+  }
 }
 ```
 A critical alert is triggered for those modules if **both** conditions are met:
 
-* Active validators exceed or equal to `minActiveCount`.
-* Affected validators exceed or equal either `minAffectedCount` or `affectedShare` of the total validators.
+* The number of active validators exceed or equal to `minActiveCount`.
+* The number of affected validators exceed or equal either `minAffectedCount` or `affectedShare` of the total active
+  validators.
 
 For modules that don't have keys in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` the rules defined in the previous steps
 are applied.
 
-5. **Per-Module Rules for Affected Validators** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`). If specific module keys are
-   defined, those values override all other rules for the module.
+7. **Per-Module Rules for Affected Validators Count** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`). If specific module
+   keys are defined, those values override all previous rules for the module.
 ```
 CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT = {
-   "n": <integer>
+  "n": <integer>
 }
 ```
 A critical alert is triggered if the number of affected validators exceeds or equal to the specified value.
+
+8. **Per-Module Rules for Active Validators Balance** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE`). If specific module
+   keys are defined, those values override the global rules for `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`,
+   `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`, `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` and
+   `CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`.
+```
+CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE = {
+  "n": {
+    "minActiveBalance": <float>,
+    "affectedShare": <0.xx>,
+    "minAffectedBalance": <float>,
+  }
+}
+```
+A critical alert is triggered for those modules if **both** conditions are met:
+
+* The total balance of all active validators exceed or equal to `minActiveBalance`.
+* The total balance of all affected validators exceed or equal to either `minAffectedBalance` or `affectedShare` of the
+  total balance of all active validators.
+
+For modules that don't have keys in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` the rules defined in the previous steps
+are applied.
+
+9. **Per-Module Rules for Affected Validators Balance** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`). If specific module
+   keys are defined, those values override all previous rules for the module.
+```
+CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE= {
+  "n": <float>
+}
+```
+A critical alert is triggered if the total balance of all affected validators exceeds or equal to the specified value.
 
 To illustrate these rules let's consider the following sample config:
 ```

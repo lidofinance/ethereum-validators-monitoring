@@ -5,6 +5,7 @@ import { ConfigService } from 'common/config';
 import { ClickhouseService } from 'storage';
 import { NOsValidatorsByConditionAttestationCount, NOsValidatorsStatusStats } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
+import { gweiToEth } from '../../functions/gweiToEth';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
@@ -29,11 +30,14 @@ export class CriticalMissedAttestations extends Alert {
     const alertParams = this.config.getCriticalAlertParamForModule(this.moduleIndex);
     const result: AlertRuleResult = {};
 
-    const activeOngoingThreshold = alertParams.affectedValCount ?? alertParams.activeValCount.minActiveCount;
-
-    // If affectedValCount is set, we're not interested in NOs with a number of validators less than this value
-    // (because for these NOs it is not possible to have a number of affected validators greater than this value).
-    const filteredNosStats = this.nosStats.filter((o) => o.active_ongoing >= activeOngoingThreshold);
+    let filteredNosStats: NOsValidatorsStatusStats[];
+    if (alertParams.affectedValBalance != null || alertParams.activeValBalance != null) {
+      const balanceThreshold = alertParams.affectedValBalance ?? alertParams.activeValBalance.minActiveBalance;
+      filteredNosStats = this.nosStats.filter((o) => o.balance >= balanceThreshold);
+    } else {
+      const activeOngoingThreshold = alertParams.affectedValCount ?? alertParams.activeValCount.minActiveCount;
+      filteredNosStats = this.nosStats.filter((o) => o.active_ongoing >= activeOngoingThreshold);
+    }
 
     for (const noStats of filteredNosStats) {
       const operator = this.operators.find((o) => +noStats.val_nos_id === o.index);
@@ -41,15 +45,32 @@ export class CriticalMissedAttestations extends Alert {
         (a) => a.val_nos_id != null && +a.val_nos_module_id === operator.module && +a.val_nos_id === operator.index,
       );
 
-      if (missedAtt == null) continue;
+      if (missedAtt == null) {
+        continue;
+      }
 
-      const includeToResult =
-        alertParams.affectedValCount != null
-          ? missedAtt.amount >= alertParams.affectedValCount
-          : missedAtt.amount >=
-            Math.min(noStats.active_ongoing * alertParams.activeValCount.affectedShare, alertParams.activeValCount.minAffectedCount);
+      let includeToResult = false;
+      if (alertParams.affectedValBalance != null) {
+        includeToResult = missedAtt.balance >= alertParams.affectedValBalance;
+      } else if (alertParams.activeValBalance != null) {
+        const percent = Math.round(alertParams.activeValBalance.affectedShare * 100);
+        const noStatsBalanceShare = noStats.balance * BigInt(percent) / 100n;
+        const minBalance = noStatsBalanceShare <= alertParams.activeValBalance.minAffectedBalance ? noStatsBalanceShare : alertParams.activeValBalance.minAffectedBalance;
+        includeToResult = missedAtt.balance >= minBalance;
+      } else if (alertParams.affectedValCount != null) {
+        includeToResult = missedAtt.amount >= alertParams.affectedValCount;
+      } else if (alertParams.activeValCount != null) {
+        includeToResult = missedAtt.amount >=
+          Math.min(noStats.active_ongoing * alertParams.activeValCount.affectedShare, alertParams.activeValCount.minAffectedCount);
+      }
+
       if (includeToResult) {
-        result[operator.name] = { ongoing: noStats.active_ongoing, missedAtt: missedAtt.amount };
+        result[operator.name] = {
+          activeCount: noStats.active_ongoing,
+          missedAttCount: missedAtt.amount,
+          activeBalance: noStats.balance,
+          missedAttBalance: missedAtt.balance,
+        };
       }
     }
 
@@ -57,16 +78,20 @@ export class CriticalMissedAttestations extends Alert {
   }
 
   sendRule(ruleResult: AlertRuleResult): boolean {
-    const defaultInterval = 6 * 60 * 60 * 1000; // 6h
-    const ifIncreasedInterval = 60 * 60 * 1000; // 1h
+    const defaultInterval = 21600000; // 6 * 60 * 60 * 1000 = 6h
+    const ifIncreasedInterval = 3600000; // 60 * 60 * 1000 = 1h
     this.sendTimestamp = Date.now();
     if (Object.values(ruleResult).length > 0) {
       const prevSendTimestamp = sentAlerts[this.alertname]?.timestamp ?? 0;
-      if (this.sendTimestamp - prevSendTimestamp > defaultInterval) return true;
-      for (const [operator, operatorResult] of Object.entries(ruleResult)) {
-        // if any operator has increased bad validators count or another bad operator has been added
+      if (this.sendTimestamp - prevSendTimestamp > defaultInterval) {
+        return true;
+      }
+
+      for (const [operatorName, operatorResult] of Object.entries(ruleResult)) {
+        // if any operator has increased bad validators count or balance, or another bad operator has been added
         if (
-          operatorResult.missedAtt > (sentAlerts[this.alertname]?.ruleResult[operator]?.missedAtt ?? 0) &&
+          (operatorResult.missedAttBalance > (sentAlerts[this.alertname]?.ruleResult[operatorName]?.missedAttBalance ?? 0) ||
+          operatorResult.missedAttCount > (sentAlerts[this.alertname]?.ruleResult[operatorName]?.missedAttCount ?? 0)) &&
           this.sendTimestamp - prevSendTimestamp > ifIncreasedInterval
         )
           return true;
@@ -95,7 +120,7 @@ export class CriticalMissedAttestations extends Alert {
           'BAD_ATTESTATION_EPOCHS',
         )} epoch in module ${this.moduleIndex}`,
         description: join(
-          Object.entries(ruleResult).map(([o, r]) => `${o}: ${r.missedAtt} of ${r.ongoing}`),
+          Object.entries(ruleResult).map(([o, r]) => `${o} (${r.activeCount} active validators with total balance ${+gweiToEth(r.activeBalance).toFixed(2)} ETH): ${r.missedAttCount} validators with total balance ${+gweiToEth(r.missedAttBalance).toFixed(2)} ETH missed attestations`),
           '\n',
         ),
       },
