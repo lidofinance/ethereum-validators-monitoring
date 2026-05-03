@@ -94,7 +94,7 @@ export class CriticalMissedProposes extends Alert {
           Object.values(ruleResult).length
         } Node Operators with CRITICAL count of missed proposals in the last 12 hours in module ${this.moduleIndex}`,
         description: join(
-          Object.entries(ruleResult).map(([o, r]) => `${o}: ${r.missed} of ${r.all} proposals`),
+          Object.entries(ruleResult).map(([o, r]) => `- **${o}**: ${r.missed} of ${r.all} proposals;`),
           '\n',
         ),
       },

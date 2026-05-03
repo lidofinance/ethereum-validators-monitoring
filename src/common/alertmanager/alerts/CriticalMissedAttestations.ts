@@ -126,9 +126,9 @@ export class CriticalMissedAttestations extends Alert {
         description: join(
           Object.entries(ruleResult).map(
             ([o, r]) =>
-              `${o} (${r.activeCount} active validators with total balance ${+gweiToEth(r.activeBalance).toFixed(2)} ETH): ${
+              `- **${o}** (${r.activeCount} active validators with total balance ${+gweiToEth(r.activeBalance).toFixed(2)} ETH): ${
                 r.missedAttCount
-              } validators with total balance ${+gweiToEth(r.missedAttBalance).toFixed(2)} ETH missed attestations`,
+              } validators with total balance ${+gweiToEth(r.missedAttBalance).toFixed(2)} ETH missed attestations;`,
           ),
           '\n',
         ),

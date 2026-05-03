@@ -62,7 +62,7 @@ export class CriticalSlashing extends Alert {
       annotations: {
         summary: `${Object.values(ruleResult).length} Node Operators with SLASHED validators in module ${this.moduleIndex}`,
         description: join(
-          Object.entries(ruleResult).map(([o, r]) => `${o}: ${r.slashed} of ${r.ongoing}`),
+          Object.entries(ruleResult).map(([o, r]) => `- **${o}**: ${r.slashed} of ${r.ongoing};`),
           '\n',
         ),
       },
