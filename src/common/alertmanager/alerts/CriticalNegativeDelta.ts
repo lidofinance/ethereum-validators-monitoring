@@ -5,9 +5,9 @@ import { ConfigService } from 'common/config';
 import { ClickhouseService } from 'storage';
 import { NOsValidatorsNegDeltaCount, NOsValidatorsStatusStats } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
-import { gweiToEth } from '../../functions/gweiToEth';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
+import { gweiToEth } from '../../functions/gweiToEth';
 
 export class CriticalNegativeDelta extends Alert {
   protected readonly negativeValidatorsCount: NOsValidatorsNegDeltaCount[];
@@ -54,13 +54,17 @@ export class CriticalNegativeDelta extends Alert {
         includeToResult = negDelta.balance >= alertParams.affectedValBalance;
       } else if (alertParams.activeValBalance != null) {
         const percent = Math.round(alertParams.activeValBalance.affectedShare * 100);
-        const noStatsBalanceShare = noStats.balance * BigInt(percent) / 100n;
-        const minBalance = noStatsBalanceShare <= alertParams.activeValBalance.minAffectedBalance ? noStatsBalanceShare : alertParams.activeValBalance.minAffectedBalance;
+        const noStatsBalanceShare = (noStats.balance * BigInt(percent)) / 100n;
+        const minBalance =
+          noStatsBalanceShare <= alertParams.activeValBalance.minAffectedBalance
+            ? noStatsBalanceShare
+            : alertParams.activeValBalance.minAffectedBalance;
         includeToResult = negDelta.balance >= minBalance;
       } else if (alertParams.affectedValCount != null) {
         includeToResult = negDelta.amount >= alertParams.affectedValCount;
       } else if (alertParams.activeValCount != null) {
-        includeToResult = negDelta.amount >=
+        includeToResult =
+          negDelta.amount >=
           Math.min(noStats.active_ongoing * alertParams.activeValCount.affectedShare, alertParams.activeValCount.minAffectedCount);
       }
 
@@ -91,7 +95,7 @@ export class CriticalNegativeDelta extends Alert {
         // if any operator has increased bad validators count or another bad operator has been added
         if (
           (operatorResult.negDeltaBalance > (sentAlerts[this.alertname]?.ruleResult[operatorName]?.negDeltaBalance ?? 0) ||
-          operatorResult.negDeltaCount > (sentAlerts[this.alertname]?.ruleResult[operatorName]?.negDeltaCount ?? 0)) &&
+            operatorResult.negDeltaCount > (sentAlerts[this.alertname]?.ruleResult[operatorName]?.negDeltaCount ?? 0)) &&
           this.sendTimestamp - prevSendTimestamp > ifIncreasedInterval
         )
           return true;
@@ -118,7 +122,12 @@ export class CriticalNegativeDelta extends Alert {
           this.moduleIndex
         }`,
         description: join(
-          Object.entries(ruleResult).map(([o, r]) => `${o} (${r.activeCount} active validators with total balance ${+gweiToEth(r.activeBalance).toFixed(2)} ETH): ${r.negDeltaCount} validators with total balance ${+gweiToEth(r.negDeltaBalance).toFixed(2)} ETH have negative balance delta`),
+          Object.entries(ruleResult).map(
+            ([o, r]) =>
+              `${o} (${r.activeCount} active validators with total balance ${+gweiToEth(r.activeBalance).toFixed(2)} ETH): ${
+                r.negDeltaCount
+              } validators with total balance ${+gweiToEth(r.negDeltaBalance).toFixed(2)} ETH have negative balance delta`,
+          ),
           '\n',
         ),
       },

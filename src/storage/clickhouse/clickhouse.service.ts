@@ -41,6 +41,7 @@ import {
 import {
   AvgChainRewardsStats,
   EpochProcessingState,
+  ModuleValidatorsStatusStats,
   NOsBalance24hDiff,
   NOsDelta,
   NOsProposesStats,
@@ -54,7 +55,6 @@ import {
   NOsWithdrawalsStats,
   SyncCommitteeParticipationAvgPercents,
   ValidatorsStatusBaseStats,
-  ModuleValidatorsStatusStats,
   WithdrawalsStats,
 } from './clickhouse.types';
 import migration_000000_summary from './migrations/migration_000000_summary';
@@ -565,7 +565,7 @@ export class ClickhouseService implements OnModuleInit {
    * how many other (not user) validators have active, slashed, pending status
    */
   public async getOtherValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusBaseStats> {
-    const ret = await this.select(otherValidatorsSummaryStatsQuery(epoch)) as ValidatorsStatusBaseStats[];
+    const ret = (await this.select(otherValidatorsSummaryStatsQuery(epoch))) as ValidatorsStatusBaseStats[];
     return {
       ...ret[0],
       active_ongoing: Number(ret[0].active_ongoing),

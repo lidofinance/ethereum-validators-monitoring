@@ -5,9 +5,9 @@ import { ConfigService } from 'common/config';
 import { ClickhouseService } from 'storage';
 import { NOsValidatorsByConditionAttestationCount, NOsValidatorsStatusStats } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
-import { gweiToEth } from '../../functions/gweiToEth';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
+import { gweiToEth } from '../../functions/gweiToEth';
 
 export class CriticalMissedAttestations extends Alert {
   protected readonly missedAttValidatorsCount: NOsValidatorsByConditionAttestationCount[];
@@ -54,13 +54,17 @@ export class CriticalMissedAttestations extends Alert {
         includeToResult = missedAtt.balance >= alertParams.affectedValBalance;
       } else if (alertParams.activeValBalance != null) {
         const percent = Math.round(alertParams.activeValBalance.affectedShare * 100);
-        const noStatsBalanceShare = noStats.balance * BigInt(percent) / 100n;
-        const minBalance = noStatsBalanceShare <= alertParams.activeValBalance.minAffectedBalance ? noStatsBalanceShare : alertParams.activeValBalance.minAffectedBalance;
+        const noStatsBalanceShare = (noStats.balance * BigInt(percent)) / 100n;
+        const minBalance =
+          noStatsBalanceShare <= alertParams.activeValBalance.minAffectedBalance
+            ? noStatsBalanceShare
+            : alertParams.activeValBalance.minAffectedBalance;
         includeToResult = missedAtt.balance >= minBalance;
       } else if (alertParams.affectedValCount != null) {
         includeToResult = missedAtt.amount >= alertParams.affectedValCount;
       } else if (alertParams.activeValCount != null) {
-        includeToResult = missedAtt.amount >=
+        includeToResult =
+          missedAtt.amount >=
           Math.min(noStats.active_ongoing * alertParams.activeValCount.affectedShare, alertParams.activeValCount.minAffectedCount);
       }
 
@@ -91,7 +95,7 @@ export class CriticalMissedAttestations extends Alert {
         // if any operator has increased bad validators count or balance, or another bad operator has been added
         if (
           (operatorResult.missedAttBalance > (sentAlerts[this.alertname]?.ruleResult[operatorName]?.missedAttBalance ?? 0) ||
-          operatorResult.missedAttCount > (sentAlerts[this.alertname]?.ruleResult[operatorName]?.missedAttCount ?? 0)) &&
+            operatorResult.missedAttCount > (sentAlerts[this.alertname]?.ruleResult[operatorName]?.missedAttCount ?? 0)) &&
           this.sendTimestamp - prevSendTimestamp > ifIncreasedInterval
         )
           return true;
@@ -120,7 +124,12 @@ export class CriticalMissedAttestations extends Alert {
           'BAD_ATTESTATION_EPOCHS',
         )} epoch in module ${this.moduleIndex}`,
         description: join(
-          Object.entries(ruleResult).map(([o, r]) => `${o} (${r.activeCount} active validators with total balance ${+gweiToEth(r.activeBalance).toFixed(2)} ETH): ${r.missedAttCount} validators with total balance ${+gweiToEth(r.missedAttBalance).toFixed(2)} ETH missed attestations`),
+          Object.entries(ruleResult).map(
+            ([o, r]) =>
+              `${o} (${r.activeCount} active validators with total balance ${+gweiToEth(r.activeBalance).toFixed(2)} ETH): ${
+                r.missedAttCount
+              } validators with total balance ${+gweiToEth(r.missedAttBalance).toFixed(2)} ETH missed attestations`,
+          ),
           '\n',
         ),
       },
