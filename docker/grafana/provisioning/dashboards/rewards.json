@@ -357,7 +357,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "(sum_over_time((sum(ethereum_validators_monitoring_operator_calculated_balance_calculation_error{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / sum_over_time((sum(ethereum_validators_monitoring_operator_real_balance_delta{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) * 100",
+          "expr": "(sum_over_time((sum(ethereum_validators_monitoring_operator_calculated_balance_calculation_error{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / sum_over_time((sum(ethereum_validators_monitoring_operator_real_balance_delta{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) * 100",
           "refId": "A"
         }
       ],
@@ -1485,7 +1485,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+          "expr": "sum by () (ethereum_validators_monitoring_operator_reward{nos_global_index=~'${nos_global_index_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "interval": "",
           "legendFormat": "Rewards",
           "range": true,
@@ -1497,7 +1497,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by () (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) / 10^9 AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+          "expr": "sum by () (ethereum_validators_monitoring_operator_penalty{nos_global_index=~'${nos_global_index_var}'}) / 10^9 AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "hide": false,
           "legendFormat": "Penalties",
           "range": true,
@@ -1509,7 +1509,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) / 10^9 AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+          "expr": "sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_global_index=~'${nos_global_index_var}'}) / 10^9 AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "hide": false,
           "legendFormat": "Missed rewards",
           "range": true,
@@ -1521,7 +1521,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+          "expr": "sum by () (ethereum_validators_monitoring_operator_reward{nos_global_index=~'${nos_global_index_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "hide": false,
           "legendFormat": "Rewards (line)",
           "range": true,
@@ -1533,7 +1533,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by () (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+          "expr": "sum by () (ethereum_validators_monitoring_operator_penalty{nos_global_index=~'${nos_global_index_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "hide": false,
           "legendFormat": "Penalties (line)",
           "range": true,
@@ -1545,7 +1545,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+          "expr": "sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_global_index=~'${nos_global_index_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "hide": false,
           "legendFormat": "Missed rewards (line)",
           "range": true,
@@ -1655,7 +1655,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "editorMode": "code",
-          "expr": "((sum by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0)) / (((sum by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0)) + ((sum by () (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0)) + (sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0)) * 100",
+          "expr": "((sum by () (ethereum_validators_monitoring_operator_reward{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0)) / (((sum by () (ethereum_validators_monitoring_operator_reward{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0)) + ((sum by () (ethereum_validators_monitoring_operator_penalty{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0)) + (sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0)) * 100",
           "legendFormat": "Percent",
           "range": true,
           "refId": "A"
@@ -1736,7 +1736,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "(sum_over_time((sum by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) / ((sum_over_time((sum by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) + (sum_over_time((sum by () (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) + sum_over_time((sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) * 100",
+          "expr": "(sum_over_time((sum by () (ethereum_validators_monitoring_operator_reward{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) / ((sum_over_time((sum by () (ethereum_validators_monitoring_operator_reward{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) + (sum_over_time((sum by () (ethereum_validators_monitoring_operator_penalty{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) + sum_over_time((sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])) * 100",
           "refId": "A"
         }
       ],
@@ -2006,7 +2006,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": false,
-          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -2020,7 +2020,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": false,
-          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -2034,7 +2034,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": false,
-          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -2049,7 +2049,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_calculated_balance_calculation_error{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9)",
+          "expr": "(sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_calculated_balance_calculation_error{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9)",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -2064,7 +2064,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_withdrawals_sum{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+          "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_withdrawals_sum{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -2338,7 +2338,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_reward{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
           "refId": "A"
         }
       ],
@@ -2427,7 +2427,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_calculated_balance_delta{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_calculated_balance_delta{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
           "instant": true,
           "legendFormat": "Total sum",
           "range": false,
@@ -2495,7 +2495,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_penalty{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
           "refId": "A"
         }
       ],
@@ -2560,7 +2560,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_missed_reward{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
           "refId": "A"
         }
       ],
@@ -2625,7 +2625,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_withdrawals_sum{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+          "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_operator_withdrawals_sum{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
           "refId": "A"
         }
       ],
@@ -2783,7 +2783,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{duty='attestation', nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{duty='attestation', nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2797,7 +2797,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{duty='proposal', nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{duty='proposal', nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2811,7 +2811,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{duty='sync', nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{duty='sync', nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2826,7 +2826,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_reward{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3004,7 +3004,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_reward{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_reward{nos_global_index=~'${nos_global_index_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -3161,7 +3161,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{duty='attestation', nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{duty='attestation', nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3175,7 +3175,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{duty='sync', nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{duty='sync', nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3190,7 +3190,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3368,7 +3368,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{nos_global_index=~'${nos_global_index_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -3533,7 +3533,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{duty='attestation', nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{duty='attestation', nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3547,7 +3547,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{duty='proposal', nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{duty='proposal', nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3561,7 +3561,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{duty='sync', nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{duty='sync', nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3576,7 +3576,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3765,7 +3765,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{nos_global_index=~'${nos_global_index_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -3922,7 +3922,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_withdrawals_sum{type='partial', nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_withdrawals_sum{type='partial', nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3936,7 +3936,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_withdrawals_sum{type='full', nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_withdrawals_sum{type='full', nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3951,7 +3951,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_withdrawals_sum{nos_name=~'${nos_name_array_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_withdrawals_sum{nos_global_index=~'${nos_global_index_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) / 10^9",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4143,7 +4143,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_withdrawals_sum{nos_name=~'${nos_name_array_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_withdrawals_sum{nos_global_index=~'${nos_global_index_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -4252,6 +4252,37 @@
         "regex": "/nos_name=\"(?<text>[^\"]+)/",
         "sort": 1,
         "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "query_result(label_join(ethereum_validators_monitoring_user_validators{nos_module_id=~'${module_var}', nos_name=~'${nos_name_array_var}'}, 'nos_global_index', ';', 'nos_module_id', 'nos_id'))",
+        "description": "",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Node Operator Global Indexes",
+        "multi": true,
+        "name": "nos_global_index_var",
+        "options": [],
+        "query": {
+          "query": "query_result(label_join(ethereum_validators_monitoring_user_validators{nos_module_id=~'${module_var}', nos_name=~'${nos_name_array_var}'}, 'nos_global_index', ';', 'nos_module_id', 'nos_id'))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "/nos_global_index=\"(?<text>[^\"]+)/",
+        "sort": 1,
+        "type": "query"
       }
     ]
   },
@@ -4273,6 +4304,6 @@
   "timezone": "",
   "title": "Rewards & Penalties",
   "uid": "poBeaLaRD",
-  "version": 12,
+  "version": 13,
   "weekStart": ""
 }
