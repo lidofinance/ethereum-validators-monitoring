@@ -3,13 +3,13 @@ import { join } from 'lodash';
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
 import { ClickhouseService } from 'storage';
-import { NOsValidatorsNegDeltaCount, NOsValidatorsStatusStats } from 'storage/clickhouse';
+import { NOsValidatorsCount, NOsValidatorsStatusStats } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
 export class CriticalNegativeDelta extends Alert {
-  protected readonly negativeValidatorsCount: NOsValidatorsNegDeltaCount[];
+  protected readonly negativeValidatorsCount: NOsValidatorsCount[];
 
   constructor(
     config: ConfigService,
@@ -17,7 +17,7 @@ export class CriticalNegativeDelta extends Alert {
     operators: RegistrySourceOperator[],
     moduleIndex: number,
     nosStats: NOsValidatorsStatusStats[],
-    negativeValidatorsCount: NOsValidatorsNegDeltaCount[],
+    negativeValidatorsCount: NOsValidatorsCount[],
   ) {
     const name = CriticalNegativeDelta.name + 'Module' + moduleIndex;
     super(name, config, storage, operators, moduleIndex, nosStats);

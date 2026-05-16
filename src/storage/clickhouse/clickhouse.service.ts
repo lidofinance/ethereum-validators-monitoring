@@ -12,24 +12,26 @@ import { retrier } from 'common/functions/retrier';
 import { unblock } from 'common/functions/unblock';
 import { PrometheusService, TrackTask } from 'common/prometheus';
 import { Epoch, Slot } from 'common/types/types';
-import { EpochMeta, ValidatorDutySummary } from 'duty/summary';
+import { EpochMeta, EpochPendingConsolidation, ValidatorDutySummary } from 'duty/summary';
 
 import {
-  avgChainRewardsAndPenaltiesStats,
-  avgValidatorBalanceDelta,
+  avgChainRewardsAndPenaltiesStatsQuery,
+  avgValidatorBalanceDeltaQuery,
   chainSyncParticipationAvgPercentQuery,
-  epochMetadata,
-  epochProcessing,
+  epochMetadataQuery,
+  epochProcessingQuery,
   operatorBalance24hDifferenceQuery,
   operatorsSyncParticipationAvgPercentsQuery,
-  otherChainWithdrawalsStats,
+  otherChainWithdrawalsStatsQuery,
+  otherConsolidationsCountQuery,
   otherSyncParticipationAvgPercentQuery,
   otherValidatorsSummaryStatsQuery,
   totalBalance24hDifferenceQuery,
+  userConsolidationsCountQuery,
   userNodeOperatorsProposesStatsLastNEpochQuery,
-  userNodeOperatorsRewardsAndPenaltiesStats,
+  userNodeOperatorsRewardsAndPenaltiesStatsQuery,
   userNodeOperatorsStatsQuery,
-  userNodeOperatorsWithdrawalsStats,
+  userNodeOperatorsWithdrawalsStatsQuery,
   userSyncParticipationAvgPercentQuery,
   userValidatorsSummaryStatsQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
@@ -41,17 +43,13 @@ import {
 import {
   AvgChainRewardsStats,
   EpochProcessingState,
-  NOsBalance24hDiff,
-  NOsDelta,
   NOsProposesStats,
-  NOsValidatorsByConditionAttestationCount,
-  NOsValidatorsByConditionProposeCount,
-  NOsValidatorsNegDeltaCount,
+  NOsValidatorsCount,
+  NOsValidatorsCountAndBalance,
   NOsValidatorsRewardsStats,
   NOsValidatorsStatusStats,
-  NOsValidatorsSyncAvgPercent,
-  NOsValidatorsSyncByConditionCount,
   NOsWithdrawalsStats,
+  OtherValidatorsCountAndBalance,
   SyncCommitteeParticipationAvgPercents,
   ValidatorsStatusStats,
   WithdrawalsStats,
@@ -65,6 +63,7 @@ import migration_000005_withdrawals from './migrations/migration_000005_withdraw
 import migration_000006_stuck_validators from './migrations/migration_000006_stuck_validators';
 import migration_000007_module_id from './migrations/migration_000007_module_id';
 import migration_000008_last_not_missed_slot from './migrations/migration_000008_last_not_missed_slot';
+import migration_000009_pending_consolidations from './migrations/migration_000009_pending_consolidations';
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -158,6 +157,7 @@ export class ClickhouseService implements OnModuleInit {
           format: 'JSONEachRow',
         }),
       );
+
       const summaries = this.retry(async () =>
         this.db.insert({
           table: 'validators_summary',
@@ -197,6 +197,40 @@ export class ClickhouseService implements OnModuleInit {
           },
         ]),
       ),
+    );
+  }
+
+  @TrackTask('write-pending-consolidations')
+  public async writePendingConsolidations(epoch: Epoch, consolidations: EpochPendingConsolidation[]): Promise<void> {
+    const runWriteTask = (stream: Readable): Promise<any> =>
+      this.retry(async () =>
+        this.db.insert({
+          table: 'pending_consolidations',
+          values: stream.pipe(
+            new Transform({
+              transform(chunk, encoding, callback) {
+                callback(null, {
+                  epoch,
+                  source_val_id: chunk.source_index,
+                  target_val_id: chunk.target_index,
+                });
+              },
+              objectMode: true,
+            }),
+          ),
+          format: 'JSONEachRow',
+        }),
+      );
+
+    await runWriteTask(
+      chain([
+        Readable.from(consolidations, { objectMode: true, autoDestroy: true }),
+        batch({ batchSize: 100 }),
+        async (batch) => {
+          await unblock();
+          return batch;
+        },
+      ]),
     );
   }
 
@@ -256,28 +290,29 @@ export class ClickhouseService implements OnModuleInit {
       migration_000006_stuck_validators,
       migration_000007_module_id,
       migration_000008_last_not_missed_slot,
+      migration_000009_pending_consolidations,
     ];
     for (const query of migrations) {
       await this.db.exec({ query });
     }
   }
 
-  public async getAvgValidatorBalanceDelta(epoch: Epoch): Promise<NOsDelta[]> {
-    return (await this.select<NOsDelta[]>(avgValidatorBalanceDelta(epoch))).map((v) => ({
+  public async getAvgValidatorBalanceDelta(epoch: Epoch): Promise<NOsValidatorsCount[]> {
+    return (await this.select<NOsValidatorsCount[]>(avgValidatorBalanceDeltaQuery(epoch))).map((v) => ({
       ...v,
       amount: Number(v.amount),
     }));
   }
 
-  public async getValidatorQuantile0001BalanceDeltas(epoch: Epoch): Promise<NOsDelta[]> {
-    return (await this.select<NOsDelta[]>(validatorQuantile0001BalanceDeltasQuery(epoch))).map((v) => ({
+  public async getValidatorQuantile0001BalanceDeltas(epoch: Epoch): Promise<NOsValidatorsCount[]> {
+    return (await this.select<NOsValidatorsCount[]>(validatorQuantile0001BalanceDeltasQuery(epoch))).map((v) => ({
       ...v,
       amount: Number(v.amount),
     }));
   }
 
-  public async getValidatorsCountWithNegativeDelta(epoch: Epoch): Promise<NOsValidatorsNegDeltaCount[]> {
-    return (await this.select<NOsValidatorsNegDeltaCount[]>(validatorsCountWithNegativeDeltaQuery(epoch))).map((v) => ({
+  public async getValidatorsCountWithNegativeDelta(epoch: Epoch): Promise<NOsValidatorsCount[]> {
+    return (await this.select<NOsValidatorsCount[]>(validatorsCountWithNegativeDeltaQuery(epoch))).map((v) => ({
       ...v,
       amount: Number(v.amount),
     }));
@@ -312,8 +347,8 @@ export class ClickhouseService implements OnModuleInit {
   /**
    * Send query to Clickhouse and receives information about Operator Sync Committee participants
    */
-  public async getOperatorSyncParticipationAvgPercents(epoch: Epoch): Promise<NOsValidatorsSyncAvgPercent[]> {
-    return (await this.select<NOsValidatorsSyncAvgPercent[]>(operatorsSyncParticipationAvgPercentsQuery(epoch))).map((v) => ({
+  public async getOperatorSyncParticipationAvgPercents(epoch: Epoch): Promise<NOsValidatorsCount[]> {
+    return (await this.select<NOsValidatorsCount[]>(operatorsSyncParticipationAvgPercentsQuery(epoch))).map((v) => ({
       ...v,
       amount: Number(v.amount),
     }));
@@ -324,9 +359,9 @@ export class ClickhouseService implements OnModuleInit {
     epochInterval: number,
     chainAvg: number,
     validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsSyncByConditionCount[]> {
+  ): Promise<NOsValidatorsCount[]> {
     return (
-      await this.select<NOsValidatorsSyncByConditionCount[]>(
+      await this.select<NOsValidatorsCount[]>(
         validatorsCountWithSyncParticipationByConditionLastNEpochQuery(
           epoch,
           epochInterval,
@@ -349,9 +384,9 @@ export class ClickhouseService implements OnModuleInit {
     epochInterval: number,
     chainAvg: number,
     validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsSyncByConditionCount[]> {
+  ): Promise<NOsValidatorsCount[]> {
     return (
-      await this.select<NOsValidatorsSyncByConditionCount[]>(
+      await this.select<NOsValidatorsCount[]>(
         validatorsCountWithSyncParticipationByConditionLastNEpochQuery(
           epoch,
           epochInterval,
@@ -467,9 +502,9 @@ export class ClickhouseService implements OnModuleInit {
     epochInterval: number,
     condition: string,
     validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsByConditionAttestationCount[]> {
+  ): Promise<NOsValidatorsCount[]> {
     return (
-      await this.select<NOsValidatorsByConditionAttestationCount[]>(
+      await this.select<NOsValidatorsCount[]>(
         validatorCountByConditionAttestationLastNEpochQuery(epoch, epochInterval, validatorIndexes, condition),
       )
     ).map((v) => ({
@@ -478,14 +513,9 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  public async getValidatorsCountWithGoodProposes(
-    epoch: Epoch,
-    validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsByConditionProposeCount[]> {
+  public async getValidatorsCountWithGoodProposes(epoch: Epoch, validatorIndexes: string[] = []): Promise<NOsValidatorsCount[]> {
     return (
-      await this.select<NOsValidatorsByConditionProposeCount[]>(
-        validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 1'),
-      )
+      await this.select<NOsValidatorsCount[]>(validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 1'))
     ).map((v) => ({
       ...v,
       amount: Number(v.amount),
@@ -496,14 +526,9 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about
    * how many User Node Operator validators miss proposals at our last processed epoch
    */
-  public async getValidatorsCountWithMissedProposes(
-    epoch: Epoch,
-    validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsByConditionProposeCount[]> {
+  public async getValidatorsCountWithMissedProposes(epoch: Epoch, validatorIndexes: string[] = []): Promise<NOsValidatorsCount[]> {
     return (
-      await this.select<NOsValidatorsByConditionProposeCount[]>(
-        validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 0'),
-      )
+      await this.select<NOsValidatorsCount[]>(validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 0'))
     ).map((v) => ({
       ...v,
       amount: Number(v.amount),
@@ -517,8 +542,8 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  public async getOperatorBalance24hDifference(epoch: Epoch): Promise<NOsBalance24hDiff[]> {
-    return (await this.select<NOsBalance24hDiff[]>(operatorBalance24hDifferenceQuery(epoch))).map((v) => ({
+  public async getOperatorBalance24hDifference(epoch: Epoch): Promise<NOsValidatorsCount[]> {
+    return (await this.select<NOsValidatorsCount[]>(operatorBalance24hDifferenceQuery(epoch))).map((v) => ({
       ...v,
       amount: Number(v.amount),
     }));
@@ -585,7 +610,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   async getEpochMetadata(epoch: Epoch): Promise<EpochMeta> {
-    const ret = (await this.select(epochMetadata(epoch)))[0];
+    const ret = (await this.select(epochMetadataQuery(epoch)))[0];
     const metadata = {};
     if (ret) {
       metadata['state'] = {
@@ -627,13 +652,13 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async getEpochProcessing(epoch: Epoch): Promise<EpochProcessingState> {
-    const ret = (await this.select(epochProcessing(epoch)))[0];
+    const ret = (await this.select(epochProcessingQuery(epoch)))[0];
     if (ret) return { ...ret, epoch: ret.epoch };
     return { epoch: 0, is_stored: undefined, is_calculated: undefined };
   }
 
   public async getUserNodeOperatorsRewardsAndPenaltiesStats(epoch: Epoch): Promise<NOsValidatorsRewardsStats[]> {
-    return (await this.select<NOsValidatorsRewardsStats[]>(userNodeOperatorsRewardsAndPenaltiesStats(epoch))).map((v) => ({
+    return (await this.select<NOsValidatorsRewardsStats[]>(userNodeOperatorsRewardsAndPenaltiesStatsQuery(epoch))).map((v) => ({
       ...v,
       prop_reward: +v.prop_reward,
       prop_missed: +v.prop_missed,
@@ -654,7 +679,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async getAvgChainRewardsAndPenaltiesStats(epoch: Epoch): Promise<AvgChainRewardsStats> {
-    return (await this.select<AvgChainRewardsStats[]>(avgChainRewardsAndPenaltiesStats(epoch))).map((v) => ({
+    return (await this.select<AvgChainRewardsStats[]>(avgChainRewardsAndPenaltiesStatsQuery(epoch))).map((v) => ({
       prop_reward: +v.prop_reward,
       prop_missed: +v.prop_missed,
       prop_penalty: +v.prop_penalty,
@@ -668,7 +693,7 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async getUserNodeOperatorsWithdrawalsStats(epoch: Epoch): Promise<NOsWithdrawalsStats[]> {
-    return (await this.select<NOsWithdrawalsStats[]>(userNodeOperatorsWithdrawalsStats(epoch))).map((v) => ({
+    return (await this.select<NOsWithdrawalsStats[]>(userNodeOperatorsWithdrawalsStatsQuery(epoch))).map((v) => ({
       ...v,
       full_withdrawn_sum: +v.full_withdrawn_sum,
       full_withdrawn_count: +v.full_withdrawn_count,
@@ -678,12 +703,34 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   public async getOtherChainWithdrawalsStats(epoch: Epoch): Promise<WithdrawalsStats> {
-    return (await this.select<WithdrawalsStats[]>(otherChainWithdrawalsStats(epoch))).map((v) => ({
+    return (await this.select<WithdrawalsStats[]>(otherChainWithdrawalsStatsQuery(epoch))).map((v) => ({
       ...v,
       full_withdrawn_sum: +v.full_withdrawn_sum,
       full_withdrawn_count: +v.full_withdrawn_count,
       partial_withdrawn_sum: +v.partial_withdrawn_sum,
       partial_withdrawn_count: +v.partial_withdrawn_count,
     }))[0];
+  }
+
+  public async getUserValidatorsConsolidationCount(epoch: Epoch, type: 'source' | 'target'): Promise<NOsValidatorsCountAndBalance[]> {
+    return (await this.select<NOsValidatorsCountAndBalance[]>(userConsolidationsCountQuery(epoch, type))).map((v) => ({
+      ...v,
+      amount: Number(v.amount),
+      balance: BigInt(v.balance),
+    }));
+  }
+
+  public async getOtherValidatorsConsolidationCount(epoch: Epoch, type: 'source' | 'target'): Promise<OtherValidatorsCountAndBalance> {
+    const result = (await this.select<OtherValidatorsCountAndBalance[]>(otherConsolidationsCountQuery(epoch, type))).map((v) => ({
+      amount: Number(v.amount),
+      balance: BigInt(v.balance),
+    }));
+
+    return result.length > 0
+      ? result[0]
+      : {
+          amount: 0,
+          balance: 0n,
+        };
   }
 }

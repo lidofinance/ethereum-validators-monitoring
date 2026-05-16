@@ -3,13 +3,13 @@ import { join } from 'lodash';
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
 import { ClickhouseService } from 'storage';
-import { NOsValidatorsByConditionAttestationCount, NOsValidatorsStatusStats } from 'storage/clickhouse';
+import { NOsValidatorsCount, NOsValidatorsStatusStats } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
 
 import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
 
 export class CriticalMissedAttestations extends Alert {
-  protected readonly missedAttValidatorsCount: NOsValidatorsByConditionAttestationCount[];
+  protected readonly missedAttValidatorsCount: NOsValidatorsCount[];
 
   constructor(
     config: ConfigService,
@@ -17,7 +17,7 @@ export class CriticalMissedAttestations extends Alert {
     operators: RegistrySourceOperator[],
     moduleIndex: number,
     nosStats: NOsValidatorsStatusStats[],
-    missedAttValidatorsCount: NOsValidatorsByConditionAttestationCount[],
+    missedAttValidatorsCount: NOsValidatorsCount[],
   ) {
     const name = CriticalMissedAttestations.name + 'Module' + moduleIndex;
     super(name, config, storage, operators, moduleIndex, nosStats);

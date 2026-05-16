@@ -69,9 +69,15 @@ export interface EpochMeta {
   };
 }
 
+export interface EpochPendingConsolidation {
+  source_index: number;
+  target_index: number;
+}
+
 export interface EpochInfo {
   summary: Map<ValidatorId, ValidatorDutySummary>;
   meta: EpochMeta;
+  pendingConsolidations: EpochPendingConsolidation[];
 }
 
 export type EpochStorage = Map<Epoch, EpochInfo>;
@@ -85,26 +91,30 @@ export class SummaryService {
   }
 
   public epoch(epoch: Epoch) {
-    if (!this.storage.get(epoch)) this.init(epoch); // Initialize epoch
+    if (!this.storage.get(epoch)) {
+      this.init(epoch); // Initialize epoch
+    }
+
     const epochStorageData = this.storage.get(epoch);
     return {
       setMeta: (val: EpochMeta) => {
         const curr = epochStorageData.meta;
         epochStorageData.meta = merge(curr, val);
       },
-      getMeta: (): EpochMeta => {
-        return epochStorageData.meta;
+      getMeta: (): EpochMeta => epochStorageData.meta,
+      setPendingConsolidations: (val: EpochPendingConsolidation[]) => {
+        epochStorageData.pendingConsolidations = [...val];
       },
+      addPendingConsolidation: (val: EpochPendingConsolidation) => {
+        epochStorageData.pendingConsolidations.push(val);
+      },
+      getPendingConsolidations: (): EpochPendingConsolidation[] => epochStorageData.pendingConsolidations,
       set: (val: ValidatorDutySummary) => {
         const curr = epochStorageData.summary.get(val.val_id) ?? {};
         epochStorageData.summary.set(val.val_id, merge(curr, val));
       },
-      get: (val_id: ValidatorId): ValidatorDutySummary | undefined => {
-        return epochStorageData.summary.get(val_id);
-      },
-      values: () => {
-        return epochStorageData.summary.values();
-      },
+      get: (val_id: ValidatorId): ValidatorDutySummary | undefined => epochStorageData.summary.get(val_id),
+      values: () => epochStorageData.summary.values(),
     };
   }
 
@@ -134,6 +144,7 @@ export class SummaryService {
           blocks_to_sync: [],
         },
       },
+      pendingConsolidations: [],
     });
   }
 }

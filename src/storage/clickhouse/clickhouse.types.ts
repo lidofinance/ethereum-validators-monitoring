@@ -10,46 +10,19 @@ export interface ValidatorsStatusStats {
   stuck?: number;
 }
 
-export interface NOsDelta {
+export interface NOsValidatorsCount {
   val_nos_module_id: string;
   val_nos_id: string;
   amount: number;
 }
 
-export interface NOsValidatorsNegDeltaCount {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
+export interface NOsValidatorsCountAndBalance extends NOsValidatorsCount {
+  balance: bigint;
 }
 
-export interface NOsValidatorsSyncAvgPercent {
-  val_nos_module_id: string;
-  val_nos_id: string;
+export interface OtherValidatorsCountAndBalance {
   amount: number;
-}
-
-export interface NOsValidatorsSyncByConditionCount {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
-export interface NOsValidatorsByConditionAttestationCount {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
-export interface NOsValidatorsByConditionProposeCount {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
-export interface NOsBalance24hDiff {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
+  balance: bigint;
 }
 
 export interface NOsValidatorsStatusStats extends ValidatorsStatusStats {
@@ -112,6 +85,7 @@ export interface WithdrawalsStats {
   partial_withdrawn_sum: number;
   partial_withdrawn_count: number;
 }
+
 export interface NOsWithdrawalsStats extends WithdrawalsStats {
   val_nos_module_id: string;
   val_nos_id: string;
