@@ -5886,7 +5886,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 54
+        "y": 55
       },
       "id": 1752,
       "panels": [
@@ -5895,7 +5895,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Number of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total number of User validator `source_index`es in the queue",
+          "description": "Number of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total number of User validator `source_index`es in the queue belonging to other User operators",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -6106,7 +6106,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Total balance of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total balance of User validator `source_index`es in the queue",
+          "description": "Total balance of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total balance of User validator `source_index`es in the queue belonging to other User operators",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -6317,7 +6317,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Number of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total number of User validator `target_index`es in the queue",
+          "description": "Number of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total number of User validator `target_index`es in the queue belonging to other User operators",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -6528,7 +6528,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Total balance of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total balance of User validator `target_index`es in the queue",
+          "description": "Total balance of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total balance of User validator `target_index`es in the queue belonging to other User operators",
           "fieldConfig": {
             "defaults": {
               "color": {
