@@ -33,7 +33,7 @@ export class CriticalNegativeDelta extends Alert {
     let filteredNosStats: NOsValidatorsStatusStats[];
     if (alertParams.affectedValBalance != null || alertParams.activeValBalance != null) {
       const balanceThreshold = alertParams.affectedValBalance ?? alertParams.activeValBalance.minActiveBalance;
-      filteredNosStats = this.nosStats.filter((o) => o.balance >= balanceThreshold);
+      filteredNosStats = this.nosStats.filter((o) => o.active_ongoing_balance >= balanceThreshold);
     } else {
       const activeOngoingThreshold = alertParams.affectedValCount ?? alertParams.activeValCount.minActiveCount;
       filteredNosStats = this.nosStats.filter((o) => o.active_ongoing >= activeOngoingThreshold);
@@ -54,7 +54,7 @@ export class CriticalNegativeDelta extends Alert {
         includeToResult = negDelta.balance >= alertParams.affectedValBalance;
       } else if (alertParams.activeValBalance != null) {
         const percent = Math.round(alertParams.activeValBalance.affectedShare * 100);
-        const noStatsBalanceShare = (noStats.balance * BigInt(percent)) / 100n;
+        const noStatsBalanceShare = (noStats.active_ongoing_balance * BigInt(percent)) / 100n;
         const minBalance =
           noStatsBalanceShare <= alertParams.activeValBalance.minAffectedBalance
             ? noStatsBalanceShare
@@ -72,7 +72,7 @@ export class CriticalNegativeDelta extends Alert {
         result[operator.name] = {
           activeCount: noStats.active_ongoing,
           negDeltaCount: negDelta.amount,
-          activeBalance: noStats.balance,
+          activeBalance: noStats.active_ongoing_balance,
           negDeltaBalance: negDelta.balance,
         };
       }

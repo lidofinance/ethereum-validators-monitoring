@@ -59,7 +59,12 @@ export interface NOsBalance24hDiff {
 
 export interface NOsValidatorsStatusStats extends ModuleValidatorsStatusStats {
   val_nos_id: string;
-  balance: bigint;
+  active_ongoing_balance: bigint;
+  pending_balance: bigint;
+  slashed_balance: bigint;
+  withdraw_pending_balance: bigint;
+  withdrawn_balance: bigint;
+  stuck_balance: bigint;
 }
 
 export interface NOsValidatorsRewardsStats {

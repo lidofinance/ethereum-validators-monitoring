@@ -535,12 +535,17 @@ export class ClickhouseService implements OnModuleInit {
     return (await this.select<NOsValidatorsStatusStats[]>(userNodeOperatorsStatsQuery(epoch))).map((v) => ({
       ...v,
       active_ongoing: Number(v.active_ongoing),
+      active_ongoing_balance: BigInt(v.active_ongoing_balance),
       pending: Number(v.pending),
+      pending_balance: BigInt(v.pending_balance),
       slashed: Number(v.slashed),
+      slashed_balance: BigInt(v.slashed_balance),
       withdraw_pending: Number(v.withdraw_pending),
+      withdraw_pending_balance: BigInt(v.withdraw_pending_balance),
       withdrawn: Number(v.withdrawn),
+      withdrawn_balance: BigInt(v.withdrawn_balance),
       stuck: Number(v.stuck),
-      balance: BigInt(v.balance),
+      stuck_balance: BigInt(v.stuck_balance),
     }));
   }
 

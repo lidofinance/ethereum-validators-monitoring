@@ -408,33 +408,48 @@ export const userNodeOperatorsStatsQuery = (epoch: Epoch): string => `
     val_nos_module_id,
     val_nos_id,
     SUM(a) AS active_ongoing,
+    SUM(a_balance) AS active_ongoing_balance,
     SUM(p) AS pending,
+    SUM(p_balance) AS pending_balance,
     SUM(s) AS slashed,
+    SUM(s_balance) AS slashed_balance,
     ifNull(SUM(wp), 0) AS withdraw_pending,
+    ifNull(SUM(wp_balance), 0) AS withdraw_pending_balance,
     ifNull(SUM(w), 0) AS withdrawn,
+    ifNull(SUM(w_balance), 0) AS withdrawn_balance,
     SUM(st) AS stuck,
-    SUM(b) AS balance
+    SUM(st_balance) AS stuck_balance
   FROM (
     SELECT
       val_nos_module_id,
       val_nos_id,
       IF(val_status = '${ValStatus.ActiveOngoing}', count(val_status), 0) AS a,
+      IF(val_status = '${ValStatus.ActiveOngoing}', SUM(val_balance), 0) AS a_balance,
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) AS p,
+      IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', SUM(val_balance), 0) AS p_balance,
       IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) AS s,
+      IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, SUM(val_balance), 0) AS s_balance,
       IF(
-        (val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
+        (val_status in ['${ValStatus.ActiveExiting}', '${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
         OR
-        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
         count(val_status), 0
       ) AS wp,
       IF(
-        (val_status == '${ValStatus.WithdrawalDone}')
+        (val_status in ['${ValStatus.ActiveExiting}', '${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
         OR
-        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance == 0),
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
+        SUM(val_balance), 0
+      ) AS wp_balance,
+      IF(
+        (val_status = '${ValStatus.WithdrawalDone}')
+        OR
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance = 0),
         count(val_status), 0
       ) AS w,
-      IF (val_stuck = 1, count(val_stuck), 0) AS st,
-      SUM(val_balance) AS b
+      IF(val_status = '${ValStatus.WithdrawalDone}', SUM(val_balance), 0) AS w_balance,
+      IF(val_stuck = 1, count(val_stuck), 0) AS st,
+      IF(val_stuck = 1, SUM(val_balance), 0) AS st_balance
     FROM (
       SELECT val_nos_module_id, val_nos_id, val_status, val_slashed, val_balance, val_stuck
       FROM validators_summary
@@ -465,13 +480,13 @@ export const userValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
       IF(
         (val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
         OR
-        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
         count(val_status), 0
       ) AS wp,
       IF(
-        (val_status == '${ValStatus.WithdrawalDone}')
+        (val_status = '${ValStatus.WithdrawalDone}')
         OR
-        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance == 0),
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance = 0),
         count(val_status), 0
       ) AS w,
       IF (val_stuck = 1, count(val_stuck), 0) AS st
@@ -502,13 +517,13 @@ export const otherValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
       IF(
         (val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
         OR
-        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
         count(val_status), 0
       ) AS wp,
       IF(
-        (val_status == '${ValStatus.WithdrawalDone}')
+        (val_status = '${ValStatus.WithdrawalDone}')
         OR
-        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance == 0),
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance = 0),
         count(val_status), 0
       ) AS w
     FROM (
@@ -748,7 +763,7 @@ export const userNodeOperatorsWithdrawalsStats = (epoch: Epoch): string => `
     ifNull(
       sumIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance == 0
+        val_balance_withdrawn > 0 AND val_balance = 0
       ),
       0
     ) AS full_withdrawn_sum,
@@ -762,7 +777,7 @@ export const userNodeOperatorsWithdrawalsStats = (epoch: Epoch): string => `
     ifNull(
       countIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance == 0
+        val_balance_withdrawn > 0 AND val_balance = 0
       ),
       0
     ) AS full_withdrawn_count,
@@ -791,7 +806,7 @@ export const otherChainWithdrawalsStats = (epoch: Epoch): string => `
     ifNull(
       sumIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance == 0
+        val_balance_withdrawn > 0 AND val_balance = 0
       ),
       0
     ) AS full_withdrawn_sum,
@@ -805,7 +820,7 @@ export const otherChainWithdrawalsStats = (epoch: Epoch): string => `
     ifNull(
       countIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance == 0
+        val_balance_withdrawn > 0 AND val_balance = 0
       ),
       0
     ) AS full_withdrawn_count,

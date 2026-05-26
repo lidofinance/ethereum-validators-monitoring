@@ -34,7 +34,7 @@ export class CriticalMissedProposes extends Alert {
     let filteredNosStats: NOsValidatorsStatusStats[];
     if (alertParams.affectedValBalance != null || alertParams.activeValBalance != null) {
       const balanceThreshold = alertParams.affectedValBalance ?? alertParams.activeValBalance.minActiveBalance;
-      filteredNosStats = this.nosStats.filter((o) => o.balance >= balanceThreshold);
+      filteredNosStats = this.nosStats.filter((o) => o.active_ongoing_balance >= balanceThreshold);
     } else {
       const activeOngoingThreshold = alertParams.affectedValCount ?? alertParams.activeValCount.minActiveCount;
       filteredNosStats = this.nosStats.filter((o) => o.active_ongoing >= activeOngoingThreshold);
