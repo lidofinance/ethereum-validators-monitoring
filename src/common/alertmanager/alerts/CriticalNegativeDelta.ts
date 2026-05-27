@@ -53,8 +53,8 @@ export class CriticalNegativeDelta extends Alert {
       if (alertParams.affectedValBalance != null) {
         includeToResult = negDelta.balance >= alertParams.affectedValBalance;
       } else if (alertParams.activeValBalance != null) {
-        const percent = Math.round(alertParams.activeValBalance.affectedShare * 100);
-        const noStatsBalanceShare = (noStats.active_ongoing_balance * BigInt(percent)) / 100n;
+        const percent = Math.round(alertParams.activeValBalance.affectedShare * 1000000);
+        const noStatsBalanceShare = (noStats.active_ongoing_balance * BigInt(percent)) / 1000000n;
         const minBalance =
           noStatsBalanceShare <= alertParams.activeValBalance.minAffectedBalance
             ? noStatsBalanceShare
