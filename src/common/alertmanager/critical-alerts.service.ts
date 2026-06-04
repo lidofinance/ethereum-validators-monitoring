@@ -9,13 +9,21 @@ import { ClickhouseService } from 'storage';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
 import { AlertRequestBody, PreparedToSendAlert } from './alerts/BasicAlert';
-import { CriticalMissedAttestations } from './alerts/CriticalMissedAttestations';
-import { CriticalMissedProposes } from './alerts/CriticalMissedProposes';
-import { CriticalNegativeDelta } from './alerts/CriticalNegativeDelta';
-import { CriticalSlashing } from './alerts/CriticalSlashing';
+import { CriticalMissedAttestations, MissedAttestationsRuleResult } from './alerts/CriticalMissedAttestations';
+import { CriticalMissedProposes, MissedProposalsRuleResult } from './alerts/CriticalMissedProposes';
+import { CriticalNegativeDelta, NegativeBalanceDeltaRuleResult } from './alerts/CriticalNegativeDelta';
+import { CriticalSlashing, SlashingRuleResult } from './alerts/CriticalSlashing';
+import {
+  NOsProposesStats,
+  NOsValidatorsByConditionAttestationCount,
+  NOsValidatorsNegDeltaCount,
+  NOsValidatorsStatusStats,
+} from '../../storage/clickhouse';
 
 interface SentAlerts {
-  [alertname: string]: PreparedToSendAlert;
+  [alertname: string]: PreparedToSendAlert<
+    SlashingRuleResult | MissedProposalsRuleResult | MissedAttestationsRuleResult | NegativeBalanceDeltaRuleResult
+  >;
 }
 
 export const sentAlerts: SentAlerts = {};
@@ -47,13 +55,19 @@ export class CriticalAlertsService {
     }
     try {
       const moduleIndexes = this.registryService.getModuleIndexes();
-      const [nosStats, missedAttValidatorsCount, proposes, negativeValidatorsCount, prevNosStats] = await Promise.all([
+      const [nosStats, missedAttValidatorsCount, proposes, negativeValidatorsCount, prevNosStats] = (await Promise.all([
         this.storage.getUserNodeOperatorsStats(epoch),
         this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(epoch),
         this.storage.getUserNodeOperatorsProposesStats(epoch), // ~12h range
         this.storage.getValidatorsCountWithNegativeDelta(epoch),
         this.storage.getUserNodeOperatorsStats(epoch - 1),
-      ]);
+      ])) as [
+        NOsValidatorsStatusStats[],
+        NOsValidatorsByConditionAttestationCount[],
+        NOsProposesStats[],
+        NOsValidatorsNegDeltaCount[],
+        NOsValidatorsStatusStats[],
+      ];
 
       const alerts = [];
       for (const moduleIndex of moduleIndexes) {
@@ -62,30 +76,16 @@ export class CriticalAlertsService {
 
         alerts.push(
           ...[
-            new CriticalMissedAttestations(
-              this.config,
-              this.storage,
-              operatorsForModule,
-              moduleIndex,
-              nosStatsForModule,
-              missedAttValidatorsCount,
-            ),
-            new CriticalMissedProposes(this.config, this.storage, operatorsForModule, moduleIndex, nosStatsForModule, proposes),
-            new CriticalNegativeDelta(
-              this.config,
-              this.storage,
-              operatorsForModule,
-              moduleIndex,
-              nosStatsForModule,
-              negativeValidatorsCount,
-            ),
-            new CriticalSlashing(this.config, this.storage, operatorsForModule, moduleIndex, nosStatsForModule, prevNosStats),
+            new CriticalMissedAttestations(this.config, operatorsForModule, moduleIndex, nosStatsForModule, missedAttValidatorsCount),
+            new CriticalMissedProposes(this.config, operatorsForModule, moduleIndex, nosStatsForModule, proposes),
+            new CriticalNegativeDelta(this.config, operatorsForModule, moduleIndex, nosStatsForModule, negativeValidatorsCount),
+            new CriticalSlashing(this.config, operatorsForModule, moduleIndex, nosStatsForModule, prevNosStats),
           ],
         );
       }
 
       for (const alert of alerts) {
-        const toSend = await alert.toSend(epoch);
+        const toSend = alert.toSend();
         if (toSend == null) continue;
 
         await this.fire(toSend.body).then(() => (sentAlerts[alert.alertname] = toSend));

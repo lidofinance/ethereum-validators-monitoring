@@ -41,6 +41,7 @@ import {
 import {
   AvgChainRewardsStats,
   EpochProcessingState,
+  ModuleValidatorsStatusStats,
   NOsBalance24hDiff,
   NOsDelta,
   NOsProposesStats,
@@ -53,7 +54,7 @@ import {
   NOsValidatorsSyncByConditionCount,
   NOsWithdrawalsStats,
   SyncCommitteeParticipationAvgPercents,
-  ValidatorsStatusStats,
+  ValidatorsStatusBaseStats,
   WithdrawalsStats,
 } from './clickhouse.types';
 import migration_000000_summary from './migrations/migration_000000_summary';
@@ -280,6 +281,7 @@ export class ClickhouseService implements OnModuleInit {
     return (await this.select<NOsValidatorsNegDeltaCount[]>(validatorsCountWithNegativeDeltaQuery(epoch))).map((v) => ({
       ...v,
       amount: Number(v.amount),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -475,6 +477,7 @@ export class ClickhouseService implements OnModuleInit {
     ).map((v) => ({
       ...v,
       amount: Number(v.amount),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -532,11 +535,17 @@ export class ClickhouseService implements OnModuleInit {
     return (await this.select<NOsValidatorsStatusStats[]>(userNodeOperatorsStatsQuery(epoch))).map((v) => ({
       ...v,
       active_ongoing: Number(v.active_ongoing),
+      active_ongoing_balance: BigInt(v.active_ongoing_balance),
       pending: Number(v.pending),
+      pending_balance: BigInt(v.pending_balance),
       slashed: Number(v.slashed),
+      slashed_balance: BigInt(v.slashed_balance),
       withdraw_pending: Number(v.withdraw_pending),
+      withdraw_pending_balance: BigInt(v.withdraw_pending_balance),
       withdrawn: Number(v.withdrawn),
+      withdrawn_balance: BigInt(v.withdrawn_balance),
       stuck: Number(v.stuck),
+      stuck_balance: BigInt(v.stuck_balance),
     }));
   }
 
@@ -544,8 +553,8 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about summary
    * how many User Node Operator validators have active, slashed, pending status
    */
-  public async getUserValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats[]> {
-    return (await this.select<ValidatorsStatusStats[]>(userValidatorsSummaryStatsQuery(epoch))).map((v) => ({
+  public async getUserValidatorsSummaryStats(epoch: Epoch): Promise<ModuleValidatorsStatusStats[]> {
+    return (await this.select<ModuleValidatorsStatusStats[]>(userValidatorsSummaryStatsQuery(epoch))).map((v) => ({
       ...v,
       active_ongoing: Number(v.active_ongoing),
       pending: Number(v.pending),
@@ -560,8 +569,8 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about summary
    * how many other (not user) validators have active, slashed, pending status
    */
-  public async getOtherValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusStats> {
-    const ret = await this.select(otherValidatorsSummaryStatsQuery(epoch));
+  public async getOtherValidatorsSummaryStats(epoch: Epoch): Promise<ValidatorsStatusBaseStats> {
+    const ret = (await this.select(otherValidatorsSummaryStatsQuery(epoch))) as ValidatorsStatusBaseStats[];
     return {
       ...ret[0],
       active_ongoing: Number(ret[0].active_ongoing),

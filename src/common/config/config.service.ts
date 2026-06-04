@@ -2,6 +2,7 @@ import { ConfigService as ConfigServiceSource } from '@nestjs/config';
 
 import { EnvironmentVariables } from './env.validation';
 import { CriticalAlertParamsForModule } from './interfaces';
+import { ethToGwei } from '../functions/ethToGwei';
 
 export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
   /**
@@ -19,6 +20,24 @@ export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
     const minValCount = this.get('CRITICAL_ALERTS_MIN_VAL_COUNT');
     const minActiveValCount = this.get('CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT');
     const minAffectedValCount = this.get('CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT');
+    const minActiveBalance = this.get('CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE');
+    const minAffectedBalance = this.get('CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE');
+
+    if (minAffectedBalance[moduleIndex] != null) {
+      return {
+        affectedValBalance: ethToGwei(minAffectedBalance[moduleIndex]),
+      };
+    }
+
+    if (minActiveBalance[moduleIndex] != null) {
+      return {
+        activeValBalance: {
+          minActiveBalance: ethToGwei(minActiveBalance[moduleIndex].minActiveBalance),
+          affectedShare: minActiveBalance[moduleIndex].affectedShare,
+          minAffectedBalance: ethToGwei(minActiveBalance[moduleIndex].minAffectedBalance),
+        },
+      };
+    }
 
     if (minAffectedValCount[moduleIndex] != null) {
       return {
@@ -29,6 +48,22 @@ export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
     if (minActiveValCount[moduleIndex] != null) {
       return {
         activeValCount: minActiveValCount[moduleIndex],
+      };
+    }
+
+    if (minAffectedBalance[0] != null) {
+      return {
+        affectedValBalance: ethToGwei(minAffectedBalance[0]),
+      };
+    }
+
+    if (minActiveBalance[0] != null) {
+      return {
+        activeValBalance: {
+          minActiveBalance: ethToGwei(minActiveBalance[0].minActiveBalance),
+          affectedShare: minActiveBalance[0].affectedShare,
+          minAffectedBalance: ethToGwei(minActiveBalance[0].minAffectedBalance),
+        },
       };
     }
 

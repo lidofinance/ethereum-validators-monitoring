@@ -33,7 +33,7 @@ export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
     previous.val_id = current.val_id
   LEFT JOIN (
     SELECT
-      sum(val_balance_withdrawn) AS withdrawn, val_id, val_nos_id, val_nos_module_id
+      SUM(val_balance_withdrawn) AS withdrawn, val_id, val_nos_id, val_nos_module_id
     FROM (
       SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id
       FROM validators_summary
@@ -81,7 +81,7 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string =>
     previous.val_id = current.val_id
   LEFT JOIN (
     SELECT
-      sum(val_balance_withdrawn) AS withdrawn, val_id, val_nos_module_id, val_nos_id
+      SUM(val_balance_withdrawn) AS withdrawn, val_id, val_nos_module_id, val_nos_id
     FROM (
       SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id
       FROM validators_summary
@@ -104,7 +104,8 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
   SELECT
     current.val_nos_module_id AS val_nos_module_id,
     current.val_nos_id AS val_nos_id,
-    count(current.val_id) AS amount
+    count(current.val_id) AS amount,
+    SUM(current.val_balance) AS balance
   FROM (
       SELECT val_balance, val_id, val_nos_module_id, val_nos_id, val_slashed
       FROM validators_summary
@@ -129,7 +130,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
     previous.val_id = current.val_id
   LEFT JOIN (
     SELECT
-      sum(val_balance_withdrawn) AS withdrawn, val_id, val_nos_module_id, val_nos_id
+      SUM(val_balance_withdrawn) AS withdrawn, val_id, val_nos_module_id, val_nos_id
     FROM (
       SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id
       FROM validators_summary
@@ -145,8 +146,8 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
   ) AS withdrawals
   ON
     withdrawals.val_id = current.val_id
+  WHERE (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0
   GROUP BY current.val_nos_module_id, current.val_nos_id
-  HAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0
 `;
 
 export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
@@ -202,14 +203,16 @@ export const validatorCountByConditionAttestationLastNEpochQuery = (
     SELECT
       val_nos_module_id,
       val_nos_id,
-      count() AS amount
+      count() AS amount,
+      SUM(b) AS balance
     FROM (
       SELECT
         val_nos_module_id,
         val_nos_id,
-        count() AS count_fail
+        count() AS count_fail,
+        MAX(val_balance) AS b
       FROM (
-        SELECT val_id, val_nos_module_id, val_nos_id
+        SELECT val_id, val_nos_module_id, val_nos_id, val_balance
         FROM validators_summary
         WHERE
           ${condition} AND
@@ -332,7 +335,7 @@ export const totalBalance24hDifferenceQuery = (epoch: Epoch): string => `
     previous.val_id = curr.val_id
   LEFT JOIN (
     SELECT
-      sum(val_balance_withdrawn) AS withdrawn, val_id
+      SUM(val_balance_withdrawn) AS withdrawn, val_id
     FROM (
       SELECT val_balance_withdrawn, val_id
       FROM validators_summary
@@ -381,7 +384,7 @@ export const operatorBalance24hDifferenceQuery = (epoch: Epoch): string => `
     previous.val_id = curr.val_id
   LEFT JOIN (
     SELECT
-      sum(val_balance_withdrawn) AS withdrawn, val_id, val_nos_id
+      SUM(val_balance_withdrawn) AS withdrawn, val_id, val_nos_id
     FROM (
       SELECT val_balance_withdrawn, val_id, val_nos_id
       FROM validators_summary
@@ -405,31 +408,48 @@ export const userNodeOperatorsStatsQuery = (epoch: Epoch): string => `
     val_nos_module_id,
     val_nos_id,
     SUM(a) AS active_ongoing,
+    SUM(a_balance) AS active_ongoing_balance,
     SUM(p) AS pending,
+    SUM(p_balance) AS pending_balance,
     SUM(s) AS slashed,
+    SUM(s_balance) AS slashed_balance,
     ifNull(SUM(wp), 0) AS withdraw_pending,
+    ifNull(SUM(wp_balance), 0) AS withdraw_pending_balance,
     ifNull(SUM(w), 0) AS withdrawn,
-    SUM(st) AS stuck
+    ifNull(SUM(w_balance), 0) AS withdrawn_balance,
+    SUM(st) AS stuck,
+    SUM(st_balance) AS stuck_balance
   FROM (
     SELECT
       val_nos_module_id,
       val_nos_id,
       IF(val_status = '${ValStatus.ActiveOngoing}', count(val_status), 0) AS a,
+      IF(val_status = '${ValStatus.ActiveOngoing}', SUM(val_balance), 0) AS a_balance,
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) AS p,
+      IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', SUM(val_balance), 0) AS p_balance,
       IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) AS s,
+      IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, SUM(val_balance), 0) AS s_balance,
       IF(
-        (val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
+        (val_status in ['${ValStatus.ActiveExiting}', '${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
         OR
-        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
         count(val_status), 0
       ) AS wp,
       IF(
-        (val_status == '${ValStatus.WithdrawalDone}')
+        (val_status in ['${ValStatus.ActiveExiting}', '${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
         OR
-        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance == 0),
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
+        SUM(val_balance), 0
+      ) AS wp_balance,
+      IF(
+        (val_status = '${ValStatus.WithdrawalDone}')
+        OR
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance = 0),
         count(val_status), 0
       ) AS w,
-      IF (val_stuck = 1, count(val_stuck), 0) AS st
+      IF(val_status = '${ValStatus.WithdrawalDone}', SUM(val_balance), 0) AS w_balance,
+      IF(val_stuck = 1, count(val_stuck), 0) AS st,
+      IF(val_stuck = 1, SUM(val_balance), 0) AS st_balance
     FROM (
       SELECT val_nos_module_id, val_nos_id, val_status, val_slashed, val_balance, val_stuck
       FROM validators_summary
@@ -460,13 +480,13 @@ export const userValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
       IF(
         (val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
         OR
-        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
         count(val_status), 0
       ) AS wp,
       IF(
-        (val_status == '${ValStatus.WithdrawalDone}')
+        (val_status = '${ValStatus.WithdrawalDone}')
         OR
-        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance == 0),
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance = 0),
         count(val_status), 0
       ) AS w,
       IF (val_stuck = 1, count(val_stuck), 0) AS st
@@ -497,13 +517,13 @@ export const otherValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
       IF(
         (val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
         OR
-        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
         count(val_status), 0
       ) AS wp,
       IF(
-        (val_status == '${ValStatus.WithdrawalDone}')
+        (val_status = '${ValStatus.WithdrawalDone}')
         OR
-        (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance == 0),
+        (val_status = '${ValStatus.WithdrawalPossible}' AND val_balance = 0),
         count(val_status), 0
       ) AS w
     FROM (
@@ -527,7 +547,7 @@ export const userNodeOperatorsProposesStatsLastNEpochQuery = (epoch: Epoch, epoc
     SELECT
       val_nos_module_id,
       val_nos_id,
-      COUNT(block_proposed) AS a,
+      count(block_proposed) AS a,
       IF(block_proposed = 0, count(block_proposed), 0) AS m
     FROM (
       SELECT val_nos_module_id, val_nos_id, block_proposed
@@ -578,9 +598,9 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     SELECT
       val_nos_module_id,
       val_nos_id,
-      sum(att_earned_reward) AS attestation_reward,
-      sum(att_missed_reward) AS attestation_missed,
-      sum(att_penalty) AS attestation_penalty
+      SUM(att_earned_reward) AS attestation_reward,
+      SUM(att_missed_reward) AS attestation_missed,
+      SUM(att_penalty) AS attestation_penalty
     FROM (
       SELECT val_nos_module_id, val_nos_id, att_earned_reward, att_missed_reward, att_penalty
       FROM validators_summary
@@ -596,9 +616,9 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     SELECT
       val_nos_module_id,
       val_nos_id,
-      sum(propose_earned_reward) AS prop_reward,
-      sum(propose_missed_reward) AS prop_missed,
-      sum(propose_penalty) AS prop_penalty
+      SUM(propose_earned_reward) AS prop_reward,
+      SUM(propose_missed_reward) AS prop_missed,
+      SUM(propose_penalty) AS prop_penalty
     FROM (
       SELECT val_nos_module_id, val_nos_id, propose_earned_reward, propose_missed_reward, propose_penalty
       FROM validators_summary
@@ -618,9 +638,9 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     SELECT
       val_nos_module_id,
       val_nos_id,
-      sum(sync_earned_reward) AS sync_reward,
-      sum(sync_missed_reward) AS sync_missed,
-      sum(sync_penalty) AS sync_penalty
+      SUM(sync_earned_reward) AS sync_reward,
+      SUM(sync_missed_reward) AS sync_missed,
+      SUM(sync_penalty) AS sync_penalty
     FROM (
       SELECT val_nos_module_id, val_nos_id, sync_earned_reward, sync_missed_reward, sync_penalty
       FROM validators_summary
@@ -640,7 +660,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     SELECT
       current.val_nos_module_id AS val_nos_module_id,
       current.val_nos_id AS val_nos_id,
-      sum(current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) AS real_balance_change
+      SUM(current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) AS real_balance_change
     FROM (
       SELECT val_balance, val_id, val_nos_module_id, val_nos_id
       FROM validators_summary AS curr
@@ -663,7 +683,7 @@ export const userNodeOperatorsRewardsAndPenaltiesStats = (epoch: Epoch): string 
     ) AS previous ON previous.val_id = current.val_id
     LEFT JOIN (
       SELECT
-        sum(val_balance_withdrawn) AS withdrawn, val_id, val_nos_id
+        SUM(val_balance_withdrawn) AS withdrawn, val_id, val_nos_id
       FROM (
         SELECT val_balance_withdrawn, val_id, val_nos_id
         FROM validators_summary
@@ -743,7 +763,7 @@ export const userNodeOperatorsWithdrawalsStats = (epoch: Epoch): string => `
     ifNull(
       sumIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance == 0
+        val_balance_withdrawn > 0 AND val_balance = 0
       ),
       0
     ) AS full_withdrawn_sum,
@@ -757,7 +777,7 @@ export const userNodeOperatorsWithdrawalsStats = (epoch: Epoch): string => `
     ifNull(
       countIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance == 0
+        val_balance_withdrawn > 0 AND val_balance = 0
       ),
       0
     ) AS full_withdrawn_count,
@@ -786,7 +806,7 @@ export const otherChainWithdrawalsStats = (epoch: Epoch): string => `
     ifNull(
       sumIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance == 0
+        val_balance_withdrawn > 0 AND val_balance = 0
       ),
       0
     ) AS full_withdrawn_sum,
@@ -800,7 +820,7 @@ export const otherChainWithdrawalsStats = (epoch: Epoch): string => `
     ifNull(
       countIf(
         val_balance_withdrawn,
-        val_balance_withdrawn > 0 AND val_balance == 0
+        val_balance_withdrawn > 0 AND val_balance = 0
       ),
       0
     ) AS full_withdrawn_count,
