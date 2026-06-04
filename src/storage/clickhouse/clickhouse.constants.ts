@@ -146,8 +146,8 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
   ) AS withdrawals
   ON
     withdrawals.val_id = current.val_id
+  WHERE (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0
   GROUP BY current.val_nos_module_id, current.val_nos_id
-  HAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0
 `;
 
 export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
