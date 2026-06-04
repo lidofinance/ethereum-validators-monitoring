@@ -1,6 +1,5 @@
 import { ConfigService } from 'common/config';
-import { ClickhouseService } from 'storage';
-import { NOsValidatorsStatusStats } from 'storage/clickhouse/clickhouse.types';
+import { NOsValidatorsStatusStats } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
 
 export interface AlertRequestBody {
@@ -15,21 +14,25 @@ export interface AlertRequestBody {
   };
 }
 
-export interface PreparedToSendAlert {
+export interface AlertRuleResult<TOperatorAlertRuleResult> {
+  [operator: string]: TOperatorAlertRuleResult;
+}
+
+export interface PreparedToSendAlert<TOperatorAlertRuleResult> {
   timestamp: number;
   body: AlertRequestBody;
-  ruleResult: AlertRuleResult;
+  ruleResult: AlertRuleResult<TOperatorAlertRuleResult>;
 }
 
-export interface AlertRuleResult {
-  [operator: string]: any;
+export interface AlertBodyAnnotations {
+  summary: string;
+  description: string;
 }
 
-export abstract class Alert {
+export abstract class Alert<TOperatorAlertRuleResult> {
   public readonly alertname: string;
   protected sendTimestamp = 0;
   protected readonly config: ConfigService;
-  protected readonly storage: ClickhouseService;
   protected readonly operators: RegistrySourceOperator[];
   protected readonly moduleIndex: number;
   protected readonly nosStats: NOsValidatorsStatusStats[];
@@ -37,27 +40,44 @@ export abstract class Alert {
   protected constructor(
     name: string,
     config: ConfigService,
-    storage: ClickhouseService,
     operators: RegistrySourceOperator[],
     moduleIndex: number,
     nosStats: NOsValidatorsStatusStats[],
   ) {
     this.alertname = name;
     this.config = config;
-    this.storage = storage;
     this.operators = operators;
     this.moduleIndex = moduleIndex;
     this.nosStats = nosStats;
   }
 
-  abstract alertRule(): AlertRuleResult;
+  alertBody(ruleResult: AlertRuleResult<TOperatorAlertRuleResult>): AlertRequestBody {
+    const timestampDate = new Date(this.sendTimestamp);
+    const timestampDatePlusTwoMins = new Date(this.sendTimestamp).setMinutes(timestampDate.getMinutes() + 2);
 
-  abstract sendRule(ruleResult?: AlertRuleResult): boolean;
+    return {
+      startsAt: timestampDate.toISOString(),
+      endsAt: new Date(timestampDatePlusTwoMins).toISOString(),
+      labels: {
+        alertname: this.alertname,
+        severity: 'critical',
+        nos_module_id: this.moduleIndex.toString(),
+        ...this.config.get('CRITICAL_ALERTS_ALERTMANAGER_LABELS'),
+      },
+      annotations: this.getAlertBodyAnnotations(ruleResult),
+    };
+  }
 
-  abstract alertBody(ruleResult: AlertRuleResult): AlertRequestBody;
+  abstract alertRule(): AlertRuleResult<TOperatorAlertRuleResult>;
 
-  async toSend(): Promise<PreparedToSendAlert | undefined> {
-    const ruleResult = await this.alertRule();
-    if (this.sendRule(ruleResult)) return { timestamp: this.sendTimestamp, body: this.alertBody(ruleResult), ruleResult };
+  abstract sendRule(ruleResult: AlertRuleResult<TOperatorAlertRuleResult>): boolean;
+
+  abstract getAlertBodyAnnotations(ruleResult: AlertRuleResult<TOperatorAlertRuleResult>): AlertBodyAnnotations;
+
+  toSend(): PreparedToSendAlert<TOperatorAlertRuleResult> | undefined {
+    const ruleResult = this.alertRule();
+    if (this.sendRule(ruleResult)) {
+      return { timestamp: this.sendTimestamp, body: this.alertBody(ruleResult), ruleResult };
+    }
   }
 }
