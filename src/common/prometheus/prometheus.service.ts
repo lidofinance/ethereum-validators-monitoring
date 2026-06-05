@@ -35,6 +35,8 @@ import {
   METRIC_OTHER_CHAIN_WITHDRAWALS_COUNT,
   METRIC_OTHER_CHAIN_WITHDRAWALS_SUM,
   METRIC_OTHER_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_OTHER_VALIDATOR_CONSOLIDATION_BALANCE,
+  METRIC_OTHER_VALIDATOR_CONSOLIDATION_COUNT,
   METRIC_OTHER_VALIDATOR_COUNT_GOOD_PROPOSE,
   METRIC_OTHER_VALIDATOR_COUNT_INVALID_ATTESTATION,
   METRIC_OTHER_VALIDATOR_COUNT_MISS_ATTESTATION,
@@ -58,6 +60,8 @@ import {
   METRIC_USER_VALIDATORS,
   METRIC_VALIDATORS,
   METRIC_VALIDATOR_BALANCES_DELTA,
+  METRIC_VALIDATOR_CONSOLIDATION_BALANCE,
+  METRIC_VALIDATOR_CONSOLIDATION_COUNT,
   METRIC_VALIDATOR_COUNT_GOOD_PROPOSE,
   METRIC_VALIDATOR_COUNT_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
@@ -511,6 +515,30 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['type'],
   });
 
+  public otherValidatorConsolidationCount = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_CONSOLIDATION_COUNT,
+    help: 'Number of non-user source and target validators in the pending consolidation queue',
+    labelNames: ['type'],
+  });
+
+  public validatorConsolidationCount = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_CONSOLIDATION_COUNT,
+    help: 'Number of source and target validators in the pending consolidation queue for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'type'],
+  });
+
+  public otherValidatorConsolidationBalance = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_CONSOLIDATION_BALANCE,
+    help: 'Total balance of non-user source and target validators in the pending consolidation queue',
+    labelNames: ['type'],
+  });
+
+  public validatorConsolidationBalance = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_CONSOLIDATION_BALANCE,
+    help: 'Total balance of source and target validators in the pending consolidation queue for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'type'],
+  });
+
   public contractKeysTotal = this.getOrCreateMetric('Gauge', {
     name: METRIC_CONTRACT_KEYS_TOTAL,
     help: 'Total user validators keys of each type',
@@ -533,7 +561,7 @@ export const setUserOperatorsMetric = (
 ) => {
   operators.forEach((operator) => {
     const _labels =
-      typeof labels == 'function'
+      typeof labels === 'function'
         ? labels(operator)
         : { nos_module_id: operator.module, nos_id: operator.index, nos_name: operator.name, ...labels };
 
@@ -551,7 +579,10 @@ export const setUserOperatorsMetric = (
   // we should remove 'outdated' metrics (operator renaming or deleting case, for example)
   const registry = Object.values(metric['hashMap']).map((m: any) => m.labels);
   registry.forEach((labels) => {
-    if (!operators.find((o) => o.name == labels.nos_name)) metric.remove(labels);
+    const op = operators.find((o) => o.name == labels.nos_name);
+    if (op == null) {
+      metric.remove(labels);
+    }
   });
 };
 
