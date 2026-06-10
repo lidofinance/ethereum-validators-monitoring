@@ -13,7 +13,7 @@ export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
     SELECT val_balance, val_id, val_nos_module_id, val_nos_id
     FROM validators_summary
     WHERE
-      val_status in [${perfStatuses}] AND
+      val_status IN [${perfStatuses}] AND
       val_nos_id IS NOT NULL AND
       val_stuck = 0 AND
       epoch = ${epoch}
@@ -23,7 +23,7 @@ export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
     SELECT val_balance, val_id, val_nos_id
     FROM validators_summary
     WHERE
-      val_status in [${perfStatuses}] AND
+      val_status IN [${perfStatuses}] AND
       val_nos_id IS NOT NULL AND
       val_stuck = 0 AND
       epoch = (${epoch} - 6)
@@ -39,7 +39,7 @@ export const avgValidatorBalanceDelta = (epoch: Epoch): string => `
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL AND
-        val_status in [${perfStatuses}] AND
+        val_status IN [${perfStatuses}] AND
         val_balance_withdrawn > 0 AND
         val_stuck = 0 AND
         epoch > (${epoch} - 6) AND epoch <= ${epoch}
@@ -61,7 +61,7 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string =>
     SELECT val_balance, val_id, val_nos_id, val_nos_module_id
     FROM validators_summary
     WHERE
-      val_status in [${perfStatuses}] AND
+      val_status IN [${perfStatuses}] AND
       val_nos_id IS NOT NULL AND
       val_stuck = 0 AND
       epoch = ${epoch}
@@ -71,7 +71,7 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string =>
     SELECT val_balance, val_id, val_nos_id
     FROM validators_summary
     WHERE
-      val_status in [${perfStatuses}] AND
+      val_status IN [${perfStatuses}] AND
       val_nos_id IS NOT NULL AND
       val_stuck = 0 AND
       epoch = (${epoch} - 6)
@@ -87,7 +87,7 @@ export const validatorQuantile0001BalanceDeltasQuery = (epoch: Epoch): string =>
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL AND
-        val_status in [${perfStatuses}] AND
+        val_status IN [${perfStatuses}] AND
         val_balance_withdrawn > 0 AND
         val_stuck = 0 AND
         epoch > (${epoch} - 6) AND epoch <= ${epoch}
@@ -109,17 +109,17 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
       SELECT val_balance, val_id, val_nos_module_id, val_nos_id, val_slashed
       FROM validators_summary
       WHERE
-        val_status in [${perfStatuses}] AND
+        val_status IN [${perfStatuses}] AND
         val_nos_id IS NOT NULL AND
         val_stuck = 0 AND
         epoch = ${epoch}
       LIMIT 1 BY val_id
   ) AS current
   INNER JOIN (
-    SELECT val_balance, val_id, val_nos_id
+    SELECT val_balance, val_id
     FROM validators_summary
     WHERE
-      val_status in [${perfStatuses}] AND
+      val_status IN [${perfStatuses}] AND
       val_nos_id IS NOT NULL AND
       val_stuck = 0 AND
       epoch = (${epoch} - 6)
@@ -135,7 +135,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
       FROM validators_summary
       WHERE
         val_nos_id IS NOT NULL AND
-        val_status in [${perfStatuses}] AND
+        val_status IN [${perfStatuses}] AND
         val_balance_withdrawn > 0 AND
         val_stuck = 0 AND
         (${epoch} - 6) < epoch AND epoch <= ${epoch}
@@ -157,7 +157,7 @@ export const validatorsCountWithSyncParticipationByConditionLastNEpochQuery = (
 ): string => {
   let strFilterValIndexes = '';
   if (validatorIndexes.length > 0) {
-    strFilterValIndexes = `AND val_id in [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
+    strFilterValIndexes = `AND val_id IN [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
   }
   return `
     SELECT
@@ -195,7 +195,7 @@ export const validatorCountByConditionAttestationLastNEpochQuery = (
 ): string => {
   let strFilterValIndexes = '';
   if (validatorIndexes.length > 0) {
-    strFilterValIndexes = `AND val_id in [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
+    strFilterValIndexes = `AND val_id IN [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
   }
 
   return `
@@ -228,7 +228,7 @@ export const validatorCountByConditionAttestationLastNEpochQuery = (
 export const validatorsCountByConditionMissProposeQuery = (epoch: Epoch, validatorIndexes: string[] = [], condition: string): string => {
   let strFilterValIndexes = '';
   if (validatorIndexes.length > 0) {
-    strFilterValIndexes = `AND val_id in [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
+    strFilterValIndexes = `AND val_id IN [${validatorIndexes.map((i) => `'${i}'`).join(',')}]`;
   }
 
   return `
@@ -243,7 +243,7 @@ export const validatorsCountByConditionMissProposeQuery = (epoch: Epoch, validat
         is_proposer = 1 AND
         ${condition} AND
         val_stuck = 0 AND
-        (${epoch} - 1) < epoch AND epoch <= ${epoch}
+        epoch = ${epoch}
         ${strFilterValIndexes}
       LIMIT 1 BY epoch, val_id
     )
@@ -418,7 +418,7 @@ export const userNodeOperatorsStatsQuery = (epoch: Epoch): string => `
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) AS p,
       IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) AS s,
       IF(
-        (val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
+        (val_status IN ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
         OR
         (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
         count(val_status), 0
@@ -439,7 +439,7 @@ export const userNodeOperatorsStatsQuery = (epoch: Epoch): string => `
     )
     GROUP BY val_nos_module_id, val_nos_id, val_status, val_slashed, val_balance, val_stuck
   )
-  GROUP by val_nos_module_id, val_nos_id
+  GROUP BY val_nos_module_id, val_nos_id
 `;
 
 export const userValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
@@ -458,7 +458,7 @@ export const userValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) AS p,
       IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) AS s,
       IF(
-        (val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
+        (val_status IN ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
         OR
         (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
         count(val_status), 0
@@ -479,7 +479,7 @@ export const userValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
     )
     GROUP BY val_nos_module_id, val_status, val_slashed, val_balance, val_stuck
   )
-  GROUP by val_nos_module_id
+  GROUP BY val_nos_module_id
 `;
 
 export const otherValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
@@ -495,7 +495,7 @@ export const otherValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
       IF(val_status = '${ValStatus.PendingQueued}' OR val_status = '${ValStatus.PendingInitialized}', count(val_status), 0) AS p,
       IF(val_status = '${ValStatus.ActiveSlashed}' OR val_status = '${ValStatus.ExitedSlashed}' OR val_slashed = 1, count(val_status), 0) AS s,
       IF(
-        (val_status in ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
+        (val_status IN ['${ValStatus.ActiveExiting}','${ValStatus.ExitedUnslashed}', '${ValStatus.ExitedSlashed}'])
         OR
         (val_status == '${ValStatus.WithdrawalPossible}' AND val_balance != 0),
         count(val_status), 0
