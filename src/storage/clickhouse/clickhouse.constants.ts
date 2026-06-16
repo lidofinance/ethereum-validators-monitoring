@@ -117,7 +117,7 @@ export const validatorsCountWithNegativeDeltaQuery = (epoch: Epoch): string => `
       LIMIT 1 BY val_id
   ) AS current
   INNER JOIN (
-    SELECT val_balance, val_id, val_nos_id
+    SELECT val_balance, val_id
     FROM validators_summary
     WHERE
       val_status in [${perfStatuses}] AND
@@ -246,7 +246,7 @@ export const validatorsCountByConditionMissProposeQuery = (epoch: Epoch, validat
         is_proposer = 1 AND
         ${condition} AND
         val_stuck = 0 AND
-        (${epoch} - 1) < epoch AND epoch <= ${epoch}
+        epoch = ${epoch}
         ${strFilterValIndexes}
       LIMIT 1 BY epoch, val_id
     )
@@ -459,7 +459,7 @@ export const userNodeOperatorsStatsQuery = (epoch: Epoch): string => `
     )
     GROUP BY val_nos_module_id, val_nos_id, val_status, val_slashed, val_balance, val_stuck
   )
-  GROUP by val_nos_module_id, val_nos_id
+  GROUP BY val_nos_module_id, val_nos_id
 `;
 
 export const userValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
@@ -499,7 +499,7 @@ export const userValidatorsSummaryStatsQuery = (epoch: Epoch): string => `
     )
     GROUP BY val_nos_module_id, val_status, val_slashed, val_balance, val_stuck
   )
-  GROUP by val_nos_module_id
+  GROUP BY val_nos_module_id
 `;
 
 export const otherValidatorsSummaryStatsQuery = (epoch: Epoch): string => `

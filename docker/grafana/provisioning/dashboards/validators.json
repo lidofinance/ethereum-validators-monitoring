@@ -357,7 +357,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"stuck\"})",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner='user', status='stuck'})",
           "refId": "A"
         }
       ],
@@ -504,7 +504,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum (ethereum_validators_monitoring_validators{owner=\"user\",status=\"ongoing\", nos_module_id=\"$module_var\"})",
+          "expr": "sum (ethereum_validators_monitoring_validators{owner='user', status='ongoing', nos_module_id='$module_var'})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -571,7 +571,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"pending\", nos_module_id=\"${module_var}\"})",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner='user', status='pending', nos_module_id='${module_var}'})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -638,7 +638,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"withdrawal_pending\", nos_module_id=\"${module_var}\"})",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner='user', status='withdrawal_pending', nos_module_id='${module_var}'})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -705,7 +705,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"withdrawal_done\",nos_module_id=\"${module_var}\"})",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner='user', status='withdrawal_done', nos_module_id='${module_var}'})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -779,7 +779,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\", nos_module_id=\"${module_var}\"})",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner='user', status='slashed', nos_module_id='${module_var}'})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -882,7 +882,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner=\"user\",status=\"ongoing\", nos_module_id=~\"${module_var}\"})",
+          "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner='user', status='ongoing', nos_module_id=~'${module_var}'})",
           "interval": "",
           "legendFormat": "User",
           "range": true,
@@ -894,7 +894,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"ongoing\"})",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner='other', status='ongoing'})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
@@ -998,7 +998,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner=\"user\",status=\"pending\", nos_module_id=\"${module_var}\"})",
+          "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner='user', status='pending', nos_module_id='${module_var}'})",
           "interval": "",
           "legendFormat": "User",
           "range": true,
@@ -1010,7 +1010,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"pending\"})",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner='other', status='pending'})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
@@ -1114,7 +1114,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner=\"user\",status=\"withdrawal_pending\", nos_module_id=\"${module_var}\"})",
+          "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner='user', status='withdrawal_pending', nos_module_id='${module_var}'})",
           "interval": "",
           "legendFormat": "User",
           "range": true,
@@ -1126,7 +1126,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"withdrawal_pending\"})",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner='other', status='withdrawal_pending'})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
@@ -1230,7 +1230,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner=\"user\",status=\"withdrawal_done\", nos_module_id=\"${module_var}\"})",
+          "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner='user', status='withdrawal_done', nos_module_id='${module_var}'})",
           "interval": "",
           "legendFormat": "User",
           "range": true,
@@ -1242,7 +1242,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"withdrawal_done\"})",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner='other', status='withdrawal_done'})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
@@ -1345,7 +1345,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner=\"user\",status=\"slashed\", nos_module_id=\"${module_var}\"})",
+          "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner='user', status='slashed', nos_module_id='${module_var}'})",
           "interval": "",
           "legendFormat": "User",
           "range": true,
@@ -1357,7 +1357,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_validators{owner=\"other\",status=\"slashed\"})",
+          "expr": "sum(ethereum_validators_monitoring_validators{owner='other', status='slashed'})",
           "hide": false,
           "interval": "",
           "legendFormat": "Other",
@@ -1520,7 +1520,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator's dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -1559,7 +1559,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(sort_desc(sum by (nos_name, status, nos_module_id) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\", nos_module_id=\"${module_var}\"})))",
+          "expr": "(sort_desc(sum by (nos_name, status, nos_module_id) (ethereum_validators_monitoring_user_validators{status=~'ongoing|pending|withdrawal_pending|withdrawal_done', nos_module_id='${module_var}'})))",
           "instant": true,
           "interval": "",
           "legendFormat": "",
@@ -1780,7 +1780,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~'ongoing|pending|withdrawal_pending|withdrawal_done', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "instant": false,
           "interval": "",
           "legendFormat": "{{status}}",
@@ -1923,7 +1923,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (type) (ethereum_validators_monitoring_operator_withdrawals_count{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+          "expr": "sum by (type) (ethereum_validators_monitoring_operator_withdrawals_count{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "instant": false,
           "interval": "",
           "legendFormat": "{{type}}",
@@ -2024,7 +2024,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator's dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               },
@@ -2186,7 +2186,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2201,7 +2201,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_good_propose{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_good_propose{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2496,7 +2496,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -2535,7 +2535,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2550,7 +2550,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2565,7 +2565,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2746,7 +2746,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_good_propose{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_good_propose{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2885,7 +2885,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -2900,7 +2900,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3197,7 +3197,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -3239,7 +3239,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3254,7 +3254,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3269,7 +3269,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "avg_over_time((sum by (nos_name) (ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3534,7 +3534,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]) + sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3733,7 +3733,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='high_inclusion_delay', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3748,7 +3748,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='invalid_head', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3763,7 +3763,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='invalid_target', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3778,7 +3778,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='invalid_source', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -3793,7 +3793,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_attestation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_miss_attestation{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "instant": true,
               "interval": "",
@@ -3807,7 +3807,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_perfect_attestation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_count_perfect_attestation{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "hide": false,
               "instant": true,
               "interval": "",
@@ -4051,7 +4051,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -4090,7 +4090,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='high_inclusion_delay', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4105,7 +4105,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='invalid_head', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4120,7 +4120,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='invalid_target', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4135,7 +4135,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='invalid_source', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4150,7 +4150,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "instant": true,
               "interval": "",
@@ -4164,7 +4164,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_perfect_attestation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_perfect_attestation{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4469,7 +4469,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"high_inclusion_delay\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason='high_inclusion_delay'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4483,7 +4483,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_head\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason='invalid_head'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4497,7 +4497,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_target\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason='invalid_target'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4511,7 +4511,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason=\"invalid_source\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_count_invalid_attestation{reason='invalid_source'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4707,7 +4707,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "(sum(ethereum_validators_monitoring_total_balance_24h_difference{nos_module_id=\"${module_var}\"}) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "(sum(ethereum_validators_monitoring_total_balance_24h_difference{nos_module_id='${module_var}'}) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "delta",
@@ -4800,7 +4800,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "(sort_desc(ethereum_validators_monitoring_validator_balances_delta{nos_module_id=\"${module_var}\"}))",
+              "expr": "(sort_desc(ethereum_validators_monitoring_validator_balances_delta{nos_module_id='${module_var}'}))",
               "instant": true,
               "interval": "",
               "legendFormat": "{{nos_name}}",
@@ -4899,7 +4899,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -5011,7 +5011,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5165,7 +5165,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -5296,7 +5296,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5437,7 +5437,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -5610,7 +5610,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_user_sync_participation_avg_percent{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum(ethereum_validators_monitoring_user_sync_participation_avg_percent{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "User",
               "range": true,
@@ -5740,7 +5740,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5903,7 +5903,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -6060,7 +6060,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -6201,7 +6201,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -6341,7 +6341,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -6482,7 +6482,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='high_inclusion_delay', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -6621,7 +6621,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -6762,7 +6762,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_head\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='invalid_head', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -6901,7 +6901,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -7042,7 +7042,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\", nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='invalid_target', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -7181,7 +7181,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -7322,7 +7322,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_source\", nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='invalid_source', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -7424,7 +7424,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -7607,7 +7607,7 @@
           "type": "prometheus",
           "uid": "PBFA97CFB590B2093"
         },
-        "definition": "label_values(ethereum_validators_monitoring_validators,nos_module_id)",
+        "definition": "label_values(ethereum_validators_monitoring_validators, nos_module_id)",
         "description": "Staking module",
         "hide": 0,
         "includeAll": false,
@@ -7616,7 +7616,7 @@
         "name": "module_var",
         "options": [],
         "query": {
-          "query": "label_values(ethereum_validators_monitoring_validators,nos_module_id)",
+          "query": "label_values(ethereum_validators_monitoring_validators, nos_module_id)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
