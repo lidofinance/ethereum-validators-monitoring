@@ -3,7 +3,7 @@ import { join } from 'lodash';
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
 import { gweiToEth } from 'common/functions/gweiToEth';
-import { NOsValidatorsNegDeltaCount, NOsValidatorsStatusStats } from 'storage/clickhouse';
+import { NOsValidatorsStatusStats, UserNOsValidatorsCountAndBalance } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
 
 import { AlertBodyAnnotations, AlertRuleResult } from './BasicAlert';
@@ -16,19 +16,22 @@ export interface NegativeBalanceDeltaRuleResult {
   negDeltaBalance: bigint;
 }
 
-export class CriticalNegativeDelta extends FullInclusionChecksAlert<NOsValidatorsNegDeltaCount, NegativeBalanceDeltaRuleResult> {
+export class CriticalNegativeDelta extends FullInclusionChecksAlert<UserNOsValidatorsCountAndBalance, NegativeBalanceDeltaRuleResult> {
   constructor(
     config: ConfigService,
     operators: RegistrySourceOperator[],
     moduleIndex: number,
     nosStats: NOsValidatorsStatusStats[],
-    negativeValidatorsCount: NOsValidatorsNegDeltaCount[],
+    negativeValidatorsCount: UserNOsValidatorsCountAndBalance[],
   ) {
     const name = CriticalNegativeDelta.name + 'Module' + moduleIndex;
     super(name, config, operators, moduleIndex, nosStats, negativeValidatorsCount);
   }
 
-  getOperatorAlertRuleResult(negDeltaStats: NOsValidatorsNegDeltaCount, noStats: NOsValidatorsStatusStats): NegativeBalanceDeltaRuleResult {
+  getOperatorAlertRuleResult(
+    negDeltaStats: UserNOsValidatorsCountAndBalance,
+    noStats: NOsValidatorsStatusStats,
+  ): NegativeBalanceDeltaRuleResult {
     return {
       activeCount: noStats.active_ongoing,
       negDeltaCount: negDeltaStats.amount,
