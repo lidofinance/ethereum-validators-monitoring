@@ -506,7 +506,7 @@
           "exemplar": true,
           "expr": "sum (ethereum_validators_monitoring_validators{owner='user', status='ongoing', nos_module_id='$module_var'})",
           "interval": "",
-          "legendFormat": "{{owner}}",
+          "legendFormat": "${owner}",
           "range": true,
           "refId": "A"
         }
@@ -573,7 +573,7 @@
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner='user', status='pending', nos_module_id='${module_var}'})",
           "interval": "",
-          "legendFormat": "{{owner}}",
+          "legendFormat": "${owner}",
           "range": true,
           "refId": "A"
         }
@@ -640,7 +640,7 @@
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner='user', status='withdrawal_pending', nos_module_id='${module_var}'})",
           "interval": "",
-          "legendFormat": "{{owner}}",
+          "legendFormat": "${owner}",
           "range": true,
           "refId": "A"
         }
@@ -707,7 +707,7 @@
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner='user', status='withdrawal_done', nos_module_id='${module_var}'})",
           "interval": "",
-          "legendFormat": "{{owner}}",
+          "legendFormat": "${owner}",
           "range": true,
           "refId": "A"
         }
@@ -781,7 +781,7 @@
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_validators{owner='user', status='slashed', nos_module_id='${module_var}'})",
           "interval": "",
-          "legendFormat": "{{owner}}",
+          "legendFormat": "${owner}",
           "range": true,
           "refId": "A"
         }
@@ -1783,7 +1783,7 @@
           "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~'ongoing|pending|withdrawal_pending|withdrawal_done', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "instant": false,
           "interval": "",
-          "legendFormat": "{{status}}",
+          "legendFormat": "${status}",
           "range": true,
           "refId": "A"
         }
@@ -1926,7 +1926,7 @@
           "expr": "sum by (type) (ethereum_validators_monitoring_operator_withdrawals_count{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "instant": false,
           "interval": "",
-          "legendFormat": "{{type}}",
+          "legendFormat": "${type}",
           "range": true,
           "refId": "A"
         }
@@ -2191,7 +2191,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "bad"
             },
             {
@@ -2206,7 +2206,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "good"
             }
           ],
@@ -2329,7 +2329,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "bad"
             },
             {
@@ -2344,7 +2344,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "good"
             }
           ],
@@ -2540,7 +2540,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "bad"
             },
             {
@@ -2555,7 +2555,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "good"
             },
             {
@@ -2570,7 +2570,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "all"
             }
           ],
@@ -2751,7 +2751,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "user"
             },
             {
@@ -2765,7 +2765,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "other"
             }
           ],
@@ -2890,7 +2890,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "bad"
             },
             {
@@ -2905,7 +2905,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "good"
             }
           ],
@@ -3027,7 +3027,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "bad"
             },
             {
@@ -3041,7 +3041,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "good"
             }
           ],
@@ -3244,7 +3244,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "bad"
             },
             {
@@ -3259,7 +3259,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "good"
             },
             {
@@ -3274,7 +3274,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "average participation rate"
             }
           ],
@@ -3539,7 +3539,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "user"
             },
             {
@@ -3553,7 +3553,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "other"
             }
           ],
@@ -3738,7 +3738,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "high inclusion delay"
             },
             {
@@ -3753,7 +3753,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "invalid head"
             },
             {
@@ -3768,7 +3768,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "invalid target"
             },
             {
@@ -3783,7 +3783,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "invalid source"
             },
             {
@@ -3797,7 +3797,7 @@
               "format": "table",
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "missed"
             },
             {
@@ -3811,7 +3811,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "perfect"
             }
           ],
@@ -4095,7 +4095,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "high inclusion delay"
             },
             {
@@ -4110,7 +4110,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "invalid head"
             },
             {
@@ -4125,7 +4125,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "invalid target"
             },
             {
@@ -4140,7 +4140,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "invalid source"
             },
             {
@@ -4154,7 +4154,7 @@
               "format": "table",
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "missed"
             },
             {
@@ -4169,7 +4169,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "perfect"
             }
           ],
@@ -4474,7 +4474,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "high inclusion delay"
             },
             {
@@ -4488,7 +4488,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "invalid head"
             },
             {
@@ -4502,7 +4502,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "invalid target"
             },
             {
@@ -4516,7 +4516,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "invalid source"
             },
             {
@@ -4529,7 +4529,7 @@
               "format": "table",
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "missed"
             },
             {
@@ -4542,7 +4542,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "perfect"
             }
           ],
@@ -4803,7 +4803,7 @@
               "expr": "(sort_desc(ethereum_validators_monitoring_validator_balances_delta{nos_module_id='${module_var}'}))",
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "A"
             }
           ],
@@ -4901,7 +4901,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
@@ -5167,7 +5167,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
@@ -5439,7 +5439,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
@@ -5905,7 +5905,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
@@ -6203,7 +6203,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
@@ -6484,7 +6484,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='high_inclusion_delay', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
@@ -6764,7 +6764,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='invalid_head', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
@@ -7044,7 +7044,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='invalid_target', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
@@ -7324,7 +7324,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason='invalid_source', nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
@@ -7585,7 +7585,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type=\"source\",nos_module_id=~\"${module_var}\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_module_id=~'${module_var}'})",
               "interval": "",
               "legendFormat": "Module ${module_var}",
               "range": true,
@@ -7598,7 +7598,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type=\"source\",nos_module_id!~\"${module_var}\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_module_id!~'${module_var}'})",
               "hide": false,
               "interval": "",
               "legendFormat": "Other modules",
@@ -7693,9 +7693,9 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_count{type=\"source\", nos_module_id=~'${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_module_id=~'${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "Module {{nos_module_id}}",
+              "legendFormat": "Module ${nos_module_id}",
               "range": true,
               "refId": "A"
             }
@@ -7796,7 +7796,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"source\",nos_module_id=~\"${module_var}\"}) / 10^4",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_module_id=~'${module_var}'}) / 10^4",
               "interval": "",
               "legendFormat": "Module ${module_var} (ETH)",
               "range": true,
@@ -7809,7 +7809,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"source\",nos_module_id!~\"${module_var}\"}) / 10^4",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_module_id!~'${module_var}'}) / 10^4",
               "hide": false,
               "interval": "",
               "legendFormat": "Other modules (ETH)",
@@ -7904,9 +7904,9 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_balance{type=\"source\", nos_module_id=~'${module_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_module_id=~'${module_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "Module {{nos_module_id}}",
+              "legendFormat": "Module ${nos_module_id}",
               "range": true,
               "refId": "A"
             }
@@ -7990,7 +7990,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -8173,7 +8173,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type=\"target\",nos_module_id=~\"${module_var}\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_module_id=~'${module_var}'})",
               "interval": "",
               "legendFormat": "Module ${module_var}",
               "range": true,
@@ -8186,7 +8186,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type=\"target\",nos_module_id!~\"${module_var}\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_module_id!~'${module_var}'})",
               "hide": false,
               "interval": "",
               "legendFormat": "Other modules",
@@ -8281,9 +8281,9 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_count{type=\"target\", nos_module_id=~'${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_module_id=~'${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "Module {{nos_module_id}}",
+              "legendFormat": "Module ${nos_module_id}",
               "range": true,
               "refId": "A"
             }
@@ -8384,7 +8384,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"target\",nos_module_id=~\"${module_var}\"}) / 10^4",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_module_id=~'${module_var}'}) / 10^4",
               "interval": "",
               "legendFormat": "Module ${module_var} (ETH)",
               "range": true,
@@ -8397,7 +8397,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"target\",nos_module_id!~\"${module_var}\"}) / 10^4",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_module_id!~'${module_var}'}) / 10^4",
               "hide": false,
               "interval": "",
               "legendFormat": "Other modules (ETH)",
@@ -8492,9 +8492,9 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_balance{type=\"target\", nos_module_id=~'${module_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_module_id=~'${module_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "Module {{nos_module_id}}",
+              "legendFormat": "Module ${nos_module_id}",
               "range": true,
               "refId": "A"
             }
@@ -8578,7 +8578,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }

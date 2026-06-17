@@ -2011,7 +2011,7 @@
           "hide": false,
           "instant": true,
           "interval": "",
-          "legendFormat": "{{nos_name}}",
+          "legendFormat": "${nos_name}",
           "refId": "reward"
         },
         {
@@ -2025,7 +2025,7 @@
           "hide": false,
           "instant": true,
           "interval": "",
-          "legendFormat": "{{nos_name}}",
+          "legendFormat": "${nos_name}",
           "refId": "penalty"
         },
         {
@@ -2039,7 +2039,7 @@
           "hide": false,
           "instant": true,
           "interval": "",
-          "legendFormat": "{{nos_name}}",
+          "legendFormat": "${nos_name}",
           "refId": "missed"
         },
         {
@@ -2053,7 +2053,7 @@
           "format": "table",
           "hide": false,
           "instant": true,
-          "legendFormat": "{{nos_name}}",
+          "legendFormat": "${nos_name}",
           "range": false,
           "refId": "error"
         },
@@ -2068,7 +2068,7 @@
           "format": "table",
           "hide": false,
           "instant": true,
-          "legendFormat": "{{nos_name}}",
+          "legendFormat": "${nos_name}",
           "range": false,
           "refId": "withdrawn"
         }
@@ -2788,7 +2788,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "att"
             },
             {
@@ -2802,7 +2802,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "prop"
             },
             {
@@ -2816,7 +2816,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "sync"
             },
             {
@@ -2830,7 +2830,7 @@
               "format": "table",
               "hide": false,
               "instant": true,
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": false,
               "refId": "total"
             }
@@ -3006,7 +3006,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_reward{nos_global_index=~'${nos_global_index_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
@@ -3166,7 +3166,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "att"
             },
             {
@@ -3180,7 +3180,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "sync"
             },
             {
@@ -3194,7 +3194,7 @@
               "format": "table",
               "hide": false,
               "instant": true,
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": false,
               "refId": "total"
             }
@@ -3370,7 +3370,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_penalty{nos_global_index=~'${nos_global_index_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
@@ -3538,7 +3538,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "att"
             },
             {
@@ -3552,7 +3552,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "prop"
             },
             {
@@ -3566,7 +3566,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "sync"
             },
             {
@@ -3580,7 +3580,7 @@
               "format": "table",
               "hide": false,
               "instant": true,
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": false,
               "refId": "total"
             }
@@ -3767,7 +3767,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_missed_reward{nos_global_index=~'${nos_global_index_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
@@ -3927,7 +3927,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "partial"
             },
             {
@@ -3941,7 +3941,7 @@
               "hide": false,
               "instant": true,
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "refId": "full"
             },
             {
@@ -3955,7 +3955,7 @@
               "format": "table",
               "hide": false,
               "instant": true,
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": false,
               "refId": "total"
             }
@@ -4145,7 +4145,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_withdrawals_sum{nos_global_index=~'${nos_global_index_var}'}) / 10^9 and on() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}}",
+              "legendFormat": "${nos_name}",
               "range": true,
               "refId": "A"
             }
