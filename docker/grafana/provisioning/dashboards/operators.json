@@ -360,7 +360,7 @@
           "exemplar": true,
           "expr": "sum by (nos_name) (ethereum_validators_monitoring_user_validators{nos_name=~'${mapped_nos_names_var}'})",
           "interval": "",
-          "legendFormat": "🏖️  ${nos_name}",
+          "legendFormat": "🏖️  {{nos_name}}",
           "range": true,
           "refId": "A"
         }
@@ -568,7 +568,7 @@
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status='ongoing', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
-          "legendFormat": "${owner}",
+          "legendFormat": "{{owner}}",
           "range": true,
           "refId": "A"
         }
@@ -635,7 +635,7 @@
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status='pending', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
-          "legendFormat": "${owner}",
+          "legendFormat": "{{owner}}",
           "range": true,
           "refId": "A"
         }
@@ -702,7 +702,7 @@
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_pending', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
-          "legendFormat": "${owner}",
+          "legendFormat": "{{owner}}",
           "range": true,
           "refId": "A"
         }
@@ -769,7 +769,7 @@
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_done', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
-          "legendFormat": "${owner}",
+          "legendFormat": "{{owner}}",
           "range": true,
           "refId": "A"
         }
@@ -843,7 +843,7 @@
           "exemplar": true,
           "expr": "sum(ethereum_validators_monitoring_user_validators{status='slashed', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
-          "legendFormat": "${owner}",
+          "legendFormat": "{{owner}}",
           "range": true,
           "refId": "A"
         }
@@ -1585,7 +1585,7 @@
           "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~'ongoing|pending|withdrawal_pending|withdrawal_done', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "instant": false,
           "interval": "",
-          "legendFormat": "${status}",
+          "legendFormat": "{{status}}",
           "range": true,
           "refId": "A"
         }
@@ -1920,7 +1920,7 @@
           "expr": "sum by (type) (ethereum_validators_monitoring_operator_withdrawals_count{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "instant": false,
           "interval": "",
-          "legendFormat": "${type}",
+          "legendFormat": "{{type}}",
           "range": true,
           "refId": "A"
         }
@@ -3225,7 +3225,7 @@
               "expr": "(sum by (nos_name) (ethereum_validators_monitoring_operator_balance_24h_difference{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "hide": false,
               "interval": "",
-              "legendFormat": "${nos_name} delta",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -3325,7 +3325,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_balances_delta{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name} delta",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -3424,7 +3424,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name} delta",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -3696,7 +3696,7 @@
               "hide": false,
               "instant": false,
               "interval": "",
-              "legendFormat": "${nos_name} delta",
+              "legendFormat": "{{nos_name}}",
               "refId": "A"
             }
           ],
@@ -3981,7 +3981,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name} delta",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -4197,7 +4197,7 @@
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON(nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'} + ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'} > 0) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
-              "legendFormat": "${nos_name}",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "C"
             }
@@ -4499,7 +4499,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name}",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -4798,7 +4798,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name}",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -5079,7 +5079,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}', reason='high_inclusion_delay'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name}",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -5360,7 +5360,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}', reason='invalid_head'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name}",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -5641,7 +5641,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}', reason='invalid_target'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name}",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -5922,7 +5922,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}', reason='invalid_source'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name}",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -6043,7 +6043,7 @@
               "exemplar": true,
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
               "interval": "",
-              "legendFormat": "${nos_name_var}",
+              "legendFormat": "Selected",
               "range": true,
               "refId": "A"
             },
@@ -6057,7 +6057,7 @@
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_global_index!~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
               "hide": false,
               "interval": "",
-              "legendFormat": "Other User operators",
+              "legendFormat": "User (other)",
               "range": true,
               "refId": "B"
             }
@@ -6151,7 +6151,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name}",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -6254,7 +6254,7 @@
               "exemplar": true,
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) / 10^4",
               "interval": "",
-              "legendFormat": "${nos_name_var} (ETH)",
+              "legendFormat": "Selected (ETH)",
               "range": true,
               "refId": "A"
             },
@@ -6268,7 +6268,7 @@
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_global_index!~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) / 10^4",
               "hide": false,
               "interval": "",
-              "legendFormat": "Other User operators (ETH)",
+              "legendFormat": "User (other, ETH)",
               "range": true,
               "refId": "B"
             }
@@ -6362,7 +6362,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name}",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -6465,7 +6465,7 @@
               "exemplar": true,
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
               "interval": "",
-              "legendFormat": "${nos_name_var}",
+              "legendFormat": "Selected",
               "range": true,
               "refId": "A"
             },
@@ -6479,7 +6479,7 @@
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_global_index!~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
               "hide": false,
               "interval": "",
-              "legendFormat": "Other User operators",
+              "legendFormat": "User (other)",
               "range": true,
               "refId": "B"
             }
@@ -6573,7 +6573,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name}",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -6676,7 +6676,7 @@
               "exemplar": true,
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) / 10^4",
               "interval": "",
-              "legendFormat": "${nos_name_var} (ETH)",
+              "legendFormat": "Selected (ETH)",
               "range": true,
               "refId": "A"
             },
@@ -6690,7 +6690,7 @@
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_global_index!~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) / 10^4",
               "hide": false,
               "interval": "",
-              "legendFormat": "Other User operators (ETH)",
+              "legendFormat": "User (other, ETH)",
               "range": true,
               "refId": "B"
             }
@@ -6784,7 +6784,7 @@
               "exemplar": true,
               "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "${nos_name}",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
