@@ -1,5 +1,5 @@
 import { iterateNodesAtDepth } from '@chainsafe/persistent-merkle-tree';
-import { BooleanType, ByteVectorType, ContainerNodeStructType, UintNumberType } from '@chainsafe/ssz';
+import { BooleanType, ByteVectorType, ContainerNodeStructType, ContainerType, UintNumberType } from '@chainsafe/ssz';
 import { ArrayBasicTreeView } from '@chainsafe/ssz/lib/view/arrayBasic';
 import { ListCompositeTreeView } from '@chainsafe/ssz/lib/view/listComposite';
 import { BigNumber } from '@ethersproject/bignumber';
@@ -28,6 +28,13 @@ type Validators = ListCompositeTreeView<
     activationEpoch: UintNumberType;
     exitEpoch: UintNumberType;
     withdrawableEpoch: UintNumberType;
+  }>
+>;
+
+type PendingConsolidations = ListCompositeTreeView<
+  ContainerType<{
+    sourceIndex: UintNumberType;
+    targetIndex: UintNumberType;
   }>
 >;
 
@@ -84,11 +91,27 @@ export class StateService {
         val_stuck: stuckKeys.includes(pubkey),
       };
       this.summary.epoch(epoch).set(v);
-      if ([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed].includes(status)) {
+      if (([ValStatus.ActiveOngoing, ValStatus.ActiveExiting, ValStatus.ActiveSlashed] as ValStatus[]).includes(status)) {
         activeValidatorsCount++;
         activeValidatorsEffectiveBalance += BigInt(validator.effectiveBalance) / BigInt(10 ** 9);
       }
     }
+
+    const pendingConsolidations = stateView.pendingConsolidations as PendingConsolidations;
+    if (pendingConsolidations != null) {
+      for (let index = 0; index < pendingConsolidations.length; index++) {
+        if (index % 100 === 0) {
+          await unblock();
+        }
+
+        const consolidation = pendingConsolidations.get(index);
+        this.summary.epoch(epoch).addPendingConsolidation({
+          source_index: consolidation.sourceIndex,
+          target_index: consolidation.targetIndex,
+        });
+      }
+    }
+
     const baseReward = Math.trunc(
       BigNumber.from(64 * 10 ** 9)
         .div(bigNumberSqrt(BigNumber.from(activeValidatorsEffectiveBalance).mul(10 ** 9)))

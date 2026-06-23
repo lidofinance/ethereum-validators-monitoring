@@ -1,16 +1,11 @@
 import { ConfigService } from 'common/config';
-import { NOsValidatorsStatusStats } from 'storage/clickhouse';
+import { NOsIdentity, NOsValidatorsStatusStats } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
 
 import { Alert, AlertRuleResult } from './BasicAlert';
 
-export interface NOIdentity {
-  val_nos_module_id: string;
-  val_nos_id: string;
-}
-
 export abstract class StandardAlertRuleAlert<
-  TConditionedNOsStats extends NOIdentity,
+  TConditionedNOsStats extends NOsIdentity,
   TOperatorAlertRuleResult,
 > extends Alert<TOperatorAlertRuleResult> {
   protected readonly conditionedNOsStats: TConditionedNOsStats[];

@@ -6,6 +6,12 @@ import { ConfigService } from 'common/config';
 import { PrometheusService } from 'common/prometheus';
 import { Epoch } from 'common/types/types';
 import { ClickhouseService } from 'storage';
+import {
+  NOsProposesStats,
+  NOsValidatorsCountAndBalance,
+  NOsValidatorsStatusStats,
+  UserNOsValidatorsCountAndBalance,
+} from 'storage/clickhouse';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
 import { AlertRequestBody, PreparedToSendAlert } from './alerts/BasicAlert';
@@ -13,12 +19,6 @@ import { CriticalMissedAttestations, MissedAttestationsRuleResult } from './aler
 import { CriticalMissedProposes, MissedProposalsRuleResult } from './alerts/CriticalMissedProposes';
 import { CriticalNegativeDelta, NegativeBalanceDeltaRuleResult } from './alerts/CriticalNegativeDelta';
 import { CriticalSlashing, SlashingRuleResult } from './alerts/CriticalSlashing';
-import {
-  NOsProposesStats,
-  NOsValidatorsByConditionAttestationCount,
-  NOsValidatorsNegDeltaCount,
-  NOsValidatorsStatusStats,
-} from '../../storage/clickhouse';
 
 interface SentAlerts {
   [alertname: string]: PreparedToSendAlert<
@@ -59,13 +59,13 @@ export class CriticalAlertsService {
         this.storage.getUserNodeOperatorsStats(epoch),
         this.storage.getValidatorCountWithMissedAttestationsLastNEpoch(epoch),
         this.storage.getUserNodeOperatorsProposesStats(epoch), // ~12h range
-        this.storage.getValidatorsCountWithNegativeDelta(epoch),
+        this.storage.getUserValidatorsCountWithNegativeDelta(epoch),
         this.storage.getUserNodeOperatorsStats(epoch - 1),
       ])) as [
         NOsValidatorsStatusStats[],
-        NOsValidatorsByConditionAttestationCount[],
+        NOsValidatorsCountAndBalance[],
         NOsProposesStats[],
-        NOsValidatorsNegDeltaCount[],
+        UserNOsValidatorsCountAndBalance[],
         NOsValidatorsStatusStats[],
       ];
 

@@ -420,7 +420,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='stuck', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='stuck', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "refId": "A"
         }
       ],
@@ -566,7 +566,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='ongoing', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='ongoing', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -633,7 +633,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='pending', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='pending', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -700,7 +700,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_pending', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_pending', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -767,7 +767,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_done', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_done', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -841,7 +841,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='slashed', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='slashed', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -943,7 +943,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='ongoing', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='ongoing', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
           "legendFormat": "Selected",
           "range": true,
@@ -956,7 +956,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='ongoing', nos_global_index!~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='ongoing', nos_global_index!~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "hide": false,
           "interval": "",
           "legendFormat": "User (other)",
@@ -1060,7 +1060,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='pending', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='pending', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
           "legendFormat": "Selected",
           "range": true,
@@ -1073,7 +1073,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='pending', nos_global_index!~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='pending', nos_global_index!~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "hide": false,
           "interval": "",
           "legendFormat": "User (other)",
@@ -1178,7 +1178,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_pending', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_pending', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
           "legendFormat": "Selected",
           "range": true,
@@ -1191,7 +1191,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_pending', nos_global_index!~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_pending', nos_global_index!~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "hide": false,
           "interval": "",
           "legendFormat": "User (other)",
@@ -1296,7 +1296,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_done', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_done', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
           "legendFormat": "Selected",
           "range": true,
@@ -1309,7 +1309,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_done', nos_global_index!~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='withdrawal_done', nos_global_index!~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "hide": false,
           "interval": "",
           "legendFormat": "User (other)",
@@ -1412,7 +1412,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='slashed', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='slashed', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "interval": "",
           "legendFormat": "Selected",
           "range": true,
@@ -1425,7 +1425,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "sum(ethereum_validators_monitoring_user_validators{status='slashed', nos_global_index!~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'})",
+          "expr": "sum(ethereum_validators_monitoring_user_validators{status='slashed', nos_global_index!~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
           "hide": false,
           "interval": "",
           "legendFormat": "User (other)",
@@ -1582,7 +1582,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~'ongoing|pending|withdrawal_pending|withdrawal_done', nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators{status=~'ongoing|pending|withdrawal_pending|withdrawal_done', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "instant": false,
           "interval": "",
           "legendFormat": "{{status}}",
@@ -1715,7 +1715,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -1758,8 +1758,8 @@
           "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_status AS Status,\n  val_balance / pow(10,9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  val_status IN ['active_exiting','exited_unslashed', 'exited_slashed', 'withdrawal_possible'] AND\n  val_balance != 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id, val_balance\nLIMIT 1 BY val_id",
-          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_status AS Status,\n  val_balance / pow(10,9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  val_status IN ['active_exiting','exited_unslashed', 'exited_slashed', 'withdrawal_possible'] AND\n  val_balance != 0 AND\n  epoch = 222117\nORDER BY val_id, val_balance\nLIMIT 1 BY val_id",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_status AS Status,\n  val_balance / pow(10,9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n  val_status IN ['active_exiting','exited_unslashed', 'exited_slashed', 'withdrawal_possible'] AND\n  val_balance != 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id, val_balance\nLIMIT 1 BY val_id",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_status AS Status,\n  val_balance / pow(10,9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n  val_status IN ['active_exiting','exited_unslashed', 'exited_slashed', 'withdrawal_possible'] AND\n  val_balance != 0 AND\n  epoch = 222117\nORDER BY val_id, val_balance\nLIMIT 1 BY val_id",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -1775,8 +1775,8 @@
           "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": true,
           "intervalFactor": 1,
-          "query": "SELECT arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}'))\n",
-          "rawQuery": "SELECT arrayConcat(['1;0'], splitByChar('|','2;0|2;1'))",
+          "query": "SELECT arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}'))\n",
+          "rawQuery": "SELECT arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1'))",
           "refId": "B",
           "round": "0s",
           "skip_comments": true
@@ -1917,7 +1917,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (type) (ethereum_validators_monitoring_operator_withdrawals_count{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+          "expr": "sum by (type) (ethereum_validators_monitoring_operator_withdrawals_count{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
           "instant": false,
           "interval": "",
           "legendFormat": "{{type}}",
@@ -2069,7 +2069,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               },
@@ -2119,8 +2119,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  current.val_nos_module_id AS Module,\n  current.val_nos_name AS Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id AS Validator\nFROM (\n  SELECT\n    val_balance,\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_slashed,\n    val_nos_name\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS current\nINNER JOIN (\n  SELECT val_balance, val_id\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var} - 6\n  LIMIT 1 BY val_id\n) AS previous\nON\n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) AS withdrawn,\n    val_id,\n    val_nos_module_id,\n    val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_balance_withdrawn > 0 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - 6) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0\nORDER BY GWei ASC, Validator\nLIMIT CAST(${limit}, 'Int16')",
-          "rawQuery": "SELECT\n  current.val_nos_module_id AS Module,\n  current.val_nos_name AS Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id AS Validator\nFROM (\n  SELECT\n    val_balance,\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_slashed,\n    val_nos_name\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = 222126\n  LIMIT 1 BY val_id\n) AS current\nINNER JOIN (\n  SELECT val_balance, val_id\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = 222126 - 6\n  LIMIT 1 BY val_id\n) AS previous\nON\n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) AS withdrawn,\n    val_id,\n    val_nos_module_id,\n    val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_balance_withdrawn > 0 AND\n      val_stuck = 0 AND\n      (222126 - 6) < epoch AND epoch <= 222126\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0\nORDER BY GWei ASC, Validator\nLIMIT 100",
+          "query": "SELECT\n  current.val_nos_module_id AS Module,\n  current.val_nos_name AS Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id AS Validator\nFROM (\n  SELECT\n    val_balance,\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_slashed,\n    val_nos_name\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS current\nINNER JOIN (\n  SELECT val_balance, val_id\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var} - 6\n  LIMIT 1 BY val_id\n) AS previous\nON\n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) AS withdrawn,\n    val_id,\n    val_nos_module_id,\n    val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n      val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_balance_withdrawn > 0 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - 6) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_id = current.val_id\nWHERE (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0\nORDER BY GWei ASC, Validator\nLIMIT CAST(${limit}, 'Int16')",
+          "rawQuery": "SELECT\n  current.val_nos_module_id AS Module,\n  current.val_nos_name AS Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id AS Validator\nFROM (\n  SELECT\n    val_balance,\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_slashed,\n    val_nos_name\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = 222126\n  LIMIT 1 BY val_id\n) AS current\nINNER JOIN (\n  SELECT val_balance, val_id\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = 222126 - 6\n  LIMIT 1 BY val_id\n) AS previous\nON\n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) AS withdrawn,\n    val_id,\n    val_nos_module_id,\n    val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n      val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_balance_withdrawn > 0 AND\n      val_stuck = 0 AND\n      (222126 - 6) < epoch AND epoch <= 222126\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_id = current.val_id\nWHERE (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0\nORDER BY GWei ASC, Validator\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -2248,7 +2248,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -2294,8 +2294,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  block_to_propose AS Block,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 BY val_id",
-          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  block_to_propose AS Block,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  epoch = 222135\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 BY val_id",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  block_to_propose AS Block,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 BY val_id",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  block_to_propose AS Block,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  epoch = 222135\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 BY val_id",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -2435,7 +2435,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -2482,8 +2482,8 @@
           "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_nos_module_id,\n    val_nos_id,\n    val_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT\n      val_id,\n      val_nos_module_id,\n      val_nos_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      is_sync = 1 AND\n      val_stuck = 0 AND\n      sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n      (${epoch_number_var} - ${sync_epochs_var}) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, val_id",
-          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_nos_module_id,\n    val_nos_id,\n    val_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT\n      val_id,\n      val_nos_module_id,\n      val_nos_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      is_sync = 1 AND\n      val_stuck = 0 AND\n      sync_percent < (99.200439453125 - 0) AND\n      (222137 - 3) < epoch AND epoch <= 222137\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_nos_module_id,\n    val_nos_id,\n    val_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT\n      val_id,\n      val_nos_module_id,\n      val_nos_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n      is_sync = 1 AND\n      val_stuck = 0 AND\n      sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n      (${epoch_number_var} - ${sync_epochs_var}) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, val_id",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_nos_module_id,\n    val_nos_id,\n    val_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT\n      val_id,\n      val_nos_module_id,\n      val_nos_id,\n      val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n      is_sync = 1 AND\n      val_stuck = 0 AND\n      sync_percent < (99.200439453125 - 0) AND\n      (222137 - 3) < epoch AND epoch <= 222137\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id",
           "refId": "B",
           "round": "0s",
           "skip_comments": true
@@ -2590,7 +2590,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -2636,8 +2636,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      att_happened = 0 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - ${att_epochs_var}) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT CAST(${limit}, 'Int16')",
-          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      att_happened = 0 AND\n      val_stuck = 0 AND\n      (222140 - 3) < epoch AND epoch <= 222140\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n      att_happened = 0 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - ${att_epochs_var}) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT CAST(${limit}, 'Int16')",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n      att_happened = 0 AND\n      val_stuck = 0 AND\n      (222140 - 3) < epoch AND epoch <= 222140\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -2744,7 +2744,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operators dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -2790,8 +2790,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      att_happened = 1 AND\n      att_inc_delay > 1 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - ${att_epochs_var}) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT CAST(${limit}, 'Int16')",
-          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      att_happened = 1 AND\n      att_inc_delay > 1 AND\n      val_stuck = 0 AND\n      (222142 - 3) < epoch AND epoch <= 222142\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n      att_happened = 1 AND\n      att_inc_delay > 1 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - ${att_epochs_var}) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT CAST(${limit}, 'Int16')",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n      att_happened = 1 AND\n      att_inc_delay > 1 AND\n      val_stuck = 0 AND\n      (222142 - 3) < epoch AND epoch <= 222142\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -2899,7 +2899,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -2945,8 +2945,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      att_valid_head + att_valid_target + att_valid_source = 1 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - ${att_epochs_var}) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT CAST(${limit}, 'Int16')",
-          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      att_valid_head + att_valid_target + att_valid_source = 1 AND\n      val_stuck = 0 AND\n      (222147 - 3) < epoch AND epoch <= 222147\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n      att_valid_head + att_valid_target + att_valid_source = 1 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - ${att_epochs_var}) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT CAST(${limit}, 'Int16')",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n      att_valid_head + att_valid_target + att_valid_source = 1 AND\n      val_stuck = 0 AND\n      (222147 - 3) < epoch AND epoch <= 222147\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -3053,7 +3053,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -3099,8 +3099,8 @@
           "format": "table",
           "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_status AS Status,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  (val_status = 'active_slashed' OR val_status = 'exited_slashed' OR val_slashed = 1) AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id",
-          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_status AS Status,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  (val_status = 'active_slashed' OR val_status = 'exited_slashed' OR val_slashed = 1) AND\n  epoch = 222149\nORDER BY val_id\nLIMIT 1 BY val_id",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_status AS Status,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n  (val_status = 'active_slashed' OR val_status = 'exited_slashed' OR val_slashed = 1) AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_status AS Status,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n  (val_status = 'active_slashed' OR val_status = 'exited_slashed' OR val_slashed = 1) AND\n  epoch = 222149\nORDER BY val_id\nLIMIT 1 BY val_id",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -3222,10 +3222,10 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "(sum by (nos_name) (ethereum_validators_monitoring_operator_balance_24h_difference{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "(sum by (nos_name) (ethereum_validators_monitoring_operator_balance_24h_difference{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) / 10 ^ 9) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "hide": false,
               "interval": "",
-              "legendFormat": "{{nos_name}} delta",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -3323,9 +3323,9 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_balances_delta{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_balances_delta{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}} delta",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -3422,9 +3422,9 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_quantile_001_balances_delta{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}} delta",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -3550,7 +3550,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -3596,8 +3596,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  current.val_nos_module_id AS Module,\n  current.val_nos_name AS Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id AS Validator\nFROM (\n  SELECT\n    val_balance,\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS current\nINNER JOIN (\n  SELECT val_balance, val_id\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var} - 6\n  LIMIT 1 BY val_id\n) AS previous\nON\n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) AS withdrawn,\n    val_id,\n    val_nos_module_id,\n    val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_balance_withdrawn > 0 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - 6) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n  current.val_nos_module_id AS Module,\n  current.val_nos_name AS Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id AS Validator\nFROM (\n  SELECT\n    val_balance,\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = 222150\n  LIMIT 1 BY val_id\n) AS current\nINNER JOIN (\n  SELECT val_balance, val_id\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = 222150 - 6\n  LIMIT 1 BY val_id\n) AS previous\nON\n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) AS withdrawn,\n    val_id,\n    val_nos_module_id,\n    val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_balance_withdrawn > 0 AND\n      val_stuck = 0 AND\n      (222150 - 6) < epoch AND epoch <= 222150\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT 100",
+              "query": "SELECT\n  current.val_nos_module_id AS Module,\n  current.val_nos_name AS Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id AS Validator\nFROM (\n  SELECT\n    val_balance,\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS current\nINNER JOIN (\n  SELECT val_balance, val_id\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var} - 6\n  LIMIT 1 BY val_id\n) AS previous\nON\n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) AS withdrawn,\n    val_id,\n    val_nos_module_id,\n    val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n      val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_balance_withdrawn > 0 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - 6) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n  current.val_nos_module_id AS Module,\n  current.val_nos_name AS Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id AS Validator\nFROM (\n  SELECT\n    val_balance,\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = 222150\n  LIMIT 1 BY val_id\n) AS current\nINNER JOIN (\n  SELECT val_balance, val_id\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = 222150 - 6\n  LIMIT 1 BY val_id\n) AS previous\nON\n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) AS withdrawn,\n    val_id,\n    val_nos_module_id,\n    val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n      val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_balance_withdrawn > 0 AND\n      val_stuck = 0 AND\n      (222150 - 6) < epoch AND epoch <= 222150\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3692,11 +3692,11 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "hide": false,
               "instant": false,
               "interval": "",
-              "legendFormat": "{{nos_name}} delta",
+              "legendFormat": "{{nos_name}}",
               "refId": "A"
             }
           ],
@@ -3839,7 +3839,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -3885,8 +3885,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  block_to_propose AS Block,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  (${epoch_number_var} - ${epochs_range}) < epoch AND epoch <= ${epoch_number_var}\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 BY epoch, val_id",
-              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  block_to_propose AS Block,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  (222157 - 19) < epoch AND epoch <= 222157\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 BY epoch, val_id",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  block_to_propose AS Block,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  (${epoch_number_var} - ${epochs_range}) < epoch AND epoch <= ${epoch_number_var}\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 BY epoch, val_id",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  block_to_propose AS Block,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  (222157 - 19) < epoch AND epoch <= 222157\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 BY epoch, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -3979,9 +3979,9 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_propose{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "{{nos_name}} delta",
+              "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
@@ -4180,7 +4180,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_global_index!~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'} AND ON(nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_global_index!~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'} + ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_global_index!~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'} > 0) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0) ",
+              "expr": "avg(ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_global_index!~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'} AND ON(nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_global_index!~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'} + ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_global_index!~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'} > 0) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0) ",
               "hide": false,
               "interval": "",
               "legendFormat": "Rest of User's",
@@ -4194,7 +4194,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON(nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'} + ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'} > 0) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_operator_sync_participation_avg_percent{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) AND ON(nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'} + ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'} > 0) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0",
               "hide": false,
               "interval": "",
               "legendFormat": "{{nos_name}}",
@@ -4358,7 +4358,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -4404,8 +4404,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  sync_percent AS Percent,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  is_sync = 1 AND\n  val_stuck = 0 AND\n  sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n  epoch = ${epoch_number_var}\nORDER BY sync_percent, val_id\nLIMIT 1 BY val_id",
-              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  sync_percent AS Percent,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  is_sync = 1 AND\n  val_stuck = 0 AND\n  sync_percent < (99.0234375 - 0) AND\n  epoch = 222160\nORDER BY sync_percent, val_id\nLIMIT 1 BY val_id",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  sync_percent AS Percent,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n  is_sync = 1 AND\n  val_stuck = 0 AND\n  sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n  epoch = ${epoch_number_var}\nORDER BY sync_percent, val_id\nLIMIT 1 BY val_id",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  sync_percent AS Percent,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n  is_sync = 1 AND\n  val_stuck = 0 AND\n  sync_percent < (99.0234375 - 0) AND\n  epoch = 222160\nORDER BY sync_percent, val_id\nLIMIT 1 BY val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4497,7 +4497,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -4656,7 +4656,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -4702,8 +4702,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  att_happened = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  att_happened = 0 AND\n  val_stuck = 0 AND\n  epoch = 222164\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n  att_happened = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n  att_happened = 0 AND\n  val_stuck = 0 AND\n  epoch = 222164\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -4796,7 +4796,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -4937,7 +4937,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -4983,8 +4983,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  val_stuck = 0 AND\n  epoch = 222165\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  val_stuck = 0 AND\n  epoch = 222165\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5077,7 +5077,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}', reason='high_inclusion_delay'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}', reason='high_inclusion_delay'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -5218,7 +5218,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5264,8 +5264,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  att_valid_head = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  att_valid_head = 0 AND\n  val_stuck = 0 AND\n  epoch = 222169\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n  att_valid_head = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n  att_valid_head = 0 AND\n  val_stuck = 0 AND\n  epoch = 222169\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5358,7 +5358,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}', reason='invalid_head'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}', reason='invalid_head'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -5499,7 +5499,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5545,8 +5545,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  att_valid_target = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  att_valid_target = 0 AND\n  val_stuck = 0 AND\n  epoch = 222158\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n  att_valid_target = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n  att_valid_target = 0 AND\n  val_stuck = 0 AND\n  epoch = 222158\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5639,7 +5639,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}', reason='invalid_target'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}', reason='invalid_target'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -5780,7 +5780,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5826,8 +5826,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  att_valid_source = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  att_valid_source = 0 AND\n  val_stuck = 0 AND\n  epoch = 222171\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}')) AND\n  att_valid_source = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1')) AND\n  att_valid_source = 0 AND\n  val_stuck = 0 AND\n  epoch = 222171\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5920,7 +5920,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}', reason='invalid_source'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}', reason='invalid_source'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
@@ -5932,6 +5932,868 @@
         }
       ],
       "title": "📝 Attestations",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 55
+      },
+      "id": 1752,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "Number of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total number of User validator `source_index`es in the queue belonging to other User operators",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [],
+              "unit": "locale"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "A"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "yellow",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "B"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "super-light-yellow",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 79
+          },
+          "id": 1716,
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "pieType": "donut",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
+              "interval": "",
+              "legendFormat": "Selected",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_global_index!~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "User (other)",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Consolidating source validators share (amount)",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "Number of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "red",
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 15,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 111
+          },
+          "id": 1769,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Number of User validators initiating consolidation",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "Total balance of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total balance of User validator `source_index`es in the queue belonging to other User operators",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [],
+              "unit": "locale"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "A"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "B"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "super-light-orange",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 79
+          },
+          "id": 1718,
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "pieType": "donut",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) / 10^4",
+              "interval": "",
+              "legendFormat": "Selected (ETH)",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_global_index!~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) / 10^4",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "User (other, ETH)",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Consolidating source validators share (balance)",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "Total balance of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue (in ETH)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "red",
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 15,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 111
+          },
+          "id": 1775,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total balance of User validators initiating consolidation (in ETH)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "Number of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total number of User validator `target_index`es in the queue belonging to other User operators",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [],
+              "unit": "locale"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "A"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "blue",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "B"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "super-light-blue",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 79
+          },
+          "id": 1720,
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "pieType": "donut",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
+              "interval": "",
+              "legendFormat": "Selected",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_global_index!~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'})",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "User (other)",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Consolidating target validators share (amount)",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "Number of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "red",
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 15,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 111
+          },
+          "id": 1777,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Number of User target consolidation validators",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "Total balance of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total balance of User validator `target_index`es in the queue belonging to other User operators",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [],
+              "unit": "locale"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "A"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "purple",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byFrameRefID",
+                  "options": "B"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "super-light-purple",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 79
+          },
+          "id": 1722,
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "pieType": "donut",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) / 10^4",
+              "interval": "",
+              "legendFormat": "Selected (ETH)",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_global_index!~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}) / 10^4",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "User (other, ETH)",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Consolidating target validators share (balance)",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "Total balance of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue (in ETH)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "red",
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 15,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 111
+          },
+          "id": 1779,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total balance of User target consolidation validators (in ETH)",
+          "type": "timeseries"
+        }
+      ],
+      "title": "\uD83E\uDDF2 Consolidations",
       "type": "row"
     }
   ],
@@ -6283,7 +7145,7 @@
           "type": "prometheus",
           "uid": "PBFA97CFB590B2093"
         },
-        "definition": "query_result(last_over_time(ethereum_validators_monitoring_user_operators_identifies{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}[28h]))",
+        "definition": "query_result(last_over_time(ethereum_validators_monitoring_user_operators_identifies{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}[28h]))",
         "description": "",
         "hide": 2,
         "includeAll": true,
@@ -6292,7 +7154,7 @@
         "name": "mapped_nos_names_var",
         "options": [],
         "query": {
-          "query": "query_result(last_over_time(ethereum_validators_monitoring_user_operators_identifies{nos_global_index=~'${nos_global_index_var}|${dvt_nos_global_indexes_var:pipe}'}[28h]))",
+          "query": "query_result(last_over_time(ethereum_validators_monitoring_user_operators_identifies{nos_global_index=~'${nos_global_index_var:pipe}|${dvt_nos_global_indexes_var:pipe}'}[28h]))",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
