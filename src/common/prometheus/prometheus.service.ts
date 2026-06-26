@@ -19,6 +19,9 @@ import {
   METRIC_DATA_ACTUALITY,
   METRIC_EPOCH_NUMBER,
   METRIC_FETCH_INTERVAL,
+  METRIC_HIGH_REWARD_VALIDATOR_BALANCE_MISS_ATTESTATION_LAST_N_EPOCH,
+  METRIC_HIGH_REWARD_VALIDATOR_BALANCE_MISS_PROPOSE,
+  METRIC_HIGH_REWARD_VALIDATOR_BALANCE_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
@@ -35,6 +38,13 @@ import {
   METRIC_OTHER_CHAIN_WITHDRAWALS_COUNT,
   METRIC_OTHER_CHAIN_WITHDRAWALS_SUM,
   METRIC_OTHER_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_OTHER_VALIDATOR_BALANCE_GOOD_PROPOSE,
+  METRIC_OTHER_VALIDATOR_BALANCE_INVALID_ATTESTATION,
+  METRIC_OTHER_VALIDATOR_BALANCE_MISS_ATTESTATION,
+  METRIC_OTHER_VALIDATOR_BALANCE_MISS_PROPOSE,
+  METRIC_OTHER_VALIDATOR_BALANCE_PERFECT_ATTESTATION,
+  METRIC_OTHER_VALIDATOR_BALANCE_WITH_GOOD_SYNC_PARTICIPATION,
+  METRIC_OTHER_VALIDATOR_BALANCE_WITH_SYNC_PARTICIPATION_LESS_AVG,
   METRIC_OTHER_VALIDATOR_COUNT_GOOD_PROPOSE,
   METRIC_OTHER_VALIDATOR_COUNT_INVALID_ATTESTATION,
   METRIC_OTHER_VALIDATOR_COUNT_MISS_ATTESTATION,
@@ -56,8 +66,23 @@ import {
   METRIC_USER_OPERATORS_IDENTIFIES,
   METRIC_USER_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_USER_VALIDATORS,
+  METRIC_USER_VALIDATORS_BALANCE,
   METRIC_VALIDATORS,
+  METRIC_VALIDATORS_BALANCE,
   METRIC_VALIDATOR_BALANCES_DELTA,
+  METRIC_VALIDATOR_BALANCE_GOOD_PROPOSE,
+  METRIC_VALIDATOR_BALANCE_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
+  METRIC_VALIDATOR_BALANCE_INVALID_ATTESTATION,
+  METRIC_VALIDATOR_BALANCE_INVALID_ATTESTATION_LAST_N_EPOCH,
+  METRIC_VALIDATOR_BALANCE_INVALID_ATTESTATION_PROPERTY_LAST_N_EPOCH,
+  METRIC_VALIDATOR_BALANCE_MISS_ATTESTATION,
+  METRIC_VALIDATOR_BALANCE_MISS_ATTESTATION_LAST_N_EPOCH,
+  METRIC_VALIDATOR_BALANCE_MISS_PROPOSE,
+  METRIC_VALIDATOR_BALANCE_PERFECT_ATTESTATION,
+  METRIC_VALIDATOR_BALANCE_WITH_GOOD_SYNC_PARTICIPATION,
+  METRIC_VALIDATOR_BALANCE_WITH_NEGATIVE_BALANCES_DELTA,
+  METRIC_VALIDATOR_BALANCE_WITH_SYNC_PARTICIPATION_LESS_AVG,
+  METRIC_VALIDATOR_BALANCE_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_GOOD_PROPOSE,
   METRIC_VALIDATOR_COUNT_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
@@ -241,9 +266,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['owner', 'nos_module_id', 'status'],
   });
 
+  public validatorsBalance = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATORS_BALANCE,
+    help: 'Total balance of validators in the chain',
+    labelNames: ['owner', 'nos_module_id', 'status'],
+  });
+
   public userValidators = this.getOrCreateMetric('Gauge', {
     name: METRIC_USER_VALIDATORS,
     help: 'Count of validators for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'status'],
+  });
+
+  public userValidatorsBalance = this.getOrCreateMetric('Gauge', {
+    name: METRIC_USER_VALIDATORS_BALANCE,
+    help: 'Total balance of validators for each user Node Operator',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'status'],
   });
 
@@ -283,6 +320,12 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
+  public validatorsBalanceWithNegativeBalanceDelta = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_WITH_NEGATIVE_BALANCES_DELTA,
+    help: 'Total balance of validators with negative balances delta for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+  });
+
   public totalBalance24hDifference = this.getOrCreateMetric('Gauge', {
     name: METRIC_TOTAL_BALANCE_24H_DIFFERENCE,
     help: 'Total user validators balance difference (24 hours)',
@@ -301,9 +344,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: [],
   });
 
+  public otherValidatorsBalanceWithGoodSyncParticipation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_BALANCE_WITH_GOOD_SYNC_PARTICIPATION,
+    help: 'Total balance of non-user validators in the chain with a good sync committee participation',
+    labelNames: [],
+  });
+
   public validatorsCountWithGoodSyncParticipation = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_WITH_GOOD_SYNC_PARTICIPATION,
     help: 'Number of validators with a good sync committee participation for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+  });
+
+  public validatorsBalanceWithGoodSyncParticipation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_WITH_GOOD_SYNC_PARTICIPATION,
+    help: 'Total balance of validators with a good sync committee participation for each user Node Operator',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
@@ -313,9 +368,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: [],
   });
 
+  public otherValidatorsBalanceWithSyncParticipationLessAvg = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_BALANCE_WITH_SYNC_PARTICIPATION_LESS_AVG,
+    help: 'Total balance of non-user validators with sync committee participation less than average in the chain',
+    labelNames: [],
+  });
+
   public validatorsCountWithSyncParticipationLessAvg = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG,
     help: 'Number of validators with sync committee participation less than average in the chain for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+  });
+
+  public validatorsBalanceWithSyncParticipationLessAvg = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_WITH_SYNC_PARTICIPATION_LESS_AVG,
+    help: 'Total balance of validators with sync committee participation less than average in the chain for each user Node Operator',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
@@ -325,9 +392,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
+  public validatorsBalanceWithSyncParticipationLessAvgLastNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
+    help: 'Total balance of validators with sync committee participation less than average in the chain in the last N epochs for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
+  });
+
   public highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
     help: 'Number of validators with sync committee participation less than average in the chain in the last N epochs (with possible high reward in the future) for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
+  });
+
+  public highRewardValidatorsBalanceWithSyncParticipationLessAvgLastNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_HIGH_REWARD_VALIDATOR_BALANCE_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
+    help: 'Total balance of validators with sync committee participation less than average in the chain in the last N epochs (with possible high reward in the future) for each user Node Operator',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
@@ -361,9 +440,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: [],
   });
 
+  public otherValidatorsBalancePerfectAttestation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_BALANCE_PERFECT_ATTESTATION,
+    help: 'Total balance of non-user validators in the chain with perfect attestations',
+    labelNames: [],
+  });
+
   public validatorsCountPerfectAttestation = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_PERFECT_ATTESTATION,
     help: 'Number of validators with perfect attestations for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+  });
+
+  public validatorsBalancePerfectAttestation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_PERFECT_ATTESTATION,
+    help: 'Total balance of validators with perfect attestations for each user Node Operator',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
@@ -373,9 +464,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: [],
   });
 
+  public otherValidatorsBalanceMissAttestation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_BALANCE_MISS_ATTESTATION,
+    help: 'Total balance of non-user validators in the chain with missed attestations',
+    labelNames: [],
+  });
+
   public validatorsCountMissAttestation = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_MISS_ATTESTATION,
     help: 'Number of validators with missed attestations for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+  });
+
+  public validatorsBalanceMissAttestation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_MISS_ATTESTATION,
+    help: 'Total balance of validators with missed attestations for each user Node Operator',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
@@ -385,9 +488,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
+  public validatorsBalanceMissAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_MISS_ATTESTATION_LAST_N_EPOCH,
+    help: 'Total balance of validators with missed attestations in the last N epochs for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
+  });
+
   public highRewardValidatorsCountMissAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
     help: 'Number of validators with missed attestations in the last N epochs (with possible high reward in the future) for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
+  });
+
+  public highRewardValidatorsBalanceMissAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_HIGH_REWARD_VALIDATOR_BALANCE_MISS_ATTESTATION_LAST_N_EPOCH,
+    help: 'Total balance of validators with missed attestations in the last N epochs (with possible high reward in the future) for each user Node Operator',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
@@ -397,9 +512,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['reason'],
   });
 
+  public otherValidatorsBalanceInvalidAttestation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_BALANCE_INVALID_ATTESTATION,
+    help: 'Total balance of non-user validators in the chain with invalid properties (head, target, source) or high inclusion delay in attestations',
+    labelNames: ['reason'],
+  });
+
   public validatorsCountInvalidAttestation = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
     help: 'Number of validators with invalid properties (head, target, source) or high inclusion delay in attestations for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'reason'],
+  });
+
+  public validatorsBalanceInvalidAttestation = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_INVALID_ATTESTATION,
+    help: 'Total balance of validators with invalid properties (head, target, source) or high inclusion delay in attestations for each user Node Operator',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'reason'],
   });
 
@@ -409,9 +536,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'reason', 'epoch_interval'],
   });
 
+  public validatorsBalanceInvalidAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_INVALID_ATTESTATION_LAST_N_EPOCH,
+    help: 'Total balance of validators with invalid properties (head, target, source) or high inclusion delay in attestations in the last N epochs for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'reason', 'epoch_interval'],
+  });
+
   public validatorsCountInvalidAttestationPropertyLastNEpoch = this.getOrCreateMetric('Gauge', {
     name: METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION_PROPERTY_LAST_N_EPOCH,
     help: 'Number of validators with two invalid attestation properties (head or target or source) in the last N epochs for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
+  });
+
+  public validatorsBalanceInvalidAttestationPropertyLastNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_INVALID_ATTESTATION_PROPERTY_LAST_N_EPOCH,
+    help: 'Total balance of validators with two invalid attestation properties (head or target or source) in the last N epochs for each user Node Operator',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
@@ -421,9 +560,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
   });
 
+  public validatorsBalanceHighIncDelayAttestationLastNEpoch = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
+    help: 'Total balance of validators with attestations inclusion delay > 2 in the last N epochs for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name', 'epoch_interval'],
+  });
+
   public otherValidatorsCountGoodPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_OTHER_VALIDATOR_COUNT_GOOD_PROPOSE,
     help: 'Number of non-user validators in the chain with good proposals for each user Node Operator',
+    labelNames: [],
+  });
+
+  public otherValidatorsBalanceGoodPropose = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_BALANCE_GOOD_PROPOSE,
+    help: 'Total balance of non-user validators in the chain with good proposals for each user Node Operator',
     labelNames: [],
   });
 
@@ -433,9 +584,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
+  public validatorsBalanceGoodPropose = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_GOOD_PROPOSE,
+    help: 'Total balance of validators with good proposals for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+  });
+
   public otherValidatorsCountMissPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_OTHER_VALIDATOR_COUNT_MISS_PROPOSE,
     help: 'Number of non-user validators in the chain with missed proposals',
+    labelNames: [],
+  });
+
+  public otherValidatorsBalanceMissPropose = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_BALANCE_MISS_PROPOSE,
+    help: 'Total balance of non-user validators in the chain with missed proposals',
     labelNames: [],
   });
 
@@ -445,9 +608,21 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
+  public validatorsBalanceMissPropose = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_MISS_PROPOSE,
+    help: 'Total balance of validators with missed proposals for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+  });
+
   public highRewardValidatorsCountMissPropose = this.getOrCreateMetric('Gauge', {
     name: METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
     help: 'Number of validators with missed proposals (with possible high reward in the future) for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+  });
+
+  public highRewardValidatorsBalanceMissPropose = this.getOrCreateMetric('Gauge', {
+    name: METRIC_HIGH_REWARD_VALIDATOR_BALANCE_MISS_PROPOSE,
+    help: 'Total balance of validators with missed proposals (with possible high reward in the future) for each user Node Operator',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
   });
 
@@ -555,11 +730,16 @@ export const setUserOperatorsMetric = (
   });
 };
 
-export const setOtherOperatorsMetric = (metric: Metric<'Gauge', any>, data: any[], labels: LabelValues<string> = {}) => {
+export const setOtherOperatorsMetric = (
+  metric: Metric<'Gauge', any>,
+  data: any[],
+  labels: LabelValues<string> = {},
+  value: (dataItem: any) => number = (dataItem) => dataItem.amount,
+) => {
   const other = data.find((p) => p.val_nos_id == null);
 
   if (other != null) {
-    metric.set(labels, other.amount);
+    metric.set(labels, value(other));
   } else {
     metric.set(labels, 0);
   }

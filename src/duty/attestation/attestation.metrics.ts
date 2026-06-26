@@ -8,6 +8,8 @@ import { Epoch } from 'common/types/types';
 import { ClickhouseService } from 'storage/clickhouse';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
+import { gweiToEthBP } from '../state';
+
 enum BadAttReason {
   HighIncDelay = 'high_inclusion_delay',
   InvalidHead = 'invalid_head',
@@ -58,13 +60,19 @@ export class AttestationMetrics {
   private async perfectAttestationsLastEpoch() {
     const data = await this.storage.getValidatorCountWithPerfectAttestationsLastEpoch(this.processedEpoch);
     setUserOperatorsMetric(this.prometheus.validatorsCountPerfectAttestation, data, this.operators);
+    setUserOperatorsMetric(this.prometheus.validatorsBalancePerfectAttestation, data, this.operators, {}, (item) =>
+      gweiToEthBP(item.balance),
+    );
     setOtherOperatorsMetric(this.prometheus.otherValidatorsCountPerfectAttestation, data);
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsBalancePerfectAttestation, data, {}, (item) => gweiToEthBP(item.balance));
   }
 
   private async missedAttestationsLastEpoch() {
     const data = await this.storage.getValidatorCountWithMissedAttestationsLastEpoch(this.processedEpoch);
     setUserOperatorsMetric(this.prometheus.validatorsCountMissAttestation, data, this.operators);
+    setUserOperatorsMetric(this.prometheus.validatorsBalanceMissAttestation, data, this.operators, {}, (item) => gweiToEthBP(item.balance));
     setOtherOperatorsMetric(this.prometheus.otherValidatorsCountMissAttestation, data);
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsBalanceMissAttestation, data, {}, (item) => gweiToEthBP(item.balance));
   }
 
   private async highIncDelayAttestationsLastEpoch() {
@@ -72,7 +80,19 @@ export class AttestationMetrics {
     setUserOperatorsMetric(this.prometheus.validatorsCountInvalidAttestation, data, this.operators, {
       reason: BadAttReason.HighIncDelay,
     });
+    setUserOperatorsMetric(
+      this.prometheus.validatorsBalanceInvalidAttestation,
+      data,
+      this.operators,
+      {
+        reason: BadAttReason.HighIncDelay,
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
     setOtherOperatorsMetric(this.prometheus.otherValidatorsCountInvalidAttestation, data, { reason: BadAttReason.HighIncDelay });
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsBalanceInvalidAttestation, data, { reason: BadAttReason.HighIncDelay }, (item) =>
+      gweiToEthBP(item.balance),
+    );
   }
 
   private async invalidHeadAttestationsLastEpoch() {
@@ -80,7 +100,19 @@ export class AttestationMetrics {
     setUserOperatorsMetric(this.prometheus.validatorsCountInvalidAttestation, data, this.operators, {
       reason: BadAttReason.InvalidHead,
     });
+    setUserOperatorsMetric(
+      this.prometheus.validatorsBalanceInvalidAttestation,
+      data,
+      this.operators,
+      {
+        reason: BadAttReason.InvalidHead,
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
     setOtherOperatorsMetric(this.prometheus.otherValidatorsCountInvalidAttestation, data, { reason: BadAttReason.InvalidHead });
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsBalanceInvalidAttestation, data, { reason: BadAttReason.InvalidHead }, (item) =>
+      gweiToEthBP(item.balance),
+    );
   }
 
   private async invalidTargetAttestationsLastEpoch() {
@@ -88,7 +120,22 @@ export class AttestationMetrics {
     setUserOperatorsMetric(this.prometheus.validatorsCountInvalidAttestation, data, this.operators, {
       reason: BadAttReason.InvalidTarget,
     });
+    setUserOperatorsMetric(
+      this.prometheus.validatorsBalanceInvalidAttestation,
+      data,
+      this.operators,
+      {
+        reason: BadAttReason.InvalidTarget,
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
     setOtherOperatorsMetric(this.prometheus.otherValidatorsCountInvalidAttestation, data, { reason: BadAttReason.InvalidTarget });
+    setOtherOperatorsMetric(
+      this.prometheus.otherValidatorsBalanceInvalidAttestation,
+      data,
+      { reason: BadAttReason.InvalidTarget },
+      (item) => gweiToEthBP(item.balance),
+    );
   }
 
   private async invalidSourceAttestationsLastEpoch() {
@@ -96,7 +143,22 @@ export class AttestationMetrics {
     setUserOperatorsMetric(this.prometheus.validatorsCountInvalidAttestation, data, this.operators, {
       reason: BadAttReason.InvalidSource,
     });
+    setUserOperatorsMetric(
+      this.prometheus.validatorsBalanceInvalidAttestation,
+      data,
+      this.operators,
+      {
+        reason: BadAttReason.InvalidSource,
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
     setOtherOperatorsMetric(this.prometheus.otherValidatorsCountInvalidAttestation, data, { reason: BadAttReason.InvalidSource });
+    setOtherOperatorsMetric(
+      this.prometheus.otherValidatorsBalanceInvalidAttestation,
+      data,
+      { reason: BadAttReason.InvalidSource },
+      (item) => gweiToEthBP(item.balance),
+    );
   }
 
   private async missAttestationsLastNEpoch() {
@@ -104,6 +166,15 @@ export class AttestationMetrics {
     setUserOperatorsMetric(this.prometheus.validatorsCountMissAttestationLastNEpoch, data, this.operators, {
       epoch_interval: this.epochInterval,
     });
+    setUserOperatorsMetric(
+      this.prometheus.validatorsBalanceMissAttestationLastNEpoch,
+      data,
+      this.operators,
+      {
+        epoch_interval: this.epochInterval,
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
   }
 
   private async highIncDelayAttestationsLastNEpoch() {
@@ -112,6 +183,16 @@ export class AttestationMetrics {
       reason: BadAttReason.HighIncDelay,
       epoch_interval: this.epochInterval,
     });
+    setUserOperatorsMetric(
+      this.prometheus.validatorsBalanceInvalidAttestationLastNEpoch,
+      data,
+      this.operators,
+      {
+        reason: BadAttReason.HighIncDelay,
+        epoch_interval: this.epochInterval,
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
   }
 
   private async invalidHeadAttestationsLastNEpoch() {
@@ -120,6 +201,16 @@ export class AttestationMetrics {
       reason: BadAttReason.InvalidHead,
       epoch_interval: this.epochInterval,
     });
+    setUserOperatorsMetric(
+      this.prometheus.validatorsBalanceInvalidAttestationLastNEpoch,
+      data,
+      this.operators,
+      {
+        reason: BadAttReason.InvalidHead,
+        epoch_interval: this.epochInterval,
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
   }
 
   private async invalidTargetAttestationsLastNEpoch() {
@@ -128,6 +219,16 @@ export class AttestationMetrics {
       reason: BadAttReason.InvalidTarget,
       epoch_interval: this.epochInterval,
     });
+    setUserOperatorsMetric(
+      this.prometheus.validatorsBalanceInvalidAttestationLastNEpoch,
+      data,
+      this.operators,
+      {
+        reason: BadAttReason.InvalidTarget,
+        epoch_interval: this.epochInterval,
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
   }
 
   private async invalidSourceAttestationsLastNEpoch() {
@@ -136,6 +237,16 @@ export class AttestationMetrics {
       reason: BadAttReason.InvalidSource,
       epoch_interval: this.epochInterval,
     });
+    setUserOperatorsMetric(
+      this.prometheus.validatorsBalanceInvalidAttestationLastNEpoch,
+      data,
+      this.operators,
+      {
+        reason: BadAttReason.InvalidSource,
+        epoch_interval: this.epochInterval,
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
   }
 
   private async incDelayGtTwoAttestationsLastNEpoch() {
@@ -143,6 +254,15 @@ export class AttestationMetrics {
     setUserOperatorsMetric(this.prometheus.validatorsCountHighIncDelayAttestationLastNEpoch, data, this.operators, {
       epoch_interval: this.epochInterval,
     });
+    setUserOperatorsMetric(
+      this.prometheus.validatorsBalanceHighIncDelayAttestationLastNEpoch,
+      data,
+      this.operators,
+      {
+        epoch_interval: this.epochInterval,
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
   }
 
   private async invalidAttestationPropertyGtOneLastNEpoch() {
@@ -150,6 +270,15 @@ export class AttestationMetrics {
     setUserOperatorsMetric(this.prometheus.validatorsCountInvalidAttestationPropertyLastNEpoch, data, this.operators, {
       epoch_interval: this.epochInterval,
     });
+    setUserOperatorsMetric(
+      this.prometheus.validatorsBalanceInvalidAttestationPropertyLastNEpoch,
+      data,
+      this.operators,
+      {
+        epoch_interval: this.epochInterval,
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
   }
 
   private async highRewardMissAttestationsLastNEpoch(possibleHighRewardValidators: string[]) {
@@ -161,6 +290,15 @@ export class AttestationMetrics {
       setUserOperatorsMetric(this.prometheus.highRewardValidatorsCountMissAttestationLastNEpoch, data, this.operators, {
         epoch_interval: this.epochInterval,
       });
+      setUserOperatorsMetric(
+        this.prometheus.highRewardValidatorsBalanceMissAttestationLastNEpoch,
+        data,
+        this.operators,
+        {
+          epoch_interval: this.epochInterval,
+        },
+        (item) => gweiToEthBP(item.balance),
+      );
     }
   }
 }

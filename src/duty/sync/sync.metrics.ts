@@ -8,6 +8,8 @@ import { Epoch } from 'common/types/types';
 import { ClickhouseService } from 'storage';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
 
+import { gweiToEthBP } from '../state';
+
 @Injectable()
 export class SyncMetrics {
   protected readonly epochInterval;
@@ -74,13 +76,23 @@ export class SyncMetrics {
   private async goodSyncParticipationLastEpoch(chainAvgSyncPercent: number) {
     const data = await this.storage.getValidatorsCountWithGoodSyncParticipationLastNEpoch(this.processedEpoch, 1, chainAvgSyncPercent);
     setUserOperatorsMetric(this.prometheus.validatorsCountWithGoodSyncParticipation, data, this.operators);
+    setUserOperatorsMetric(this.prometheus.validatorsBalanceWithGoodSyncParticipation, data, this.operators, {}, (item) =>
+      gweiToEthBP(item.balance),
+    );
     setOtherOperatorsMetric(this.prometheus.otherValidatorsCountWithGoodSyncParticipation, data);
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsBalanceWithGoodSyncParticipation, data, {}, (item) => gweiToEthBP(item.balance));
   }
 
   private async badSyncParticipationLastEpoch(chainAvgSyncPercent: number) {
     const data = await this.storage.getValidatorsCountWithBadSyncParticipationLastNEpoch(this.processedEpoch, 1, chainAvgSyncPercent);
     setUserOperatorsMetric(this.prometheus.validatorsCountWithSyncParticipationLessAvg, data, this.operators);
+    setUserOperatorsMetric(this.prometheus.validatorsBalanceWithSyncParticipationLessAvg, data, this.operators, {}, (item) =>
+      gweiToEthBP(item.balance),
+    );
     setOtherOperatorsMetric(this.prometheus.otherValidatorsCountWithSyncParticipationLessAvg, data);
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsBalanceWithSyncParticipationLessAvg, data, {}, (item) =>
+      gweiToEthBP(item.balance),
+    );
   }
 
   private async badSyncParticipationLastNEpoch(chainAvgSyncPercent: number) {
@@ -92,6 +104,15 @@ export class SyncMetrics {
     setUserOperatorsMetric(this.prometheus.validatorsCountWithSyncParticipationLessAvgLastNEpoch, data, this.operators, {
       epoch_interval: this.epochInterval,
     });
+    setUserOperatorsMetric(
+      this.prometheus.validatorsBalanceWithSyncParticipationLessAvgLastNEpoch,
+      data,
+      this.operators,
+      {
+        epoch_interval: this.epochInterval,
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
   }
 
   private async highRewardSyncParticipationLastNEpoch(chainAvgSyncPercent: number, possibleHighRewardValidators: string[]) {
@@ -105,6 +126,15 @@ export class SyncMetrics {
       setUserOperatorsMetric(this.prometheus.highRewardValidatorsCountWithSyncParticipationLessAvgLastNEpoch, data, this.operators, {
         epoch_interval: this.epochInterval,
       });
+      setUserOperatorsMetric(
+        this.prometheus.highRewardValidatorsBalanceWithSyncParticipationLessAvgLastNEpoch,
+        data,
+        this.operators,
+        {
+          epoch_interval: this.epochInterval,
+        },
+        (item) => gweiToEthBP(item.balance),
+      );
     }
   }
 }

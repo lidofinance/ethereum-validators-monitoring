@@ -34,7 +34,7 @@ import {
   userValidatorsSummaryStatsQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
   validatorQuantile0001BalanceDeltasQuery,
-  validatorsCountByConditionMissProposeQuery,
+  validatorsCountByConditionProposeQuery,
   validatorsCountWithNegativeDeltaQuery,
   validatorsCountWithSyncParticipationByConditionLastNEpochQuery,
 } from './clickhouse.constants';
@@ -339,6 +339,7 @@ export class ClickhouseService implements OnModuleInit {
     ).map((v) => ({
       ...v,
       amount: Number(v.amount),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -364,6 +365,7 @@ export class ClickhouseService implements OnModuleInit {
     ).map((v) => ({
       ...v,
       amount: Number(v.amount),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -487,11 +489,12 @@ export class ClickhouseService implements OnModuleInit {
   ): Promise<NOsValidatorsByConditionProposeCount[]> {
     return (
       await this.select<NOsValidatorsByConditionProposeCount[]>(
-        validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 1'),
+        validatorsCountByConditionProposeQuery(epoch, validatorIndexes, 'block_proposed = 1'),
       )
     ).map((v) => ({
       ...v,
       amount: Number(v.amount),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -505,11 +508,12 @@ export class ClickhouseService implements OnModuleInit {
   ): Promise<NOsValidatorsByConditionProposeCount[]> {
     return (
       await this.select<NOsValidatorsByConditionProposeCount[]>(
-        validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 0'),
+        validatorsCountByConditionProposeQuery(epoch, validatorIndexes, 'block_proposed = 0'),
       )
     ).map((v) => ({
       ...v,
       amount: Number(v.amount),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -557,11 +561,17 @@ export class ClickhouseService implements OnModuleInit {
     return (await this.select<ModuleValidatorsStatusStats[]>(userValidatorsSummaryStatsQuery(epoch))).map((v) => ({
       ...v,
       active_ongoing: Number(v.active_ongoing),
+      active_ongoing_balance: BigInt(v.active_ongoing_balance),
       pending: Number(v.pending),
+      pending_balance: BigInt(v.pending_balance),
       slashed: Number(v.slashed),
+      slashed_balance: BigInt(v.slashed_balance),
       withdraw_pending: Number(v.withdraw_pending),
+      withdraw_pending_balance: BigInt(v.withdraw_pending_balance),
       withdrawn: Number(v.withdrawn),
+      withdrawn_balance: BigInt(v.withdrawn_balance),
       stuck: Number(v.stuck),
+      stuck_balance: BigInt(v.stuck_balance),
     }));
   }
 
@@ -574,10 +584,15 @@ export class ClickhouseService implements OnModuleInit {
     return {
       ...ret[0],
       active_ongoing: Number(ret[0].active_ongoing),
+      active_ongoing_balance: BigInt(ret[0].active_ongoing_balance),
       pending: Number(ret[0].pending),
+      pending_balance: BigInt(ret[0].pending_balance),
       slashed: Number(ret[0].slashed),
+      slashed_balance: BigInt(ret[0].slashed_balance),
       withdraw_pending: Number(ret[0].withdraw_pending),
+      withdraw_pending_balance: BigInt(ret[0].withdraw_pending_balance),
       withdrawn: Number(ret[0].withdrawn),
+      withdrawn_balance: BigInt(ret[0].withdrawn_balance),
     };
   }
 

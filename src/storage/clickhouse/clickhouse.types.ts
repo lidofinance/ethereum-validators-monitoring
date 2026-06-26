@@ -2,15 +2,21 @@ import { Epoch } from 'common/types/types';
 
 export interface ValidatorsStatusBaseStats {
   active_ongoing: number;
+  active_ongoing_balance: bigint;
   pending: number;
+  pending_balance: bigint;
   slashed: number;
+  slashed_balance: bigint;
   withdraw_pending: number;
+  withdraw_pending_balance: bigint;
   withdrawn: number;
+  withdrawn_balance: bigint;
 }
 
 export interface ModuleValidatorsStatusStats extends ValidatorsStatusBaseStats {
   val_nos_module_id: string;
   stuck: number;
+  stuck_balance: bigint;
 }
 
 export interface NOsDelta {
@@ -36,6 +42,7 @@ export interface NOsValidatorsSyncByConditionCount {
   val_nos_module_id: string;
   val_nos_id: string;
   amount: number;
+  balance: bigint;
 }
 
 export interface NOsValidatorsByConditionAttestationCount {
@@ -49,6 +56,7 @@ export interface NOsValidatorsByConditionProposeCount {
   val_nos_module_id: string;
   val_nos_id: string;
   amount: number;
+  balance: bigint;
 }
 
 export interface NOsBalance24hDiff {
@@ -59,12 +67,6 @@ export interface NOsBalance24hDiff {
 
 export interface NOsValidatorsStatusStats extends ModuleValidatorsStatusStats {
   val_nos_id: string;
-  active_ongoing_balance: bigint;
-  pending_balance: bigint;
-  slashed_balance: bigint;
-  withdraw_pending_balance: bigint;
-  withdrawn_balance: bigint;
-  stuck_balance: bigint;
 }
 
 export interface NOsValidatorsRewardsStats {
