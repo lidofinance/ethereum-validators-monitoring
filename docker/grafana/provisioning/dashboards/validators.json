@@ -2542,7 +2542,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(sort_desc(sum by (nos_name, status, nos_module_id) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\", nos_module_id=\"${module_var}\"})))",
+          "expr": "sort_desc(sum by (nos_name, status, nos_module_id) (ethereum_validators_monitoring_user_validators{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\", nos_module_id=\"${module_var}\"}))",
           "instant": true,
           "interval": "",
           "legendFormat": "",
@@ -2780,6 +2780,431 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "custom": {
+            "align": "center",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": false,
+            "inspect": false
+          },
+          "decimals": 0,
+          "links": [],
+          "mappings": [],
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Ongoing"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Pending"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Withdrawal pending"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Withdrawn"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "text",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Operator"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "Operator's dashboard",
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 35
+      },
+      "id": 76,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "frameIndex": 0,
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "9.5.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sort_desc(sum by (nos_name, status, nos_module_id) (ethereum_validators_monitoring_user_validators_balance{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\", nos_module_id=\"${module_var}\"} / 10^4))",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "title": "ETH per Operator Statuses",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {
+            "keepLabels": [
+              "nos_name",
+              "status"
+            ],
+            "mode": "columns",
+            "valueLabel": "status"
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "indexByName": {
+              "Time": 0,
+              "nos_name": 1,
+              "ongoing": 2,
+              "pending": 3,
+              "withdrawal_done": 5,
+              "withdrawal_pending": 4
+            },
+            "renameByName": {
+              "nos_name": "Operator",
+              "ongoing": "Ongoing",
+              "pending": "Pending",
+              "withdrawal_done": "Withdrawn",
+              "withdrawal_pending": "Withdrawal pending"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "Name"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": true,
+                "field": "Ongoing"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "links": [],
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ongoing"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pending"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "withdrawal_pending"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "withdrawal_done"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "text",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 35
+      },
+      "id": 129,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.5.15",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators_balance{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\",nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{status}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Status progress (ETH)",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
       "description": "A validator is considered `fully` withdrawn if it has withdrawn a balance in a certain epoch and its balance is 0,  otherwise it is considered `partially` withdrawn",
       "fieldConfig": {
         "defaults": {
@@ -2882,7 +3307,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 35
+        "y": 44
       },
       "id": 121,
       "options": {
@@ -3023,7 +3448,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 35
+        "y": 44
       },
       "id": 123,
       "options": {
@@ -3073,7 +3498,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 52
       },
       "id": 79,
       "panels": [
@@ -3134,7 +3559,7 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 44
+            "y": 53
           },
           "id": 108,
           "options": {
@@ -3272,7 +3697,7 @@
             "h": 7,
             "w": 6,
             "x": 6,
-            "y": 44
+            "y": 53
           },
           "id": 113,
           "options": {
@@ -3491,7 +3916,7 @@
             "h": 14,
             "w": 12,
             "x": 12,
-            "y": 44
+            "y": 53
           },
           "id": 110,
           "options": {
@@ -3694,7 +4119,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 51
+            "y": 60
           },
           "id": 109,
           "options": {
@@ -3833,7 +4258,7 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 58
+            "y": 67
           },
           "id": 111,
           "options": {
@@ -3971,7 +4396,7 @@
             "h": 7,
             "w": 6,
             "x": 6,
-            "y": 58
+            "y": 67
           },
           "id": 114,
           "options": {
@@ -4192,7 +4617,7 @@
             "h": 14,
             "w": 12,
             "x": 12,
-            "y": 58
+            "y": 67
           },
           "id": 107,
           "options": {
@@ -4482,7 +4907,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 65
+            "y": 74
           },
           "id": 112,
           "options": {
@@ -4681,7 +5106,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 72
+            "y": 81
           },
           "id": 106,
           "options": {
@@ -5046,7 +5471,7 @@
             "h": 12,
             "w": 12,
             "x": 12,
-            "y": 72
+            "y": 81
           },
           "id": 104,
           "options": {
@@ -5417,7 +5842,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 78
+            "y": 87
           },
           "id": 115,
           "options": {
@@ -5587,7 +6012,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 53
       },
       "id": 23,
       "panels": [
@@ -5666,7 +6091,7 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 45
+            "y": 54
           },
           "id": 24,
           "options": {
@@ -5755,7 +6180,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 50
+            "y": 59
           },
           "id": 21,
           "options": {
@@ -5854,7 +6279,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 50
+            "y": 59
           },
           "id": 10,
           "options": {
@@ -6006,7 +6431,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 57
+            "y": 66
           },
           "id": 28,
           "options": {
@@ -6120,7 +6545,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 57
+            "y": 66
           },
           "id": 11,
           "options": {
@@ -6172,7 +6597,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 54
       },
       "id": 66,
       "panels": [
@@ -6291,7 +6716,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 65
+            "y": 74
           },
           "id": 63,
           "options": {
@@ -6392,7 +6817,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 65
+            "y": 74
           },
           "id": 67,
           "options": {
@@ -6444,7 +6869,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 46
+        "y": 55
       },
       "id": 69,
       "panels": [
@@ -6565,7 +6990,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 47
+            "y": 56
           },
           "id": 92,
           "options": {
@@ -6757,7 +7182,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 53
+            "y": 62
           },
           "id": 72,
           "options": {
@@ -6858,7 +7283,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 53
+            "y": 62
           },
           "id": 73,
           "options": {
@@ -6910,7 +7335,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 47
+        "y": 56
       },
       "id": 62,
       "panels": [
@@ -7055,7 +7480,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 48
+            "y": 57
           },
           "id": 57,
           "options": {
@@ -7156,7 +7581,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 48
+            "y": 57
           },
           "id": 58,
           "options": {
@@ -7336,7 +7761,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 56
+            "y": 65
           },
           "id": 99,
           "options": {
@@ -7437,7 +7862,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 56
+            "y": 65
           },
           "id": 95,
           "options": {
@@ -7616,7 +8041,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 64
+            "y": 73
           },
           "id": 100,
           "options": {
@@ -7717,7 +8142,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 64
+            "y": 73
           },
           "id": 96,
           "options": {
@@ -7896,7 +8321,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 72
+            "y": 81
           },
           "id": 101,
           "options": {
@@ -7997,7 +8422,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 72
+            "y": 81
           },
           "id": 97,
           "options": {
@@ -8176,7 +8601,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 80
+            "y": 89
           },
           "id": 102,
           "options": {
@@ -8277,7 +8702,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 80
+            "y": 89
           },
           "id": 98,
           "options": {
@@ -8329,7 +8754,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 57
       },
       "id": 50,
       "panels": [
@@ -8419,7 +8844,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 49
+            "y": 58
           },
           "id": 51,
           "options": {

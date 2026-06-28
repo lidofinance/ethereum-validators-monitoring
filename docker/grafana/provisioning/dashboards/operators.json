@@ -393,7 +393,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
+        "h": 2,
         "w": 4,
         "x": 20,
         "y": 1
@@ -425,6 +425,66 @@
         }
       ],
       "title": "Unmonitored keys",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Total balance of unmonitored (stuck) keys that are defined manually. Such keys will not be taken into account when calculating validator metrics and alerts",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "ETH",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 4,
+        "x": 20,
+        "y": 3
+      },
+      "id": 1791,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{status=\"stuck\",nos_name=\"${nos_name_var}\"} / 10^4))",
+          "refId": "A"
+        }
+      ],
+      "title": "Unmonitored keys balance",
       "type": "stat"
     },
     {
@@ -707,7 +767,7 @@
           "refId": "A"
         }
       ],
-      "title": "Full withdrawal pending",
+      "title": "Full withdrawal pending validators",
       "type": "stat"
     },
     {
@@ -774,7 +834,7 @@
           "refId": "A"
         }
       ],
-      "title": "Full withdrawn",
+      "title": "Full withdrawn validators",
       "type": "stat"
     },
     {
@@ -859,6 +919,352 @@
       "fieldConfig": {
         "defaults": {
           "color": {
+            "fixedColor": "green",
+            "mode": "fixed"
+          },
+          "displayName": "ETH",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "super-light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 0,
+        "y": 9
+      },
+      "id": 1714,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{status=\"ongoing\",nos_name=~\"${mapped_nos_names_var}\"} / 10^4))",
+          "interval": "",
+          "legendFormat": "{{owner}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Ongoing validators balance",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Alias for `pending_queued` and `pending_initialized` statuses",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "blue",
+            "mode": "fixed"
+          },
+          "displayName": "ETH",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "super-light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 5,
+        "y": 9
+      },
+      "id": 1718,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{status=\"pending\",nos_name=~\"${mapped_nos_names_var}\"} / 10^4))",
+          "interval": "",
+          "legendFormat": "{{owner}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Pending validators balance",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Alias for `active_exiting`, `exited_unslashed`, `exited_slashed` and `withdrawal_possible` statuses",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "yellow",
+            "mode": "fixed"
+          },
+          "displayName": "ETH",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "super-light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 10,
+        "y": 9
+      },
+      "id": 1777,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{nos_name=~\"${mapped_nos_names_var}\",status=\"withdrawal_pending\"} / 10^4))",
+          "interval": "",
+          "legendFormat": "{{owner}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Full withdrawal pending validators balance",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Alias for `withdrawal_done`, and `withdrawal_possible` statuses. `withdrawal_possible` is considered fully withdrawn when the validator balance is `0`.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "displayName": "ETH",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "super-light-blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 15,
+        "y": 9
+      },
+      "id": 1781,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{nos_name=~\"${mapped_nos_names_var}\",status=\"withdrawal_done\"} / 10^4))",
+          "interval": "",
+          "legendFormat": "{{owner}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Full withdrawn validators balance",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Alias for `active_slashed`, `exited_slashed` or any validator status with `slashed = true` in state",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "ETH",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "super-light-red",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 20,
+        "y": 9
+      },
+      "id": 1722,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.5.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{status=\"slashed\",nos_name=~\"${mapped_nos_names_var}\"} / 10^4))",
+          "interval": "",
+          "legendFormat": "{{owner}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Slashed validators balance",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
             "mode": "palette-classic"
           },
           "custom": {
@@ -908,7 +1314,7 @@
         "h": 7,
         "w": 5,
         "x": 0,
-        "y": 9
+        "y": 12
       },
       "id": 1715,
       "options": {
@@ -1025,7 +1431,7 @@
         "h": 7,
         "w": 5,
         "x": 5,
-        "y": 9
+        "y": 12
       },
       "id": 1719,
       "options": {
@@ -1142,7 +1548,7 @@
         "h": 7,
         "w": 5,
         "x": 10,
-        "y": 9
+        "y": 12
       },
       "id": 1778,
       "options": {
@@ -1199,7 +1605,7 @@
           "refId": "B"
         }
       ],
-      "title": "Full withdrawal pending",
+      "title": "Full withdrawal pending validators",
       "type": "piechart"
     },
     {
@@ -1260,7 +1666,7 @@
         "h": 7,
         "w": 5,
         "x": 15,
-        "y": 9
+        "y": 12
       },
       "id": 1782,
       "options": {
@@ -1317,7 +1723,7 @@
           "refId": "B"
         }
       ],
-      "title": "Full withdrawn",
+      "title": "Full withdrawn validators",
       "type": "piechart"
     },
     {
@@ -1378,7 +1784,7 @@
         "h": 7,
         "w": 4,
         "x": 20,
-        "y": 9
+        "y": 12
       },
       "id": 1723,
       "options": {
@@ -1434,6 +1840,591 @@
         }
       ],
       "title": "Slashed validators share",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 0,
+        "y": 19
+      },
+      "id": 1716,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{status=\"ongoing\",nos_name=~\"${mapped_nos_names_var}\"} / 10^4))",
+          "interval": "",
+          "legendFormat": "Selected",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{status=\"ongoing\",nos_name!~\"${mapped_nos_names_var}\"} / 10^4))",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "User (other)",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Ongoing validators balance share",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Alias for `pending_queued` and `pending_initialized` statuses",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 5,
+        "y": 19
+      },
+      "id": 1720,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{status=\"pending\",nos_name=~\"${mapped_nos_names_var}\"} / 10^4))",
+          "interval": "",
+          "legendFormat": "Selected",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{status=\"pending\",nos_name!~\"${mapped_nos_names_var}\"} / 10^4))",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "User (other)",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Pending validators balance share",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Alias for `active_exiting`, `exited_unslashed`, `exited_slashed` and `withdrawal_possible` statuses",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 10,
+        "y": 19
+      },
+      "id": 1779,
+      "options": {
+        "displayLabels": [],
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "asc"
+        }
+      },
+      "pluginVersion": "8.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{status=\"withdrawal_pending\",nos_name=~\"${mapped_nos_names_var}\"} / 10^4))",
+          "interval": "",
+          "legendFormat": "Selected",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{status=\"withdrawal_pending\",nos_name!~\"${mapped_nos_names_var}\"} / 10^4))",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "User (other)",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Full withdrawal pending validators balance",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Alias for `withdrawal_done`, and `withdrawal_possible` statuses. `withdrawal_possible` is considered fully withdrawn when the validator balance is `0`.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "text",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#ffffff",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 15,
+        "y": 19
+      },
+      "id": 1783,
+      "options": {
+        "displayLabels": [],
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "asc"
+        }
+      },
+      "pluginVersion": "8.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{nos_name=~\"${nos_name_var}\",status=\"withdrawal_done\"} / 10^4))",
+          "interval": "",
+          "legendFormat": "Selected",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{nos_name!~\"${mapped_nos_names_var}\",status=\"withdrawal_done\"} / 10^4))",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "User (other)",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Full withdrawn validators balance",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "Alias for `active_slashed`, `exited_slashed` or any validator status with `slashed = true` in state",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "A"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 20,
+        "y": 19
+      },
+      "id": 1724,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.1.5",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{status=\"slashed\",nos_name=~\"${nos_name_var}\"} / 10^4))",
+          "interval": "",
+          "legendFormat": "Selected",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "round(sum(ethereum_validators_monitoring_user_validators_balance{status=\"slashed\",nos_name!~\"${mapped_nos_names_var}\"} / 10^4))",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "User (other)",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Slashed validators balance share",
       "type": "piechart"
     },
     {
@@ -1558,7 +2549,7 @@
         "h": 5,
         "w": 13,
         "x": 0,
-        "y": 16
+        "y": 26
       },
       "id": 1784,
       "options": {
@@ -1712,10 +2703,10 @@
         ]
       },
       "gridPos": {
-        "h": 10,
+        "h": 15,
         "w": 11,
         "x": 13,
-        "y": 16
+        "y": 26
       },
       "id": 1788,
       "options": {
@@ -1833,6 +2824,164 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "ongoing"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pending"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "withdrawal_pending"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "withdrawal_done"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "text",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 13,
+        "x": 0,
+        "y": 31
+      },
+      "id": 1785,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.5.15",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum by (status) (ethereum_validators_monitoring_user_validators_balance{status=~\"ongoing|pending|withdrawal_pending|withdrawal_done\",nos_name=~\"${mapped_nos_names_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{status}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "ETH per status progress",
+      "transformations": [],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "text",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
               "options": "full"
             },
             "properties": [
@@ -1881,7 +3030,7 @@
         "h": 5,
         "w": 13,
         "x": 0,
-        "y": 21
+        "y": 36
       },
       "id": 1786,
       "options": {
@@ -1927,7 +3076,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 41
       },
       "id": 1753,
       "panels": [],
@@ -2061,7 +3210,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 27
+        "y": 42
       },
       "id": 1759,
       "options": {
@@ -2224,7 +3373,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 27
+        "y": 42
       },
       "id": 1761,
       "options": {
@@ -2399,7 +3548,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 27
+        "y": 42
       },
       "id": 1762,
       "options": {
@@ -2542,7 +3691,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 35
+        "y": 50
       },
       "id": 1760,
       "options": {
@@ -2696,7 +3845,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 35
+        "y": 50
       },
       "id": 1773,
       "options": {
@@ -2851,7 +4000,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 35
+        "y": 50
       },
       "id": 1774,
       "options": {
@@ -2993,7 +4142,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 43
+        "y": 58
       },
       "id": 1758,
       "options": {
@@ -3047,7 +4196,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 66
       },
       "id": 1727,
       "panels": [
@@ -3126,7 +4275,7 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 76
+            "y": 92
           },
           "id": 1729,
           "options": {
@@ -3228,7 +4377,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 81
+            "y": 96
           },
           "id": 2,
           "options": {
@@ -3327,7 +4476,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 81
+            "y": 96
           },
           "id": 6,
           "options": {
@@ -3478,7 +4627,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 87
+            "y": 102
           },
           "id": 1733,
           "options": {
@@ -3584,7 +4733,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 87
+            "y": 102
           },
           "id": 5,
           "options": {
@@ -3633,7 +4782,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 52
+        "y": 67
       },
       "id": 1735,
       "panels": [
@@ -3755,7 +4904,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 77
+            "y": 92
           },
           "id": 1737,
           "options": {
@@ -3857,7 +5006,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 77
+            "y": 92
           },
           "id": 1739,
           "options": {
@@ -3907,7 +5056,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 53
+        "y": 68
       },
       "id": 1711,
       "panels": [
@@ -4042,7 +5191,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 78
+            "y": 93
           },
           "id": 1745,
           "options": {
@@ -4262,7 +5411,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 84
+            "y": 99
           },
           "id": 1747,
           "options": {
@@ -4363,7 +5512,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 84
+            "y": 99
           },
           "id": 1749,
           "options": {
@@ -4413,7 +5562,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 54
+        "y": 69
       },
       "id": 1751,
       "panels": [
@@ -4570,7 +5719,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 79
+            "y": 94
           },
           "id": 1755,
           "options": {
@@ -4672,7 +5821,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 79
+            "y": 94
           },
           "id": 1757,
           "options": {
@@ -4861,7 +6010,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 87
+            "y": 102
           },
           "id": 1764,
           "options": {
@@ -4963,7 +6112,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 87
+            "y": 102
           },
           "id": 1765,
           "options": {
@@ -5152,7 +6301,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 95
+            "y": 110
           },
           "id": 1770,
           "options": {
@@ -5254,7 +6403,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 95
+            "y": 110
           },
           "id": 1766,
           "options": {
@@ -5443,7 +6592,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 103
+            "y": 118
           },
           "id": 1771,
           "options": {
@@ -5545,7 +6694,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 103
+            "y": 118
           },
           "id": 1767,
           "options": {
@@ -5734,7 +6883,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 111
+            "y": 126
           },
           "id": 1772,
           "options": {
@@ -5836,7 +6985,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 111
+            "y": 126
           },
           "id": 1768,
           "options": {
