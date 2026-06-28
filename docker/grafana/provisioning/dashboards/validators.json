@@ -375,6 +375,7 @@
           "color": {
             "mode": "thresholds"
           },
+          "displayName": "ETH",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -859,6 +860,7 @@
             "fixedColor": "green",
             "mode": "fixed"
           },
+          "displayName": "ETH",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -925,6 +927,7 @@
             "fixedColor": "blue",
             "mode": "fixed"
           },
+          "displayName": "ETH",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -992,6 +995,7 @@
             "fixedColor": "yellow",
             "mode": "fixed"
           },
+          "displayName": "ETH",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1059,6 +1063,7 @@
             "fixedColor": "text",
             "mode": "fixed"
           },
+          "displayName": "ETH",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1125,6 +1130,7 @@
           "color": {
             "mode": "thresholds"
           },
+          "displayName": "ETH",
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
