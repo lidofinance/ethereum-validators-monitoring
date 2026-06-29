@@ -1867,7 +1867,7 @@
           "exemplar": true,
           "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner=\"user\",status=\"ongoing\", nos_module_id=~\"${module_var}\"} / 10^4))",
           "interval": "",
-          "legendFormat": "User",
+          "legendFormat": "User (ETH)",
           "range": true,
           "refId": "A"
         },
@@ -1880,7 +1880,7 @@
           "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner=\"other\",status=\"ongoing\"} / 10^4))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other",
+          "legendFormat": "Other (ETH)",
           "refId": "B"
         }
       ],
@@ -1983,7 +1983,7 @@
           "exemplar": true,
           "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner=\"user\",status=\"pending\", nos_module_id=\"${module_var}\"} / 10^4))",
           "interval": "",
-          "legendFormat": "User",
+          "legendFormat": "User (ETH)",
           "range": true,
           "refId": "A"
         },
@@ -1996,7 +1996,7 @@
           "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner=\"other\",status=\"pending\"} / 10^4))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other",
+          "legendFormat": "Other (ETH)",
           "refId": "B"
         }
       ],
@@ -2099,7 +2099,7 @@
           "exemplar": true,
           "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner=\"user\",status=\"withdrawal_pending\", nos_module_id=\"${module_var}\"} / 10^4))",
           "interval": "",
-          "legendFormat": "User",
+          "legendFormat": "User (ETH)",
           "range": true,
           "refId": "A"
         },
@@ -2112,7 +2112,7 @@
           "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner=\"other\",status=\"withdrawal_pending\"} / 10^4))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other",
+          "legendFormat": "Other (ETH)",
           "refId": "B"
         }
       ],
@@ -2215,7 +2215,7 @@
           "exemplar": true,
           "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner=\"user\",status=\"withdrawal_done\", nos_module_id=\"${module_var}\"} / 10^4))",
           "interval": "",
-          "legendFormat": "User",
+          "legendFormat": "User (ETH)",
           "range": true,
           "refId": "A"
         },
@@ -2228,7 +2228,7 @@
           "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner=\"other\",status=\"withdrawal_done\"} / 10^4))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other",
+          "legendFormat": "Other (ETH)",
           "refId": "B"
         }
       ],
@@ -2330,7 +2330,7 @@
           "exemplar": true,
           "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner=\"user\",status=\"slashed\", nos_module_id=\"${module_var}\"} / 10^4))",
           "interval": "",
-          "legendFormat": "User",
+          "legendFormat": "User (ETH)",
           "range": true,
           "refId": "A"
         },
@@ -2343,7 +2343,7 @@
           "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner=\"other\",status=\"slashed\"} / 10^4))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other",
+          "legendFormat": "Other (ETH)",
           "refId": "B"
         }
       ],
@@ -5318,7 +5318,7 @@
           "gridPos": {
             "h": 7,
             "w": 6,
-            "x": 0,
+            "x": 6,
             "y": 81
           },
           "id": 132,
