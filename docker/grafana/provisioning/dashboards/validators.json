@@ -4480,7 +4480,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "`Bad` is considered when validator's sync is less than chain average value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
+          "description": "`Bad` is considered when validator's sync is less than chain average value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`)",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -4555,6 +4555,24 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Bad (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "Good"
                 },
                 "properties": [
@@ -4569,6 +4587,24 @@
                     "value": {
                       "fixedColor": "green",
                       "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Good (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
                     }
                   },
                   {
@@ -4627,7 +4663,9 @@
               "enablePagination": true,
               "fields": [
                 "Value #good (sum)",
-                "Value #bad (sum)"
+                "Value #good (ETH) (sum)",
+                "Value #bad (sum)",
+                "Value #bad (ETH) (sum)"
               ],
               "reducer": [
                 "sum"
@@ -4662,6 +4700,21 @@
               },
               "editorMode": "code",
               "exemplar": false,
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_balance_with_sync_participation_less_avg{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "bad (ETH)"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
               "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_with_good_sync_participation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
@@ -4669,6 +4722,21 @@
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "good"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_balance_with_good_sync_participation{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "good (ETH)"
             },
             {
               "datasource": {
@@ -4692,36 +4760,6 @@
               "id": "groupBy",
               "options": {
                 "fields": {
-                  "Value": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #A": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #B": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #Total high inclusion delay": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #Total missed": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
                   "Value #average participation rate": {
                     "aggregations": [
                       "mean"
@@ -4734,49 +4772,19 @@
                     ],
                     "operation": "aggregate"
                   },
+                  "Value #bad (ETH)": {
+                    "aggregations": [
+                      "sum"
+                    ],
+                    "operation": "aggregate"
+                  },
                   "Value #good": {
                     "aggregations": [
                       "sum"
                     ],
                     "operation": "aggregate"
                   },
-                  "Value #high inclusion delay": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #invalid head": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #invalid source": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #invalid target": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #missed": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #ongoing": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #perfect": {
+                  "Value #good (ETH)": {
                     "aggregations": [
                       "sum"
                     ],
@@ -4796,30 +4804,21 @@
             {
               "id": "organize",
               "options": {
-                "excludeByName": {
-                  "Max bad": true,
-                  "Value #ongoing (sum)": true
-                },
                 "indexByName": {
+                  "nos_name": 0,
                   "Value #average participation rate (mean)": 1,
-                  "Value #bad (sum)": 3,
                   "Value #good (sum)": 2,
-                  "nos_name": 0
+                  "Value #good (ETH) (sum)": 3,
+                  "Value #bad (sum)": 4,
+                  "Value #bad (ETH) (sum)": 5
                 },
                 "renameByName": {
-                  "Perfect": "",
+                  "nos_name": "Operator",
                   "Value #average participation rate (mean)": "Average participation",
-                  "Value #average participation rate (sum)": "",
-                  "Value #bad (sum)": "Bad",
                   "Value #good (sum)": "Good",
-                  "Value #high inclusion delay (sum)": "High inclusion delay",
-                  "Value #invalid head (sum)": "Bad head",
-                  "Value #invalid source (sum)": "Bad source",
-                  "Value #invalid target (sum)": "Bad target",
-                  "Value #missed (sum)": "Missed",
-                  "Value #ongoing (sum)": "",
-                  "Value #perfect (sum)": "Perfect",
-                  "nos_name": "Operator"
+                  "Value #good (ETH) (sum)": "Good (ETH)",
+                  "Value #bad (sum)": "Bad",
+                  "Value #bad (ETH) (sum)": "Bad (ETH)"
                 }
               }
             },
@@ -4942,7 +4941,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "round(sum_over_time((sum by () (ethereum_validators_monitoring_validator_balance_with_sync_participation_less_avg{nos_module_id=\"${module_var}\" / 10^4}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_balance_with_sync_participation_less_avg{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -4957,7 +4956,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "round(sum_over_time((sum by () (ethereum_validators_monitoring_validator_balance_with_good_sync_participation{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_balance_with_good_sync_participation{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -5079,7 +5078,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "round(sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_balance_with_sync_participation_less_avg / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_balance_with_sync_participation_less_avg / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
@@ -5093,7 +5092,7 @@
                 "uid": "PBFA97CFB590B2093"
               },
               "exemplar": false,
-              "expr": "round(sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_balance_with_good_sync_participation / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_balance_with_good_sync_participation / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
