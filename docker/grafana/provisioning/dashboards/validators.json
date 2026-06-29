@@ -7623,6 +7623,22 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Balance (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "Validator"
                 },
                 "properties": [
@@ -7648,10 +7664,6 @@
                   "options": "Operator"
                 },
                 "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 200
-                  },
                   {
                     "id": "custom.filterable",
                     "value": true
@@ -7682,18 +7694,30 @@
                   },
                   {
                     "id": "custom.width",
-                    "value": 100
+                    "value": 90
                   },
                   {
                     "id": "unit",
                     "value": "percent"
                   }
                 ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Balance"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
               }
             ]
           },
           "gridPos": {
-            "h": 8,
+            "h": 16,
             "w": 8,
             "x": 0,
             "y": 76
@@ -7730,14 +7754,36 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE\n  val_nos_module_id = '${module_var}' AND\n  is_sync = 1 AND\n  val_nos_id IS NOT NULL AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var} AND\n  sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent, Operator, Validator\nLIMIT 1 by epoch, val_id",
-              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator\nFROM\n    validators_summary\nWHERE\n  val_nos_module_id = '1' AND\n  is_sync = 1 AND\n  val_nos_id IS NOT NULL AND\n  val_stuck = 0 AND\n  epoch = 216253 AND\n  sync_percent < (94.451904296875 - 0)\nORDER BY sync_percent, Operator, Validator\nLIMIT 1 by epoch, val_id",
+              "query": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator,\n    val_balance as Balance\nFROM\n    validators_summary\nWHERE\n  val_nos_module_id = '${module_var}' AND\n  is_sync = 1 AND\n  val_nos_id IS NOT NULL AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var} AND\n  sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent, Operator, Validator\nLIMIT 1 by epoch, val_id",
+              "rawQuery": "SELECT\n    sync_percent as Percent,\n    val_nos_name as Operator,\n    val_id as Validator,\n    val_balance as Balance\nFROM\n    validators_summary\nWHERE\n  val_nos_module_id = '1' AND\n  is_sync = 1 AND\n  val_nos_id IS NOT NULL AND\n  val_stuck = 0 AND\n  epoch = 216253 AND\n  sync_percent < (94.451904296875 - 0)\nORDER BY sync_percent, Operator, Validator\nLIMIT 1 by epoch, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Bad Sync Committee participation",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Balance (ETH)",
+                "binary": {
+                  "left": "Balance",
+                  "operator": "/",
+                  "reducer": "sum",
+                  "right": "1000000000"
+                },
+                "mode": "binary",
+                "reduce": {
+                  "include": [
+                    "Balance (ETH)"
+                  ],
+                  "reducer": "lastNotNull"
+                },
+                "replaceFields": false
+              }
+            }
+          ],
           "type": "table"
         },
         {
@@ -7834,6 +7880,101 @@
           ],
           "title": "Number of validators with sync participation less average",
           "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 84
+          },
+          "id": 74,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_balance_with_sync_participation_less_avg{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total balance of validators with sync participation less average (ETH)",
+          "type": "timeseries"
         }
       ],
       "title": "🔄 Sync Committee participation",
@@ -7849,7 +7990,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 70
+        "y": 78
       },
       "id": 62,
       "panels": [
@@ -7994,7 +8135,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 71
+            "y": 79
           },
           "id": 57,
           "options": {
@@ -8095,7 +8236,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 71
+            "y": 79
           },
           "id": 58,
           "options": {
@@ -8275,7 +8416,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 79
+            "y": 87
           },
           "id": 99,
           "options": {
@@ -8376,7 +8517,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 79
+            "y": 87
           },
           "id": 95,
           "options": {
@@ -8555,7 +8696,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 87
+            "y": 95
           },
           "id": 100,
           "options": {
@@ -8656,7 +8797,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 87
+            "y": 95
           },
           "id": 96,
           "options": {
@@ -8835,7 +8976,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 95
+            "y": 103
           },
           "id": 101,
           "options": {
@@ -8936,7 +9077,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 95
+            "y": 103
           },
           "id": 97,
           "options": {
@@ -9115,7 +9256,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 103
+            "y": 111
           },
           "id": 102,
           "options": {
@@ -9216,7 +9357,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 103
+            "y": 111
           },
           "id": 98,
           "options": {
@@ -9268,7 +9409,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 71
+        "y": 79
       },
       "id": 50,
       "panels": [
@@ -9358,7 +9499,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 72
+            "y": 80
           },
           "id": 51,
           "options": {
