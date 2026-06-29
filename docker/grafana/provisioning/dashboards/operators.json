@@ -4624,7 +4624,7 @@
             ]
           },
           "gridPos": {
-            "h": 7,
+            "h": 14,
             "w": 8,
             "x": 0,
             "y": 102
@@ -4767,6 +4767,103 @@
           ],
           "title": "Number of validators with negative delta",
           "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "dark-red",
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "right",
+                "axisSoftMax": 10,
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 15,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "dark-red"
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 16,
+            "x": 8,
+            "y": 109
+          },
+          "id": 7,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_balance_with_negative_balances_delta{nos_name=~\"${mapped_nos_names_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{nos_name}} delta",
+              "refId": "A"
+            }
+          ],
+          "title": "Total balance of validators with negative delta (ETH)",
+          "type": "timeseries"
         }
       ],
       "title": "💸 Balances",
@@ -4782,7 +4879,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 67
+        "y": 74
       },
       "id": 1735,
       "panels": [
@@ -4904,7 +5001,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 92
+            "y": 99
           },
           "id": 1737,
           "options": {
@@ -5006,7 +5103,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 92
+            "y": 99
           },
           "id": 1739,
           "options": {
@@ -5056,7 +5153,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 68
+        "y": 75
       },
       "id": 1711,
       "panels": [
@@ -5191,7 +5288,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 93
+            "y": 100
           },
           "id": 1745,
           "options": {
@@ -5411,7 +5508,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 99
+            "y": 106
           },
           "id": 1747,
           "options": {
@@ -5512,7 +5609,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 99
+            "y": 106
           },
           "id": 1749,
           "options": {
@@ -5562,7 +5659,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 69
+        "y": 76
       },
       "id": 1751,
       "panels": [
@@ -5719,7 +5816,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 94
+            "y": 101
           },
           "id": 1755,
           "options": {
@@ -5821,7 +5918,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 94
+            "y": 101
           },
           "id": 1757,
           "options": {
@@ -6010,7 +6107,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 102
+            "y": 109
           },
           "id": 1764,
           "options": {
@@ -6112,7 +6209,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 102
+            "y": 109
           },
           "id": 1765,
           "options": {
@@ -6301,7 +6398,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 110
+            "y": 117
           },
           "id": 1770,
           "options": {
@@ -6403,7 +6500,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 110
+            "y": 117
           },
           "id": 1766,
           "options": {
@@ -6592,7 +6689,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 118
+            "y": 125
           },
           "id": 1771,
           "options": {
@@ -6694,7 +6791,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 118
+            "y": 125
           },
           "id": 1767,
           "options": {
@@ -6883,7 +6980,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 126
+            "y": 133
           },
           "id": 1772,
           "options": {
@@ -6985,7 +7082,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 126
+            "y": 133
           },
           "id": 1768,
           "options": {

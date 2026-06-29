@@ -6177,7 +6177,7 @@
             ]
           },
           "gridPos": {
-            "h": 7,
+            "h": 14,
             "w": 8,
             "x": 0,
             "y": 59
@@ -6327,6 +6327,112 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "Delta: current slot - 192 slot",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineStyle": {
+                  "fill": "solid"
+                },
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 16,
+            "x": 8,
+            "y": 66
+          },
+          "id": 12,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_balance_with_negative_balances_delta{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "thresholds": [
+            {
+              "colorMode": "critical",
+              "op": "gt",
+              "value": 0,
+              "visible": true
+            }
+          ],
+          "title": "Total balance of validators with negative delta (ETH)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
             "type": "vertamedia-clickhouse-datasource",
             "uid": "PDEE91DDB90597936"
           },
@@ -6431,7 +6537,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 66
+            "y": 73
           },
           "id": 28,
           "options": {
@@ -6545,7 +6651,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 66
+            "y": 73
           },
           "id": 11,
           "options": {
@@ -6597,7 +6703,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 54
+        "y": 61
       },
       "id": 66,
       "panels": [
@@ -6716,7 +6822,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 74
+            "y": 81
           },
           "id": 63,
           "options": {
@@ -6817,7 +6923,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 74
+            "y": 81
           },
           "id": 67,
           "options": {
@@ -6869,7 +6975,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 55
+        "y": 62
       },
       "id": 69,
       "panels": [
@@ -6990,7 +7096,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 56
+            "y": 63
           },
           "id": 92,
           "options": {
@@ -7182,7 +7288,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 62
+            "y": 69
           },
           "id": 72,
           "options": {
@@ -7283,7 +7389,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 62
+            "y": 69
           },
           "id": 73,
           "options": {
@@ -7335,7 +7441,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 63
       },
       "id": 62,
       "panels": [
@@ -7480,7 +7586,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 57
+            "y": 64
           },
           "id": 57,
           "options": {
@@ -7581,7 +7687,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 57
+            "y": 64
           },
           "id": 58,
           "options": {
@@ -7761,7 +7867,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 65
+            "y": 72
           },
           "id": 99,
           "options": {
@@ -7862,7 +7968,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 65
+            "y": 72
           },
           "id": 95,
           "options": {
@@ -8041,7 +8147,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 73
+            "y": 80
           },
           "id": 100,
           "options": {
@@ -8142,7 +8248,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 73
+            "y": 80
           },
           "id": 96,
           "options": {
@@ -8321,7 +8427,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 81
+            "y": 88
           },
           "id": 101,
           "options": {
@@ -8422,7 +8528,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 81
+            "y": 88
           },
           "id": 97,
           "options": {
@@ -8601,7 +8707,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 89
+            "y": 96
           },
           "id": 102,
           "options": {
@@ -8702,7 +8808,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 89
+            "y": 96
           },
           "id": 98,
           "options": {
@@ -8754,7 +8860,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 57
+        "y": 64
       },
       "id": 50,
       "panels": [
@@ -8844,7 +8950,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 58
+            "y": 65
           },
           "id": 51,
           "options": {
