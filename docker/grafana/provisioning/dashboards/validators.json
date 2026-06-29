@@ -4873,7 +4873,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Bad"
+                  "options": "Bad (ETH)"
                 },
                 "properties": [
                   {
@@ -4888,7 +4888,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Good"
+                  "options": "Good (ETH)"
                 },
                 "properties": [
                   {
@@ -5011,7 +5011,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Bad"
+                  "options": "Bad (ETH)"
                 },
                 "properties": [
                   {
@@ -5026,7 +5026,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Good"
+                  "options": "Good (ETH)"
                 },
                 "properties": [
                   {
@@ -5252,8 +5252,6 @@
                 },
                 "indexByName": {},
                 "renameByName": {
-                  "Value #bad": "Bad",
-                  "Value #good": "Good",
                   "Value #other": "Other",
                   "Value #user": "User"
                 }
@@ -5286,7 +5284,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "User"
+                  "options": "User (ETH)"
                 },
                 "properties": [
                   {
@@ -5301,7 +5299,7 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Other"
+                  "options": "Other (ETH)"
                 },
                 "properties": [
                   {
@@ -5391,8 +5389,6 @@
                 },
                 "indexByName": {},
                 "renameByName": {
-                  "Value #bad": "Bad",
-                  "Value #good": "Good",
                   "Value #other": "Other (ETH)",
                   "Value #user": "User (ETH)"
                 }
