@@ -4614,7 +4614,7 @@
             ]
           },
           "gridPos": {
-            "h": 14,
+            "h": 21,
             "w": 12,
             "x": 12,
             "y": 67
@@ -4855,6 +4855,280 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
+          "description": "`Bad` is considered when validator's sync is less than chain average value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": []
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Bad"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Good"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "green",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 6,
+            "x": 0,
+            "y": 74
+          },
+          "id": 130,
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "pieType": "donut",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.3.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "round(sum_over_time((sum by () (ethereum_validators_monitoring_validator_balance_with_sync_participation_less_avg{nos_module_id=\"${module_var}\" / 10^4}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "bad"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "round(sum_over_time((sum by () (ethereum_validators_monitoring_validator_balance_with_good_sync_participation{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "good"
+            }
+          ],
+          "title": "User Sync (${epochs_range} epochs range, ETH)",
+          "transformations": [
+            {
+              "id": "seriesToColumns",
+              "options": {}
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "indexByName": {},
+                "renameByName": {
+                  "Value #bad": "Bad",
+                  "Value #good": "Good"
+                }
+              }
+            }
+          ],
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "`Bad` is considered when validator's sync is less than chain average value (including `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`) ",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": []
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Bad"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Good"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "green",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 6,
+            "x": 6,
+            "y": 74
+          },
+          "id": 131,
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "pieType": "donut",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.3.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "exemplar": false,
+              "expr": "round(sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_balance_with_sync_participation_less_avg / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "bad"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "exemplar": false,
+              "expr": "round(sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_balance_with_good_sync_participation / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:]))",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "good"
+            }
+          ],
+          "title": "Other Sync (${epochs_range} epochs range, ETH)",
+          "transformations": [
+            {
+              "id": "seriesToColumns",
+              "options": {}
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "indexByName": {},
+                "renameByName": {
+                  "Value #bad": "Bad",
+                  "Value #good": "Good"
+                }
+              }
+            }
+          ],
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "description": "",
           "fieldConfig": {
             "defaults": {
@@ -4907,7 +5181,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 74
+            "y": 81
           },
           "id": 112,
           "options": {
@@ -5106,7 +5380,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 81
+            "y": 88
           },
           "id": 106,
           "options": {
@@ -5471,7 +5745,7 @@
             "h": 12,
             "w": 12,
             "x": 12,
-            "y": 81
+            "y": 88
           },
           "id": 104,
           "options": {
@@ -5842,7 +6116,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 87
+            "y": 94
           },
           "id": 115,
           "options": {
@@ -6012,7 +6286,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 53
+        "y": 60
       },
       "id": 23,
       "panels": [
@@ -6091,7 +6365,7 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 54
+            "y": 61
           },
           "id": 24,
           "options": {
@@ -6180,7 +6454,7 @@
             "h": 14,
             "w": 8,
             "x": 0,
-            "y": 59
+            "y": 66
           },
           "id": 21,
           "options": {
@@ -6279,7 +6553,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 59
+            "y": 66
           },
           "id": 10,
           "options": {
@@ -6385,7 +6659,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 66
+            "y": 73
           },
           "id": 12,
           "options": {
@@ -6537,7 +6811,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 73
+            "y": 80
           },
           "id": 28,
           "options": {
@@ -6651,7 +6925,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 73
+            "y": 80
           },
           "id": 11,
           "options": {
@@ -6703,7 +6977,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 61
+        "y": 68
       },
       "id": 66,
       "panels": [
@@ -6822,7 +7096,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 81
+            "y": 88
           },
           "id": 63,
           "options": {
@@ -6923,7 +7197,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 81
+            "y": 88
           },
           "id": 67,
           "options": {
@@ -6975,7 +7249,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 62
+        "y": 69
       },
       "id": 69,
       "panels": [
@@ -7096,7 +7370,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 63
+            "y": 70
           },
           "id": 92,
           "options": {
@@ -7288,7 +7562,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 69
+            "y": 76
           },
           "id": 72,
           "options": {
@@ -7389,7 +7663,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 69
+            "y": 76
           },
           "id": 73,
           "options": {
@@ -7441,7 +7715,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 63
+        "y": 70
       },
       "id": 62,
       "panels": [
@@ -7586,7 +7860,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 64
+            "y": 71
           },
           "id": 57,
           "options": {
@@ -7687,7 +7961,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 64
+            "y": 71
           },
           "id": 58,
           "options": {
@@ -7867,7 +8141,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 72
+            "y": 79
           },
           "id": 99,
           "options": {
@@ -7968,7 +8242,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 72
+            "y": 79
           },
           "id": 95,
           "options": {
@@ -8147,7 +8421,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 80
+            "y": 87
           },
           "id": 100,
           "options": {
@@ -8248,7 +8522,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 80
+            "y": 87
           },
           "id": 96,
           "options": {
@@ -8427,7 +8701,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 88
+            "y": 95
           },
           "id": 101,
           "options": {
@@ -8528,7 +8802,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 88
+            "y": 95
           },
           "id": 97,
           "options": {
@@ -8707,7 +8981,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 96
+            "y": 103
           },
           "id": 102,
           "options": {
@@ -8808,7 +9082,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 96
+            "y": 103
           },
           "id": 98,
           "options": {
@@ -8860,7 +9134,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 64
+        "y": 71
       },
       "id": 50,
       "panels": [
@@ -8950,7 +9224,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 65
+            "y": 72
           },
           "id": 51,
           "options": {
