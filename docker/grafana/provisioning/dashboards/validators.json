@@ -5637,7 +5637,7 @@
               "id": "organize",
               "options": {
                 "indexByName": {
-                  "Value #perfect": 0,
+                  "Value": 0,
                   "Value #missed": 1,
                   "Value #high inclusion delay": 2,
                   "Value #invalid head": 3,
@@ -5645,7 +5645,7 @@
                   "Value #invalid source": 5
                 },
                 "renameByName": {
-                  "Value #perfect": "Perfect",
+                  "Value": "Perfect",
                   "Value #missed": "Missed",
                   "Value #high inclusion delay": "High inclusion delay",
                   "Value #invalid head": "Invalid head",
@@ -6355,7 +6355,7 @@
               "id": "organize",
               "options": {
                 "indexByName": {
-                  "Value #perfect": 0,
+                  "Value": 0,
                   "Value #missed": 1,
                   "Value #high inclusion delay": 2,
                   "Value #invalid head": 3,
@@ -6363,7 +6363,7 @@
                   "Value #invalid source": 5
                 },
                 "renameByName": {
-                  "Value #perfect": "Perfect (ETH)",
+                  "Value": "Perfect (ETH)",
                   "Value #missed": "Missed (ETH)",
                   "Value #high inclusion delay": "High inclusion delay (ETH)",
                   "Value #invalid head": "Invalid head (ETH)",
@@ -6610,7 +6610,7 @@
               "id": "organize",
               "options": {
                 "indexByName": {
-                  "Value #perfect": 0,
+                  "Value": 0,
                   "Value #missed": 1,
                   "Value #high inclusion delay": 2,
                   "Value #invalid head": 3,
@@ -6618,7 +6618,7 @@
                   "Value #invalid source": 5
                 },
                 "renameByName": {
-                  "Value #perfect": "Perfect",
+                  "Value": "Perfect",
                   "Value #missed": "Missed",
                   "Value #high inclusion delay": "High inclusion delay",
                   "Value #invalid head": "Invalid head",
@@ -6865,7 +6865,7 @@
               "id": "organize",
               "options": {
                 "indexByName": {
-                  "Value #perfect": 0,
+                  "Value": 0,
                   "Value #missed": 1,
                   "Value #high inclusion delay": 2,
                   "Value #invalid head": 3,
@@ -6873,7 +6873,7 @@
                   "Value #invalid source": 5
                 },
                 "renameByName": {
-                  "Value #perfect": "Perfect (ETH)",
+                  "Value": "Perfect (ETH)",
                   "Value #missed": "Missed (ETH)",
                   "Value #high inclusion delay": "High inclusion delay (ETH)",
                   "Value #invalid head": "Invalid head (ETH)",
