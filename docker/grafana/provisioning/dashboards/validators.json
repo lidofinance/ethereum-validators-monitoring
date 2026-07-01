@@ -5725,8 +5725,15 @@
                     }
                   },
                   {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "green",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
                     "id": "custom.width",
-                    "value": 90
+                    "value": 110
                   }
                 ]
               },
@@ -5768,8 +5775,15 @@
                     }
                   },
                   {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
                     "id": "custom.width",
-                    "value": 90
+                    "value": 110
                   }
                 ]
               },
@@ -5811,8 +5825,15 @@
                     }
                   },
                   {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "yellow",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
                     "id": "custom.width",
-                    "value": 115
+                    "value": 135
                   }
                 ]
               },
@@ -5854,8 +5875,15 @@
                     }
                   },
                   {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
                     "id": "custom.width",
-                    "value": 90
+                    "value": 110
                   }
                 ]
               },
@@ -5897,8 +5925,15 @@
                     }
                   },
                   {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
                     "id": "custom.width",
-                    "value": 90
+                    "value": 110
                   }
                 ]
               },
@@ -5940,8 +5975,15 @@
                     }
                   },
                   {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
                     "id": "custom.width",
-                    "value": 90
+                    "value": 110
                   }
                 ]
               },
