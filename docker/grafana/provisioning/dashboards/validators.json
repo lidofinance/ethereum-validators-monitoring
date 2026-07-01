@@ -5690,6 +5690,49 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Perfect"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "green",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Perfect (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "Missed"
                 },
                 "properties": [
@@ -5715,95 +5758,13 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Bad head"
+                  "options": "Missed (ETH)"
                 },
                 "properties": [
                   {
                     "id": "custom.cellOptions",
                     "value": {
                       "type": "color-text"
-                    }
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "orange",
-                      "mode": "fixed"
-                    }
-                  },
-                  {
-                    "id": "custom.width",
-                    "value": 90
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Bad target"
-                },
-                "properties": [
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-text"
-                    }
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "orange",
-                      "mode": "fixed"
-                    }
-                  },
-                  {
-                    "id": "custom.width",
-                    "value": 90
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Bad source"
-                },
-                "properties": [
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-text"
-                    }
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "orange",
-                      "mode": "fixed"
-                    }
-                  },
-                  {
-                    "id": "custom.width",
-                    "value": 90
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Perfect"
-                },
-                "properties": [
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-text"
-                    }
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "green",
-                      "mode": "fixed"
                     }
                   },
                   {
@@ -5834,6 +5795,153 @@
                   {
                     "id": "custom.width",
                     "value": 115
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "High inclusion delay (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 115
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Invalid head"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Invalid head (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Invalid target"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Invalid target (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Invalid source"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Invalid source (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
                   }
                 ]
               },
@@ -5888,6 +5996,64 @@
               },
               "editorMode": "code",
               "exemplar": false,
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_perfect_attestation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "perfect"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_balance_perfect_attestation{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "perfect (ETH)"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "missed"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_balance_miss_attestation{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "missed (ETH)"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
               "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"high_inclusion_delay\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
@@ -5895,6 +6061,21 @@
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "high inclusion delay"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_balance_invalid_attestation{reason=\"high_inclusion_delay\",nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "high inclusion delay (ETH)"
             },
             {
               "datasource": {
@@ -5918,6 +6099,21 @@
               },
               "editorMode": "code",
               "exemplar": false,
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_balance_invalid_attestation{reason=\"invalid_head\",nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "invalid head (ETH)"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
               "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_invalid_attestation{reason=\"invalid_target\",nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
@@ -5925,6 +6121,21 @@
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "invalid target"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_balance_invalid_attestation{reason=\"invalid_target\",nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "invalid target (ETH)"
             },
             {
               "datasource": {
@@ -5948,27 +6159,13 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_miss_attestation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
-              "format": "table",
-              "instant": true,
-              "interval": "",
-              "legendFormat": "{{nos_name}}",
-              "refId": "missed"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "PBFA97CFB590B2093"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_perfect_attestation{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_balance_invalid_attestation{reason=\"invalid_source\",nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
               "instant": true,
               "interval": "",
               "legendFormat": "{{nos_name}}",
-              "refId": "perfect"
+              "refId": "invalid source (ETH)"
             }
           ],
           "title": "Attestation duty summary (${epochs_range} epochs range)",
@@ -5977,55 +6174,13 @@
               "id": "groupBy",
               "options": {
                 "fields": {
-                  "Value": {
+                  "Value #perfect": {
                     "aggregations": [
                       "sum"
                     ],
                     "operation": "aggregate"
                   },
-                  "Value #A": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #B": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #Total high inclusion delay": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #Total missed": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #high inclusion delay": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #invalid head": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #invalid source": {
-                    "aggregations": [
-                      "sum"
-                    ],
-                    "operation": "aggregate"
-                  },
-                  "Value #invalid target": {
+                  "Value #perfect (ETH)": {
                     "aggregations": [
                       "sum"
                     ],
@@ -6037,13 +6192,55 @@
                     ],
                     "operation": "aggregate"
                   },
-                  "Value #ongoing": {
+                  "Value #missed (ETH)": {
                     "aggregations": [
                       "sum"
                     ],
                     "operation": "aggregate"
                   },
-                  "Value #perfect": {
+                  "Value #high inclusion delay": {
+                    "aggregations": [
+                      "sum"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "Value #high inclusion delay (ETH)": {
+                    "aggregations": [
+                      "sum"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "Value #invalid head": {
+                    "aggregations": [
+                      "sum"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "Value #invalid head (ETH)": {
+                    "aggregations": [
+                      "sum"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "Value #invalid target": {
+                    "aggregations": [
+                      "sum"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "Value #invalid target (ETH)": {
+                    "aggregations": [
+                      "sum"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "Value #invalid source": {
+                    "aggregations": [
+                      "sum"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "Value #invalid source (ETH)": {
                     "aggregations": [
                       "sum"
                     ],
@@ -6063,29 +6260,35 @@
             {
               "id": "organize",
               "options": {
-                "excludeByName": {
-                  "Max bad": true,
-                  "Value #ongoing (sum)": true
-                },
                 "indexByName": {
-                  "Value #high inclusion delay (sum)": 2,
-                  "Value #invalid head (sum)": 3,
-                  "Value #invalid source (sum)": 5,
-                  "Value #invalid target (sum)": 4,
-                  "Value #missed (sum)": 6,
+                  "nos_name": 0,
                   "Value #perfect (sum)": 1,
-                  "nos_name": 0
+                  "Value #perfect (ETH) (sum)": 2,
+                  "Value #missed (sum)": 3,
+                  "Value #missed (ETH) (sum)": 4,
+                  "Value #high inclusion delay (sum)": 5,
+                  "Value #high inclusion delay (ETH) (sum)": 6,
+                  "Value #invalid head (sum)": 7,
+                  "Value #invalid head (ETH) (sum)": 8,
+                  "Value #invalid target (sum)": 9,
+                  "Value #invalid target (ETH) (sum)": 10,
+                  "Value #invalid source (sum)": 11,
+                  "Value #invalid source (ETH) (sum)": 12
                 },
                 "renameByName": {
-                  "Perfect": "",
-                  "Value #high inclusion delay (sum)": "High inclusion delay",
-                  "Value #invalid head (sum)": "Bad head",
-                  "Value #invalid source (sum)": "Bad source",
-                  "Value #invalid target (sum)": "Bad target",
-                  "Value #missed (sum)": "Missed",
-                  "Value #ongoing (sum)": "",
+                  "nos_name": "Operator",
                   "Value #perfect (sum)": "Perfect",
-                  "nos_name": "Operator"
+                  "Value #perfect (ETH) (sum)": "Perfect (ETH)",
+                  "Value #missed (sum)": "Missed",
+                  "Value #missed (ETH) (sum)": "Missed (ETH)",
+                  "Value #high inclusion delay (sum)": "High inclusion delay",
+                  "Value #high inclusion delay (ETH) (sum)": "High inclusion delay (ETH)",
+                  "Value #invalid head (sum)": "Invalid head",
+                  "Value #invalid head (ETH) (sum)": "Invalid head (ETH)",
+                  "Value #invalid target (sum)": "Invalid target",
+                  "Value #invalid target (ETH) (sum)": "Invalid target (ETH)",
+                  "Value #invalid source (sum)": "Invalid source",
+                  "Value #invalid source (ETH) (sum)": "Invalid source (ETH)"
                 }
               }
             },
