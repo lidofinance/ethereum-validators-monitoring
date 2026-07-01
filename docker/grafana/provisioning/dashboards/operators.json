@@ -7636,6 +7636,22 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Balance (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "Validator"
                 },
                 "properties": [
@@ -7692,11 +7708,23 @@
                     ]
                   }
                 ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Balance"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
               }
             ]
           },
           "gridPos": {
-            "h": 8,
+            "h": 16,
             "w": 8,
             "x": 0,
             "y": 173
@@ -7724,7 +7752,7 @@
           "pluginVersion": "9.5.7",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -7733,14 +7761,36 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator\n    FROM validators_summary\n    WHERE\n      att_valid_source = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n      val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n      if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator\n    FROM validators_summary\n    WHERE\n      att_valid_source = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND epoch = 222171\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_source = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n      val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n      if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_source = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND epoch = 222171\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Validator with invalid SOURCE",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Balance (ETH)",
+                "binary": {
+                  "left": "Balance",
+                  "operator": "/",
+                  "reducer": "sum",
+                  "right": "1000000000"
+                },
+                "mode": "binary",
+                "reduce": {
+                  "include": [
+                    "Balance (ETH)"
+                  ],
+                  "reducer": "lastNotNull"
+                },
+                "replaceFields": false
+              }
+            }
+          ],
           "type": "table"
         },
         {
@@ -7835,6 +7885,100 @@
             }
           ],
           "title": "Number of validators with invalid attestation SOURCE",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "User only",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "red",
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 15,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 181
+          },
+          "id": 1789,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_balance_invalid_attestation{nos_name=~'${mapped_nos_names_var}', reason=\"invalid_source\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total balance of validators with invalid attestation SOURCE (ETH)",
           "type": "timeseries"
         }
       ],
