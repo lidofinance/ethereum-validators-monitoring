@@ -8365,6 +8365,22 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Balance (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "Validator"
                 },
                 "properties": [
@@ -8381,22 +8397,6 @@
                   {
                     "id": "unit",
                     "value": "string"
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Operator"
-                },
-                "properties": [
-                  {
-                    "id": "custom.width",
-                    "value": 200
-                  },
-                  {
-                    "id": "custom.filterable",
-                    "value": true
                   }
                 ]
               },
@@ -8429,6 +8429,14 @@
                 },
                 "properties": [
                   {
+                    "id": "custom.width",
+                    "value": 200
+                  },
+                  {
+                    "id": "custom.filterable",
+                    "value": true
+                  },
+                  {
                     "id": "links",
                     "value": [
                       {
@@ -8439,11 +8447,23 @@
                     ]
                   }
                 ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Balance"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
               }
             ]
           },
           "gridPos": {
-            "h": 8,
+            "h": 16,
             "w": 8,
             "x": 0,
             "y": 107
@@ -8480,14 +8500,36 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE\n  val_nos_module_id = '${module_var}' AND\n  is_proposer = 1 AND\n  val_nos_id IS NOT NULL AND\n  val_stuck = 0 AND\n  block_proposed = 0 AND\n  (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, Operator, Validator\nLIMIT 1 by epoch, val_id",
-              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE\n  val_nos_module_id = '1' AND\n  is_proposer = 1 AND\n  val_nos_id IS NOT NULL AND\n  val_stuck = 0 AND\n  block_proposed = 0 AND\n  (epoch <= 216250 AND epoch >= (216250 - 50))\nORDER BY block_to_propose DESC, Operator, Validator\nLIMIT 1 by epoch, val_id",
+              "query": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator,\n  val_balance as Balance\nFROM validators_summary\nWHERE\n  val_nos_module_id = '${module_var}' AND\n  is_proposer = 1 AND\n  val_nos_id IS NOT NULL AND\n  val_stuck = 0 AND\n  block_proposed = 0 AND\n  (epoch <= ${epoch_number_var} AND epoch >= (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, Operator, Validator\nLIMIT 1 by epoch, val_id",
+              "rawQuery": "SELECT\n  block_to_propose as Block,\n  val_nos_name as Operator,\n  val_id as Validator,\n  val_balance as Balance\nFROM validators_summary\nWHERE\n  val_nos_module_id = '1' AND\n  is_proposer = 1 AND\n  val_nos_id IS NOT NULL AND\n  val_stuck = 0 AND\n  block_proposed = 0 AND\n  (epoch <= 216250 AND epoch >= (216250 - 50))\nORDER BY block_to_propose DESC, Operator, Validator\nLIMIT 1 by epoch, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Missed proposals (${epochs_range} epochs range)",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Balance (ETH)",
+                "binary": {
+                  "left": "Balance",
+                  "operator": "/",
+                  "reducer": "sum",
+                  "right": "1000000000"
+                },
+                "mode": "binary",
+                "reduce": {
+                  "include": [
+                    "Balance (ETH)"
+                  ],
+                  "reducer": "lastNotNull"
+                },
+                "replaceFields": false
+              }
+            }
+          ],
           "type": "table"
         },
         {
@@ -8584,6 +8626,101 @@
           ],
           "title": "Number of validators with missed proposals",
           "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "User only",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 115
+          },
+          "id": 68,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_balance_miss_propose{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total balance of validators with missed proposals (ETH)",
+          "type": "timeseries"
         }
       ],
       "title": "📥 Proposals",
@@ -8599,7 +8736,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 89
+        "y": 97
       },
       "id": 69,
       "panels": [
@@ -8720,7 +8857,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 89
+            "y": 97
           },
           "id": 92,
           "options": {
@@ -8936,7 +9073,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 95
+            "y": 103
           },
           "id": 72,
           "options": {
@@ -9059,7 +9196,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 95
+            "y": 103
           },
           "id": 73,
           "options": {
@@ -9154,7 +9291,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 103
+            "y": 111
           },
           "id": 74,
           "options": {
@@ -9206,7 +9343,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 97
+        "y": 105
       },
       "id": 62,
       "panels": [
@@ -9379,7 +9516,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 98
+            "y": 106
           },
           "id": 57,
           "options": {
@@ -9502,7 +9639,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 98
+            "y": 106
           },
           "id": 58,
           "options": {
@@ -9598,7 +9735,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 106
+            "y": 114
           },
           "id": 59,
           "options": {
@@ -9806,7 +9943,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 114
+            "y": 122
           },
           "id": 99,
           "options": {
@@ -9929,7 +10066,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 114
+            "y": 122
           },
           "id": 95,
           "options": {
@@ -10024,7 +10161,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 122
+            "y": 130
           },
           "id": 103,
           "options": {
@@ -10231,7 +10368,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 130
+            "y": 138
           },
           "id": 100,
           "options": {
@@ -10354,7 +10491,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 130
+            "y": 138
           },
           "id": 96,
           "options": {
@@ -10449,7 +10586,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 138
+            "y": 146
           },
           "id": 105,
           "options": {
@@ -10656,7 +10793,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 146
+            "y": 154
           },
           "id": 101,
           "options": {
@@ -10779,7 +10916,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 146
+            "y": 154
           },
           "id": 97,
           "options": {
@@ -10874,7 +11011,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 154
+            "y": 162
           },
           "id": 135,
           "options": {
@@ -11081,7 +11218,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 162
+            "y": 170
           },
           "id": 102,
           "options": {
@@ -11204,7 +11341,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 162
+            "y": 170
           },
           "id": 98,
           "options": {
@@ -11299,7 +11436,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 170
+            "y": 178
           },
           "id": 136,
           "options": {
@@ -11351,7 +11488,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 138
+        "y": 146
       },
       "id": 50,
       "panels": [
@@ -11441,7 +11578,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 139
+            "y": 147
           },
           "id": 51,
           "options": {

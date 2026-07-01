@@ -4916,6 +4916,22 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Balance (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "Validator"
                 },
                 "properties": [
@@ -4994,11 +5010,23 @@
                     ]
                   }
                 ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Balance"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
               }
             ]
           },
           "gridPos": {
-            "h": 8,
+            "h": 16,
             "w": 8,
             "x": 0,
             "y": 99
@@ -5035,14 +5063,36 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
-              "rawQuery": "SELECT\n  if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n  block_to_propose as Block,\n  val_id as Validator\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  (epoch <= 222157 AND epoch > (222157 - 19))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
+              "query": "SELECT\n  if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n  block_to_propose as Block,\n  val_id as Validator,\n  val_balance as Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
+              "rawQuery": "SELECT\n  if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n  block_to_propose as Block,\n  val_id as Validator,\n  val_balance as Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  (epoch <= 222157 AND epoch > (222157 - 19))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Missed proposals (${epochs_range} epochs range)",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Balance (ETH)",
+                "binary": {
+                  "left": "Balance",
+                  "operator": "/",
+                  "reducer": "sum",
+                  "right": "1000000000"
+                },
+                "mode": "binary",
+                "reduce": {
+                  "include": [
+                    "Balance (ETH)"
+                  ],
+                  "reducer": "lastNotNull"
+                },
+                "replaceFields": false
+              }
+            }
+          ],
           "type": "table"
         },
         {
@@ -5138,6 +5188,100 @@
           ],
           "title": "Number of validators with missed proposals",
           "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "red",
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 15,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 107
+          },
+          "id": 1740,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_balance_miss_propose{nos_name=~'${mapped_nos_names_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "interval": "",
+              "legendFormat": "{{nos_name}} delta",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total balance of validators with missed proposals (ETH)",
+          "type": "timeseries"
         }
       ],
       "title": "📥 Proposals",
@@ -5153,7 +5297,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 75
+        "y": 83
       },
       "id": 1711,
       "panels": [
@@ -5288,7 +5432,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 100
+            "y": 108
           },
           "id": 1745,
           "options": {
@@ -5536,7 +5680,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 106
+            "y": 114
           },
           "id": 1747,
           "options": {
@@ -5659,7 +5803,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 106
+            "y": 114
           },
           "id": 1749,
           "options": {
@@ -5752,7 +5896,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 114
+            "y": 122
           },
           "id": 1750,
           "options": {
@@ -5802,7 +5946,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 84
+        "y": 92
       },
       "id": 1751,
       "panels": [
@@ -5987,7 +6131,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 109
+            "y": 117
           },
           "id": 1755,
           "options": {
@@ -6111,7 +6255,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 109
+            "y": 117
           },
           "id": 1757,
           "options": {
@@ -6205,7 +6349,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 117
+            "y": 125
           },
           "id": 1763,
           "options": {
@@ -6422,7 +6566,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 125
+            "y": 133
           },
           "id": 1764,
           "options": {
@@ -6546,7 +6690,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 125
+            "y": 133
           },
           "id": 1765,
           "options": {
@@ -6640,7 +6784,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 133
+            "y": 141
           },
           "id": 1769,
           "options": {
@@ -6857,7 +7001,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 141
+            "y": 149
           },
           "id": 1770,
           "options": {
@@ -6981,7 +7125,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 141
+            "y": 149
           },
           "id": 1766,
           "options": {
@@ -7075,7 +7219,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 149
+            "y": 157
           },
           "id": 1775,
           "options": {
@@ -7292,7 +7436,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 157
+            "y": 165
           },
           "id": 1771,
           "options": {
@@ -7416,7 +7560,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 157
+            "y": 165
           },
           "id": 1767,
           "options": {
@@ -7510,7 +7654,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 165
+            "y": 173
           },
           "id": 1787,
           "options": {
@@ -7727,7 +7871,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 173
+            "y": 181
           },
           "id": 1772,
           "options": {
@@ -7851,7 +7995,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 173
+            "y": 181
           },
           "id": 1768,
           "options": {
@@ -7945,7 +8089,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 181
+            "y": 189
           },
           "id": 1789,
           "options": {
