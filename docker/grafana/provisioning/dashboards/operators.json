@@ -2659,6 +2659,10 @@
               {
                 "id": "unit",
                 "value": "ETH"
+              },
+              {
+                "id": "decimals",
+                "value": 2
               }
             ]
           },
@@ -2737,8 +2741,8 @@
           "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n    if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n    val_id as Validator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    validators_summary\nWHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n    epoch = ${epoch_number_var} AND\n    (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
-          "rawQuery": "SELECT\n    if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n    val_id as Validator,\n    val_status as Status,\n    val_balance / pow(10,9) as Balance\nFROM\n    validators_summary\nWHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    epoch = 222117 AND\n    (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
+          "query": "SELECT\n    if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n    val_id as Validator,\n    val_status as Status,\n    val_balance / pow(10, 9) as Balance\nFROM\n    validators_summary\nWHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n    epoch = ${epoch_number_var} AND\n    (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
+          "rawQuery": "SELECT\n    if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n    val_id as Validator,\n    val_status as Status,\n    val_balance / pow(10, 9) as Balance\nFROM\n    validators_summary\nWHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    epoch = 222117 AND\n    (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -4916,12 +4920,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Balance (ETH)"
+                  "options": "Balance"
                 },
                 "properties": [
                   {
                     "id": "unit",
-                    "value": "none"
+                    "value": "ETH"
                   },
                   {
                     "id": "decimals",
@@ -5010,18 +5014,6 @@
                     ]
                   }
                 ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Balance"
-                },
-                "properties": [
-                  {
-                    "id": "custom.hidden",
-                    "value": true
-                  }
-                ]
               }
             ]
           },
@@ -5054,7 +5046,7 @@
           "pluginVersion": "9.5.7",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
@@ -5063,36 +5055,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n  block_to_propose as Block,\n  val_id as Validator,\n  val_balance as Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
-              "rawQuery": "SELECT\n  if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n  block_to_propose as Block,\n  val_id as Validator,\n  val_balance as Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  (epoch <= 222157 AND epoch > (222157 - 19))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
+              "query": "SELECT\n  if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n  block_to_propose as Block,\n  val_id as Validator,\n  val_balance / pow(10, 9) as Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
+              "rawQuery": "SELECT\n  if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n  block_to_propose as Block,\n  val_id as Validator,\n  val_balance / pow(10, 9) as Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  (epoch <= 222157 AND epoch > (222157 - 19))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Missed proposals (${epochs_range} epochs range)",
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Balance (ETH)",
-                "binary": {
-                  "left": "Balance",
-                  "operator": "/",
-                  "reducer": "sum",
-                  "right": "1000000000"
-                },
-                "mode": "binary",
-                "reduce": {
-                  "include": [
-                    "Balance (ETH)"
-                  ],
-                  "reducer": "lastNotNull"
-                },
-                "replaceFields": false
-              }
-            }
-          ],
           "type": "table"
         },
         {
@@ -5567,12 +5537,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Balance (ETH)"
+                  "options": "Balance"
                 },
                 "properties": [
                   {
                     "id": "unit",
-                    "value": "none"
+                    "value": "ETH"
                   },
                   {
                     "id": "decimals",
@@ -5661,18 +5631,6 @@
                     ]
                   }
                 ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Balance"
-                },
-                "properties": [
-                  {
-                    "id": "custom.hidden",
-                    "value": true
-                  }
-                ]
               }
             ]
           },
@@ -5714,36 +5672,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n    sync_percent as Percent,\n    val_id as Validator,\n    val_balance as Balance\nFROM\n    validators_summary\nWHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var} AND\n    is_sync = 1 AND\n    sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent, val_id\nLIMIT 1 by val_id",
-              "rawQuery": "SELECT\n    if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n    sync_percent as Percent,\n    val_id as Validator,\n    val_balance as Balance\nFROM\n    validators_summary\nWHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    val_stuck = 0 AND\n    epoch = 222160 AND\n    is_sync = 1 AND\n    sync_percent < (99.0234375 - 0)\nORDER BY sync_percent, val_id\nLIMIT 1 by val_id",
+              "query": "SELECT\n    if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n    sync_percent as Percent,\n    val_id as Validator,\n    val_balance / pow(10, 9) as Balance\nFROM\n    validators_summary\nWHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var} AND\n    is_sync = 1 AND\n    sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent, val_id\nLIMIT 1 by val_id",
+              "rawQuery": "SELECT\n    if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n    sync_percent as Percent,\n    val_id as Validator,\n    val_balance / pow(10, 9) as Balance\nFROM\n    validators_summary\nWHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    val_stuck = 0 AND\n    epoch = 222160 AND\n    is_sync = 1 AND\n    sync_percent < (99.0234375 - 0)\nORDER BY sync_percent, val_id\nLIMIT 1 by val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Bad Sync Committee participation",
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Balance (ETH)",
-                "binary": {
-                  "left": "Balance",
-                  "operator": "/",
-                  "reducer": "sum",
-                  "right": "1000000000"
-                },
-                "mode": "binary",
-                "reduce": {
-                  "include": [
-                    "Balance (ETH)"
-                  ],
-                  "reducer": "lastNotNull"
-                },
-                "replaceFields": false
-              }
-            }
-          ],
           "type": "table"
         },
         {
@@ -6040,12 +5976,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Balance (ETH)"
+                  "options": "Balance"
                 },
                 "properties": [
                   {
                     "id": "unit",
-                    "value": "none"
+                    "value": "ETH"
                   },
                   {
                     "id": "decimals",
@@ -6112,18 +6048,6 @@
                     ]
                   }
                 ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Balance"
-                },
-                "properties": [
-                  {
-                    "id": "custom.hidden",
-                    "value": true
-                  }
-                ]
               }
             ]
           },
@@ -6165,36 +6089,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "    SELECT\n      if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance as Balance\n    FROM validators_summary\n    WHERE\n      att_happened = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n      val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n      if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance as Balance\n    FROM validators_summary\n    WHERE\n      att_happened = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND epoch = 222164\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
+              "query": "    SELECT\n      if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_happened = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n      val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n      if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_happened = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND epoch = 222164\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Validators with MISSED attestation",
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Balance (ETH)",
-                "binary": {
-                  "left": "Balance",
-                  "operator": "/",
-                  "reducer": "sum",
-                  "right": "1000000000"
-                },
-                "mode": "binary",
-                "reduce": {
-                  "include": [
-                    "Balance (ETH)"
-                  ],
-                  "reducer": "lastNotNull"
-                },
-                "replaceFields": false
-              }
-            }
-          ],
           "type": "table"
         },
         {
@@ -6475,12 +6377,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Balance (ETH)"
+                  "options": "Balance"
                 },
                 "properties": [
                   {
                     "id": "unit",
-                    "value": "none"
+                    "value": "ETH"
                   },
                   {
                     "id": "decimals",
@@ -6547,18 +6449,6 @@
                     ]
                   }
                 ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Balance"
-                },
-                "properties": [
-                  {
-                    "id": "custom.hidden",
-                    "value": true
-                  }
-                ]
               }
             ]
           },
@@ -6600,36 +6490,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance as Balance\n    FROM validators_summary\n    WHERE\n      att_happened = 1 AND\n      att_inc_delay > 1 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n      if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance as Balance\n    FROM validators_summary\n    WHERE\n      att_happened = 1 AND\n      att_inc_delay > 1 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND\n      epoch = 222165\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_happened = 1 AND\n      att_inc_delay > 1 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n      if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_happened = 1 AND\n      att_inc_delay > 1 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND\n      epoch = 222165\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Validators with high INCLUSION DELAY attestation",
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Balance (ETH)",
-                "binary": {
-                  "left": "Balance",
-                  "operator": "/",
-                  "reducer": "sum",
-                  "right": "1000000000"
-                },
-                "mode": "binary",
-                "reduce": {
-                  "include": [
-                    "Balance (ETH)"
-                  ],
-                  "reducer": "lastNotNull"
-                },
-                "replaceFields": false
-              }
-            }
-          ],
           "type": "table"
         },
         {
@@ -6910,12 +6778,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Balance (ETH)"
+                  "options": "Balance"
                 },
                 "properties": [
                   {
                     "id": "unit",
-                    "value": "none"
+                    "value": "ETH"
                   },
                   {
                     "id": "decimals",
@@ -6982,18 +6850,6 @@
                     ]
                   }
                 ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Balance"
-                },
-                "properties": [
-                  {
-                    "id": "custom.hidden",
-                    "value": true
-                  }
-                ]
               }
             ]
           },
@@ -7035,36 +6891,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_head = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 BY val_id\n    LIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n      if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_head = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND\n      epoch = 222169\n    ORDER BY val_id\n    LIMIT 1 BY val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_head = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 BY val_id\n    LIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n      if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_head = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND\n      epoch = 222169\n    ORDER BY val_id\n    LIMIT 1 BY val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Validators with invalid HEAD",
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Balance (ETH)",
-                "binary": {
-                  "left": "Balance",
-                  "operator": "/",
-                  "reducer": "sum",
-                  "right": "1000000000"
-                },
-                "mode": "binary",
-                "reduce": {
-                  "include": [
-                    "Balance (ETH)"
-                  ],
-                  "reducer": "lastNotNull"
-                },
-                "replaceFields": false
-              }
-            }
-          ],
           "type": "table"
         },
         {
@@ -7345,12 +7179,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Balance (ETH)"
+                  "options": "Balance"
                 },
                 "properties": [
                   {
                     "id": "unit",
-                    "value": "none"
+                    "value": "ETH"
                   },
                   {
                     "id": "decimals",
@@ -7417,18 +7251,6 @@
                     ]
                   }
                 ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Balance"
-                },
-                "properties": [
-                  {
-                    "id": "custom.hidden",
-                    "value": true
-                  }
-                ]
               }
             ]
           },
@@ -7470,36 +7292,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_target = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n      if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_target = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND\n      epoch = 222158\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_target = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n      if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_target = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND\n      epoch = 222158\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Validators with invalid TARGET",
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Balance (ETH)",
-                "binary": {
-                  "left": "Balance",
-                  "operator": "/",
-                  "reducer": "sum",
-                  "right": "1000000000"
-                },
-                "mode": "binary",
-                "reduce": {
-                  "include": [
-                    "Balance (ETH)"
-                  ],
-                  "reducer": "lastNotNull"
-                },
-                "replaceFields": false
-              }
-            }
-          ],
           "type": "table"
         },
         {
@@ -7780,12 +7580,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Balance (ETH)"
+                  "options": "Balance"
                 },
                 "properties": [
                   {
                     "id": "unit",
-                    "value": "none"
+                    "value": "ETH"
                   },
                   {
                     "id": "decimals",
@@ -7852,18 +7652,6 @@
                     ]
                   }
                 ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Balance"
-                },
-                "properties": [
-                  {
-                    "id": "custom.hidden",
-                    "value": true
-                  }
-                ]
               }
             ]
           },
@@ -7905,36 +7693,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_source = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n      val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n      if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_source = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND epoch = 222171\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
+              "query": "\n    SELECT\n      if('${dvt_nos_global_indexes_var}' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_source = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['${nos_global_index_var}'], splitByChar('|','${dvt_nos_global_indexes_var}')) AND\n      val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n      if('2;0|2;1' != '', val_nos_name, NULL) as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_source = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND epoch = 222171\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Validator with invalid SOURCE",
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Balance (ETH)",
-                "binary": {
-                  "left": "Balance",
-                  "operator": "/",
-                  "reducer": "sum",
-                  "right": "1000000000"
-                },
-                "mode": "binary",
-                "reduce": {
-                  "include": [
-                    "Balance (ETH)"
-                  ],
-                  "reducer": "lastNotNull"
-                },
-                "replaceFields": false
-              }
-            }
-          ],
           "type": "table"
         },
         {
