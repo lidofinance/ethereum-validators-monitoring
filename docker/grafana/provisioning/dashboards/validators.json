@@ -8092,6 +8092,22 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Balance"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "ETH"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "GWei"
                 },
                 "properties": [
@@ -8199,8 +8215,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE\n      val_nos_module_id = '${module_var}' AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE\n      val_nos_module_id = '${module_var}' AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_module_id = '${module_var}' AND\n      val_nos_id IS NOT NULL AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_stuck = 0 AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
-              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE\n      val_nos_module_id = '1' AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 216247\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE\n      val_nos_module_id = '1' AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 216247 - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_module_id = '1' AND\n      val_nos_id IS NOT NULL AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_stuck = 0 AND\n      epoch > (216247 - 6) AND epoch <= 216247\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
+              "query": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator,\n  current.val_balance / pow(10, 9) as Balance\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE\n      val_nos_module_id = '${module_var}' AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE\n      val_nos_module_id = '${module_var}' AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_module_id = '${module_var}' AND\n      val_nos_id IS NOT NULL AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_stuck = 0 AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
+              "rawQuery": "SELECT\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_nos_name as Operator,\n  current.val_id as Validator,\n  current.val_balance / pow(10, 9) as Balance\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE\n      val_nos_module_id = '1' AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 216247\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE\n      val_nos_module_id = '1' AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 216247 - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_module_id = '1' AND\n      val_nos_id IS NOT NULL AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_stuck = 0 AND\n      epoch > (216247 - 6) AND epoch <= 216247\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Operator, Validator\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -11294,6 +11310,22 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Balance"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "ETH"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "Validator"
                 },
                 "properties": [
@@ -11372,8 +11404,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM validators_summary\nWHERE\n  val_nos_module_id = '${module_var}' AND\n  (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND\n  val_nos_id IS NOT NULL\n  AND epoch = ${epoch_number_var}\nORDER by val_id\nLIMIT 1 by val_id",
-              "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator\nFROM validators_summary\nWHERE\n  val_nos_module_id = '1' AND\n  (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND\n  val_nos_id IS NOT NULL\n  AND epoch = 216259\nORDER by val_id\nLIMIT 1 by val_id",
+              "query": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator,\n    val_balance / pow(10, 9) as Balance\nFROM validators_summary\nWHERE\n  val_nos_module_id = '${module_var}' AND\n  (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND\n  val_nos_id IS NOT NULL\n  AND epoch = ${epoch_number_var}\nORDER by val_id\nLIMIT 1 by val_id",
+              "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator,\n    val_balance / pow(10, 9) as Balance\nFROM validators_summary\nWHERE\n  val_nos_module_id = '1' AND\n  (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND\n  val_nos_id IS NOT NULL\n  AND epoch = 216259\nORDER by val_id\nLIMIT 1 by val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
