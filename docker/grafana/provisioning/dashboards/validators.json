@@ -9660,6 +9660,22 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Balance (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "none"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "Validator"
                 },
                 "properties": [
@@ -9704,11 +9720,23 @@
                     ]
                   }
                 ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Balance"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
               }
             ]
           },
           "gridPos": {
-            "h": 8,
+            "h": 16,
             "w": 8,
             "x": 0,
             "y": 123
@@ -9745,14 +9773,36 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE \n  val_nos_module_id = '${module_var}' AND\n  att_valid_head = 0 AND\n  val_nos_id IS NOT NULL AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator\nFROM validators_summary\nWHERE \n  val_nos_module_id = '1' AND\n  att_valid_head = 0 AND\n  val_nos_id IS NOT NULL AND\n  val_stuck = 0 AND\n  epoch = 216255\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator,\n  val_balance as Balance\nFROM validators_summary\nWHERE \n  val_nos_module_id = '${module_var}' AND\n  att_valid_head = 0 AND\n  val_nos_id IS NOT NULL AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
+              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator,\n  val_balance as Balance\nFROM validators_summary\nWHERE \n  val_nos_module_id = '1' AND\n  att_valid_head = 0 AND\n  val_nos_id IS NOT NULL AND\n  val_stuck = 0 AND\n  epoch = 216255\nORDER BY val_id\nLIMIT 1 by val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Validators with invalid HEAD",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Balance (ETH)",
+                "binary": {
+                  "left": "Balance",
+                  "operator": "/",
+                  "reducer": "sum",
+                  "right": "1000000000"
+                },
+                "mode": "binary",
+                "reduce": {
+                  "include": [
+                    "Balance (ETH)"
+                  ],
+                  "reducer": "lastNotNull"
+                },
+                "replaceFields": false
+              }
+            }
+          ],
           "type": "table"
         },
         {
@@ -9848,6 +9898,101 @@
             }
           ],
           "title": "Number of validators with invalid attestation HEAD",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "User only",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "smooth",
+                "lineWidth": 3,
+                "pointSize": 6,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": true,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "semi-dark-green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 16,
+            "x": 8,
+            "y": 131
+          },
+          "id": 105,
+          "options": {
+            "legend": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_balance_invalid_attestation{reason=\"invalid_head\",nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total balance of validators with invalid attestation HEAD (ETH)",
           "type": "timeseries"
         },
         {
@@ -9991,7 +10136,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 131
+            "y": 139
           },
           "id": 101,
           "options": {
@@ -10092,7 +10237,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 131
+            "y": 139
           },
           "id": 97,
           "options": {
@@ -10271,7 +10416,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 139
+            "y": 147
           },
           "id": 102,
           "options": {
@@ -10372,7 +10517,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 139
+            "y": 147
           },
           "id": 98,
           "options": {
@@ -10424,7 +10569,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 107
+        "y": 115
       },
       "id": 50,
       "panels": [
@@ -10514,7 +10659,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 108
+            "y": 116
           },
           "id": 51,
           "options": {
