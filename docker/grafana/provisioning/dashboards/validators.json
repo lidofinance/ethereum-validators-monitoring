@@ -3858,6 +3858,24 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Bad (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "Good"
                 },
                 "properties": [
@@ -3872,6 +3890,24 @@
                     "value": {
                       "fixedColor": "green",
                       "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 90
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Good (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "custom.cellOptions",
+                    "value": {
+                      "type": "color-text"
                     }
                   },
                   {
@@ -3913,7 +3949,7 @@
             ]
           },
           "gridPos": {
-            "h": 14,
+            "h": 21,
             "w": 12,
             "x": 12,
             "y": 53
@@ -3958,6 +3994,21 @@
               },
               "editorMode": "code",
               "exemplar": false,
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_balance_miss_propose{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "bad (ETH)"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
               "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_count_good_propose{nos_module_id=\"${module_var}\"}) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
               "format": "table",
               "hide": false,
@@ -3965,6 +4016,21 @@
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "refId": "good"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum_over_time((sum by (nos_name) (ethereum_validators_monitoring_validator_balance_good_propose{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "good (ETH)"
             },
             {
               "datasource": {
@@ -4000,7 +4066,19 @@
                     ],
                     "operation": "aggregate"
                   },
+                  "Value #bad (ETH)": {
+                    "aggregations": [
+                      "sum"
+                    ],
+                    "operation": "aggregate"
+                  },
                   "Value #good": {
+                    "aggregations": [
+                      "sum"
+                    ],
+                    "operation": "aggregate"
+                  },
+                  "Value #good (ETH)": {
                     "aggregations": [
                       "sum"
                     ],
@@ -4020,18 +4098,21 @@
             {
               "id": "organize",
               "options": {
-                "excludeByName": {},
                 "indexByName": {
+                  "nos_name": 0,
                   "Value #all (sum)": 1,
-                  "Value #bad (sum)": 3,
                   "Value #good (sum)": 2,
-                  "nos_name": 0
+                  "Value #good (ETH) (sum)": 3,
+                  "Value #bad (sum)": 4,
+                  "Value #bad (ETH) (sum)": 5
                 },
                 "renameByName": {
+                  "nos_name": "Operator",
                   "Value #all (sum)": "All",
-                  "Value #bad (sum)": "Bad",
                   "Value #good (sum)": "Good",
-                  "nos_name": "Operator"
+                  "Value #good (ETH) (sum)": "Good (ETH)",
+                  "Value #bad (sum)": "Bad",
+                  "Value #bad (ETH) (sum)": "Bad (ETH)"
                 }
               }
             },
@@ -4061,6 +4142,282 @@
             }
           ],
           "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": []
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Bad (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Good (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "green",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 6,
+            "x": 0,
+            "y": 60
+          },
+          "id": 137,
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "pieType": "donut",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.3.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_balance_miss_propose{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "bad"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_validator_balance_good_propose{nos_module_id=\"${module_var}\"} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "good"
+            }
+          ],
+          "title": "User Propose (${epochs_range} epochs range, ETH)",
+          "transformations": [
+            {
+              "id": "seriesToColumns",
+              "options": {}
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "indexByName": {},
+                "renameByName": {
+                  "Value #bad": "Bad (ETH)",
+                  "Value #good": "Good (ETH)"
+                }
+              }
+            }
+          ],
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": []
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Bad (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Good (ETH)"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "green",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 6,
+            "x": 6,
+            "y": 60
+          },
+          "id": 138,
+          "options": {
+            "legend": {
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "pieType": "donut",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "8.3.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_balance_miss_propose / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "bad"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum_over_time((sum by () (ethereum_validators_monitoring_other_validator_balance_good_propose / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[25s]) > 0)[$__range:])",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{nos_name}}",
+              "refId": "good"
+            }
+          ],
+          "title": "Other Propose (${epochs_range} epochs range, ETH)",
+          "transformations": [
+            {
+              "id": "seriesToColumns",
+              "options": {}
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "indexByName": {},
+                "renameByName": {
+                  "Value #bad": "Bad (ETH)",
+                  "Value #good": "Good (ETH)"
+                }
+              }
+            }
+          ],
+          "type": "piechart"
         },
         {
           "datasource": {
@@ -4119,7 +4476,7 @@
             "h": 7,
             "w": 12,
             "x": 0,
-            "y": 60
+            "y": 67
           },
           "id": 109,
           "options": {
@@ -4258,7 +4615,7 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 67
+            "y": 74
           },
           "id": 111,
           "options": {
@@ -4396,7 +4753,7 @@
             "h": 7,
             "w": 6,
             "x": 6,
-            "y": 67
+            "y": 74
           },
           "id": 114,
           "options": {
@@ -4653,7 +5010,7 @@
             "h": 21,
             "w": 12,
             "x": 12,
-            "y": 67
+            "y": 74
           },
           "id": 107,
           "options": {
@@ -4906,7 +5263,7 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 74
+            "y": 81
           },
           "id": 130,
           "options": {
@@ -5044,7 +5401,7 @@
             "h": 7,
             "w": 6,
             "x": 6,
-            "y": 74
+            "y": 81
           },
           "id": 131,
           "options": {
@@ -5180,7 +5537,7 @@
             "h": 7,
             "w": 6,
             "x": 0,
-            "y": 81
+            "y": 88
           },
           "id": 112,
           "options": {
@@ -5317,7 +5674,7 @@
             "h": 7,
             "w": 6,
             "x": 6,
-            "y": 81
+            "y": 88
           },
           "id": 132,
           "options": {
@@ -5514,7 +5871,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 88
+            "y": 95
           },
           "id": 106,
           "options": {
@@ -6011,7 +6368,7 @@
             "h": 24,
             "w": 12,
             "x": 12,
-            "y": 88
+            "y": 95
           },
           "id": 104,
           "options": {
@@ -6477,7 +6834,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 94
+            "y": 101
           },
           "id": 133,
           "options": {
@@ -6737,7 +7094,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 100
+            "y": 107
           },
           "id": 115,
           "options": {
@@ -6992,7 +7349,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 106
+            "y": 113
           },
           "id": 134,
           "options": {
@@ -7144,7 +7501,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 72
+        "y": 79
       },
       "id": 23,
       "panels": [
@@ -7223,7 +7580,7 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 73
+            "y": 80
           },
           "id": 24,
           "options": {
@@ -7312,7 +7669,7 @@
             "h": 14,
             "w": 8,
             "x": 0,
-            "y": 78
+            "y": 85
           },
           "id": 21,
           "options": {
@@ -7411,7 +7768,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 78
+            "y": 85
           },
           "id": 10,
           "options": {
@@ -7517,7 +7874,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 85
+            "y": 92
           },
           "id": 12,
           "options": {
@@ -7669,7 +8026,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 92
+            "y": 99
           },
           "id": 28,
           "options": {
@@ -7783,7 +8140,7 @@
             "h": 7,
             "w": 16,
             "x": 8,
-            "y": 92
+            "y": 99
           },
           "id": 11,
           "options": {
@@ -7835,7 +8192,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 80
+        "y": 87
       },
       "id": 66,
       "panels": [
@@ -7954,7 +8311,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 100
+            "y": 107
           },
           "id": 63,
           "options": {
@@ -8055,7 +8412,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 100
+            "y": 107
           },
           "id": 67,
           "options": {
@@ -8107,7 +8464,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 81
+        "y": 89
       },
       "id": 69,
       "panels": [
@@ -8228,7 +8585,7 @@
             "h": 6,
             "w": 24,
             "x": 0,
-            "y": 82
+            "y": 89
           },
           "id": 92,
           "options": {
@@ -8444,7 +8801,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 88
+            "y": 95
           },
           "id": 72,
           "options": {
@@ -8567,7 +8924,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 88
+            "y": 95
           },
           "id": 73,
           "options": {
@@ -8662,7 +9019,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 96
+            "y": 103
           },
           "id": 74,
           "options": {
@@ -8714,7 +9071,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 90
+        "y": 97
       },
       "id": 62,
       "panels": [
@@ -8887,7 +9244,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 91
+            "y": 98
           },
           "id": 57,
           "options": {
@@ -9010,7 +9367,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 91
+            "y": 98
           },
           "id": 58,
           "options": {
@@ -9106,7 +9463,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 99
+            "y": 106
           },
           "id": 59,
           "options": {
@@ -9314,7 +9671,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 107
+            "y": 114
           },
           "id": 99,
           "options": {
@@ -9437,7 +9794,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 107
+            "y": 114
           },
           "id": 95,
           "options": {
@@ -9532,7 +9889,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 115
+            "y": 122
           },
           "id": 103,
           "options": {
@@ -9739,7 +10096,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 123
+            "y": 130
           },
           "id": 100,
           "options": {
@@ -9862,7 +10219,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 123
+            "y": 130
           },
           "id": 96,
           "options": {
@@ -9957,7 +10314,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 131
+            "y": 138
           },
           "id": 105,
           "options": {
@@ -10164,7 +10521,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 139
+            "y": 146
           },
           "id": 101,
           "options": {
@@ -10287,7 +10644,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 139
+            "y": 146
           },
           "id": 97,
           "options": {
@@ -10382,7 +10739,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 147
+            "y": 154
           },
           "id": 135,
           "options": {
@@ -10589,7 +10946,7 @@
             "h": 16,
             "w": 8,
             "x": 0,
-            "y": 155
+            "y": 162
           },
           "id": 102,
           "options": {
@@ -10712,7 +11069,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 155
+            "y": 162
           },
           "id": 98,
           "options": {
@@ -10807,7 +11164,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 163
+            "y": 170
           },
           "id": 136,
           "options": {
@@ -10859,7 +11216,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 131
+        "y": 138
       },
       "id": 50,
       "panels": [
@@ -10949,7 +11306,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 132
+            "y": 139
           },
           "id": 51,
           "options": {
