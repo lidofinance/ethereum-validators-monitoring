@@ -8033,14 +8033,45 @@
       {
         "current": {
           "selected": true,
-          "text": "Operator_1",
-          "value": "Operator_1"
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": {
           "type": "prometheus",
           "uid": "PBFA97CFB590B2093"
         },
-        "definition": "query_result(last_over_time(ethereum_validators_monitoring_user_validators[28h]))",
+        "definition": "label_values(ethereum_validators_monitoring_user_validators, nos_module_id)",
+        "description": "Staking module",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Module",
+        "multi": true,
+        "name": "module_var",
+        "options": [],
+        "query": {
+          "query": "label_values(ethereum_validators_monitoring_user_validators, nos_module_id)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "PBFA97CFB590B2093"
+        },
+        "definition": "query_result(last_over_time(ethereum_validators_monitoring_user_validators{nos_module_id=~'${module_var}'}[28h]))",
         "description": "",
         "hide": 0,
         "includeAll": false,
@@ -8049,12 +8080,11 @@
         "name": "nos_name_var",
         "options": [],
         "query": {
-          "query": "query_result(last_over_time(ethereum_validators_monitoring_user_validators[28h]))",
+          "query": "query_result(last_over_time(ethereum_validators_monitoring_user_validators{nos_module_id=~'${module_var}'}[28h]))",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
         "regex": "/nos_name=\"(?<text>[^\"]+)/",
-        "skipUrlSync": false,
         "sort": 1,
         "type": "query"
       },
@@ -8364,8 +8394,8 @@
     "refresh_intervals": []
   },
   "timezone": "",
-  "title": "NodeOperators",
+  "title": "Node Operators",
   "uid": "3wimU2H7h",
-  "version": 27,
+  "version": 28,
   "weekStart": ""
 }
