@@ -2503,7 +2503,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator's dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -2928,7 +2928,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator's dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -3436,7 +3436,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator's dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               },
@@ -3944,7 +3944,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5137,7 +5137,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -6495,7 +6495,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -8169,7 +8169,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -8462,7 +8462,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -9013,7 +9013,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -9444,7 +9444,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -9837,7 +9837,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -10228,7 +10228,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -10619,7 +10619,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -11010,7 +11010,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -11364,7 +11364,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
