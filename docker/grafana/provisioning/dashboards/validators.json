@@ -11404,8 +11404,8 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    val_nos_name AS Operator,\n    val_id AS Validator,\n    val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  val_nos_module_id = '${module_var}' AND\n  val_nos_id IS NOT NULL\n  (val_status = 'active_slashed' OR val_status = 'exited_slashed' OR val_slashed = 1) AND\n  AND epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id",
-              "rawQuery": "SELECT\n    val_nos_name AS Operator,\n    val_id AS Validator,\n    val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  val_nos_module_id = '1' AND\n  val_nos_id IS NOT NULL\n  (val_status = 'active_slashed' OR val_status = 'exited_slashed' OR val_slashed = 1) AND\n  AND epoch = 216259\nORDER BY val_id\nLIMIT 1 BY val_id",
+              "query": "SELECT\n    val_nos_name AS Operator,\n    val_id AS Validator,\n    val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  val_nos_module_id = '${module_var}' AND\n  val_nos_id IS NOT NULL AND\n  (val_status = 'active_slashed' OR val_status = 'exited_slashed' OR val_slashed = 1) AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id",
+              "rawQuery": "SELECT\n    val_nos_name AS Operator,\n    val_id AS Validator,\n    val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  val_nos_module_id = '1' AND\n  val_nos_id IS NOT NULL AND\n  (val_status = 'active_slashed' OR val_status = 'exited_slashed' OR val_slashed = 1) AND\n  epoch = 216259\nORDER BY val_id\nLIMIT 1 BY val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
