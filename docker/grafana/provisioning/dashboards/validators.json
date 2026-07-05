@@ -11525,7 +11525,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type=\"source\",nos_module_id=~\"${module_var}\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_module_id=~'${module_var}'})",
               "interval": "",
               "legendFormat": "Module ${module_var}",
               "range": true,
@@ -11538,7 +11538,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type=\"source\",nos_module_id!~\"${module_var}\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_module_id!~'${module_var}'})",
               "hide": false,
               "interval": "",
               "legendFormat": "Other modules",
@@ -11633,7 +11633,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_count{type=\"source\", nos_module_id=~'${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_module_id=~'${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "Module {{nos_module_id}}",
               "range": true,
@@ -11736,7 +11736,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"source\",nos_module_id=~\"${module_var}\"}) / 10^4",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_module_id=~'${module_var}'}) / 10^4",
               "interval": "",
               "legendFormat": "Module ${module_var} (ETH)",
               "range": true,
@@ -11749,7 +11749,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"source\",nos_module_id!~\"${module_var}\"}) / 10^4",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_module_id!~'${module_var}'}) / 10^4",
               "hide": false,
               "interval": "",
               "legendFormat": "Other modules (ETH)",
@@ -11844,7 +11844,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_balance{type=\"source\", nos_module_id=~'${module_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_module_id=~'${module_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "Module {{nos_module_id}}",
               "range": true,
@@ -11930,7 +11930,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -12113,7 +12113,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type=\"target\",nos_module_id=~\"${module_var}\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_module_id=~'${module_var}'})",
               "interval": "",
               "legendFormat": "Module ${module_var}",
               "range": true,
@@ -12126,7 +12126,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type=\"target\",nos_module_id!~\"${module_var}\"})",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_module_id!~'${module_var}'})",
               "hide": false,
               "interval": "",
               "legendFormat": "Other modules",
@@ -12221,7 +12221,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_count{type=\"target\", nos_module_id=~'${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_module_id=~'${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "Module {{nos_module_id}}",
               "range": true,
@@ -12324,7 +12324,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"target\",nos_module_id=~\"${module_var}\"}) / 10^4",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_module_id=~'${module_var}'}) / 10^4",
               "interval": "",
               "legendFormat": "Module ${module_var} (ETH)",
               "range": true,
@@ -12337,7 +12337,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"target\",nos_module_id!~\"${module_var}\"}) / 10^4",
+              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_module_id!~'${module_var}'}) / 10^4",
               "hide": false,
               "interval": "",
               "legendFormat": "Other modules (ETH)",
@@ -12432,7 +12432,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_balance{type=\"target\", nos_module_id=~'${module_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_module_id=~'${module_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "Module {{nos_module_id}}",
               "range": true,
@@ -12518,7 +12518,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator's dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
