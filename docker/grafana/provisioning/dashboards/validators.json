@@ -1289,7 +1289,7 @@
           "exemplar": true,
           "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner='user', status='ongoing', nos_module_id=~'${module_var}'})",
           "interval": "",
-          "legendFormat": "User",
+          "legendFormat": "Module ${module_var}",
           "range": true,
           "refId": "A"
         },
@@ -1302,7 +1302,7 @@
           "expr": "sum(ethereum_validators_monitoring_validators{owner='other', status='ongoing'})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other",
+          "legendFormat": "Rest of chain",
           "refId": "B"
         }
       ],
@@ -1405,7 +1405,7 @@
           "exemplar": true,
           "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner='user', status='pending', nos_module_id='${module_var}'})",
           "interval": "",
-          "legendFormat": "User",
+          "legendFormat": "Module ${module_var}",
           "range": true,
           "refId": "A"
         },
@@ -1418,7 +1418,7 @@
           "expr": "sum(ethereum_validators_monitoring_validators{owner='other', status='pending'})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other",
+          "legendFormat": "Rest of chain",
           "refId": "B"
         }
       ],
@@ -1521,7 +1521,7 @@
           "exemplar": true,
           "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner='user', status='withdrawal_pending', nos_module_id='${module_var}'})",
           "interval": "",
-          "legendFormat": "User",
+          "legendFormat": "Module ${module_var}",
           "range": true,
           "refId": "A"
         },
@@ -1534,7 +1534,7 @@
           "expr": "sum(ethereum_validators_monitoring_validators{owner='other', status='withdrawal_pending'})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other",
+          "legendFormat": "Rest of chain",
           "refId": "B"
         }
       ],
@@ -1637,7 +1637,7 @@
           "exemplar": true,
           "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner='user', status='withdrawal_done', nos_module_id='${module_var}'})",
           "interval": "",
-          "legendFormat": "User",
+          "legendFormat": "Module ${module_var}",
           "range": true,
           "refId": "A"
         },
@@ -1650,7 +1650,7 @@
           "expr": "sum(ethereum_validators_monitoring_validators{owner='other', status='withdrawal_done'})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other",
+          "legendFormat": "Rest of chain",
           "refId": "B"
         }
       ],
@@ -1752,7 +1752,7 @@
           "exemplar": true,
           "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validators{owner='user', status='slashed', nos_module_id='${module_var}'})",
           "interval": "",
-          "legendFormat": "User",
+          "legendFormat": "Module ${module_var}",
           "range": true,
           "refId": "A"
         },
@@ -1765,7 +1765,7 @@
           "expr": "sum(ethereum_validators_monitoring_validators{owner='other', status='slashed'})",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other",
+          "legendFormat": "Rest of chain",
           "refId": "B"
         }
       ],
@@ -1867,7 +1867,7 @@
           "exemplar": true,
           "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='ongoing', nos_module_id=~'${module_var}'} / 10^4))",
           "interval": "",
-          "legendFormat": "User (ETH)",
+          "legendFormat": "Module ${module_var} (ETH)",
           "range": true,
           "refId": "A"
         },
@@ -1880,7 +1880,7 @@
           "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='ongoing'} / 10^4))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other (ETH)",
+          "legendFormat": "Rest of chain (ETH)",
           "refId": "B"
         }
       ],
@@ -1983,7 +1983,7 @@
           "exemplar": true,
           "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='pending', nos_module_id='${module_var}'} / 10^4))",
           "interval": "",
-          "legendFormat": "User (ETH)",
+          "legendFormat": "Module ${module_var} (ETH)",
           "range": true,
           "refId": "A"
         },
@@ -1996,7 +1996,7 @@
           "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='pending'} / 10^4))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other (ETH)",
+          "legendFormat": "Rest of chain (ETH)",
           "refId": "B"
         }
       ],
@@ -2099,7 +2099,7 @@
           "exemplar": true,
           "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='withdrawal_pending', nos_module_id='${module_var}'} / 10^4))",
           "interval": "",
-          "legendFormat": "User (ETH)",
+          "legendFormat": "Module ${module_var} (ETH)",
           "range": true,
           "refId": "A"
         },
@@ -2112,7 +2112,7 @@
           "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='withdrawal_pending'} / 10^4))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other (ETH)",
+          "legendFormat": "Rest of chain (ETH)",
           "refId": "B"
         }
       ],
@@ -2215,7 +2215,7 @@
           "exemplar": true,
           "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='withdrawal_done', nos_module_id='${module_var}'} / 10^4))",
           "interval": "",
-          "legendFormat": "User (ETH)",
+          "legendFormat": "Module ${module_var} (ETH)",
           "range": true,
           "refId": "A"
         },
@@ -2228,7 +2228,7 @@
           "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='withdrawal_done'} / 10^4))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other (ETH)",
+          "legendFormat": "Rest of chain (ETH)",
           "refId": "B"
         }
       ],
@@ -2330,7 +2330,7 @@
           "exemplar": true,
           "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='slashed', nos_module_id='${module_var}'} / 10^4))",
           "interval": "",
-          "legendFormat": "User (ETH)",
+          "legendFormat": "Module ${module_var} (ETH)",
           "range": true,
           "refId": "A"
         },
@@ -2343,7 +2343,7 @@
           "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='slashed'} / 10^4))",
           "hide": false,
           "interval": "",
-          "legendFormat": "Other (ETH)",
+          "legendFormat": "Rest of chain (ETH)",
           "refId": "B"
         }
       ],
@@ -8873,7 +8873,7 @@
               "exemplar": true,
               "expr": "sum(ethereum_validators_monitoring_user_sync_participation_avg_percent{nos_module_id='${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "User",
+              "legendFormat": "Module ${module_var}",
               "range": true,
               "refId": "A"
             },
@@ -11546,7 +11546,7 @@
               "refId": "B"
             }
           ],
-          "title": "Consolidating source validators share (amount)",
+          "title": "Consolidating source validators share",
           "type": "piechart"
         },
         {
@@ -11635,7 +11635,7 @@
               "exemplar": true,
               "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_count{type='source', nos_module_id=~'${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "Module {{nos_module_id}}",
+              "legendFormat": "Module ${module_var}",
               "range": true,
               "refId": "A"
             }
@@ -11757,7 +11757,7 @@
               "refId": "B"
             }
           ],
-          "title": "Consolidating source validators share (balance)",
+          "title": "Consolidating source validators share (ETH)",
           "type": "piechart"
         },
         {
@@ -11846,12 +11846,12 @@
               "exemplar": true,
               "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_module_id=~'${module_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "Module {{nos_module_id}}",
+              "legendFormat": "Module ${module_var}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Total balance of User validators initiating consolidation (in ETH)",
+          "title": "Total balance of User validators initiating consolidation (ETH)",
           "type": "timeseries"
         },
         {
@@ -12134,7 +12134,7 @@
               "refId": "B"
             }
           ],
-          "title": "Consolidating target validators share (amount)",
+          "title": "Consolidating target validators share",
           "type": "piechart"
         },
         {
@@ -12223,7 +12223,7 @@
               "exemplar": true,
               "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_count{type='target', nos_module_id=~'${module_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "Module {{nos_module_id}}",
+              "legendFormat": "Module ${module_var}",
               "range": true,
               "refId": "A"
             }
@@ -12345,7 +12345,7 @@
               "refId": "B"
             }
           ],
-          "title": "Consolidating target validators share (balance)",
+          "title": "Consolidating target validators share (ETH)",
           "type": "piechart"
         },
         {
@@ -12434,12 +12434,12 @@
               "exemplar": true,
               "expr": "sum by (nos_module_id) (ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_module_id=~'${module_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
-              "legendFormat": "Module {{nos_module_id}}",
+              "legendFormat": "Module ${module_var}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Total balance of User target consolidation validators (in ETH)",
+          "title": "Total balance of User target consolidation validators (ETH)",
           "type": "timeseries"
         },
         {
