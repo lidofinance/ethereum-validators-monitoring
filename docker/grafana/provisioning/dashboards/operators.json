@@ -8100,7 +8100,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Number of validators with `source_index` belonging to {{ nos_name_var }} in pending consolidation queue in comparison with total number of User validator `source_index`es in the queue",
+          "description": "Number of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total number of User validator `source_index`es in the queue",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -8126,7 +8126,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "green",
+                      "fixedColor": "yellow",
                       "mode": "fixed"
                     }
                   }
@@ -8141,7 +8141,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "super-light-green",
+                      "fixedColor": "super-light-yellow",
                       "mode": "fixed"
                     }
                   }
@@ -8190,7 +8190,7 @@
               "exemplar": true,
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type=\"source\",nos_name=~\"${nos_name_var}\"})",
               "interval": "",
-              "legendFormat": "{{nos_name_var}}",
+              "legendFormat": "${nos_name_var}",
               "range": true,
               "refId": "A"
             },
@@ -8217,7 +8217,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Number of validators with `source_index` belonging to {{ nos_name_var }} in pending consolidation queue",
+          "description": "Number of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -8311,7 +8311,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Total balance of validators with `source_index` belonging to {{ nos_name_var }} in pending consolidation queue in comparison with total balance of User validator `source_index`es in the queue",
+          "description": "Total balance of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total balance of User validator `source_index`es in the queue",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -8337,7 +8337,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "green",
+                      "fixedColor": "orange",
                       "mode": "fixed"
                     }
                   }
@@ -8352,7 +8352,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "super-light-green",
+                      "fixedColor": "super-light-orange",
                       "mode": "fixed"
                     }
                   }
@@ -8401,7 +8401,7 @@
               "exemplar": true,
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"source\",nos_name=~\"${nos_name_var}\"}) / 10^4",
               "interval": "",
-              "legendFormat": "{{nos_name_var}}",
+              "legendFormat": "${nos_name_var} (ETH)",
               "range": true,
               "refId": "A"
             },
@@ -8415,7 +8415,7 @@
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"source\",nos_name!~\"${nos_name_var}\"}) / 10^4",
               "hide": false,
               "interval": "",
-              "legendFormat": "Other User operators",
+              "legendFormat": "Other User operators (ETH)",
               "range": true,
               "refId": "B"
             }
@@ -8428,7 +8428,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Total balance of validators with `source_index` belonging to {{ nos_name_var }} in pending consolidation queue",
+          "description": "Total balance of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue (in ETH)",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -8507,14 +8507,14 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_consolidation_balance{type=\"source\", nos_name=~'${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_consolidation_balance{type=\"source\", nos_name=~'${nos_name_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Total balance of User validators initiating consolidation",
+          "title": "Total balance of User validators initiating consolidation (in ETH)",
           "type": "timeseries"
         },
         {
@@ -8522,7 +8522,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Number of validators with `target_index` belonging to {{ nos_name_var }} in pending consolidation queue in comparison with total number of User validator `target_index`es in the queue",
+          "description": "Number of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total number of User validator `target_index`es in the queue",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -8548,7 +8548,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "green",
+                      "fixedColor": "blue",
                       "mode": "fixed"
                     }
                   }
@@ -8563,7 +8563,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "super-light-green",
+                      "fixedColor": "super-light-blue",
                       "mode": "fixed"
                     }
                   }
@@ -8612,7 +8612,7 @@
               "exemplar": true,
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_count{type=\"target\",nos_name=~\"${nos_name_var}\"})",
               "interval": "",
-              "legendFormat": "{{nos_name_var}}",
+              "legendFormat": "${nos_name_var}",
               "range": true,
               "refId": "A"
             },
@@ -8639,7 +8639,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Number of validators with `target_index` belonging to {{ nos_name_var }} in pending consolidation queue",
+          "description": "Number of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -8733,7 +8733,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Total balance of validators with `target_index` belonging to {{ nos_name_var }} in pending consolidation queue in comparison with total balance of User validator `target_index`es in the queue",
+          "description": "Total balance of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue in comparison with total balance of User validator `target_index`es in the queue",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -8759,7 +8759,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "green",
+                      "fixedColor": "purple",
                       "mode": "fixed"
                     }
                   }
@@ -8774,7 +8774,7 @@
                   {
                     "id": "color",
                     "value": {
-                      "fixedColor": "super-light-green",
+                      "fixedColor": "super-light-purple",
                       "mode": "fixed"
                     }
                   }
@@ -8823,7 +8823,7 @@
               "exemplar": true,
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"target\",nos_name=~\"${nos_name_var}\"}) / 10^4",
               "interval": "",
-              "legendFormat": "{{nos_name_var}}",
+              "legendFormat": "${nos_name_var} (ETH)",
               "range": true,
               "refId": "A"
             },
@@ -8837,7 +8837,7 @@
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"target\",nos_name!~\"${nos_name_var}\"}) / 10^4",
               "hide": false,
               "interval": "",
-              "legendFormat": "Other User operators",
+              "legendFormat": "Other User operators (ETH)",
               "range": true,
               "refId": "B"
             }
@@ -8850,7 +8850,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Total balance of validators with `target_index` belonging to {{ nos_name_var }} in pending consolidation queue",
+          "description": "Total balance of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue (in ETH)",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -8929,14 +8929,14 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_consolidation_balance{type=\"target\", nos_name=~'${nos_name_var}'}) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
+              "expr": "sum by (nos_name) (ethereum_validators_monitoring_validator_consolidation_balance{type=\"target\", nos_name=~'${nos_name_var}'} / 10^4) AND ON() changes(ethereum_validators_monitoring_epoch_number[$__rate_interval]) > 0",
               "interval": "",
               "legendFormat": "{{nos_name}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Total balance of User target consolidation validators",
+          "title": "Total balance of User target consolidation validators (in ETH)",
           "type": "timeseries"
         }
       ],
