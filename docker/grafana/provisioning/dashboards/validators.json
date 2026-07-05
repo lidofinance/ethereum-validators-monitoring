@@ -11490,7 +11490,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 79
+            "y": 40
           },
           "id": 1716,
           "options": {
@@ -11607,7 +11607,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 111
+            "y": 40
           },
           "id": 1769,
           "options": {
@@ -11701,7 +11701,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 79
+            "y": 48
           },
           "id": 1718,
           "options": {
@@ -11818,7 +11818,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 111
+            "y": 48
           },
           "id": 1775,
           "options": {
@@ -11874,7 +11874,16 @@
               },
               "links": [],
               "mappings": [],
-              "thresholds": {}
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "ETH"
             },
             "overrides": [
               {
@@ -11885,7 +11894,11 @@
                 "properties": [
                   {
                     "id": "unit",
-                    "value": "string"
+                    "value": "none"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
                   }
                 ]
               },
@@ -11908,10 +11921,6 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.width",
-                    "value": 200
-                  },
-                  {
                     "id": "custom.filterable",
                     "value": true
                   },
@@ -11926,14 +11935,26 @@
                     ]
                   }
                 ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Balance"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
               }
             ]
           },
           "gridPos": {
             "h": 8,
-            "w": 8,
+            "w": 24,
             "x": 0,
-            "y": 38
+            "y": 56
           },
           "id": 61,
           "options": {
@@ -11967,14 +11988,36 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS 'Balance (ETH)'\nFROM (\n  SELECT source_val_id\n  FROM pending_consolidations\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY source_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.source_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '${module_var}'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id",
-              "rawQuery": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS 'Balance (ETH)'\nFROM (\n  SELECT source_val_id\n  FROM pending_consolidations\n  WHERE epoch = 216255\n  LIMIT 1 BY source_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = 216255\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.source_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '1'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id",
+              "query": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS Balance\nFROM (\n  SELECT source_val_id\n  FROM pending_consolidations\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY source_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.source_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '${module_var}'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id, summary.val_nos_name",
+              "rawQuery": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS Balance\nFROM (\n  SELECT source_val_id\n  FROM pending_consolidations\n  WHERE epoch = 216255\n  LIMIT 1 BY source_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = 216255\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.source_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '1'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id, summary.val_nos_name",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Operators with consolidating source validators in module ${module_var}",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Balance (ETH)",
+                "binary": {
+                  "left": "Balance",
+                  "operator": "/",
+                  "reducer": "sum",
+                  "right": "1000000000"
+                },
+                "mode": "binary",
+                "reduce": {
+                  "include": [
+                    "Balance (ETH)"
+                  ],
+                  "reducer": "lastNotNull"
+                },
+                "replaceFields": false
+              }
+            }
+          ],
           "type": "table"
         },
         {
@@ -12035,7 +12078,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 79
+            "y": 64
           },
           "id": 1720,
           "options": {
@@ -12152,7 +12195,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 111
+            "y": 64
           },
           "id": 1777,
           "options": {
@@ -12246,7 +12289,7 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 79
+            "y": 72
           },
           "id": 1722,
           "options": {
@@ -12297,7 +12340,7 @@
               "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type=\"target\",nos_module_id!~\"${module_var}\"}) / 10^4",
               "hide": false,
               "interval": "",
-              "legendFormat": "Other User operators (ETH)",
+              "legendFormat": "Other modules (ETH)",
               "range": true,
               "refId": "B"
             }
@@ -12363,7 +12406,7 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 111
+            "y": 72
           },
           "id": 1779,
           "options": {
@@ -12419,7 +12462,16 @@
               },
               "links": [],
               "mappings": [],
-              "thresholds": {}
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "ETH"
             },
             "overrides": [
               {
@@ -12430,7 +12482,11 @@
                 "properties": [
                   {
                     "id": "unit",
-                    "value": "string"
+                    "value": "none"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
                   }
                 ]
               },
@@ -12453,10 +12509,6 @@
                 },
                 "properties": [
                   {
-                    "id": "custom.width",
-                    "value": 200
-                  },
-                  {
                     "id": "custom.filterable",
                     "value": true
                   },
@@ -12471,14 +12523,26 @@
                     ]
                   }
                 ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Balance"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
               }
             ]
           },
           "gridPos": {
             "h": 8,
-            "w": 8,
+            "w": 24,
             "x": 0,
-            "y": 38
+            "y": 80
           },
           "id": 64,
           "options": {
@@ -12512,14 +12576,36 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS 'Balance (ETH)'\nFROM (\n  SELECT target_val_id\n  FROM pending_consolidations\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY target_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.target_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '${module_var}'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id",
-              "rawQuery": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS 'Balance (ETH)'\nFROM (\n  SELECT target_val_id\n  FROM pending_consolidations\n  WHERE epoch = 216255\n  LIMIT 1 BY target_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = 216255\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.target_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '1'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id",
+              "query": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS Balance\nFROM (\n  SELECT target_val_id\n  FROM pending_consolidations\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY target_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.target_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '${module_var}'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id, summary.val_nos_name",
+              "rawQuery": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS Balance\nFROM (\n  SELECT target_val_id\n  FROM pending_consolidations\n  WHERE epoch = 216255\n  LIMIT 1 BY target_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = 216255\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.target_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '1'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id, summary.val_nos_name",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Operators with consolidating target validators in module ${module_var}",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Balance (ETH)",
+                "binary": {
+                  "left": "Balance",
+                  "operator": "/",
+                  "reducer": "sum",
+                  "right": "1000000000"
+                },
+                "mode": "binary",
+                "reduce": {
+                  "include": [
+                    "Balance (ETH)"
+                  ],
+                  "reducer": "lastNotNull"
+                },
+                "replaceFields": false
+              }
+            }
+          ],
           "type": "table"
         }
       ],
@@ -12692,6 +12778,6 @@
   "timezone": "",
   "title": "Validators",
   "uid": "HRgPmpNnz",
-  "version": 22,
+  "version": 23,
   "weekStart": ""
 }
