@@ -3,7 +3,7 @@ export function gweiToEth(num: bigint, precision = 4): number {
     throw Error(`Precision must be integer between 0 and 5, got ${precision}`);
   }
 
-  return gweiToEthBP(num) / 10 ** precision;
+  return gweiToEthBP(num, precision) / 10 ** precision;
 }
 
 /**
