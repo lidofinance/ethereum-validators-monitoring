@@ -3,7 +3,7 @@ import { join } from 'lodash';
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
 import { gweiToEth } from 'common/functions/gweiToEth';
-import { NOsValidatorsByConditionAttestationCount, NOsValidatorsStatusStats } from 'storage/clickhouse';
+import { NOsValidatorsCountAndBalance, NOsValidatorsStatusStats } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
 
 import { AlertBodyAnnotations, AlertRuleResult } from './BasicAlert';
@@ -16,23 +16,20 @@ export interface MissedAttestationsRuleResult {
   missedAttBalance: bigint;
 }
 
-export class CriticalMissedAttestations extends FullInclusionChecksAlert<
-  NOsValidatorsByConditionAttestationCount,
-  MissedAttestationsRuleResult
-> {
+export class CriticalMissedAttestations extends FullInclusionChecksAlert<NOsValidatorsCountAndBalance, MissedAttestationsRuleResult> {
   constructor(
     config: ConfigService,
     operators: RegistrySourceOperator[],
     moduleIndex: number,
     nosStats: NOsValidatorsStatusStats[],
-    missedAttValidators: NOsValidatorsByConditionAttestationCount[],
+    missedAttValidators: NOsValidatorsCountAndBalance[],
   ) {
     const name = CriticalMissedAttestations.name + 'Module' + moduleIndex;
     super(name, config, operators, moduleIndex, nosStats, missedAttValidators);
   }
 
   getOperatorAlertRuleResult(
-    missedAttestationsStats: NOsValidatorsByConditionAttestationCount,
+    missedAttestationsStats: NOsValidatorsCountAndBalance,
     noStats: NOsValidatorsStatusStats,
   ): MissedAttestationsRuleResult {
     return {

@@ -55,7 +55,7 @@ export class DutyService {
       // it's nice to have but not critical
       workingMode == WorkingMode.Finalized ? this.getPossibleHighRewardValidators().catch(() => []) : [],
     ]);
-    await allSettled([this.writeEpochMeta(epoch, stateSlot), this.writeSummary(epoch)]);
+    await allSettled([this.writeEpochMeta(epoch, stateSlot), this.writeSummary(epoch), this.writePendingConsolidations(epoch)]);
     this.summary.clear();
     await this.storage.updateEpochProcessing({ epoch, is_stored: true });
     return possibleHighRewardVals;
@@ -190,6 +190,11 @@ export class DutyService {
   protected async writeSummary(epoch: Epoch): Promise<any> {
     this.logger.log('Writing summary of duties into DB');
     await this.storage.writeSummary(this.summary.epoch(epoch).values());
+  }
+
+  protected async writePendingConsolidations(epoch: Epoch): Promise<any> {
+    this.logger.log('Writing pending consolidations into DB');
+    await this.storage.writePendingConsolidations(epoch, this.summary.epoch(epoch).getPendingConsolidations());
   }
 
   protected async writeEpochMeta(epoch: Epoch, stateSlot: Slot): Promise<any> {

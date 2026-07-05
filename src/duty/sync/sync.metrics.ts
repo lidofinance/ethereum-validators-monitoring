@@ -3,12 +3,11 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { allSettled } from 'common/functions/allSettled';
+import { gweiToEthBP } from 'common/functions/gweiToEth';
 import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric } from 'common/prometheus';
 import { Epoch } from 'common/types/types';
 import { ClickhouseService } from 'storage';
 import { RegistryService, RegistrySourceOperator } from 'validators-registry';
-
-import { gweiToEthBP } from '../state';
 
 @Injectable()
 export class SyncMetrics {

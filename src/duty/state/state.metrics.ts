@@ -4,6 +4,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { allSettled } from 'common/functions/allSettled';
+import { gweiToEthBP } from 'common/functions/gweiToEth';
 import { Owner, PrometheusService, PrometheusValStatus, TrackTask, setUserOperatorsMetric } from 'common/prometheus';
 import { Epoch } from 'common/types/types';
 import { ClickhouseService } from 'storage/clickhouse';
@@ -40,6 +41,10 @@ export class StateMetrics {
       this.negativeValidatorsCount(),
       this.totalBalance24hDifference(),
       this.operatorBalance24hDifference(),
+      this.userSourceValidatorsConsolidation(),
+      this.userTargetValidatorsConsolidation(),
+      this.otherSourceValidatorsConsolidation(),
+      this.otherTargetValidatorsConsolidation(),
       this.contract(),
     ]);
   }
@@ -351,7 +356,7 @@ export class StateMetrics {
   }
 
   private async negativeValidatorsCount() {
-    const data = await this.storage.getValidatorsCountWithNegativeDelta(this.processedEpoch);
+    const data = await this.storage.getUserValidatorsCountWithNegativeDelta(this.processedEpoch);
     setUserOperatorsMetric(this.prometheus.validatorsCountWithNegativeBalanceDelta, data, this.operators);
     setUserOperatorsMetric(this.prometheus.validatorsBalanceWithNegativeBalanceDelta, data, this.operators, {}, (item) =>
       gweiToEthBP(item.balance),
@@ -368,6 +373,50 @@ export class StateMetrics {
     setUserOperatorsMetric(this.prometheus.operatorBalance24hDifference, data, this.operators);
   }
 
+  private async userSourceValidatorsConsolidation() {
+    const data = await this.storage.getUserValidatorsConsolidationCount(this.processedEpoch, 'source');
+    setUserOperatorsMetric(this.prometheus.validatorConsolidationCount, data, this.operators, {
+      type: 'source',
+    });
+    setUserOperatorsMetric(
+      this.prometheus.validatorConsolidationBalance,
+      data,
+      this.operators,
+      {
+        type: 'source',
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
+  }
+
+  private async userTargetValidatorsConsolidation() {
+    const data = await this.storage.getUserValidatorsConsolidationCount(this.processedEpoch, 'target');
+    setUserOperatorsMetric(this.prometheus.validatorConsolidationCount, data, this.operators, {
+      type: 'target',
+    });
+    setUserOperatorsMetric(
+      this.prometheus.validatorConsolidationBalance,
+      data,
+      this.operators,
+      {
+        type: 'target',
+      },
+      (item) => gweiToEthBP(item.balance),
+    );
+  }
+
+  private async otherSourceValidatorsConsolidation() {
+    const data = await this.storage.getOtherValidatorsConsolidationCount(this.processedEpoch, 'source');
+    this.prometheus.otherValidatorConsolidationCount.set({ type: 'source' }, data.amount);
+    this.prometheus.otherValidatorConsolidationBalance.set({ type: 'source' }, gweiToEthBP(data.balance));
+  }
+
+  private async otherTargetValidatorsConsolidation() {
+    const data = await this.storage.getOtherValidatorsConsolidationCount(this.processedEpoch, 'target');
+    this.prometheus.otherValidatorConsolidationCount.set({ type: 'target' }, data.amount);
+    this.prometheus.otherValidatorConsolidationBalance.set({ type: 'target' }, gweiToEthBP(data.balance));
+  }
+
   private async contract() {
     if (!(this.registryService.source instanceof LidoSourceService)) return;
     this.prometheus.contractKeysTotal.set(
@@ -381,14 +430,4 @@ export class StateMetrics {
     const bufferedEther = (await this.registryService.source.contract.getBufferedEther()).div(GWEI_WEI_RATIO).div(ETH_GWEI_RATIO);
     this.prometheus.bufferedEther.set(bufferedEther.toNumber());
   }
-}
-
-export function gweiToEthBP(num: bigint, precision = 4): number {
-  if (!Number.isInteger(precision) || precision < 0 || precision > 5) {
-    throw Error(`Precision must be integer between 0 and 5, got ${precision}`);
-  }
-
-  const decimalsToRemove = 10n ** BigInt(8 - precision);
-  const val = Number(num / decimalsToRemove);
-  return Math.round(val / 10);
 }

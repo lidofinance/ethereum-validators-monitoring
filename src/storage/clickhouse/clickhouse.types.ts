@@ -19,54 +19,39 @@ export interface ModuleValidatorsStatusStats extends ValidatorsStatusBaseStats {
   stuck_balance: bigint;
 }
 
-export interface NOsDelta {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
-export interface NOsValidatorsNegDeltaCount {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-  balance: bigint;
-}
-
-export interface NOsValidatorsSyncAvgPercent {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
-export interface NOsValidatorsSyncByConditionCount {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-  balance: bigint;
-}
-
-export interface NOsValidatorsByConditionAttestationCount {
-  val_nos_module_id: string;
-  val_nos_id: string | null;
-  amount: number;
-  balance: bigint;
-}
-
-export interface NOsValidatorsByConditionProposeCount {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-  balance: bigint;
-}
-
-export interface NOsBalance24hDiff {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
 export interface NOsValidatorsStatusStats extends ModuleValidatorsStatusStats {
   val_nos_id: string;
+}
+
+export interface NOsIdentity {
+  val_nos_module_id: string;
+  val_nos_id: string | null;
+}
+
+export interface NOsValidatorsCount extends NOsIdentity {
+  amount: number;
+}
+
+export interface NOsValidatorsCountAndBalance extends NOsValidatorsCount {
+  balance: bigint;
+}
+
+export interface UserNOsIdentity {
+  val_nos_module_id: string;
+  val_nos_id: string;
+}
+
+export interface UserNOsValidatorsCount extends UserNOsIdentity {
+  amount: number;
+}
+
+export interface UserNOsValidatorsCountAndBalance extends UserNOsValidatorsCount {
+  balance: bigint;
+}
+
+export interface OtherValidatorsCountAndBalance {
+  amount: number;
+  balance: bigint;
 }
 
 export interface NOsValidatorsRewardsStats {
@@ -125,6 +110,7 @@ export interface WithdrawalsStats {
   partial_withdrawn_sum: number;
   partial_withdrawn_count: number;
 }
+
 export interface NOsWithdrawalsStats extends WithdrawalsStats {
   val_nos_module_id: string;
   val_nos_id: string;

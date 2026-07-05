@@ -1,18 +1,13 @@
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
-import { NOsValidatorsStatusStats } from 'storage/clickhouse';
+import { NOsValidatorsCountAndBalance, NOsValidatorsStatusStats } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
 
 import { AlertRuleResult } from './BasicAlert';
-import { NOIdentity, StandardAlertRuleAlert } from './StandardAlertRuleAlert';
-
-interface NOWithAmountAndBalance extends NOIdentity {
-  amount: number;
-  balance: bigint;
-}
+import { StandardAlertRuleAlert } from './StandardAlertRuleAlert';
 
 export abstract class FullInclusionChecksAlert<
-  TConditionedNOsStats extends NOWithAmountAndBalance,
+  TConditionedNOsStats extends NOsValidatorsCountAndBalance,
   TOperatorAlertRuleResult,
 > extends StandardAlertRuleAlert<TConditionedNOsStats, TOperatorAlertRuleResult> {
   protected constructor(
