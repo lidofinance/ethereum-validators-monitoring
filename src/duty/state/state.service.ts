@@ -98,16 +98,18 @@ export class StateService {
     }
 
     const pendingConsolidations = stateView.pendingConsolidations as PendingConsolidations;
-    for (let index = 0; index < pendingConsolidations.length; index++) {
-      if (index % 100 === 0) {
-        await unblock();
-      }
+    if (pendingConsolidations != null) {
+      for (let index = 0; index < pendingConsolidations.length; index++) {
+        if (index % 100 === 0) {
+          await unblock();
+        }
 
-      const consolidation = pendingConsolidations.get(index);
-      this.summary.epoch(epoch).addPendingConsolidation({
-        source_index: consolidation.sourceIndex,
-        target_index: consolidation.targetIndex,
-      });
+        const consolidation = pendingConsolidations.get(index);
+        this.summary.epoch(epoch).addPendingConsolidation({
+          source_index: consolidation.sourceIndex,
+          target_index: consolidation.targetIndex,
+        });
+      }
     }
 
     const baseReward = Math.trunc(
