@@ -186,8 +186,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📝❌"
-              summary: "Operators have missed attestations in the last 3 finalized epochs"
-              resolved_summary: "Operators do not have missed attestations in the last 3 finalized epochs."
+              summary: "Operators have missed attestations in the last 3 epochs"
+              resolved_summary: "Operators do not have missed attestations in the last 3 epochs."
               description: "Number of validators per operator that have missed attestations."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -206,8 +206,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📝❌"
-              summary: "Operators have missed attestations in the last 3 finalized epochs"
-              resolved_summary: "Operators do not have missed attestations in the last 3 finalized epochs."
+              summary: "Operators have missed attestations in the last 3 epochs"
+              resolved_summary: "Operators do not have missed attestations in the last 3 epochs."
               description: "Number of validators per operator that have missed attestations."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -226,8 +226,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📝❌"
-              summary: "Operators have missed attestations in the last 3 finalized epochs"
-              resolved_summary: "Operators do not have missed attestations in the last 3 finalized epochs."
+              summary: "Operators have missed attestations in the last 3 epochs"
+              resolved_summary: "Operators do not have missed attestations in the last 3 epochs."
               description: "Number of validators per operator that have missed attestations."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -260,7 +260,7 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📝🐢"
-              summary: "Operators have attestation inclusion delay greater than 2 in the last 3 finalized epochs"
+              summary: "Operators have attestation inclusion delay greater than 2 in the last 3 epochs"
               description: "Number of validators per operator that have attestations with high inclusion delay."
               field_name: "1#Operator 1"
               field_value: "[1 (32 ETH)](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-module_var=1&var-nos_name_var=Operator+1&from=-900000.000000&to=11340000.000000) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-module_var=1&var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
@@ -278,7 +278,7 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📝🐢"
-              summary: "Operators have attestation inclusion delay greater than 2 in the last 3 finalized epochs"
+              summary: "Operators have attestation inclusion delay greater than 2 in the last 3 epochs"
               description: "Number of validators per operator that have attestations with high inclusion delay."
               field_name: "1#Operator 1"
               field_value: "[2 (64 ETH)](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-module_var=1&var-nos_name_var=Operator+1&from=-420000.000000&to=11820000.000000) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-module_var=1&var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
@@ -296,7 +296,7 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📝🐢"
-              summary: "Operators have attestation inclusion delay greater than 2 in the last 3 finalized epochs"
+              summary: "Operators have attestation inclusion delay greater than 2 in the last 3 epochs"
               description: "Number of validators per operator that have attestations with high inclusion delay."
               field_name: "1#Operator 1"
               field_value: "[2 (64 ETH)](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-module_var=1&var-nos_name_var=Operator+1&from=60000.000000&to=12300000.000000) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-module_var=1&var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
@@ -328,8 +328,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📝🏷️"
-              summary: "Operators have invalid attestation property in the last 3 finalized epochs"
-              description: "Number of validators per operator that have invalid attestation property."
+              summary: "Operators have two invalid attestation properties (head or target or source) in the last 3 epochs"
+              description: "Number of validators per operator that have two invalid attestation properties."
               field_name: "1#Operator 1"
               field_value: "[1 (32 ETH)](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-module_var=1&var-nos_name_var=Operator+1&from=-900000.000000&to=11340000.000000) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-module_var=1&var-nos_name_var=Operator+1&from=-660000.000000&to=540000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
@@ -346,8 +346,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📝🏷️"
-              summary: "Operators have invalid attestation property in the last 3 finalized epochs"
-              description: "Number of validators per operator that have invalid attestation property."
+              summary: "Operators have two invalid attestation properties (head or target or source) in the last 3 epochs"
+              description: "Number of validators per operator that have two invalid attestation properties."
               field_name: "1#Operator 1"
               field_value: "[2 (64 ETH)](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-module_var=1&var-nos_name_var=Operator+1&from=-420000.000000&to=11820000.000000) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-module_var=1&var-nos_name_var=Operator+1&from=-180000.000000&to=1020000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
@@ -364,8 +364,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📝🏷️"
-              summary: "Operators have invalid attestation property in the last 3 finalized epochs"
-              description: "Number of validators per operator that have invalid attestation property."
+              summary: "Operators have two invalid attestation properties (head or target or source) in the last 3 epochs"
+              description: "Number of validators per operator that have two invalid attestation properties."
               field_name: "1#Operator 1"
               field_value: "[2 (64 ETH)](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-module_var=1&var-nos_name_var=Operator+1&from=60000.000000&to=12300000.000000) | [panel](http://127.0.0.1:8082/d/3wimU2H7h/nodeoperators/?var-module_var=1&var-nos_name_var=Operator+1&from=300000.000000&to=1500000.000000)"
               url: "http://127.0.0.1:8082/d/HRgPmpNnz/validators"
@@ -395,8 +395,8 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: "📥"
-              summary: "Operators that missed block proposal in the last finalized epoch"
-              resolved_summary: "Operators did not miss block proposal in the last finalized epoch."
+              summary: "Operators that missed block proposal in the last epoch"
+              resolved_summary: "Operators did not miss block proposal in the last epoch."
               description: "Number of validators per operator that missed block proposal."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -414,8 +414,8 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: "📥"
-              summary: "Operators that missed block proposal in the last finalized epoch"
-              resolved_summary: "Operators did not miss block proposal in the last finalized epoch."
+              summary: "Operators that missed block proposal in the last epoch"
+              resolved_summary: "Operators did not miss block proposal in the last epoch."
               description: "Number of validators per operator that missed block proposal."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -433,8 +433,8 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: "📥"
-              summary: "Operators that missed block proposal in the last finalized epoch"
-              resolved_summary: "Operators did not miss block proposal in the last finalized epoch."
+              summary: "Operators that missed block proposal in the last epoch"
+              resolved_summary: "Operators did not miss block proposal in the last epoch."
               description: "Number of validators per operator that missed block proposal."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -467,8 +467,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "🔄"
-              summary: "Operators that have sync committee participation less than average in the last 3 finalized epochs"
-              resolved_summary: "Operators sync committee participation is higher or equal than average in the last 3 finalized epochs."
+              summary: "Operators that have sync committee participation less than average in the last 3 epochs"
+              resolved_summary: "Operators sync committee participation is higher or equal than average in the last 3 epochs."
               description: "Number of validators per operator which sync committee participation is less than average."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -487,8 +487,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "🔄"
-              summary: "Operators that have sync committee participation less than average in the last 3 finalized epochs"
-              resolved_summary: "Operators sync committee participation is higher or equal than average in the last 3 finalized epochs."
+              summary: "Operators that have sync committee participation less than average in the last 3 epochs"
+              resolved_summary: "Operators sync committee participation is higher or equal than average in the last 3 epochs."
               description: "Number of validators per operator which sync committee participation is less than average."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -507,8 +507,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "🔄"
-              summary: "Operators that have sync committee participation less than average in the last 3 finalized epochs"
-              resolved_summary: "Operators sync committee participation is higher or equal than average in the last 3 finalized epochs."
+              summary: "Operators that have sync committee participation less than average in the last 3 epochs"
+              resolved_summary: "Operators sync committee participation is higher or equal than average in the last 3 epochs."
               description: "Number of validators per operator which sync committee participation is less than average."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -541,8 +541,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📈🔄"
-              summary: "Operators may get high future rewards, but their sync committee participation is less than average in the last 3 finalized epochs"
-              resolved_summary: "Operators sync committee participation is higher or equal than average in the last 3 finalized epochs and now they may get high future rewards."
+              summary: "Operators may get high future rewards, but their sync committee participation is less than average in the last 3 epochs"
+              resolved_summary: "Operators sync committee participation is higher or equal than average in the last 3 epochs and now they may get high future rewards."
               description: "Number of validators per operator that may get high future rewards, but their sync committee participation is less than average."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -561,8 +561,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📈🔄"
-              summary: "Operators may get high future rewards, but their sync committee participation is less than average in the last 3 finalized epochs"
-              resolved_summary: "Operators sync committee participation is higher or equal than average in the last 3 finalized epochs and now they may get high future rewards."
+              summary: "Operators may get high future rewards, but their sync committee participation is less than average in the last 3 epochs"
+              resolved_summary: "Operators sync committee participation is higher or equal than average in the last 3 epochs and now they may get high future rewards."
               description: "Number of validators per operator that may get high future rewards, but their sync committee participation is less than average."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -581,8 +581,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📈🔄"
-              summary: "Operators may get high future rewards, but their sync committee participation is less than average in the last 3 finalized epochs"
-              resolved_summary: "Operators sync committee participation is higher or equal than average in the last 3 finalized epochs and now they may get high future rewards."
+              summary: "Operators may get high future rewards, but their sync committee participation is less than average in the last 3 epochs"
+              resolved_summary: "Operators sync committee participation is higher or equal than average in the last 3 epochs and now they may get high future rewards."
               description: "Number of validators per operator that may get high future rewards, but their sync committee participation is less than average."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -615,8 +615,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📈📝❌"
-              summary: "Operators may get high future rewards, but missed attestations in the last 3 finalized epochs"
-              resolved_summary: "Operators do not have missed attestations in the last 3 finalized epochs and now they may get high future rewards."
+              summary: "Operators may get high future rewards, but missed attestations in the last 3 epochs"
+              resolved_summary: "Operators do not have missed attestations in the last 3 epochs and now they may get high future rewards."
               description: "Number of validators per operator that may get high future rewards, but have missed attestations."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -635,8 +635,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📈📝❌"
-              summary: "Operators may get high future rewards, but missed attestations in the last 3 finalized epochs"
-              resolved_summary: "Operators do not have missed attestations in the last 3 finalized epochs and now they may get high future rewards."
+              summary: "Operators may get high future rewards, but missed attestations in the last 3 epochs"
+              resolved_summary: "Operators do not have missed attestations in the last 3 epochs and now they may get high future rewards."
               description: "Number of validators per operator that may get high future rewards, but have missed attestations."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -655,8 +655,8 @@ tests:
               epoch_interval: 3
             exp_annotations:
               emoji: "📈📝❌"
-              summary: "Operators may get high future rewards, but missed attestations in the last 3 finalized epochs"
-              resolved_summary: "Operators do not have missed attestations in the last 3 finalized epochs and now they may get high future rewards."
+              summary: "Operators may get high future rewards, but missed attestations in the last 3 epochs"
+              resolved_summary: "Operators do not have missed attestations in the last 3 epochs and now they may get high future rewards."
               description: "Number of validators per operator that may get high future rewards, but have missed attestations."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -688,8 +688,8 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: "📈📥"
-              summary: "Operators may get high future rewards, but missed block proposal in the last finalized epoch"
-              resolved_summary: "Operators did not miss block proposal in the last finalized epoch and now they may get high future rewards."
+              summary: "Operators may get high future rewards, but missed block proposal in the last epoch"
+              resolved_summary: "Operators did not miss block proposal in the last epoch and now they may get high future rewards."
               description: "Number of validators per operator that may get high future rewards, but missed block proposal."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -707,8 +707,8 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: "📈📥"
-              summary: "Operators may get high future rewards, but missed block proposal in the last finalized epoch"
-              resolved_summary: "Operators did not miss block proposal in the last finalized epoch and now they may get high future rewards."
+              summary: "Operators may get high future rewards, but missed block proposal in the last epoch"
+              resolved_summary: "Operators did not miss block proposal in the last epoch and now they may get high future rewards."
               description: "Number of validators per operator that may get high future rewards, but missed block proposal."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"
@@ -726,8 +726,8 @@ tests:
               nos_name: Operator 1
             exp_annotations:
               emoji: "📈📥"
-              summary: "Operators may get high future rewards, but missed block proposal in the last finalized epoch"
-              resolved_summary: "Operators did not miss block proposal in the last finalized epoch and now they may get high future rewards."
+              summary: "Operators may get high future rewards, but missed block proposal in the last epoch"
+              resolved_summary: "Operators did not miss block proposal in the last epoch and now they may get high future rewards."
               description: "Number of validators per operator that may get high future rewards, but missed block proposal."
               resolved_description: "Number of recovered validators per operator."
               field_name: "1#Operator 1"

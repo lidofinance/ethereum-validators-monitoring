@@ -2617,6 +2617,18 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Module"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Validator"
             },
             "properties": [
@@ -2698,7 +2710,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -2738,11 +2750,11 @@
           "dateTimeType": "DATETIME",
           "extrapolate": true,
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator,\n    val_status as Status,\n    val_balance / pow(10, 9) as Balance\nFROM\n    validators_summary\nWHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n    epoch = ${epoch_number_var} AND\n    (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
-          "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_id as Validator,\n    val_status as Status,\n    val_balance / pow(10, 9) as Balance\nFROM\n    validators_summary\nWHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    epoch = 222117 AND\n    (val_status in ['active_exiting','exited_unslashed', 'exited_slashed'] or val_status == 'withdrawal_possible' and val_balance != 0)\nORDER BY val_id, val_balance\nLIMIT 1 by val_id",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_status AS Status,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  val_status IN ['active_exiting','exited_unslashed', 'exited_slashed', 'withdrawal_possible'] AND\n  val_balance != 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id, val_balance\nLIMIT 1 BY val_id",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_status AS Status,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  val_status IN ['active_exiting','exited_unslashed', 'exited_slashed', 'withdrawal_possible'] AND\n  val_balance != 0 AND\n  epoch = 222117\nORDER BY val_id, val_balance\nLIMIT 1 BY val_id",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -2755,7 +2767,7 @@
           "dateTimeType": "DATETIME",
           "extrapolate": true,
           "format": "time_series",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": true,
           "intervalFactor": 1,
           "query": "SELECT arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}'))\n",
@@ -3122,6 +3134,18 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Module"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Balance"
             },
             "properties": [
@@ -3214,7 +3238,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               },
@@ -3262,10 +3286,10 @@
           "dateTimeType": "DATETIME",
           "extrapolate": true,
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  current.val_nos_name as Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id as Validator,\n  current.val_balance / pow(10, 9) as Balance\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_slashed, val_nos_name\n    FROM validators_summary \n    WHERE \n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      val_stuck = 0 AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 and current.val_slashed = 0\nORDER BY GWei ASC, Validator\nLIMIT CAST(${limit}, 'Int16')",
-          "rawQuery": "SELECT\n  current.val_nos_name as Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id as Validator,\n  current.val_balance / pow(10, 9) as Balance\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_slashed, val_nos_name\n    FROM validators_summary \n    WHERE \n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND\n      epoch = 222126\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND\n      epoch = 222126 - 6\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND\n      epoch > (222126 - 6) AND epoch <= 222126\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 and current.val_slashed = 0\nORDER BY GWei ASC, Validator\nLIMIT 100",
+          "query": "SELECT\n  current.val_nos_module_id AS Module,\n  current.val_nos_name AS Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id AS Validator,\n  current.val_balance / pow(10, 9) AS Balance\nFROM (\n  SELECT\n    val_balance,\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_slashed,\n    val_nos_name\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS current\nINNER JOIN (\n  SELECT val_balance, val_id\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var} - 6\n  LIMIT 1 BY val_id\n) AS previous\nON\n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) AS withdrawn,\n    val_id,\n    val_nos_module_id,\n    val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_balance_withdrawn > 0 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - 6) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0\nORDER BY GWei ASC, Validator\nLIMIT CAST(${limit}, 'Int16')",
+          "rawQuery": "SELECT\n  current.val_nos_module_id AS Module,\n  current.val_nos_name AS Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id AS Validator,\n  current.val_balance / pow(10, 9) AS Balance\nFROM (\n  SELECT\n    val_balance,\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_slashed,\n    val_nos_name\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = 222126\n  LIMIT 1 BY val_id\n) AS current\nINNER JOIN (\n  SELECT val_balance, val_id\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = 222126 - 6\n  LIMIT 1 BY val_id\n) AS previous\nON\n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) AS withdrawn,\n    val_id,\n    val_nos_module_id,\n    val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_balance_withdrawn > 0 AND\n      val_stuck = 0 AND\n      (222126 - 6) < epoch AND epoch <= 222126\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_id = current.val_id\nHAVING (current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0)) < 0 AND current.val_slashed = 0\nORDER BY GWei ASC, Validator\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -3305,6 +3329,18 @@
           }
         },
         "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Module"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
           {
             "matcher": {
               "id": "byName",
@@ -3397,7 +3433,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -3441,10 +3477,10 @@
           "dateTimeType": "DATETIME",
           "extrapolate": true,
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  val_nos_name as Operator,\n  block_to_propose as Block,\n  val_id as Validator,\n  val_balance / pow(10, 9) as Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  (epoch = ${epoch_number_var})\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by val_id",
-          "rawQuery": "SELECT\n  val_nos_name as Operator,\n  block_to_propose as Block,\n  val_id as Validator,\n  val_balance / pow(10, 9) as Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  (epoch = 222135)\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by val_id",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  block_to_propose AS Block,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 BY val_id",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  block_to_propose AS Block,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  epoch = 222135\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 BY val_id",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -3521,6 +3557,18 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Module"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Balance"
             },
             "properties": [
@@ -3588,7 +3636,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -3632,11 +3680,11 @@
           "dateTimeType": "DATETIME",
           "extrapolate": true,
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": false,
           "intervalFactor": 1,
-          "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator,\n  b as Balance\nFROM (\n  SELECT\n    val_id,\n    val_nos_name,\n    count() AS count_fail,\n    MAX(val_balance) / pow(10, 9) AS b\n  FROM (\n    SELECT val_id, val_nos_name, val_balance\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      is_sync = 1 AND \n      val_stuck = 0 AND \n      sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n      (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${sync_epochs_var}))\n    LIMIT 1 by epoch, val_id  \n  )\n  GROUP BY val_id, val_nos_name\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, val_id",
-          "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator,\n  b as Balance\nFROM (\n  SELECT\n    val_id,\n    val_nos_name,\n    count() AS count_fail,\n    MAX(val_balance) / pow(10, 9) AS b\n  FROM (\n    SELECT val_id, val_nos_name, val_balance\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      is_sync = 1 AND \n      val_stuck = 0 AND \n      sync_percent < (99.200439453125 - 0) AND\n      (epoch <= 222137 AND epoch > (222137 - 3))\n    LIMIT 1 by epoch, val_id  \n  )\n  GROUP BY val_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  b AS Balance\nFROM (\n  SELECT\n    val_nos_module_id,\n    val_nos_id,\n    val_id,\n    val_nos_name,\n    count() AS count_fail,\n    MAX(val_balance) / pow(10, 9) AS b\n  FROM (\n    SELECT\n      val_id,\n      val_nos_module_id,\n      val_nos_id,\n      val_nos_name,\n      val_balance\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      is_sync = 1 AND\n      val_stuck = 0 AND\n      sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n      (${epoch_number_var} - ${sync_epochs_var}) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = ${sync_epochs_var}\nORDER BY count_fail DESC, val_id",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  b AS Balance\nFROM (\n  SELECT\n    val_nos_module_id,\n    val_nos_id,\n    val_id,\n    val_nos_name,\n    count() AS count_fail,\n    MAX(val_balance) / pow(10, 9) AS b\n  FROM (\n    SELECT\n      val_id,\n      val_nos_module_id,\n      val_nos_id,\n      val_nos_name,\n      val_balance\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      is_sync = 1 AND\n      val_stuck = 0 AND\n      sync_percent < (99.200439453125 - 0) AND\n      (222137 - 3) < epoch AND epoch <= 222137\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id",
           "refId": "B",
           "round": "0s",
           "skip_comments": true
@@ -3680,6 +3728,18 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Module"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Balance"
             },
             "properties": [
@@ -3747,7 +3807,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -3791,10 +3851,10 @@
           "dateTimeType": "DATETIME",
           "extrapolate": true,
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "\nSELECT\n  val_nos_name as Operator,\n  val_id as Validator,\n  b as Balance\nFROM (\n    SELECT\n      val_id,\n      val_nos_name,\n      count() as count_fail,\n      MAX(val_balance) / pow(10, 9) AS b\n    FROM (\n      SELECT val_id, val_nos_name, val_balance\n      FROM validators_summary\n      WHERE \n        att_happened = 0 AND\n        val_stuck = 0 AND\n        CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n          IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n        (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\n      LIMIT 1 by epoch, val_id\n    )\n    GROUP BY val_id, val_nos_name\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT CAST(${limit}, 'Int16')",
-          "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator,\n  b as Balance\nFROM (\n    SELECT\n      val_id,\n      val_nos_name,\n      count() as count_fail,\n      MAX(val_balance) / pow(10, 9) AS b\n    FROM (\n      SELECT val_id, val_nos_name, val_balance\n      FROM validators_summary\n      WHERE \n        att_happened = 0 AND\n        val_stuck = 0 AND\n        CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n          IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n        (epoch <= 222140 AND epoch > (222140 - 3))\n      LIMIT 1 by epoch, val_id\n    )\n    GROUP BY val_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  b AS Balance\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail,\n    MAX(val_balance) / pow(10, 9) AS b\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      att_happened = 0 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - ${att_epochs_var}) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT CAST(${limit}, 'Int16')",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  b AS Balance\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail,\n    MAX(val_balance) / pow(10, 9) AS b\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      att_happened = 0 AND\n      val_stuck = 0 AND\n      (222140 - 3) < epoch AND epoch <= 222140\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -3838,6 +3898,18 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Module"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Balance"
             },
             "properties": [
@@ -3875,18 +3947,6 @@
           },
           {
             "matcher": {
-              "id": "byName",
-              "options": "count_fail"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
               "id": "byValue",
               "options": {
                 "op": "gte",
@@ -3917,7 +3977,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operators dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -3961,10 +4021,10 @@
           "dateTimeType": "DATETIME",
           "extrapolate": true,
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator,\n  count() as count_fail,\n  MAX(val_balance) / pow(10, 9) as Balance\nFROM (\n  SELECT val_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n    att_happened = 1 AND\n    att_inc_delay > 1 AND\n    val_stuck = 0 AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id, val_nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT CAST(${limit}, 'Int16')",
-          "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator,\n  count() as count_fail,\n  MAX(val_balance) / pow(10, 9) as Balance\nFROM (\n  SELECT val_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    att_happened = 1 AND\n    att_inc_delay > 1 AND\n    val_stuck = 0 AND\n    (epoch <= 222142 AND epoch > (222142 - 3))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  b AS Balance\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail,\n    MAX(val_balance) / pow(10, 9) AS b\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      att_happened = 1 AND\n      att_inc_delay > 1 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - ${att_epochs_var}) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT CAST(${limit}, 'Int16')",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  b AS Balance\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail,\n    MAX(val_balance) / pow(10, 9) AS b\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      att_happened = 1 AND\n      att_inc_delay > 1 AND\n      val_stuck = 0 AND\n      (222142 - 3) < epoch AND epoch <= 222142\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -3979,7 +4039,7 @@
         "type": "vertamedia-clickhouse-datasource",
         "uid": "PDEE91DDB90597936"
       },
-      "description": "head or target or source",
+      "description": "Validators that have two invalid attestation properties (head or target or source) in the last ${att_epochs_var} epochs",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -4006,6 +4066,18 @@
           }
         },
         "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Module"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
           {
             "matcher": {
               "id": "byName",
@@ -4046,18 +4118,6 @@
           },
           {
             "matcher": {
-              "id": "byName",
-              "options": "count_fail"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
               "id": "byValue",
               "options": {
                 "op": "gte",
@@ -4088,7 +4148,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -4132,16 +4192,16 @@
           "dateTimeType": "DATETIME",
           "extrapolate": true,
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator,\n  count() as count_fail,\n  MAX(val_balance) / pow(10, 9) as Balance\nFROM (\n  SELECT val_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n    (att_valid_head + att_valid_target + att_valid_source = 1) AND\n    val_stuck = 0 AND\n    (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${att_epochs_var}))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id, val_nos_name\nHAVING count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT CAST(${limit}, 'Int16')",
-          "rawQuery": "SELECT\n  val_nos_name as Operator,\n  val_id as Validator,\n  count() as count_fail,\n  MAX(val_balance) / pow(10, 9) as Balance\nFROM (\n  SELECT val_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    (att_valid_head + att_valid_target + att_valid_source = 1) AND\n    val_stuck = 0 AND\n    (epoch <= 222147 AND epoch > (222147 - 3))\n  LIMIT 1 by epoch, val_id\n)\nGROUP BY val_id, val_nos_name\nHAVING count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  b AS Balance\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail,\n    MAX(val_balance) / pow(10, 9) AS b\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      att_valid_head + att_valid_target + att_valid_source = 1 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - ${att_epochs_var}) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = ${att_epochs_var}\nORDER BY count_fail DESC, val_id\nLIMIT CAST(${limit}, 'Int16')",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  b AS Balance\nFROM (\n  SELECT\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name,\n    count() AS count_fail,\n    MAX(val_balance) / pow(10, 9) AS b\n  FROM (\n    SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      att_valid_head + att_valid_target + att_valid_source = 1 AND\n      val_stuck = 0 AND\n      (222147 - 3) < epoch AND epoch <= 222147\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id, val_nos_name\n)\nWHERE count_fail = 3\nORDER BY count_fail DESC, val_id\nLIMIT 100",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
         }
       ],
-      "title": "Invalid attestation properties (${att_epochs_var} epochs in a row)",
+      "title": "Two invalid attestation properties (${att_epochs_var} epochs in a row)",
       "type": "table"
     },
     {
@@ -4176,6 +4236,18 @@
           }
         },
         "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Module"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
           {
             "matcher": {
               "id": "byName",
@@ -4246,7 +4318,7 @@
                   {
                     "targetBlank": true,
                     "title": "Operator dashboard",
-                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                    "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                   }
                 ]
               }
@@ -4290,10 +4362,10 @@
           "dateTimeType": "DATETIME",
           "extrapolate": true,
           "format": "table",
-          "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+          "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "intervalFactor": 1,
-          "query": "SELECT\n    val_nos_name as Operator,\n    val_status as Status,\n    val_id as Validator,\n    val_balance / pow(10, 9) as Balance\nFROM validators_summary\nWHERE\n  (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 by val_id",
-          "rawQuery": "SELECT\n    val_nos_name as Operator,\n    val_status as Status,\n    val_id as Validator,\n    val_balance / pow(10, 9) as Balance\nFROM validators_summary\nWHERE\n  (val_status == 'active_slashed' OR val_status == 'exited_slashed' OR val_slashed == 1) AND\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  epoch = 222149\nORDER BY val_id\nLIMIT 1 by val_id",
+          "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_status AS Status,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  (val_status = 'active_slashed' OR val_status = 'exited_slashed' OR val_slashed = 1) AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id",
+          "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_status AS Status,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  (val_status = 'active_slashed' OR val_status = 'exited_slashed' OR val_slashed = 1) AND\n  epoch = 222149\nORDER BY val_id\nLIMIT 1 BY val_id",
           "refId": "A",
           "round": "0s",
           "skip_comments": true
@@ -4658,6 +4730,18 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Module"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 70
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "Balance"
                 },
                 "properties": [
@@ -4747,7 +4831,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -4784,17 +4868,17 @@
           "pluginVersion": "9.5.7",
           "targets": [
             {
-                  "datasource": {
+              "datasource": {
                 "type": "vertamedia-clickhouse-datasource",
                 "uid": "PDEE91DDB90597936"
               },
               "dateTimeType": "DATETIME",
               "extrapolate": true,
               "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+              "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  current.val_nos_name as Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id as Validator,\n  current.val_balance / pow(10, 9) as Balance\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}'))\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var} - 6 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}'))\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_stuck = 0 AND\n      epoch > (${epoch_number_var} - 6) AND epoch <= ${epoch_number_var} AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}'))\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT 100",
-              "rawQuery": "SELECT\n  current.val_nos_name as Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id as Validator,\n  current.val_balance / pow(10, 9) as Balance\nFROM \n  (\n    SELECT val_balance, val_id, val_nos_id, val_nos_name \n    FROM validators_summary \n    WHERE \n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 222150 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1'))\n    LIMIT 1 by val_id\n  ) AS current\nLEFT JOIN\n  (\n    SELECT val_balance, val_id, val_nos_id \n    FROM validators_summary \n    WHERE \n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND \n      val_nos_id IS NOT NULL AND\n      val_stuck = 0 AND\n      epoch = 222150 - 6 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1'))\n    LIMIT 1 by val_id\n  ) AS previous\nON\n  previous.val_nos_id = current.val_nos_id AND \n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) as withdrawn, val_id, val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      val_nos_id IS NOT NULL AND\n      val_status in ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_stuck = 0 AND\n      epoch > (222150 - 6) AND epoch <= 222150 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1'))\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_nos_id = current.val_nos_id AND\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT 100",
+              "query": "SELECT\n  current.val_nos_module_id AS Module,\n  current.val_nos_name AS Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id AS Validator,\n  current.val_balance / pow(10, 9) AS Balance\nFROM (\n  SELECT\n    val_balance,\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS current\nINNER JOIN (\n  SELECT val_balance, val_id\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var} - 6\n  LIMIT 1 BY val_id\n) AS previous\nON\n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) AS withdrawn,\n    val_id,\n    val_nos_module_id,\n    val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_balance_withdrawn > 0 AND\n      val_stuck = 0 AND\n      (${epoch_number_var} - 6) < epoch AND epoch <= ${epoch_number_var}\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n  current.val_nos_module_id AS Module,\n  current.val_nos_name AS Operator,\n  current.val_balance - previous.val_balance + ifNull(withdrawals.withdrawn, 0) AS GWei,\n  current.val_id AS Validator,\n  current.val_balance / pow(10, 9) AS Balance\nFROM (\n  SELECT\n    val_balance,\n    val_id,\n    val_nos_module_id,\n    val_nos_id,\n    val_nos_name\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = 222150\n  LIMIT 1 BY val_id\n) AS current\nINNER JOIN (\n  SELECT val_balance, val_id\n  FROM validators_summary\n  WHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n    val_stuck = 0 AND\n    epoch = 222150 - 6\n  LIMIT 1 BY val_id\n) AS previous\nON\n  previous.val_id = current.val_id\nLEFT JOIN (\n  SELECT\n    sum(val_balance_withdrawn) AS withdrawn,\n    val_id,\n    val_nos_module_id,\n    val_nos_id\n  FROM (\n    SELECT val_balance_withdrawn, val_id, val_nos_module_id, val_nos_id\n    FROM validators_summary\n    WHERE\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_status IN ['active_ongoing', 'active_exiting', 'active_slashed', 'pending_initialized'] AND\n      val_balance_withdrawn > 0 AND\n      val_stuck = 0 AND\n      (222150 - 6) < epoch AND epoch <= 222150\n    LIMIT 1 BY epoch, val_id\n  )\n  GROUP BY val_id, val_nos_module_id, val_nos_id\n) AS withdrawals\nON\n  withdrawals.val_id = current.val_id\nORDER BY GWei ASC, Validator\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5048,6 +5132,18 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Module"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 70
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "Balance"
                 },
                 "properties": [
@@ -5137,7 +5233,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5181,10 +5277,10 @@
               "dateTimeType": "DATETIME",
               "extrapolate": true,
               "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+              "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  val_nos_name as Operator,\n  block_to_propose as Block,\n  val_id as Validator,\n  val_balance / pow(10, 9) as Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  (epoch <= ${epoch_number_var} AND epoch > (${epoch_number_var} - ${epochs_range}))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
-              "rawQuery": "SELECT\n  val_nos_name as Operator,\n  block_to_propose as Block,\n  val_id as Validator,\n  val_balance / pow(10, 9) as Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  (epoch <= 222157 AND epoch > (222157 - 19))\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 by epoch, val_id",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  block_to_propose AS Block,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  (${epoch_number_var} - ${epochs_range}) < epoch AND epoch <= ${epoch_number_var}\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 BY epoch, val_id",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  block_to_propose AS Block,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  is_proposer = 1 AND\n  block_proposed = 0 AND\n  val_stuck = 0 AND\n  (222157 - 19) < epoch AND epoch <= 222157\nORDER BY block_to_propose DESC, val_id\nLIMIT 1 BY epoch, val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -5665,6 +5761,18 @@
               {
                 "matcher": {
                   "id": "byName",
+                  "options": "Module"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 70
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
                   "options": "Balance"
                 },
                 "properties": [
@@ -5754,7 +5862,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -5798,10 +5906,10 @@
               "dateTimeType": "DATETIME",
               "extrapolate": true,
               "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+              "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n    val_nos_name as Operator,\n    sync_percent as Percent,\n    val_id as Validator,\n    val_balance / pow(10, 9) as Balance\nFROM\n    validators_summary\nWHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n    val_stuck = 0 AND\n    epoch = ${epoch_number_var} AND\n    is_sync = 1 AND\n    sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var})\nORDER BY sync_percent, val_id\nLIMIT 1 by val_id",
-              "rawQuery": "SELECT\n    val_nos_name as Operator,\n    sync_percent as Percent,\n    val_id as Validator,\n    val_balance / pow(10, 9) as Balance\nFROM\n    validators_summary\nWHERE\n    CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n      IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n    val_stuck = 0 AND\n    epoch = 222160 AND\n    is_sync = 1 AND\n    sync_percent < (99.0234375 - 0)\nORDER BY sync_percent, val_id\nLIMIT 1 by val_id",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  sync_percent AS Percent,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  is_sync = 1 AND\n  val_stuck = 0 AND\n  sync_percent < (${chain_sync_avg_participation} - ${sync_participation_distance_var}) AND\n  epoch = ${epoch_number_var}\nORDER BY sync_percent, val_id\nLIMIT 1 BY val_id",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  sync_percent AS Percent,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  is_sync = 1 AND\n  val_stuck = 0 AND\n  sync_percent < (99.0234375 - 0) AND\n  epoch = 222160\nORDER BY sync_percent, val_id\nLIMIT 1 BY val_id",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -6082,22 +6190,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Fails"
+                  "options": "Module"
                 },
                 "properties": [
                   {
                     "id": "custom.width",
-                    "value": 60
-                  },
-                  {
-                    "id": "unit",
-                    "value": "none"
-                  },
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-text"
-                    }
+                    "value": 70
                   }
                 ]
               },
@@ -6171,7 +6269,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -6215,10 +6313,10 @@
               "dateTimeType": "DATETIME",
               "extrapolate": true,
               "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+              "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "    SELECT\n      val_nos_name as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_happened = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n      val_nos_name as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_happened = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND epoch = 222164\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  att_happened = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  att_happened = 0 AND\n  val_stuck = 0 AND\n  epoch = 222164\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -6483,22 +6581,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Fails"
+                  "options": "Module"
                 },
                 "properties": [
                   {
                     "id": "custom.width",
-                    "value": 60
-                  },
-                  {
-                    "id": "unit",
-                    "value": "none"
-                  },
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-text"
-                    }
+                    "value": 70
                   }
                 ]
               },
@@ -6572,7 +6660,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -6616,10 +6704,10 @@
               "dateTimeType": "DATETIME",
               "extrapolate": true,
               "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+              "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      val_nos_name as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_happened = 1 AND\n      att_inc_delay > 1 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n      val_nos_name as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_happened = 1 AND\n      att_inc_delay > 1 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND\n      epoch = 222165\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  att_happened = 1 AND\n  att_inc_delay > 1 AND\n  val_stuck = 0 AND\n  epoch = 222165\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -6884,22 +6972,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Fails"
+                  "options": "Module"
                 },
                 "properties": [
                   {
                     "id": "custom.width",
-                    "value": 60
-                  },
-                  {
-                    "id": "unit",
-                    "value": "none"
-                  },
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-text"
-                    }
+                    "value": 70
                   }
                 ]
               },
@@ -6973,7 +7051,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -7017,10 +7095,10 @@
               "dateTimeType": "DATETIME",
               "extrapolate": true,
               "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+              "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      val_nos_name as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_head = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 BY val_id\n    LIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n      val_nos_name as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_head = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND\n      epoch = 222169\n    ORDER BY val_id\n    LIMIT 1 BY val_id\n    LIMIT 100",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  att_valid_head = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  att_valid_head = 0 AND\n  val_stuck = 0 AND\n  epoch = 222169\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -7285,22 +7363,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Fails"
+                  "options": "Module"
                 },
                 "properties": [
                   {
                     "id": "custom.width",
-                    "value": 60
-                  },
-                  {
-                    "id": "unit",
-                    "value": "none"
-                  },
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-text"
-                    }
+                    "value": 70
                   }
                 ]
               },
@@ -7374,7 +7442,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -7418,10 +7486,10 @@
               "dateTimeType": "DATETIME",
               "extrapolate": true,
               "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+              "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      val_nos_name as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_target = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      val_stuck = 0 AND\n      epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n      val_nos_name as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_target = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND\n      epoch = 222158\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  att_valid_target = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  att_valid_target = 0 AND\n  val_stuck = 0 AND\n  epoch = 222158\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
@@ -7686,22 +7754,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Fails"
+                  "options": "Module"
                 },
                 "properties": [
                   {
                     "id": "custom.width",
-                    "value": 60
-                  },
-                  {
-                    "id": "unit",
-                    "value": "none"
-                  },
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-text"
-                    }
+                    "value": 70
                   }
                 ]
               },
@@ -7775,7 +7833,7 @@
                       {
                         "targetBlank": true,
                         "title": "Operator dashboard",
-                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
+                        "url": "http://localhost:8082/d/3wimU2H7h/nodeoperators/?var-module_var=${__data.fields[0]}&var-nos_name_var=${__value.raw}"
                       }
                     ]
                   }
@@ -7819,10 +7877,10 @@
               "dateTimeType": "DATETIME",
               "extrapolate": true,
               "format": "table",
-              "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
+              "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "\n    SELECT\n      val_nos_name as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_source = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n      val_stuck = 0 AND epoch = ${epoch_number_var}\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT CAST(${limit}, 'Int16')",
-              "rawQuery": "SELECT\n      val_nos_name as Operator,\n      val_id as Validator,\n      val_balance / pow(10, 9) as Balance\n    FROM validators_summary\n    WHERE\n      att_valid_source = 0 AND\n      CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n        IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n      val_stuck = 0 AND epoch = 222171\n    ORDER BY val_id\n    LIMIT 1 by val_id\n    LIMIT 100",
+              "query": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat([${nos_global_index_var}], splitByChar('|','${dvt_nos_global_indexes_var:pipe}')) AND\n  att_valid_source = 0 AND\n  val_stuck = 0 AND\n  epoch = ${epoch_number_var}\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT CAST(${limit}, 'Int16')",
+              "rawQuery": "SELECT\n  val_nos_module_id AS Module,\n  val_nos_name AS Operator,\n  val_id AS Validator,\n  val_balance / pow(10, 9) AS Balance\nFROM validators_summary\nWHERE\n  CONCAT(toString(val_nos_module_id), ';', toString(val_nos_id))\n    IN arrayConcat(['1;0'], splitByChar('|','2;0|2;1')) AND\n  att_valid_source = 0 AND\n  val_stuck = 0 AND\n  epoch = 222171\nORDER BY val_id\nLIMIT 1 BY val_id\nLIMIT 100",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
