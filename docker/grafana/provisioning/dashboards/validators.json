@@ -11765,7 +11765,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Total balance of validators with `source_index` belonging to module ${module_var} in pending consolidation queue (in ETH)",
+          "description": "Total balance of validators with `source_index` belonging to module ${module_var} in pending consolidation queue (ETH)",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -12353,7 +12353,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Total balance of validators with `target_index` belonging to module ${module_var} in pending consolidation queue (in ETH)",
+          "description": "Total balance of validators with `target_index` belonging to module ${module_var} in pending consolidation queue (ETH)",
           "fieldConfig": {
             "defaults": {
               "color": {
