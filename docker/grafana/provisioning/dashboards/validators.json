@@ -417,7 +417,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='user', status='stuck'} / 10^4))",
+          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='user', status='stuck'}) / 10^4)",
           "refId": "A"
         }
       ],
@@ -905,7 +905,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "round(sum (ethereum_validators_monitoring_validators_balance{owner='user', status='ongoing', nos_module_id='$module_var'} / 10^4))",
+          "expr": "round(sum (ethereum_validators_monitoring_validators_balance{owner='user', status='ongoing', nos_module_id='$module_var'}) / 10^4)",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -973,7 +973,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='user', status='pending', nos_module_id='${module_var}'} / 10^4))",
+          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='user', status='pending', nos_module_id='${module_var}'}) / 10^4)",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -1041,7 +1041,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='user', status='withdrawal_pending', nos_module_id='${module_var}'} / 10^4))",
+          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='user', status='withdrawal_pending', nos_module_id='${module_var}'}) / 10^4)",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -1109,7 +1109,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='user', status='withdrawal_done', nos_module_id='${module_var}'} / 10^4))",
+          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='user', status='withdrawal_done', nos_module_id='${module_var}'}) / 10^4)",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -1184,7 +1184,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='user', status='slashed', nos_module_id='${module_var}'} / 10^4))",
+          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='user', status='slashed', nos_module_id='${module_var}'}) / 10^4)",
           "interval": "",
           "legendFormat": "{{owner}}",
           "range": true,
@@ -1865,7 +1865,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='ongoing', nos_module_id=~'${module_var}'} / 10^4))",
+          "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='ongoing', nos_module_id=~'${module_var}'}) / 10^4)",
           "interval": "",
           "legendFormat": "Module ${module_var} (ETH)",
           "range": true,
@@ -1877,7 +1877,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='ongoing'} / 10^4))",
+          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='ongoing'}) / 10^4)",
           "hide": false,
           "interval": "",
           "legendFormat": "Rest of chain (ETH)",
@@ -1981,7 +1981,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='pending', nos_module_id='${module_var}'} / 10^4))",
+          "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='pending', nos_module_id='${module_var}'}) / 10^4)",
           "interval": "",
           "legendFormat": "Module ${module_var} (ETH)",
           "range": true,
@@ -1993,7 +1993,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='pending'} / 10^4))",
+          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='pending'}) / 10^4)",
           "hide": false,
           "interval": "",
           "legendFormat": "Rest of chain (ETH)",
@@ -2097,7 +2097,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='withdrawal_pending', nos_module_id='${module_var}'} / 10^4))",
+          "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='withdrawal_pending', nos_module_id='${module_var}'}) / 10^4)",
           "interval": "",
           "legendFormat": "Module ${module_var} (ETH)",
           "range": true,
@@ -2109,7 +2109,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='withdrawal_pending'} / 10^4))",
+          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='withdrawal_pending'}) / 10^4)",
           "hide": false,
           "interval": "",
           "legendFormat": "Rest of chain (ETH)",
@@ -2213,7 +2213,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='withdrawal_done', nos_module_id='${module_var}'} / 10^4))",
+          "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='withdrawal_done', nos_module_id='${module_var}'}) / 10^4)",
           "interval": "",
           "legendFormat": "Module ${module_var} (ETH)",
           "range": true,
@@ -2225,7 +2225,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='withdrawal_done'} / 10^4))",
+          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='withdrawal_done'}) / 10^4)",
           "hide": false,
           "interval": "",
           "legendFormat": "Rest of chain (ETH)",
@@ -2328,7 +2328,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='slashed', nos_module_id='${module_var}'} / 10^4))",
+          "expr": "round(sum by (nos_module_id) (ethereum_validators_monitoring_validators_balance{owner='user', status='slashed', nos_module_id='${module_var}'}) / 10^4)",
           "interval": "",
           "legendFormat": "Module ${module_var} (ETH)",
           "range": true,
@@ -2340,7 +2340,7 @@
             "uid": "PBFA97CFB590B2093"
           },
           "exemplar": true,
-          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='slashed'} / 10^4))",
+          "expr": "round(sum(ethereum_validators_monitoring_validators_balance{owner='other', status='slashed'}) / 10^4)",
           "hide": false,
           "interval": "",
           "legendFormat": "Rest of chain (ETH)",
@@ -11428,7 +11428,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 147
       },
       "id": 1752,
       "panels": [
@@ -11736,7 +11736,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_module_id=~'${module_var}'}) / 10^4",
+              "expr": "round(sum(ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_module_id=~'${module_var}'}) / 10^4)",
               "interval": "",
               "legendFormat": "Module ${module_var} (ETH)",
               "range": true,
@@ -11749,7 +11749,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_module_id!~'${module_var}'}) / 10^4",
+              "expr": "round(sum(ethereum_validators_monitoring_validator_consolidation_balance{type='source', nos_module_id!~'${module_var}'}) / 10^4)",
               "hide": false,
               "interval": "",
               "legendFormat": "Other modules (ETH)",
@@ -11889,12 +11889,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Balance (ETH)"
+                  "options": "Balance"
                 },
                 "properties": [
                   {
                     "id": "unit",
-                    "value": "none"
+                    "value": "ETH"
                   },
                   {
                     "id": "decimals",
@@ -11933,18 +11933,6 @@
                         "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Balance"
-                },
-                "properties": [
-                  {
-                    "id": "custom.hidden",
-                    "value": true
                   }
                 ]
               }
@@ -11988,36 +11976,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS Balance\nFROM (\n  SELECT source_val_id\n  FROM pending_consolidations\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY source_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.source_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '${module_var}'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id, summary.val_nos_name",
-              "rawQuery": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS Balance\nFROM (\n  SELECT source_val_id\n  FROM pending_consolidations\n  WHERE epoch = 216255\n  LIMIT 1 BY source_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = 216255\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.source_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '1'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id, summary.val_nos_name",
+              "query": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) / pow(10, 9) AS Balance\nFROM (\n  SELECT source_val_id\n  FROM pending_consolidations\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY source_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.source_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '${module_var}'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id, summary.val_nos_name",
+              "rawQuery": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) / pow(10, 9) AS Balance\nFROM (\n  SELECT source_val_id\n  FROM pending_consolidations\n  WHERE epoch = 216255\n  LIMIT 1 BY source_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = 216255\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.source_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '1'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id, summary.val_nos_name",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Operators with consolidating source validators in module ${module_var}",
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Balance (ETH)",
-                "binary": {
-                  "left": "Balance",
-                  "operator": "/",
-                  "reducer": "sum",
-                  "right": "1000000000"
-                },
-                "mode": "binary",
-                "reduce": {
-                  "include": [
-                    "Balance (ETH)"
-                  ],
-                  "reducer": "lastNotNull"
-                },
-                "replaceFields": false
-              }
-            }
-          ],
           "type": "table"
         },
         {
@@ -12324,7 +12290,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_module_id=~'${module_var}'}) / 10^4",
+              "expr": "round(sum(ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_module_id=~'${module_var}'}) / 10^4)",
               "interval": "",
               "legendFormat": "Module ${module_var} (ETH)",
               "range": true,
@@ -12337,7 +12303,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_module_id!~'${module_var}'}) / 10^4",
+              "expr": "round(sum(ethereum_validators_monitoring_validator_consolidation_balance{type='target', nos_module_id!~'${module_var}'}) / 10^4)",
               "hide": false,
               "interval": "",
               "legendFormat": "Other modules (ETH)",
@@ -12477,12 +12443,12 @@
               {
                 "matcher": {
                   "id": "byName",
-                  "options": "Balance (ETH)"
+                  "options": "Balance"
                 },
                 "properties": [
                   {
                     "id": "unit",
-                    "value": "none"
+                    "value": "ETH"
                   },
                   {
                     "id": "decimals",
@@ -12521,18 +12487,6 @@
                         "url": "http://localhost:8082/d/3wimU2H7h/node-operators/?var-module_var=${module_var:raw}&var-nos_name_var=${__value.raw}"
                       }
                     ]
-                  }
-                ]
-              },
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "Balance"
-                },
-                "properties": [
-                  {
-                    "id": "custom.hidden",
-                    "value": true
                   }
                 ]
               }
@@ -12576,36 +12530,14 @@
               "format": "table",
               "formattedQuery": "SELECT $timeSeries as t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
               "intervalFactor": 1,
-              "query": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS Balance\nFROM (\n  SELECT target_val_id\n  FROM pending_consolidations\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY target_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.target_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '${module_var}'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id, summary.val_nos_name",
-              "rawQuery": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS Balance\nFROM (\n  SELECT target_val_id\n  FROM pending_consolidations\n  WHERE epoch = 216255\n  LIMIT 1 BY target_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = 216255\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.target_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '1'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id, summary.val_nos_name",
+              "query": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS Balance / pow(10, 9)\nFROM (\n  SELECT target_val_id\n  FROM pending_consolidations\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY target_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = ${epoch_number_var}\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.target_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '${module_var}'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id, summary.val_nos_name",
+              "rawQuery": "SELECT\n  summary.val_nos_name AS Operator,\n  count() AS Amount,\n  SUM(summary.val_balance) AS Balance / pow(10, 9)\nFROM (\n  SELECT target_val_id\n  FROM pending_consolidations\n  WHERE epoch = 216255\n  LIMIT 1 BY target_val_id\n) AS consolidation\nLEFT JOIN (\n  SELECT val_id, val_nos_module_id, val_nos_id, val_nos_name, val_balance\n  FROM validators_summary\n  WHERE epoch = 216255\n  LIMIT 1 BY val_id\n) AS summary\nON consolidation.target_val_id = summary.val_id\n  WHERE summary.val_nos_id IS NOT NULL AND val_nos_module_id = '1'\nGROUP BY summary.val_nos_module_id, summary.val_nos_id, summary.val_nos_name",
               "refId": "A",
               "round": "0s",
               "skip_comments": true
             }
           ],
           "title": "Operators with consolidating target validators in module ${module_var}",
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Balance (ETH)",
-                "binary": {
-                  "left": "Balance",
-                  "operator": "/",
-                  "reducer": "sum",
-                  "right": "1000000000"
-                },
-                "mode": "binary",
-                "reduce": {
-                  "include": [
-                    "Balance (ETH)"
-                  ],
-                  "reducer": "lastNotNull"
-                },
-                "replaceFields": false
-              }
-            }
-          ],
           "type": "table"
         }
       ],
