@@ -5,13 +5,13 @@ rule_files:
 tests:
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_user_validators{nos_module_id="1", nos_name="Operator 1", status="slashed"}
+      - series: ethereum_validators_monitoring_user_validators{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", status="slashed"}
         values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
-      - series: ethereum_validators_monitoring_user_validators_balance{nos_module_id="1", nos_name="Operator 1", status="slashed"}
+      - series: ethereum_validators_monitoring_user_validators_balance{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", status="slashed"}
         values: 0+0x48 320000+0x47 635500+0x47 635500+0x47 640000+0x47 0+0x47
-      - series: ethereum_validators_monitoring_user_validators{nos_module_id="1", nos_name="Operator 2", status="slashed"}
+      - series: ethereum_validators_monitoring_user_validators{nos_module_id="1", nos_global_index="1;2", nos_name="Operator 2", status="slashed"}
         values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
-      - series: ethereum_validators_monitoring_user_validators_balance{nos_module_id="1", nos_name="Operator 2", status="slashed"}
+      - series: ethereum_validators_monitoring_user_validators_balance{nos_module_id="1", nos_global_index="1;2", nos_name="Operator 2", status="slashed"}
         values: 0+0x48 320000+0x47 635500+0x47 960000+0x47 960000+0x47 1280000+0x47
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x47 2+0x47 3+0x47 4+0x47 5+0x47
@@ -25,6 +25,7 @@ tests:
               severity: critical
               status: slashed
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
             exp_annotations:
               emoji: "🔪"
@@ -40,6 +41,7 @@ tests:
               severity: critical
               status: slashed
               nos_module_id: 1
+              nos_global_index: 1;2
               nos_name: Operator 2
             exp_annotations:
               emoji: "🔪"
@@ -59,6 +61,7 @@ tests:
               severity: critical
               status: slashed
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
             exp_annotations:
               emoji: "🔪"
@@ -73,6 +76,7 @@ tests:
               severity: critical
               status: slashed
               nos_module_id: 1
+              nos_global_index: 1;2
               nos_name: Operator 2
             exp_annotations:
               emoji: "🔪"
@@ -90,6 +94,7 @@ tests:
               severity: critical
               status: slashed
               nos_module_id: 1
+              nos_global_index: 1;2
               nos_name: Operator 2
             exp_annotations:
               emoji: "🔪"
@@ -125,9 +130,9 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_module_id="1", nos_name="Operator 1"}
+      - series: ethereum_validators_monitoring_validator_count_with_negative_balances_delta{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1"}
         values: 0+0x48 1+0x47 2+0x47 0+0x47
-      - series: ethereum_validators_monitoring_validator_balance_with_negative_balances_delta{nos_module_id="1", nos_name="Operator 1"}
+      - series: ethereum_validators_monitoring_validator_balance_with_negative_balances_delta{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1"}
         values: 0+0x48 320000+0x47 640000+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
@@ -140,6 +145,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
             exp_annotations:
               emoji: "💸"
@@ -158,6 +164,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
             exp_annotations:
               emoji: "💸"
@@ -175,9 +182,9 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch{nos_module_id="1", nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_validator_count_miss_attestation_last_n_epoch{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
-      - series: ethereum_validators_monitoring_validator_balance_miss_attestation_last_n_epoch{nos_module_id="1", nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_validator_balance_miss_attestation_last_n_epoch{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 320000+0x47 634500+0x47 634500+0x47 634500+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
@@ -190,6 +197,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -211,6 +219,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -232,6 +241,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -252,9 +262,9 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch{nos_module_id="1", nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_validator_count_high_inc_delay_last_n_epoch{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
-      - series: ethereum_validators_monitoring_validator_balance_high_inc_delay_last_n_epoch{nos_module_id="1", nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_validator_balance_high_inc_delay_last_n_epoch{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 320000+0x47 635500+0x47 635500+0x47 635500+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
@@ -267,6 +277,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -286,6 +297,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -305,6 +317,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -323,9 +336,9 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch{nos_module_id="1", nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_validator_count_invalid_attestation_property_last_n_epoch{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
-      - series: ethereum_validators_monitoring_validator_balance_invalid_attestation_property_last_n_epoch{nos_module_id="1", nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_validator_balance_invalid_attestation_property_last_n_epoch{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 320000+0x47 635500+0x47 635500+0x47 635500+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
@@ -338,6 +351,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -357,6 +371,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -376,6 +391,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -394,9 +410,9 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id="1", nos_name="Operator 1"}
+      - series: ethereum_validators_monitoring_validator_count_miss_propose{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1"}
         values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
-      - series: ethereum_validators_monitoring_validator_balance_miss_propose{nos_module_id="1", nos_name="Operator 1"}
+      - series: ethereum_validators_monitoring_validator_balance_miss_propose{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1"}
         values: 0+0x48 320000+0x47 640000+0x47 640000+0x47 640000+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
@@ -409,6 +425,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
             exp_annotations:
               emoji: "📥"
@@ -429,6 +446,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
             exp_annotations:
               emoji: "📥"
@@ -449,6 +467,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
             exp_annotations:
               emoji: "📥"
@@ -468,9 +487,9 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_module_id="1", nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
-      - series: ethereum_validators_monitoring_validator_balance_with_sync_participation_less_avg_last_n_epoch{nos_module_id="1", nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_validator_balance_with_sync_participation_less_avg_last_n_epoch{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 320000+0x47 640000+0x47 640000+0x47 640000+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
@@ -483,6 +502,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -504,6 +524,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -525,6 +546,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -545,9 +567,9 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_module_id="1", nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
-      - series: ethereum_validators_monitoring_high_reward_validator_balance_with_sync_participation_less_avg_last_n_epoch{nos_module_id="1", nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_high_reward_validator_balance_with_sync_participation_less_avg_last_n_epoch{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 320000+0x47 640000+0x47 640000+0x47 640000+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
@@ -560,6 +582,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -581,6 +604,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -602,6 +626,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -622,9 +647,9 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch{nos_module_id="1", nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_high_reward_validator_count_miss_attestation_last_n_epoch{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
-      - series: ethereum_validators_monitoring_high_reward_validator_balance_miss_attestation_last_n_epoch{nos_module_id="1", nos_name="Operator 1", epoch_interval="3"}
+      - series: ethereum_validators_monitoring_high_reward_validator_balance_miss_attestation_last_n_epoch{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1", epoch_interval="3"}
         values: 0+0x48 320000+0x47 640000+0x47 640000+0x47 640000+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
@@ -637,6 +662,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -658,6 +684,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -679,6 +706,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
               epoch_interval: 3
             exp_annotations:
@@ -699,9 +727,9 @@ tests:
 
   - interval: 10s
     input_series:
-      - series: ethereum_validators_monitoring_high_reward_validator_count_miss_propose{nos_module_id="1", nos_name="Operator 1"}
+      - series: ethereum_validators_monitoring_high_reward_validator_count_miss_propose{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1"}
         values: 0+0x48 1+0x47 2+0x47 2+0x47 2+0x47 0+0x47
-      - series: ethereum_validators_monitoring_high_reward_validator_balance_miss_propose{nos_module_id="1", nos_name="Operator 1"}
+      - series: ethereum_validators_monitoring_high_reward_validator_balance_miss_propose{nos_module_id="1", nos_global_index="1;1", nos_name="Operator 1"}
         values: 0+0x48 320000+0x47 640000+0x47 640000+0x47 640000+0x47 0+0x47
       - series: ethereum_validators_monitoring_epoch_number
         values: 0+0x48 1+0x47 2+0x47 3+0x47 3+0x47 4+0x47
@@ -714,6 +742,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
             exp_annotations:
               emoji: "📈📥"
@@ -734,6 +763,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
             exp_annotations:
               emoji: "📈📥"
@@ -754,6 +784,7 @@ tests:
           - exp_labels:
               severity: critical
               nos_module_id: 1
+              nos_global_index: 1;1
               nos_name: Operator 1
             exp_annotations:
               emoji: "📈📥"
