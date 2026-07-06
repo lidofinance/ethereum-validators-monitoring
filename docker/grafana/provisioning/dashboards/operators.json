@@ -8091,7 +8091,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 55
+        "y": 93
       },
       "id": 1752,
       "panels": [
@@ -8155,7 +8155,7 @@
             "x": 0,
             "y": 79
           },
-          "id": 1716,
+          "id": 1726,
           "options": {
             "legend": {
               "displayMode": "table",
@@ -8270,9 +8270,9 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 111
+            "y": 79
           },
-          "id": 1769,
+          "id": 1794,
           "options": {
             "legend": {
               "calcs": [],
@@ -8364,9 +8364,9 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 79
+            "y": 87
           },
-          "id": 1718,
+          "id": 1728,
           "options": {
             "legend": {
               "displayMode": "table",
@@ -8428,7 +8428,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Total balance of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue (in ETH)",
+          "description": "Total balance of validators with `source_index` belonging to ${nos_name_var} in pending consolidation queue (ETH)",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -8481,9 +8481,9 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 111
+            "y": 87
           },
-          "id": 1775,
+          "id": 1795,
           "options": {
             "legend": {
               "calcs": [],
@@ -8575,9 +8575,9 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 79
+            "y": 95
           },
-          "id": 1720,
+          "id": 1730,
           "options": {
             "legend": {
               "displayMode": "table",
@@ -8692,9 +8692,9 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 111
+            "y": 95
           },
-          "id": 1777,
+          "id": 1796,
           "options": {
             "legend": {
               "calcs": [],
@@ -8786,9 +8786,9 @@
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 79
+            "y": 103
           },
-          "id": 1722,
+          "id": 1731,
           "options": {
             "legend": {
               "displayMode": "table",
@@ -8850,7 +8850,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Total balance of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue (in ETH)",
+          "description": "Total balance of validators with `target_index` belonging to ${nos_name_var} in pending consolidation queue (ETH)",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -8903,9 +8903,9 @@
             "h": 8,
             "w": 16,
             "x": 8,
-            "y": 111
+            "y": 103
           },
-          "id": 1779,
+          "id": 1797,
           "options": {
             "legend": {
               "calcs": [],
@@ -9321,6 +9321,6 @@
   "timezone": "",
   "title": "Node Operators",
   "uid": "3wimU2H7h",
-  "version": 28,
+  "version": 29,
   "weekStart": ""
 }
