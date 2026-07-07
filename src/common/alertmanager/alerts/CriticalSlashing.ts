@@ -64,7 +64,7 @@ export class CriticalSlashing extends Alert<SlashingRuleResult> {
       description: join(
         Object.entries(ruleResult).map(
           ([o, r]) =>
-            `- **${o}** ${r.slashedCount} of ${r.activeCount} (${gweiToEth(r.slashedBalance, 0)} ETH of ${gweiToEth(
+            `- **${o}**: ${r.slashedCount} of ${r.activeCount} (${gweiToEth(r.slashedBalance, 0)} ETH of ${gweiToEth(
               r.activeBalance,
               0,
             )} ETH);`,

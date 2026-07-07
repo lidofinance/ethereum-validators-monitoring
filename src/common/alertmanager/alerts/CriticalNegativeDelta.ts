@@ -57,7 +57,7 @@ export class CriticalNegativeDelta extends FullInclusionChecksAlert<UserNOsValid
       description: join(
         Object.entries(ruleResult).map(
           ([o, r]) =>
-            `- **${o}** ${r.negDeltaCount} of ${r.activeCount} (${gweiToEth(r.negDeltaBalance, 0)} ETH of ${gweiToEth(
+            `- **${o}**: ${r.negDeltaCount} of ${r.activeCount} (${gweiToEth(r.negDeltaBalance, 0)} ETH of ${gweiToEth(
               r.activeBalance,
               0,
             )} ETH);`,

@@ -59,7 +59,7 @@ export class CriticalMissedAttestations extends FullInclusionChecksAlert<NOsVali
       description: join(
         Object.entries(ruleResult).map(
           ([o, r]) =>
-            `- **${o}** ${r.missedAttCount} of ${r.activeCount} (${gweiToEth(r.missedAttBalance, 0)} ETH of ${gweiToEth(
+            `- **${o}**: ${r.missedAttCount} of ${r.activeCount} (${gweiToEth(r.missedAttBalance, 0)} ETH of ${gweiToEth(
               r.activeBalance,
               0,
             )} ETH);`,
