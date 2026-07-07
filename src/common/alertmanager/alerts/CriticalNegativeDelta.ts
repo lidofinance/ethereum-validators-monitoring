@@ -57,9 +57,10 @@ export class CriticalNegativeDelta extends FullInclusionChecksAlert<UserNOsValid
       description: join(
         Object.entries(ruleResult).map(
           ([o, r]) =>
-            `- **${o}** (${r.activeCount} active validators with total balance ${+gweiToEth(r.activeBalance).toFixed(2)} ETH): ${
-              r.negDeltaCount
-            } validators with total balance ${+gweiToEth(r.negDeltaBalance).toFixed(2)} ETH have negative balance delta;`,
+            `- **${o}** ${r.negDeltaCount} of ${r.activeCount} (${gweiToEth(r.negDeltaBalance, 0)} ETH of ${gweiToEth(
+              r.activeBalance,
+              0,
+            )} ETH);`,
         ),
         '\n',
       ),
