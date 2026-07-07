@@ -4215,7 +4215,7 @@
         "name": "module_var",
         "options": [],
         "query": {
-          "query": "label_values(ethereum_validators_monitoring_validators,nos_module_id)",
+          "query": "label_values(ethereum_validators_monitoring_validators, nos_module_id)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,

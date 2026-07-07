@@ -2770,7 +2770,7 @@
           "formattedQuery": "SELECT $timeSeries AS t, count() FROM $table WHERE $timeFilter GROUP BY t ORDER BY t",
           "hide": true,
           "intervalFactor": 1,
-          "query": "SELECT arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}'))\n",
+          "query": "SELECT arrayConcat(splitByChar('|', '${nos_global_index_var:pipe}'), splitByChar('|', '${dvt_nos_global_indexes_var:pipe}'))",
           "rawQuery": "SELECT arrayConcat(splitByChar('|', '1;0'), splitByChar('|', '2;0|2;1'))",
           "refId": "B",
           "round": "0s",
