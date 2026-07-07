@@ -37,7 +37,7 @@ import {
   userValidatorsCountWithNegativeDeltaQuery,
   userValidatorsSummaryStatsQuery,
   validatorCountByConditionAttestationLastNEpochQuery,
-  validatorsCountByConditionMissProposeQuery,
+  validatorsCountByConditionProposeQuery,
   validatorsCountWithSyncParticipationByConditionLastNEpochQuery,
 } from './clickhouse.constants';
 import {
@@ -45,7 +45,6 @@ import {
   EpochProcessingState,
   ModuleValidatorsStatusStats,
   NOsProposesStats,
-  NOsValidatorsCount,
   NOsValidatorsCountAndBalance,
   NOsValidatorsRewardsStats,
   NOsValidatorsStatusStats,
@@ -363,9 +362,9 @@ export class ClickhouseService implements OnModuleInit {
     epochInterval: number,
     chainAvg: number,
     validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsCount[]> {
+  ): Promise<NOsValidatorsCountAndBalance[]> {
     return (
-      await this.select<NOsValidatorsCount[]>(
+      await this.select<NOsValidatorsCountAndBalance[]>(
         validatorsCountWithSyncParticipationByConditionLastNEpochQuery(
           epoch,
           epochInterval,
@@ -376,6 +375,7 @@ export class ClickhouseService implements OnModuleInit {
     ).map((v) => ({
       ...v,
       amount: Number(v.amount),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -388,9 +388,9 @@ export class ClickhouseService implements OnModuleInit {
     epochInterval: number,
     chainAvg: number,
     validatorIndexes: string[] = [],
-  ): Promise<NOsValidatorsCount[]> {
+  ): Promise<NOsValidatorsCountAndBalance[]> {
     return (
-      await this.select<NOsValidatorsCount[]>(
+      await this.select<NOsValidatorsCountAndBalance[]>(
         validatorsCountWithSyncParticipationByConditionLastNEpochQuery(
           epoch,
           epochInterval,
@@ -401,6 +401,7 @@ export class ClickhouseService implements OnModuleInit {
     ).map((v) => ({
       ...v,
       amount: Number(v.amount),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -518,12 +519,15 @@ export class ClickhouseService implements OnModuleInit {
     }));
   }
 
-  public async getValidatorsCountWithGoodProposes(epoch: Epoch, validatorIndexes: string[] = []): Promise<NOsValidatorsCount[]> {
+  public async getValidatorsCountWithGoodProposes(epoch: Epoch, validatorIndexes: string[] = []): Promise<NOsValidatorsCountAndBalance[]> {
     return (
-      await this.select<NOsValidatorsCount[]>(validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 1'))
+      await this.select<NOsValidatorsCountAndBalance[]>(
+        validatorsCountByConditionProposeQuery(epoch, validatorIndexes, 'block_proposed = 1'),
+      )
     ).map((v) => ({
       ...v,
       amount: Number(v.amount),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -531,12 +535,18 @@ export class ClickhouseService implements OnModuleInit {
    * Send query to Clickhouse and receives information about
    * how many User Node Operator validators miss proposals at our last processed epoch
    */
-  public async getValidatorsCountWithMissedProposes(epoch: Epoch, validatorIndexes: string[] = []): Promise<NOsValidatorsCount[]> {
+  public async getValidatorsCountWithMissedProposes(
+    epoch: Epoch,
+    validatorIndexes: string[] = [],
+  ): Promise<NOsValidatorsCountAndBalance[]> {
     return (
-      await this.select<NOsValidatorsCount[]>(validatorsCountByConditionMissProposeQuery(epoch, validatorIndexes, 'block_proposed = 0'))
+      await this.select<NOsValidatorsCountAndBalance[]>(
+        validatorsCountByConditionProposeQuery(epoch, validatorIndexes, 'block_proposed = 0'),
+      )
     ).map((v) => ({
       ...v,
       amount: Number(v.amount),
+      balance: BigInt(v.balance),
     }));
   }
 
@@ -584,11 +594,17 @@ export class ClickhouseService implements OnModuleInit {
     return (await this.select<ModuleValidatorsStatusStats[]>(userValidatorsSummaryStatsQuery(epoch))).map((v) => ({
       ...v,
       active_ongoing: Number(v.active_ongoing),
+      active_ongoing_balance: BigInt(v.active_ongoing_balance),
       pending: Number(v.pending),
+      pending_balance: BigInt(v.pending_balance),
       slashed: Number(v.slashed),
+      slashed_balance: BigInt(v.slashed_balance),
       withdraw_pending: Number(v.withdraw_pending),
+      withdraw_pending_balance: BigInt(v.withdraw_pending_balance),
       withdrawn: Number(v.withdrawn),
+      withdrawn_balance: BigInt(v.withdrawn_balance),
       stuck: Number(v.stuck),
+      stuck_balance: BigInt(v.stuck_balance),
     }));
   }
 
@@ -601,10 +617,15 @@ export class ClickhouseService implements OnModuleInit {
     return {
       ...ret[0],
       active_ongoing: Number(ret[0].active_ongoing),
+      active_ongoing_balance: BigInt(ret[0].active_ongoing_balance),
       pending: Number(ret[0].pending),
+      pending_balance: BigInt(ret[0].pending_balance),
       slashed: Number(ret[0].slashed),
+      slashed_balance: BigInt(ret[0].slashed_balance),
       withdraw_pending: Number(ret[0].withdraw_pending),
+      withdraw_pending_balance: BigInt(ret[0].withdraw_pending_balance),
       withdrawn: Number(ret[0].withdrawn),
+      withdrawn_balance: BigInt(ret[0].withdrawn_balance),
     };
   }
 

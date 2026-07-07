@@ -3,6 +3,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
 import { allSettled } from 'common/functions/allSettled';
+import { gweiToEthBP } from 'common/functions/gweiToEth';
 import { PrometheusService, TrackTask, setOtherOperatorsMetric, setUserOperatorsMetric } from 'common/prometheus';
 import { Epoch } from 'common/types/types';
 import { ClickhouseService } from 'storage';
@@ -31,19 +32,26 @@ export class ProposeMetrics {
   private async goodProposes() {
     const data = await this.storage.getValidatorsCountWithGoodProposes(this.processedEpoch);
     setUserOperatorsMetric(this.prometheus.validatorsCountGoodPropose, data, this.operators);
+    setUserOperatorsMetric(this.prometheus.validatorsBalanceGoodPropose, data, this.operators, {}, (item) => gweiToEthBP(item.balance));
     setOtherOperatorsMetric(this.prometheus.otherValidatorsCountGoodPropose, data);
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsBalanceGoodPropose, data, {}, (item) => gweiToEthBP(item.balance));
   }
 
   private async missProposes() {
     const data = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch);
     setUserOperatorsMetric(this.prometheus.validatorsCountMissPropose, data, this.operators);
+    setUserOperatorsMetric(this.prometheus.validatorsBalanceMissPropose, data, this.operators, {}, (item) => gweiToEthBP(item.balance));
     setOtherOperatorsMetric(this.prometheus.otherValidatorsCountMissPropose, data);
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsBalanceMissPropose, data, {}, (item) => gweiToEthBP(item.balance));
   }
 
   private async highRewardMissProposes(possibleHighRewardValidators: string[]) {
     if (possibleHighRewardValidators.length > 0) {
       const data = await this.storage.getValidatorsCountWithMissedProposes(this.processedEpoch, possibleHighRewardValidators);
       setUserOperatorsMetric(this.prometheus.highRewardValidatorsCountMissPropose, data, this.operators);
+      setUserOperatorsMetric(this.prometheus.highRewardValidatorsBalanceMissPropose, data, this.operators, {}, (item) =>
+        gweiToEthBP(item.balance),
+      );
     }
   }
 }

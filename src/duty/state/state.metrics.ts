@@ -64,18 +64,18 @@ export class StateMetrics {
       data,
       this.operators,
       {
-        status: PrometheusValStatus.Slashed,
+        status: PrometheusValStatus.Ongoing,
       },
-      (item) => item.slashed,
+      (item) => item.active_ongoing,
     );
     setUserOperatorsMetric(
-      this.prometheus.userValidators,
+      this.prometheus.userValidatorsBalance,
       data,
       this.operators,
       {
         status: PrometheusValStatus.Ongoing,
       },
-      (item) => item.active_ongoing,
+      (item) => gweiToEthBP(item.active_ongoing_balance),
     );
     setUserOperatorsMetric(
       this.prometheus.userValidators,
@@ -87,6 +87,33 @@ export class StateMetrics {
       (item) => item.pending,
     );
     setUserOperatorsMetric(
+      this.prometheus.userValidatorsBalance,
+      data,
+      this.operators,
+      {
+        status: PrometheusValStatus.Pending,
+      },
+      (item) => gweiToEthBP(item.pending_balance),
+    );
+    setUserOperatorsMetric(
+      this.prometheus.userValidators,
+      data,
+      this.operators,
+      {
+        status: PrometheusValStatus.Slashed,
+      },
+      (item) => item.slashed,
+    );
+    setUserOperatorsMetric(
+      this.prometheus.userValidatorsBalance,
+      data,
+      this.operators,
+      {
+        status: PrometheusValStatus.Slashed,
+      },
+      (item) => gweiToEthBP(item.slashed_balance),
+    );
+    setUserOperatorsMetric(
       this.prometheus.userValidators,
       data,
       this.operators,
@@ -94,6 +121,15 @@ export class StateMetrics {
         status: PrometheusValStatus.WithdrawalPending,
       },
       (item) => item.withdraw_pending,
+    );
+    setUserOperatorsMetric(
+      this.prometheus.userValidatorsBalance,
+      data,
+      this.operators,
+      {
+        status: PrometheusValStatus.WithdrawalPending,
+      },
+      (item) => gweiToEthBP(item.withdraw_pending_balance),
     );
     setUserOperatorsMetric(
       this.prometheus.userValidators,
@@ -105,6 +141,15 @@ export class StateMetrics {
       (item) => item.withdrawn,
     );
     setUserOperatorsMetric(
+      this.prometheus.userValidatorsBalance,
+      data,
+      this.operators,
+      {
+        status: PrometheusValStatus.WithdrawalDone,
+      },
+      (item) => gweiToEthBP(item.withdrawn_balance),
+    );
+    setUserOperatorsMetric(
       this.prometheus.userValidators,
       data,
       this.operators,
@@ -113,20 +158,20 @@ export class StateMetrics {
       },
       (item) => item.stuck,
     );
+    setUserOperatorsMetric(
+      this.prometheus.userValidatorsBalance,
+      data,
+      this.operators,
+      {
+        status: PrometheusValStatus.Stuck,
+      },
+      (item) => gweiToEthBP(item.stuck_balance),
+    );
   }
 
   private async userValidatorsStats() {
     const result = await this.storage.getUserValidatorsSummaryStats(this.processedEpoch);
-    this.logger.debug(`User stats: ${JSON.stringify(result)}`);
     result.map((r) => {
-      this.prometheus.validators.set(
-        {
-          owner: Owner.USER,
-          nos_module_id: r.val_nos_module_id,
-          status: PrometheusValStatus.Slashed,
-        },
-        r.slashed,
-      );
       this.prometheus.validators.set(
         {
           owner: Owner.USER,
@@ -134,6 +179,14 @@ export class StateMetrics {
           status: PrometheusValStatus.Ongoing,
         },
         r.active_ongoing,
+      );
+      this.prometheus.validatorsBalance.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.Ongoing,
+        },
+        gweiToEthBP(r.active_ongoing_balance),
       );
       this.prometheus.validators.set(
         {
@@ -143,6 +196,30 @@ export class StateMetrics {
         },
         r.pending,
       );
+      this.prometheus.validatorsBalance.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.Pending,
+        },
+        gweiToEthBP(r.pending_balance),
+      );
+      this.prometheus.validators.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.Slashed,
+        },
+        r.slashed,
+      );
+      this.prometheus.validatorsBalance.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.Slashed,
+        },
+        gweiToEthBP(r.slashed_balance),
+      );
       this.prometheus.validators.set(
         {
           owner: Owner.USER,
@@ -150,6 +227,14 @@ export class StateMetrics {
           status: PrometheusValStatus.WithdrawalPending,
         },
         r.withdraw_pending,
+      );
+      this.prometheus.validatorsBalance.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.WithdrawalPending,
+        },
+        gweiToEthBP(r.withdraw_pending_balance),
       );
       this.prometheus.validators.set(
         {
@@ -159,6 +244,14 @@ export class StateMetrics {
         },
         r.withdrawn,
       );
+      this.prometheus.validatorsBalance.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.WithdrawalDone,
+        },
+        gweiToEthBP(r.withdrawn_balance),
+      );
       this.prometheus.validators.set(
         {
           owner: Owner.USER,
@@ -167,18 +260,32 @@ export class StateMetrics {
         },
         r.stuck,
       );
+      this.prometheus.validatorsBalance.set(
+        {
+          owner: Owner.USER,
+          nos_module_id: r.val_nos_module_id,
+          status: PrometheusValStatus.Stuck,
+        },
+        gweiToEthBP(r.stuck_balance),
+      );
     });
   }
 
   private async otherValidatorsStats() {
     const result = await this.storage.getOtherValidatorsSummaryStats(this.processedEpoch);
-    this.logger.debug(`Other stats: ${JSON.stringify(result)}`);
     this.prometheus.validators.set(
       {
         owner: Owner.OTHER,
         status: PrometheusValStatus.Ongoing,
       },
       result.active_ongoing,
+    );
+    this.prometheus.validatorsBalance.set(
+      {
+        owner: Owner.OTHER,
+        status: PrometheusValStatus.Ongoing,
+      },
+      gweiToEthBP(result.active_ongoing_balance),
     );
     this.prometheus.validators.set(
       {
@@ -187,12 +294,26 @@ export class StateMetrics {
       },
       result.pending,
     );
+    this.prometheus.validatorsBalance.set(
+      {
+        owner: Owner.OTHER,
+        status: PrometheusValStatus.Pending,
+      },
+      gweiToEthBP(result.pending_balance),
+    );
     this.prometheus.validators.set(
       {
         owner: Owner.OTHER,
         status: PrometheusValStatus.Slashed,
       },
       result.slashed,
+    );
+    this.prometheus.validatorsBalance.set(
+      {
+        owner: Owner.OTHER,
+        status: PrometheusValStatus.Slashed,
+      },
+      gweiToEthBP(result.slashed_balance),
     );
     this.prometheus.validators.set(
       {
@@ -201,12 +322,26 @@ export class StateMetrics {
       },
       result.withdraw_pending,
     );
+    this.prometheus.validatorsBalance.set(
+      {
+        owner: Owner.OTHER,
+        status: PrometheusValStatus.WithdrawalPending,
+      },
+      gweiToEthBP(result.withdraw_pending_balance),
+    );
     this.prometheus.validators.set(
       {
         owner: Owner.OTHER,
         status: PrometheusValStatus.WithdrawalDone,
       },
       result.withdrawn,
+    );
+    this.prometheus.validatorsBalance.set(
+      {
+        owner: Owner.OTHER,
+        status: PrometheusValStatus.WithdrawalDone,
+      },
+      gweiToEthBP(result.withdrawn_balance),
     );
   }
 
@@ -223,6 +358,9 @@ export class StateMetrics {
   private async negativeValidatorsCount() {
     const data = await this.storage.getUserValidatorsCountWithNegativeDelta(this.processedEpoch);
     setUserOperatorsMetric(this.prometheus.validatorsCountWithNegativeBalanceDelta, data, this.operators);
+    setUserOperatorsMetric(this.prometheus.validatorsBalanceWithNegativeBalanceDelta, data, this.operators, {}, (item) =>
+      gweiToEthBP(item.balance),
+    );
   }
 
   private async totalBalance24hDifference() {
