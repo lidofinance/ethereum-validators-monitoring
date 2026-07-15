@@ -25,5 +25,11 @@ export interface CriticalAlertParamsForModule {
     affectedShare: number;
     minAffectedCount: number;
   };
+  activeValBalance?: {
+    minActiveBalance: bigint;
+    affectedShare: number;
+    minAffectedBalance: bigint;
+  };
   affectedValCount?: number;
+  affectedValBalance?: bigint;
 }

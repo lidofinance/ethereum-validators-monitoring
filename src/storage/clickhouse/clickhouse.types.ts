@@ -1,59 +1,57 @@
 import { Epoch } from 'common/types/types';
 
-export interface ValidatorsStatusStats {
-  val_nos_module_id?: string;
+export interface ValidatorsStatusBaseStats {
   active_ongoing: number;
+  active_ongoing_balance: bigint;
   pending: number;
+  pending_balance: bigint;
   slashed: number;
+  slashed_balance: bigint;
   withdraw_pending: number;
+  withdraw_pending_balance: bigint;
   withdrawn: number;
-  stuck?: number;
+  withdrawn_balance: bigint;
 }
 
-export interface NOsDelta {
+export interface ModuleValidatorsStatusStats extends ValidatorsStatusBaseStats {
   val_nos_module_id: string;
+  stuck: number;
+  stuck_balance: bigint;
+}
+
+export interface NOsValidatorsStatusStats extends ModuleValidatorsStatusStats {
   val_nos_id: string;
+}
+
+export interface NOsIdentity {
+  val_nos_module_id: string;
+  val_nos_id: string | null;
+}
+
+export interface NOsValidatorsCount extends NOsIdentity {
   amount: number;
 }
 
-export interface NOsValidatorsNegDeltaCount {
+export interface NOsValidatorsCountAndBalance extends NOsValidatorsCount {
+  balance: bigint;
+}
+
+export interface UserNOsIdentity {
   val_nos_module_id: string;
   val_nos_id: string;
+}
+
+export interface UserNOsValidatorsCount extends UserNOsIdentity {
   amount: number;
 }
 
-export interface NOsValidatorsSyncAvgPercent {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
+export interface UserNOsValidatorsCountAndBalance extends UserNOsValidatorsCount {
+  balance: bigint;
 }
 
-export interface NOsValidatorsSyncByConditionCount {
-  val_nos_module_id: string;
-  val_nos_id: string;
+export interface OtherValidatorsCountAndBalance {
   amount: number;
-}
-
-export interface NOsValidatorsByConditionAttestationCount {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
-export interface NOsValidatorsByConditionProposeCount {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
-export interface NOsBalance24hDiff {
-  val_nos_module_id: string;
-  val_nos_id: string;
-  amount: number;
-}
-
-export interface NOsValidatorsStatusStats extends ValidatorsStatusStats {
-  val_nos_id: string;
+  balance: bigint;
 }
 
 export interface NOsValidatorsRewardsStats {
@@ -112,6 +110,7 @@ export interface WithdrawalsStats {
   partial_withdrawn_sum: number;
   partial_withdrawn_count: number;
 }
+
 export interface NOsWithdrawalsStats extends WithdrawalsStats {
   val_nos_module_id: string;
   val_nos_id: string;

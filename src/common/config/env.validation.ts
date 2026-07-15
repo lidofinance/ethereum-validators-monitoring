@@ -280,6 +280,14 @@ export class EnvironmentVariables {
   @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
   public CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT = {};
 
+  @IsObject()
+  @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
+  public CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE = {};
+
+  @IsObject()
+  @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
+  public CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE = {};
+
   @IsString()
   public CRITICAL_ALERTS_ALERTMANAGER_URL = '';
 

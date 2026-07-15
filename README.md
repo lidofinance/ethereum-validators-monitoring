@@ -325,8 +325,8 @@ to this value.
 * **Required:** false
 * **Default:** 100
 ---
-`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` - Sets the minimum conditions for triggering critical alerts based on the number
-of active validators for node operators in a specific module.
+`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` - Sets the minimum conditions for triggering critical alerts based on the
+**number of active validators** for node operators in a specific module.
 
 The value must be in JSON format. Example:
 `{ "0": { "minActiveCount": 100, "affectedShare": 0.33, "minAffectedCount": 1000 } }`.
@@ -341,22 +341,59 @@ A critical alert is sent if:
   * Is at least `affectedShare` of the total validators for the node operator, OR
   * Exceeds or equal to `minAffectedCount`.
 * Value in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` for specific module is not overridden by
-  `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`.
+  `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` or `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` or
+  `CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`.
 
 If no settings are provided for a specific module or the 0 key, default values are used:
 `{ "minActiveCount": CRITICAL_ALERTS_MIN_VAL_COUNT, "affectedShare": 0.33, "minAffectedCount": 1000 }`.
 * **Required:** false
 * **Default:** {}
 ---
-`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` - Defines the minimum number of affected validators for a node operator in a
-specific module for which a critical alert should be sent.
+`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT` - Defines the **minimum number** of affected validators for a node operator in
+a specific module for which a critical alert should be sent.
 
 The value must be in JSON format, for example: `{ "0": 100, "3": 50 }`.  The numeric key represents the module ID. The
 value for the key `0` applies to all modules. Values for non-zero keys apply only to the specified module and take
 precedence over the `0` key.
 
-This variable takes priority over `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and `CRITICAL_ALERTS_MIN_VAL_COUNT`. If no
-value is set for a specific module or the `0` key, the rules from the other two variables will apply instead.
+This variable takes priority over `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and `CRITICAL_ALERTS_MIN_VAL_COUNT` (but not
+over `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` and `CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`). If no value is set for a
+specific module, the rules from the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` or `CRITICAL_ALERTS_MIN_VAL_COUNT` variables
+will apply instead.
+* **Required:** false
+* **Default:** {}
+---
+`CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` - Sets the minimum conditions for triggering critical alerts based on the
+**total balance of all active validators** (in ETH) for node operators in a specific module.
+
+The value must be in JSON format. Example:
+`{ "0": { "minActiveBalance": 2048, "affectedShare": 0.33, "minAffectedBalance": 1024 } }`.
+
+The numeric key represents the module ID. Settings under the `0` key apply to all modules unless overridden by settings
+for specific module IDs. Settings for specific module IDs take precedence over the `0` key.
+
+A critical alert is sent if:
+
+* The total ETH balance of all active validators for a node operator meets or exceeds `minActiveBalance`.
+* The total ETH balance of all affected validators:
+  * Is at least `affectedShare` of the total ETH balance of all active validators for the node operator, OR
+  * Exceeds or equals to `minAffectedBalance`.
+* Value in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` for specific module is not overridden by
+  `CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`.
+
+* **Required:** false
+* **Default:** {}
+---
+`CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE` - Defines the minimum **total balance** (in ETH) of affected validators for
+a node operator in a specific module for which a critical alert should be sent.
+
+The value must be in JSON format, for example: `{ "0": 2048, "4": 4096 }`. The numeric key represents the module ID.
+The value for the key `0` applies to all modules. Values for non-zero keys apply only to the specified module and take
+precedence over the `0` key.
+
+This variable takes priority over `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE`, `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`,
+`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and `CRITICAL_ALERTS_MIN_VAL_COUNT`. If no value is set for a specific module,
+the rules from the other four variables will apply instead.
 * **Required:** false
 * **Default:** {}
 ---
@@ -373,19 +410,29 @@ aggregates from app.
 
 You should pass env var `CRITICAL_ALERTS_ALERTMANAGER_URL=http://<alertmanager_host>:<alertmanager_port>`.
 
-Critical alerts for modules are controlled by three environment variables, listed here with their priority (from lowest
+Critical alerts for modules are controlled by five environment variables, listed here with their priority (from lowest
 to highest):
 ```
 CRITICAL_ALERTS_MIN_VAL_COUNT: number;
 CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT: {
   <moduleIndex>: {
-      minActiveCount: number,
-      affectedShare: number,
-      minAffectedCount: number,
-   }
+    minActiveCount: number,
+    affectedShare: number,
+    minAffectedCount: number,
+  }
 };
 CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT: {
-   <moduleIndex>: number
+  <moduleIndex>: number
+};
+CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE: {
+  <moduleIndex>: {
+    minActiveBalance: number,
+    affectedShare: number,
+    minAffectedBalance: number,
+  };
+};
+CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE: {
+  <moduleIndex>: number
 };
 ```
 
@@ -395,66 +442,125 @@ The following rules are applied (listed in order of increasing priority, the nex
    creating an implicit rule:
 ```
 {
-   "0": {
-      "minActiveCount": CRITICAL_ALERTS_MIN_VAL_COUNT,
-      "affectedShare": 0.33,
-      "minAffectedCount": 1000
-   }
+  "0": {
+    "minActiveCount": CRITICAL_ALERTS_MIN_VAL_COUNT,
+    "affectedShare": 0.33,
+    "minAffectedCount": 1000
+  }
 }
 ```
 
-2. **Global Rules for Active Validators** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`). Default rules apply to all modules
-   (key `0`) unless overridden.
+2. **Global Rules for Active Validators Count** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`). Default rules apply to all
+   modules (key `0`) unless overridden.
 ```
 CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT = {
-   "0": {
-      "minActiveCount": <integer>,
-      "affectedShare": <0.xx>,
-      "minAffectedCount": <integer>,
-   }
+  "0": {
+    "minActiveCount": <integer>,
+    "affectedShare": <0.xx>,
+    "minAffectedCount": <integer>,
+  }
 }
 ```
 A critical alert is triggered for a module if **both** conditions are met:
-* Active validators exceed or equal to `minActiveCount`.
-* Affected validators exceed or equal to either `minAffectedCount` or `affectedShare` of the total active validators.
+* The number of active validators exceed or equal to `minActiveCount`.
+* The number of affected validators exceed or equal to either `minAffectedCount` or `affectedShare` of the total active
+  validators.
 
-3. **Global Rules for Affected Validators** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`). Default rules apply to all
+3. **Global Rules for Affected Validators Count** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`). Default rules apply to all
    modules (key `0`) unless overridden.
 ```
 CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT = {
-   "0": <integer>
+  "0": <integer>
 }
 ```
 A critical alert is triggered if the number of affected validators exceeds or equal to this value.
 
-4. **Per-Module Rules for Active Validators** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`). If specific module keys are
-   defined, those values override the global rules for `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` and
-   `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`.
+4. **Global Rules for Active Validators Balance** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE`). Default rules apply to all
+   modules (key `0`) unless overridden.
+```
+CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE = {
+  "0": {
+    "minActiveBalance": <float>,
+    "affectedShare": <0.xx>,
+    "minAffectedBalance": <float>,
+  }
+}
+```
+A critical alert is triggered for a module if **both** conditions are met:
+* The total balance of all active validators exceed or equal to `minActiveBalance`.
+* The total balance of all affected validators exceed or equal to either `minAffectedBalance` or `affectedShare` of the
+  total balance of all active validators.
+
+5. **Global Rules for Affected Validators Balance** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`). Default rules apply to
+   all modules (key `0`) unless overridden.
+```
+CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE = {
+  "0": <float>
+}
+```
+A critical alert is triggered if the total balance of all affected validators exceeds or equal to this value.
+
+6. **Per-Module Rules for Active Validators Count** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`). If specific module keys
+   are defined, those values override the global rules for `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`,
+   `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`, `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` and
+   `CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`.
 ```
 CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT = {
-   "n": {
-      "minActiveCount": <integer>,
-      "affectedShare": <0.xx>,
-      "minAffectedCount": <integer>,
-   }
+  "n": {
+    "minActiveCount": <integer>,
+    "affectedShare": <0.xx>,
+    "minAffectedCount": <integer>,
+  }
 }
 ```
 A critical alert is triggered for those modules if **both** conditions are met:
 
-* Active validators exceed or equal to `minActiveCount`.
-* Affected validators exceed or equal either `minAffectedCount` or `affectedShare` of the total validators.
+* The number of active validators exceed or equal to `minActiveCount`.
+* The number of affected validators exceed or equal either `minAffectedCount` or `affectedShare` of the total active
+  validators.
 
 For modules that don't have keys in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT` the rules defined in the previous steps
 are applied.
 
-5. **Per-Module Rules for Affected Validators** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`). If specific module keys are
-   defined, those values override all other rules for the module.
+7. **Per-Module Rules for Affected Validators Count** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`). If specific module
+   keys are defined, those values override all previous rules for the module.
 ```
 CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT = {
-   "n": <integer>
+  "n": <integer>
 }
 ```
 A critical alert is triggered if the number of affected validators exceeds or equal to the specified value.
+
+8. **Per-Module Rules for Active Validators Balance** (`CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE`). If specific module
+   keys are defined, those values override the global rules for `CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT`,
+   `CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT`, `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` and
+   `CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`.
+```
+CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE = {
+  "n": {
+    "minActiveBalance": <float>,
+    "affectedShare": <0.xx>,
+    "minAffectedBalance": <float>,
+  }
+}
+```
+A critical alert is triggered for those modules if **both** conditions are met:
+
+* The total balance of all active validators exceed or equal to `minActiveBalance`.
+* The total balance of all affected validators exceed or equal to either `minAffectedBalance` or `affectedShare` of the
+  total balance of all active validators.
+
+For modules that don't have keys in the `CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE` the rules defined in the previous steps
+are applied.
+
+9. **Per-Module Rules for Affected Validators Balance** (`CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE`). If specific module
+   keys are defined, those values override all previous rules for the module.
+```
+CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE= {
+  "n": <float>
+}
+```
+A critical alert is triggered if the total balance of all affected validators exceeds or equal to the specified value.
 
 To illustrate these rules let's consider the following sample config:
 ```
@@ -496,70 +602,99 @@ If `ethereum_validators_monitoring_data_actuality < 1h` alerts from table bellow
 
 **WARNING: all metrics are prefixed with `ethereum_validators_monitoring_`**
 
-| Metric                                                                    | Labels                                                  | Description                                                                                                                                                                                                                    |
-|---------------------------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| build_info                                                                | name, version, commit, branch, env, network             | Information about app build                                                                                                                                                                                                    |
-| outgoing_el_requests_duration_seconds                                     | name, target                                            | Duration of outgoing execution layer requests in seconds                                                                                                                                                                       |
-| outgoing_el_requests_count                                                | name, target, status                                    | Count of outgoing execution layer requests                                                                                                                                                                                     |
-| outgoing_cl_requests_duration_seconds                                     | name, target                                            | Duration of outgoing consensus layer requests in seconds                                                                                                                                                                       |
-| outgoing_cl_requests_count                                                | name, target, status, code                              | Count of outgoing consensus layer requests                                                                                                                                                                                     |
-| outgoing_keysapi_requests_duration_seconds                                | name, target                                            | Duration of outgoing Keys API requests in seconds                                                                                                                                                                              |
-| outgoing_keysapi_requests_count                                           | name, target, status, code                              | Count of outgoing Keys API requests                                                                                                                                                                                            |
-| task_duration_seconds                                                     | name                                                    | Duration of task execution                                                                                                                                                                                                     |
-| task_result_count                                                         | name, status                                            | Count of passed or failed tasks                                                                                                                                                                                                |
-| epoch_number                                                              |                                                         | Current epoch number in app work process                                                                                                                                                                                       |
-| data_actuality                                                            |                                                         | Application data actuality in ms                                                                                                                                                                                               |
-| fetch_interval                                                            |                                                         | The same as `FETCH_INTERVAL_SLOTS`                                                                                                                                                                                             |
-| sync_participation_distance_down_from_chain_avg                           |                                                         | The same as `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`                                                                                                                                                                  |
-| user_operators_identifies                                                 | nos_module_id, nos_id, nos_name                         | User Node Operators in each module                                                                                                                                                                                             |
-| validators                                                                | owner, nos_module_id, status                            | Count of validators in the chain                                                                                                                                                                                               |
-| user_validators                                                           | nos_module_id, nos_id, nos_name, status                 | Count of validators for each user Node Operator                                                                                                                                                                                |
-| validator_balances_delta                                                  | nos_module_id, nos_id, nos_name                         | Validators balance delta for each user Node Operator (6 epochs delta)                                                                                                                                                          |
-| operator_real_balance_delta                                               | nos_module_id, nos_id, nos_name                         | Real operator balance change. Between N and N-1 epochs.                                                                                                                                                                        |
-| operator_calculated_balance_delta                                         | nos_module_id, nos_id, nos_name                         | Calculated operator balance change based on calculated rewards and penalties                                                                                                                                                   |
-| operator_calculated_balance_calculation_error                             | nos_module_id, nos_id, nos_name                         | Diff between calculated and real balance change                                                                                                                                                                                |
-| validator_quantile_001_balances_delta                                     | nos_module_id, nos_id, nos_name                         | Validators 0.1% quantile balances delta for each user Node Operator (6 epochs delta)                                                                                                                                           |
-| validator_count_with_negative_balances_delta                              | nos_module_id, nos_id, nos_name                         | Number of validators with negative balances delta for each user Node Operator                                                                                                                                                  |
-| total_balance_24h_difference                                              | nos_module_id                                           | Total user validators balance difference (24 hours)                                                                                                                                                                            |
-| operator_balance_24h_difference                                           | nos_module_id, nos_id, nos_name                         | Total validators balance difference (24 hours) for each user Node Operator                                                                                                                                                     |
-| other_validator_count_with_good_sync_participation                        |                                                         | Number of non-user validators in the chain with a good sync committee participation                                                                                                                                            |
-| validator_count_with_good_sync_participation                              | nos_module_id, nos_id, nos_name                         | Number of validators with a good sync committee participation for each user Node Operator                                                                                                                                      |
-| other_validator_count_with_sync_participation_less_avg                    |                                                         | Number of non-user validators with sync committee participation less than average in the chain                                                                                                                                 |
-| validator_count_with_sync_participation_less_avg                          | nos_module_id, nos_id, nos_name                         | Number of validators with sync committee participation less than average in the chain for each user Node Operator                                                                                                              |
-| validator_count_with_sync_participation_less_avg_last_n_epoch             | nos_module_id, nos_id, nos_name, epoch_interval         | Number of validators with sync committee participation less than average in the chain in the last `SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` epochs for each user Node Operator                                           |
-| high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch | nos_module_id, nos_id, nos_name, epoch_interval         | Number of validators with sync committee participation less than average in the chain in the last `SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` epochs (with possible high reward in the future) for each user Node Operator |
-| other_sync_participation_avg_percent                                      |                                                         | Average percent of participation of non-user validators in sync committees                                                                                                                                                     |
-| user_sync_participation_avg_percent                                       | nos_module_id                                           | Average percent of participation of user validators in sync committees                                                                                                                                                         |
-| operator_sync_participation_avg_percent                                   | nos_module_id, nos_id, nos_name                         | Average percent of participation of validators in sync committees for each user Node Operator                                                                                                                                  |
-| chain_sync_participation_avg_percent                                      |                                                         | Average percent of participation of all validators in the chain in sync committees                                                                                                                                             |
-| other_validator_count_perfect_attestation                                 |                                                         | Number of non-user validators in the chain with perfect attestations                                                                                                                                                           |
-| validator_count_perfect_attestation                                       | nos_module_id, nos_id, nos_name                         | Number of validators with perfect attestations for each user Node Operator                                                                                                                                                     |
-| other_validator_count_miss_attestation                                    |                                                         | Number of non-user validators in the chain with missed attestations                                                                                                                                                            |
-| validator_count_miss_attestation                                          | nos_module_id, nos_id, nos_name                         | Number of validators with missed attestations for each user Node Operator                                                                                                                                                      |
-| validator_count_miss_attestation_last_n_epoch                             | nos_module_id, nos_id, nos_name, epoch_interval         | Number of validators with missed attestations in the last `BAD_ATTESTATION_EPOCHS` epochs for each user Node Operator                                                                                                          |
-| high_reward_validator_count_miss_attestation_last_n_epoch                 | nos_module_id, nos_id, nos_name, epoch_interval         | Number of validators with missed attestations in the last `BAD_ATTESTATION_EPOCHS` epochs (with possible high reward in the future) for each user Node Operator                                                                |
-| other_validator_count_invalid_attestation                                 | reason                                                  | Number of non-user validators in the chain with invalid properties (head, target, source) or high inclusion delay in attestations                                                                                              |
-| validator_count_invalid_attestation                                       | nos_module_id, nos_id, nos_name, reason                 | Number of validators with invalid properties (head, target, source) or high inclusion delay in attestations for each user Node Operator                                                                                        |
-| validator_count_invalid_attestation_last_n_epoch                          | nos_module_id, nos_id, nos_name, reason, epoch_interval | Number of validators with invalid properties (head, target, source) or high inclusion delay in attestations in the last `BAD_ATTESTATION_EPOCHS` epochs for each user Node Operator                                            |
-| validator_count_invalid_attestation_property_last_n_epoch                 | nos_module_id, nos_id, nos_name, epoch_interval         | Number of validators with two invalid attestation properties (head or target or source) in the last `BAD_ATTESTATION_EPOCHS` epochs for each user Node Operator                                                                |
-| validator_count_high_inc_delay_last_n_epoch                               | nos_module_id, nos_id, nos_name, epoch_interval         | Number of validators with attestations inclusion delay > 2 in the last `BAD_ATTESTATION_EPOCHS` epochs for each user Node Operator                                                                                             |
-| other_validator_count_good_propose                                        |                                                         | Number of non-user validators in the chain with good proposals                                                                                                                                                                 |
-| validator_count_good_propose                                              | nos_module_id, nos_id, nos_name                         | Number of validators with good proposals for each user Node Operator                                                                                                                                                           |
-| other_validator_count_miss_propose                                        |                                                         | Number of non-user validators in the chain with missed proposals                                                                                                                                                               |
-| validator_count_miss_propose                                              | nos_module_id, nos_id, nos_name                         | Number of validators with missed proposals for each user Node Operator                                                                                                                                                         |
-| high_reward_validator_count_miss_propose                                  | nos_module_id, nos_id, nos_name                         | Number of validators with missed proposals (with possible high reward in the future) for each user Node Operator                                                                                                               |
-| operator_reward                                                           | nos_module_id, nos_id, nos_name, duty                   | Average validators reward for each duty for each user Node Operator                                                                                                                                                            |
-| avg_chain_reward                                                          | duty                                                    | Average reward of all validators in the chain for each duty                                                                                                                                                                    |
-| operator_missed_reward                                                    | nos_module_id, nos_id, nos_name, duty                   | Average validators missed reward for each duty for each user Node Operator                                                                                                                                                     |
-| avg_chain_missed_reward                                                   | duty                                                    | Average missed reward of all validators in the chain for each duty                                                                                                                                                             |
-| operator_penalty                                                          | nos_module_id, nos_id, nos_name, duty                   | Average validators penalty for each duty for each user Node Operator                                                                                                                                                           |
-| avg_chain_penalty                                                         | duty                                                    | Average penalty of all validators in the chain for each duty                                                                                                                                                                   |
-| operator_withdrawals_sum                                                  | nos_module_id, nos_id, nos_name, type                   | Total sum of validators withdrawals for each user Node Operator                                                                                                                                                                |
-| other_chain_withdrawals_sum                                               | type                                                    | Total sum of non-user validators withdrawals in the chain                                                                                                                                                                      |
-| operator_withdrawals_count                                                | nos_module_id, nos_id, nos_name, type                   | Number of validators withdrawals for each user Node Operator                                                                                                                                                                   |
-| other_chain_withdrawals_count                                             | type                                                    | Number of non-user validators withdrawals in the chain                                                                                                                                                                         |
-| contract_keys_total                                                       | type                                                    | Total user validators keys of each type                                                                                                                                                                                        |
-| steth_buffered_ether_total                                                |                                                         | Total amount of buffered Ether (ETH) in the Lido contract                                                                                                                                                                      |
+| Metric                                                                      | Labels                                                  | Description                                                                                                                                                                                                                           |
+|-----------------------------------------------------------------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| build_info                                                                  | name, version, commit, branch, env, network             | Information about app build                                                                                                                                                                                                           |
+| outgoing_el_requests_duration_seconds                                       | name, target                                            | Duration of outgoing execution layer requests in seconds                                                                                                                                                                              |
+| outgoing_el_requests_count                                                  | name, target, status                                    | Count of outgoing execution layer requests                                                                                                                                                                                            |
+| outgoing_cl_requests_duration_seconds                                       | name, target                                            | Duration of outgoing consensus layer requests in seconds                                                                                                                                                                              |
+| outgoing_cl_requests_count                                                  | name, target, status, code                              | Count of outgoing consensus layer requests                                                                                                                                                                                            |
+| outgoing_keysapi_requests_duration_seconds                                  | name, target                                            | Duration of outgoing Keys API requests in seconds                                                                                                                                                                                     |
+| outgoing_keysapi_requests_count                                             | name, target, status, code                              | Count of outgoing Keys API requests                                                                                                                                                                                                   |
+| task_duration_seconds                                                       | name                                                    | Duration of task execution                                                                                                                                                                                                            |
+| task_result_count                                                           | name, status                                            | Count of passed or failed tasks                                                                                                                                                                                                       |
+| epoch_number                                                                |                                                         | Current epoch number in app work process                                                                                                                                                                                              |
+| data_actuality                                                              |                                                         | Application data actuality in ms                                                                                                                                                                                                      |
+| fetch_interval                                                              |                                                         | The same as `FETCH_INTERVAL_SLOTS`                                                                                                                                                                                                    |
+| sync_participation_distance_down_from_chain_avg                             |                                                         | The same as `SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG`                                                                                                                                                                         |
+| user_operators_identifies                                                   | nos_module_id, nos_id, nos_name                         | User Node Operators in each module                                                                                                                                                                                                    |
+| validators                                                                  | owner, nos_module_id, status                            | Count of validators in the chain                                                                                                                                                                                                      |
+| validators_balance                                                          | owner, nos_module_id, status                            | Total balance of validators in the chain                                                                                                                                                                                              |
+| user_validators                                                             | nos_module_id, nos_id, nos_name, status                 | Count of validators for each user Node Operator                                                                                                                                                                                       |
+| user_validators_balance                                                     | nos_module_id, nos_id, nos_name, status                 | Total balance of validators for each user Node Operator                                                                                                                                                                               |
+| validator_balances_delta                                                    | nos_module_id, nos_id, nos_name                         | Validators balance delta for each user Node Operator (6 epochs delta)                                                                                                                                                                 |
+| operator_real_balance_delta                                                 | nos_module_id, nos_id, nos_name                         | Real operator balance change. Between N and N-1 epochs.                                                                                                                                                                               |
+| operator_calculated_balance_delta                                           | nos_module_id, nos_id, nos_name                         | Calculated operator balance change based on calculated rewards and penalties                                                                                                                                                          |
+| operator_calculated_balance_calculation_error                               | nos_module_id, nos_id, nos_name                         | Diff between calculated and real balance change                                                                                                                                                                                       |
+| validator_quantile_001_balances_delta                                       | nos_module_id, nos_id, nos_name                         | Validators 0.1% quantile balances delta for each user Node Operator (6 epochs delta)                                                                                                                                                  |
+| validator_count_with_negative_balances_delta                                | nos_module_id, nos_id, nos_name                         | Number of validators with negative balances delta for each user Node Operator                                                                                                                                                         |
+| validator_balance_with_negative_balances_delta                              | nos_module_id, nos_id, nos_name                         | Total balance of validators with negative balances delta for each user Node Operator                                                                                                                                                  |
+| total_balance_24h_difference                                                | nos_module_id                                           | Total user validators balance difference (24 hours)                                                                                                                                                                                   |
+| operator_balance_24h_difference                                             | nos_module_id, nos_id, nos_name                         | Total validators balance difference (24 hours) for each user Node Operator                                                                                                                                                            |
+| other_validator_count_with_good_sync_participation                          |                                                         | Number of non-user validators in the chain with a good sync committee participation                                                                                                                                                   |
+| other_validator_balance_with_good_sync_participation                        |                                                         | Total balance of non-user validators in the chain with a good sync committee participation                                                                                                                                            |
+| validator_count_with_good_sync_participation                                | nos_module_id, nos_id, nos_name                         | Number of validators with a good sync committee participation for each user Node Operator                                                                                                                                             |
+| validator_balance_with_good_sync_participation                              | nos_module_id, nos_id, nos_name                         | Total balance of validators with a good sync committee participation for each user Node Operator                                                                                                                                      |
+| other_validator_count_with_sync_participation_less_avg                      |                                                         | Number of non-user validators with sync committee participation less than average in the chain                                                                                                                                        |
+| other_validator_balance_with_sync_participation_less_avg                    |                                                         | Total balance of non-user validators with sync committee participation less than average in the chain                                                                                                                                 |
+| validator_count_with_sync_participation_less_avg                            | nos_module_id, nos_id, nos_name                         | Number of validators with sync committee participation less than average in the chain for each user Node Operator                                                                                                                     |
+| validator_balance_with_sync_participation_less_avg                          | nos_module_id, nos_id, nos_name                         | Total balance of validators with sync committee participation less than average in the chain for each user Node Operator                                                                                                              |
+| validator_count_with_sync_participation_less_avg_last_n_epoch               | nos_module_id, nos_id, nos_name, epoch_interval         | Number of validators with sync committee participation less than average in the chain in the last `SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` epochs for each user Node Operator                                                  |
+| validator_balance_with_sync_participation_less_avg_last_n_epoch             | nos_module_id, nos_id, nos_name, epoch_interval         | Total balance of validators with sync committee participation less than average in the chain in the last `SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` epochs for each user Node Operator                                           |
+| high_reward_validator_count_with_sync_participation_less_avg_last_n_epoch   | nos_module_id, nos_id, nos_name, epoch_interval         | Number of validators with sync committee participation less than average in the chain in the last `SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` epochs (with possible high reward in the future) for each user Node Operator        |
+| high_reward_validator_balance_with_sync_participation_less_avg_last_n_epoch | nos_module_id, nos_id, nos_name, epoch_interval         | Total balance of validators with sync committee participation less than average in the chain in the last `SYNC_PARTICIPATION_EPOCHS_LESS_THAN_CHAIN_AVG` epochs (with possible high reward in the future) for each user Node Operator |
+| other_sync_participation_avg_percent                                        |                                                         | Average percent of participation of non-user validators in sync committees                                                                                                                                                            |
+| user_sync_participation_avg_percent                                         | nos_module_id                                           | Average percent of participation of user validators in sync committees                                                                                                                                                                |
+| operator_sync_participation_avg_percent                                     | nos_module_id, nos_id, nos_name                         | Average percent of participation of validators in sync committees for each user Node Operator                                                                                                                                         |
+| chain_sync_participation_avg_percent                                        |                                                         | Average percent of participation of all validators in the chain in sync committees                                                                                                                                                    |
+| other_validator_count_perfect_attestation                                   |                                                         | Number of non-user validators in the chain with perfect attestations                                                                                                                                                                  |
+| other_validator_balance_perfect_attestation                                 |                                                         | Total balance of non-user validators in the chain with perfect attestations                                                                                                                                                           |
+| validator_count_perfect_attestation                                         | nos_module_id, nos_id, nos_name                         | Number of validators with perfect attestations for each user Node Operator                                                                                                                                                            |
+| validator_balance_perfect_attestation                                       | nos_module_id, nos_id, nos_name                         | Total balance of validators with perfect attestations for each user Node Operator                                                                                                                                                     |
+| other_validator_count_miss_attestation                                      |                                                         | Number of non-user validators in the chain with missed attestations                                                                                                                                                                   |
+| other_validator_balance_miss_attestation                                    |                                                         | Total balance of non-user validators in the chain with missed attestations                                                                                                                                                            |
+| validator_count_miss_attestation                                            | nos_module_id, nos_id, nos_name                         | Number of validators with missed attestations for each user Node Operator                                                                                                                                                             |
+| validator_balance_miss_attestation                                          | nos_module_id, nos_id, nos_name                         | Total balance of validators with missed attestations for each user Node Operator                                                                                                                                                      |
+| validator_count_miss_attestation_last_n_epoch                               | nos_module_id, nos_id, nos_name, epoch_interval         | Number of validators with missed attestations in the last `BAD_ATTESTATION_EPOCHS` epochs for each user Node Operator                                                                                                                 |
+| validator_balance_miss_attestation_last_n_epoch                             | nos_module_id, nos_id, nos_name, epoch_interval         | Total balance of validators with missed attestations in the last `BAD_ATTESTATION_EPOCHS` epochs for each user Node Operator                                                                                                          |
+| high_reward_validator_count_miss_attestation_last_n_epoch                   | nos_module_id, nos_id, nos_name, epoch_interval         | Number of validators with missed attestations in the last `BAD_ATTESTATION_EPOCHS` epochs (with possible high reward in the future) for each user Node Operator                                                                       |
+| high_reward_validator_balance_miss_attestation_last_n_epoch                 | nos_module_id, nos_id, nos_name, epoch_interval         | Total number of validators with missed attestations in the last `BAD_ATTESTATION_EPOCHS` epochs (with possible high reward in the future) for each user Node Operator                                                                 |
+| other_validator_count_invalid_attestation                                   | reason                                                  | Number of non-user validators in the chain with invalid properties (head, target, source) or high inclusion delay in attestations                                                                                                     |
+| other_validator_balance_invalid_attestation                                 | reason                                                  | Total balance of non-user validators in the chain with invalid properties (head, target, source) or high inclusion delay in attestations                                                                                              |
+| validator_count_invalid_attestation                                         | nos_module_id, nos_id, nos_name, reason                 | Number of validators with invalid properties (head, target, source) or high inclusion delay in attestations for each user Node Operator                                                                                               |
+| validator_balance_invalid_attestation                                       | nos_module_id, nos_id, nos_name, reason                 | Total balance of validators with invalid properties (head, target, source) or high inclusion delay in attestations for each user Node Operator                                                                                        |
+| validator_count_invalid_attestation_last_n_epoch                            | nos_module_id, nos_id, nos_name, reason, epoch_interval | Number of validators with invalid properties (head, target, source) or high inclusion delay in attestations in the last `BAD_ATTESTATION_EPOCHS` epochs for each user Node Operator                                                   |
+| validator_balance_invalid_attestation_last_n_epoch                          | nos_module_id, nos_id, nos_name, reason, epoch_interval | Total balance of validators with invalid properties (head, target, source) or high inclusion delay in attestations in the last `BAD_ATTESTATION_EPOCHS` epochs for each user Node Operator                                            |
+| validator_count_invalid_attestation_property_last_n_epoch                   | nos_module_id, nos_id, nos_name, epoch_interval         | Number of validators with two invalid attestation properties (head or target or source) in the last `BAD_ATTESTATION_EPOCHS` epochs for each user Node Operator                                                                       |
+| validator_balance_invalid_attestation_property_last_n_epoch                 | nos_module_id, nos_id, nos_name, epoch_interval         | Total balance of validators with two invalid attestation properties (head or target or source) in the last `BAD_ATTESTATION_EPOCHS` epochs for each user Node Operator                                                                |
+| validator_count_high_inc_delay_last_n_epoch                                 | nos_module_id, nos_id, nos_name, epoch_interval         | Number of validators with attestations inclusion delay > 2 in the last `BAD_ATTESTATION_EPOCHS` epochs for each user Node Operator                                                                                                    |
+| validator_balance_high_inc_delay_last_n_epoch                               | nos_module_id, nos_id, nos_name, epoch_interval         | Total balance of validators with attestations inclusion delay > 2 in the last `BAD_ATTESTATION_EPOCHS` epochs for each user Node Operator                                                                                             |
+| other_validator_count_good_propose                                          |                                                         | Number of non-user validators in the chain with good proposals                                                                                                                                                                        |
+| other_validator_balance_good_propose                                        |                                                         | Total balance of non-user validators in the chain with good proposals                                                                                                                                                                 |
+| validator_count_good_propose                                                | nos_module_id, nos_id, nos_name                         | Number of validators with good proposals for each user Node Operator                                                                                                                                                                  |
+| validator_balance_good_propose                                              | nos_module_id, nos_id, nos_name                         | Total balance of validators with good proposals for each user Node Operator                                                                                                                                                           |
+| other_validator_count_miss_propose                                          |                                                         | Number of non-user validators in the chain with missed proposals                                                                                                                                                                      |
+| other_validator_balance_miss_propose                                        |                                                         | Total balance of non-user validators in the chain with missed proposals                                                                                                                                                               |
+| validator_count_miss_propose                                                | nos_module_id, nos_id, nos_name                         | Number of validators with missed proposals for each user Node Operator                                                                                                                                                                |
+| validator_balance_miss_propose                                              | nos_module_id, nos_id, nos_name                         | Total balance of validators with missed proposals for each user Node Operator                                                                                                                                                         |
+| high_reward_validator_count_miss_propose                                    | nos_module_id, nos_id, nos_name                         | Number of validators with missed proposals (with possible high reward in the future) for each user Node Operator                                                                                                                      |
+| high_reward_validator_balance_miss_propose                                  | nos_module_id, nos_id, nos_name                         | Total balance of validators with missed proposals (with possible high reward in the future) for each user Node Operator                                                                                                               |
+| operator_reward                                                             | nos_module_id, nos_id, nos_name, duty                   | Average validators reward for each duty for each user Node Operator                                                                                                                                                                   |
+| avg_chain_reward                                                            | duty                                                    | Average reward of all validators in the chain for each duty                                                                                                                                                                           |
+| operator_missed_reward                                                      | nos_module_id, nos_id, nos_name, duty                   | Average validators missed reward for each duty for each user Node Operator                                                                                                                                                            |
+| avg_chain_missed_reward                                                     | duty                                                    | Average missed reward of all validators in the chain for each duty                                                                                                                                                                    |
+| operator_penalty                                                            | nos_module_id, nos_id, nos_name, duty                   | Average validators penalty for each duty for each user Node Operator                                                                                                                                                                  |
+| avg_chain_penalty                                                           | duty                                                    | Average penalty of all validators in the chain for each duty                                                                                                                                                                          |
+| operator_withdrawals_sum                                                    | nos_module_id, nos_id, nos_name, type                   | Total sum of validators withdrawals for each user Node Operator                                                                                                                                                                       |
+| other_chain_withdrawals_sum                                                 | type                                                    | Total sum of non-user validators withdrawals in the chain                                                                                                                                                                             |
+| operator_withdrawals_count                                                  | nos_module_id, nos_id, nos_name, type                   | Number of validators withdrawals for each user Node Operator                                                                                                                                                                          |
+| other_chain_withdrawals_count                                               | type                                                    | Number of non-user validators withdrawals in the chain                                                                                                                                                                                |
+| other_validator_consolidation_count                                         | type                                                    | Number of non-user source and target validators in the pending consolidation queue                                                                                                                                                    |
+| other_validator_consolidation_balance                                       | type                                                    | Total balance of non-user source and target validators in the pending consolidation queue                                                                                                                                             |
+| validator_consolidation_count                                               | nos_module_id, nos_id, nos_name, type                   | Number of source and target validators in the pending consolidation queue for each user Node Operator                                                                                                                                 |
+| validator_consolidation_balance                                             | nos_module_id, nos_id, nos_name, type                   | Total balance of source and target validators in the pending consolidation queue for each user Node Operator                                                                                                                          |
+| contract_keys_total                                                         | type                                                    | Total user validators keys of each type                                                                                                                                                                                               |
+| steth_buffered_ether_total                                                  |                                                         | Total amount of buffered Ether (ETH) in the Lido contract                                                                                                                                                                             |
 
 
 ## Release flow

@@ -2,101 +2,68 @@ import { join } from 'lodash';
 
 import { sentAlerts } from 'common/alertmanager';
 import { ConfigService } from 'common/config';
-import { ClickhouseService } from 'storage';
-import { NOsValidatorsNegDeltaCount, NOsValidatorsStatusStats } from 'storage/clickhouse';
+import { gweiToEth } from 'common/functions/gweiToEth';
+import { NOsValidatorsStatusStats, UserNOsValidatorsCountAndBalance } from 'storage/clickhouse';
 import { RegistrySourceOperator } from 'validators-registry';
 
-import { Alert, AlertRequestBody, AlertRuleResult } from './BasicAlert';
+import { AlertBodyAnnotations, AlertRuleResult } from './BasicAlert';
+import { FullInclusionChecksAlert } from './FullInclusionChecksAlert';
 
-export class CriticalNegativeDelta extends Alert {
-  protected readonly negativeValidatorsCount: NOsValidatorsNegDeltaCount[];
+export interface NegativeBalanceDeltaRuleResult {
+  activeCount: number;
+  negDeltaCount: number;
+  activeBalance: bigint;
+  negDeltaBalance: bigint;
+}
 
+export class CriticalNegativeDelta extends FullInclusionChecksAlert<UserNOsValidatorsCountAndBalance, NegativeBalanceDeltaRuleResult> {
   constructor(
     config: ConfigService,
-    storage: ClickhouseService,
     operators: RegistrySourceOperator[],
     moduleIndex: number,
     nosStats: NOsValidatorsStatusStats[],
-    negativeValidatorsCount: NOsValidatorsNegDeltaCount[],
+    negativeValidatorsCount: UserNOsValidatorsCountAndBalance[],
   ) {
     const name = CriticalNegativeDelta.name + 'Module' + moduleIndex;
-    super(name, config, storage, operators, moduleIndex, nosStats);
-
-    this.negativeValidatorsCount = negativeValidatorsCount;
+    super(name, config, operators, moduleIndex, nosStats, negativeValidatorsCount);
   }
 
-  alertRule(): AlertRuleResult {
-    const alertParams = this.config.getCriticalAlertParamForModule(this.moduleIndex);
-    const result: AlertRuleResult = {};
-
-    const activeOngoingThreshold = alertParams.affectedValCount ?? alertParams.activeValCount.minActiveCount;
-
-    // If affectedValCount is set, we're not interested in NOs with a number of validators less than this value
-    // (because for these NOs it is not possible to have a number of affected validators greater than this value).
-    const filteredNosStats = this.nosStats.filter((o) => o.active_ongoing >= activeOngoingThreshold);
-
-    for (const noStats of filteredNosStats) {
-      const operator = this.operators.find((o) => +noStats.val_nos_id === o.index);
-      const negDelta = this.negativeValidatorsCount.find(
-        (a) => +a.val_nos_module_id === operator.module && +a.val_nos_id === operator.index,
-      );
-
-      if (negDelta == null) continue;
-
-      const includeToResult =
-        alertParams.affectedValCount != null
-          ? negDelta.amount >= alertParams.affectedValCount
-          : negDelta.amount >=
-            Math.min(noStats.active_ongoing * alertParams.activeValCount.affectedShare, alertParams.activeValCount.minAffectedCount);
-      if (includeToResult) {
-        result[operator.name] = { ongoing: noStats.active_ongoing, negDelta: negDelta.amount };
-      }
-    }
-
-    return result;
-  }
-
-  sendRule(ruleResult: AlertRuleResult): boolean {
-    const defaultInterval = 6 * 60 * 60 * 1000; // 6h
-    const ifIncreasedInterval = 60 * 60 * 1000; // 1h
-    this.sendTimestamp = Date.now();
-    if (Object.values(ruleResult).length > 0) {
-      const prevSendTimestamp = sentAlerts[this.alertname]?.timestamp ?? 0;
-      if (this.sendTimestamp - prevSendTimestamp > defaultInterval) return true;
-      for (const [operator, operatorResult] of Object.entries(ruleResult)) {
-        // if any operator has increased bad validators count or another bad operator has been added
-        if (
-          operatorResult.negDelta > (sentAlerts[this.alertname]?.ruleResult[operator]?.negDelta ?? 0) &&
-          this.sendTimestamp - prevSendTimestamp > ifIncreasedInterval
-        )
-          return true;
-      }
-    }
-    return false;
-  }
-
-  alertBody(ruleResult: AlertRuleResult): AlertRequestBody {
-    const timestampDate = new Date(this.sendTimestamp);
-    const timestampDatePlusTwoMins = new Date(this.sendTimestamp).setMinutes(timestampDate.getMinutes() + 2);
-
+  getOperatorAlertRuleResult(
+    negDeltaStats: UserNOsValidatorsCountAndBalance,
+    noStats: NOsValidatorsStatusStats,
+  ): NegativeBalanceDeltaRuleResult {
     return {
-      startsAt: timestampDate.toISOString(),
-      endsAt: new Date(timestampDatePlusTwoMins).toISOString(),
-      labels: {
-        alertname: this.alertname,
-        severity: 'critical',
-        nos_module_id: this.moduleIndex.toString(),
-        ...this.config.get('CRITICAL_ALERTS_ALERTMANAGER_LABELS'),
-      },
-      annotations: {
-        summary: `${Object.values(ruleResult).length} Node Operators with CRITICAL count of validators with negative delta in module ${
-          this.moduleIndex
-        }`,
-        description: join(
-          Object.entries(ruleResult).map(([o, r]) => `${o}: ${r.negDelta} of ${r.ongoing}`),
-          '\n',
+      activeCount: noStats.active_ongoing,
+      negDeltaCount: negDeltaStats.amount,
+      activeBalance: noStats.active_ongoing_balance,
+      negDeltaBalance: negDeltaStats.balance,
+    };
+  }
+
+  isNumberOfAffectedValidatorsIncreased(operatorName: string, operatorRuleResult: NegativeBalanceDeltaRuleResult): boolean {
+    const sentAlertRuleResult = sentAlerts[this.alertname]?.ruleResult[operatorName] as NegativeBalanceDeltaRuleResult | undefined;
+
+    return (
+      operatorRuleResult.negDeltaBalance > (sentAlertRuleResult?.negDeltaBalance ?? 0) ||
+      operatorRuleResult.negDeltaCount > (sentAlertRuleResult?.negDeltaCount ?? 0)
+    );
+  }
+
+  getAlertBodyAnnotations(ruleResult: AlertRuleResult<NegativeBalanceDeltaRuleResult>): AlertBodyAnnotations {
+    return {
+      summary: `${Object.values(ruleResult).length} Node Operators with CRITICAL count of validators with negative delta in module ${
+        this.moduleIndex
+      }`,
+      description: join(
+        Object.entries(ruleResult).map(
+          ([o, r]) =>
+            `- **${o}**: ${r.negDeltaCount} of ${r.activeCount} (${gweiToEth(r.negDeltaBalance, 0)} ETH of ${gweiToEth(
+              r.activeBalance,
+              0,
+            )} ETH);`,
         ),
-      },
+        '\n',
+      ),
     };
   }
 }
