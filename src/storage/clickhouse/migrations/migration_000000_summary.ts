@@ -1,4 +1,4 @@
-const sql = `
+const sql = (engine: string) => `
 CREATE TABLE IF NOT EXISTS validators_summary (
     "epoch" Int64,
     "val_id" Int64,
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS validators_summary (
     INDEX proposer_index (is_proposer) TYPE set(2) GRANULARITY 8192,
     INDEX sync_index (is_sync) TYPE set(2) GRANULARITY 8192
 )
-ENGINE = ReplacingMergeTree()
+ENGINE = ${engine}
 ORDER BY (epoch, val_id)
 PARTITION BY intDiv(epoch, 225)
 `;
