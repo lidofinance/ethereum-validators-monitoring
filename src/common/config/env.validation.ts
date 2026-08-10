@@ -120,6 +120,14 @@ export class EnvironmentVariables {
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public DB_MAX_BACKOFF_SEC = 120;
 
+  /**
+   * Create ClickHouse tables with the Replicated* table engine family.
+   * Enable it only when the target database is backed by a replicated cluster.
+   */
+  @IsBoolean()
+  @Transform(({ value }) => toBoolean(value), { toClassOnly: true })
+  public DB_CLICKHOUSE_REPLICATED = false;
+
   @IsNotEmpty()
   @IsInt()
   @Min(1)

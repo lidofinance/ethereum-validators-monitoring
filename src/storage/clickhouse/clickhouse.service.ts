@@ -282,7 +282,13 @@ export class ClickhouseService implements OnModuleInit {
 
   public async migrate(): Promise<void> {
     this.logger.log('Running migrations');
-    const migrations = [
+    // Table engine is resolved once and applied to every table created below.
+    // The replicated variant is declared without arguments: the replica path then comes from the database, when it runs
+    // the `Replicated` engine, or from the server's default_replica_path / default_replica_name. Replication itself is
+    // configured outside this app.
+    const engine = this.config.get('DB_CLICKHOUSE_REPLICATED') ? 'ReplicatedReplacingMergeTree()' : 'ReplacingMergeTree()';
+    this.logger.log(`Using ClickHouse table engine [${engine}]`);
+    const migrations: (string | ((engine: string) => string))[] = [
       migration_000000_summary,
       migration_000001_indexes,
       migration_000002_rewards,
@@ -294,7 +300,8 @@ export class ClickhouseService implements OnModuleInit {
       migration_000008_last_not_missed_slot,
       migration_000009_pending_consolidations,
     ];
-    for (const query of migrations) {
+    for (const migration of migrations) {
+      const query = typeof migration === 'function' ? migration(engine) : migration;
       await this.db.exec({ query });
     }
   }

@@ -192,6 +192,13 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1695902400 + (epoch * 32 * 
 * **Required:** false
 * **Default:** 120
 ---
+`DB_CLICKHOUSE_REPLICATED` - Create Clickhouse tables with the `Replicated*` table engine family instead of the plain one.
+* **Required:** false
+* **Default:** false
+* **Note:** enable it only when the target database is backed by a replicated Clickhouse cluster. The table engine is
+  declared without arguments, so the replica path is taken from the database (`Replicated` database engine) or from the
+  server-side `default_replica_path` / `default_replica_name` defaults.
+---
 `DRY_RUN` - Run application in dry mode. This means that it runs a main cycle once every 24 hours.
 * **Required:** false
 * **Values:** true / false
