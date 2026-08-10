@@ -283,8 +283,9 @@ export class ClickhouseService implements OnModuleInit {
   public async migrate(): Promise<void> {
     this.logger.log('Running migrations');
     // Table engine is resolved once and applied to every table created below.
-    // The replicated variant takes no arguments on purpose: the deployment uses the `Replicated` database engine,
-    // so DDL replication is set up at the database level by the infra chart, not by this app.
+    // The replicated variant is declared without arguments: the replica path then comes from the database, when it runs
+    // the `Replicated` engine, or from the server's default_replica_path / default_replica_name. Replication itself is
+    // configured outside this app.
     const engine = this.config.get('DB_CLICKHOUSE_REPLICATED') ? 'ReplicatedReplacingMergeTree()' : 'ReplacingMergeTree()';
     this.logger.log(`Using ClickHouse table engine [${engine}]`);
     const migrations: (string | ((engine: string) => string))[] = [
