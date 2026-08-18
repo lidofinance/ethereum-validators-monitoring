@@ -17,6 +17,8 @@ import {
   validateSync,
 } from 'class-validator';
 
+import { DEFAULT_SECRETS_FILE_PATH, DEFAULT_SECRETS_POLL_INTERVAL_IN_SECONDS, readSecretsFile } from 'common/secrets/secrets-file';
+
 import { Environment, LogFormat, LogLevel } from './interfaces';
 
 export enum Network {
@@ -309,10 +311,29 @@ export class EnvironmentVariables {
 
   @IsEnum(WorkingMode)
   public WORKING_MODE = WorkingMode.Finalized;
+
+  /**
+   * Where the OpenBao agent writes the secrets this process reads. Absent means "no agent here,
+   * read the environment", which is how the compose deployment on the VMs runs.
+   */
+  @IsString()
+  public SECRETS_FILE_PATH = DEFAULT_SECRETS_FILE_PATH;
+
+  @IsInt()
+  @Min(1)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public SECRETS_POLL_INTERVAL_IN_SECONDS = DEFAULT_SECRETS_POLL_INTERVAL_IN_SECONDS;
 }
 
 export function validate(config: Record<string, unknown>) {
-  const validatedConfig = plainToInstance(EnvironmentVariables, config);
+  // The secrets file wins over the environment, and it is merged here rather than read by whoever
+  // needs a credential: this is the one place every value passes through, so validation covers the
+  // file's values too — a rotated endpoint that is not a URL fails at startup rather than on the
+  // first request. The logger does not exist yet at this point, hence console.
+  const secretsFilePath = String(config.SECRETS_FILE_PATH ?? DEFAULT_SECRETS_FILE_PATH);
+  const withSecrets = { ...config, ...readSecretsFile(secretsFilePath, (message) => console.error(message)) };
+
+  const validatedConfig = plainToInstance(EnvironmentVariables, withSecrets);
 
   const validatorOptions = { skipMissingProperties: false };
   const errors = validateSync(validatedConfig, validatorOptions);

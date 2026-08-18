@@ -78,6 +78,20 @@ export class ConsensusProviderService {
     this.defaultMaxSlotDeepCount = config.get('CL_API_MAX_SLOT_DEEP_COUNT');
   }
 
+  /**
+   * Re-point the API list without restarting, used when the secrets file rotates.
+   *
+   * The contents are replaced rather than the field: `apiUrls` is readonly, and retryRequest walks
+   * it on every request, so replacing the contents takes effect from the next one. Callers that
+   * captured the array — none today — would see the new list too, which is the intent.
+   */
+  public setApiUrls(urls: string[]): void {
+    if (urls.length === 0) {
+      throw new Error('setApiUrls needs at least one URL');
+    }
+    this.apiUrls.splice(0, this.apiUrls.length, ...urls);
+  }
+
   public async getVersion(): Promise<string> {
     if (this.version) {
       return this.version;

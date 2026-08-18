@@ -1,5 +1,5 @@
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, LoggerService, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 
 import { CriticalAlertsService } from 'common/alertmanager';
 import { ConfigService, WorkingMode } from 'common/config';
@@ -14,7 +14,10 @@ import { EpochProcessingState } from 'storage/clickhouse';
 import { RegistryService } from 'validators-registry';
 
 @Injectable()
-export class InspectorService implements OnModuleInit {
+export class InspectorService implements OnModuleInit, OnApplicationShutdown {
+  /** Set by the shutdown hook; the loop finishes the epoch it is on and then returns. */
+  private stopping = false;
+
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
@@ -36,11 +39,18 @@ export class InspectorService implements OnModuleInit {
     this.prometheus.epochNumber.set(Number(latestProcessedEpoch.epoch));
   }
 
-  public async startLoop(): Promise<never> {
+  public onApplicationShutdown(): void {
+    // A pod termination lands here through app.enableShutdownHooks(). Stopping between epochs
+    // rather than mid-write is the point: an insert cut in half is re-done on the next start, and
+    // the epoch it was writing reads as processed-but-incomplete until then.
+    this.stopping = true;
+    this.logger.log('Stopping the inspector loop on shutdown');
+  }
+
+  public async startLoop(): Promise<void> {
     const version = await this.clClient.getVersion();
     this.logger.log(`Beacon chain API info [${version}]`);
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
+    while (!this.stopping) {
       try {
         const toProcess = await this.getEpochDataToProcess();
         if (toProcess) {
