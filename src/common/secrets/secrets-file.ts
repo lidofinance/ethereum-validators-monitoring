@@ -1,21 +1,12 @@
 /**
- * Secrets that arrive as a file, and how a rotation is noticed.
+ * Secrets that arrive as a file, and how a change to it is noticed.
  *
- * The EL and CL endpoints carry provider credentials, so in Kubernetes they are delivered by the
- * OpenBao agent as a JSON file rather than as environment variables. The reason is not aesthetics:
- * a process cannot be handed new environment variables from outside, so any env-based delivery
- * costs a pod restart per rotation, and until that restart happens the old credential keeps
- * working — which means a rotation nobody noticed looks exactly like a healthy deployment right up
- * to the moment the provider revokes the old key.
+ * The endpoints carry provider credentials and are delivered as a JSON file, because a process
+ * cannot be handed new environment variables from outside: env-based delivery costs a restart per
+ * rotation. The file is replaced by a rename, which gives it a new inode, so this polls the path
+ * with stat() rather than watching the file.
  *
- * The agent updates the file by writing a temp file and renaming it over the path. The rename is
- * atomic, so a reader never sees half a file — but it also creates a new inode, which is why this
- * polls the path with stat() instead of watching the file. A watcher attached to the file itself
- * (fs.watch, chokidar) goes silent after the first rotation.
- *
- * When the file is absent everything falls back to environment variables, which is how the compose
- * deployment on the VMs runs. The contract is deliberately the same as ethereum-head-watcher's
- * src/secrets.py, so that one description covers both services.
+ * No file means the values come from the environment.
  */
 import { readFileSync, statSync } from 'fs';
 
@@ -25,9 +16,8 @@ export const DEFAULT_SECRETS_POLL_INTERVAL_IN_SECONDS = 10;
 /**
  * The file's contents, or an empty object if there is no usable file.
  *
- * Absent is a normal state — it means "no agent here, use the environment". Present but unparseable
- * is not, so it is reported through onError and then treated the same way: refusing to start would
- * turn a bad render of one key into an outage of the whole indexer.
+ * Absent is normal and means "use the environment". Unparseable is reported and treated the same
+ * way, so one bad value cannot keep the indexer from starting.
  */
 export function readSecretsFile(path: string, onError?: (message: string) => void): Record<string, string> {
   if (!path) return {};
@@ -83,19 +73,15 @@ export class SecretsWatcher {
     this.mtime = readSecretsFileMtime(options.path);
   }
 
-  /**
-   * True if a change was seen and applied. Kept separate from the timer so the behaviour is
-   * testable without waiting on an interval.
-   */
+  /** True if a change was seen and applied. Separate from the timer so it is testable. */
   public checkOnce(): boolean {
     const mtime = readSecretsFileMtime(this.options.path);
     if (mtime === null || mtime === this.mtime) return false;
 
     const values = readSecretsFile(this.options.path, this.options.onError);
     if (Object.keys(values).length === 0) {
-      // A rotation that renders to nothing is not something to apply over working values. The
-      // mtime is remembered anyway: otherwise one broken render would report the same error every
-      // poll interval, forever.
+      // Nothing usable: keep the values already in force. The mtime is remembered anyway, so a
+      // broken file is reported once rather than every interval.
       this.mtime = mtime;
       this.options.onError?.(`Secrets file ${this.options.path} changed but has no usable values, keeping the previous ones`);
       return false;
@@ -116,8 +102,7 @@ export class SecretsWatcher {
   public start(): void {
     if (this.timer) return;
     this.timer = setInterval(() => this.checkOnce(), this.options.intervalInSeconds * 1000);
-    // The poll must not be what keeps the process alive: with a referenced timer, an otherwise
-    // finished process would sit in the event loop until the kubelet's grace period ran out.
+    // Unreferenced, so the poll never keeps a finished process alive.
     this.timer.unref?.();
   }
 

@@ -219,11 +219,11 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1695902400 + (epoch * 32 * 
 `CL_API_URLS` - Ethereum consensus layer comma-separated API URLs.
 * **Required:** true
 ---
-`SECRETS_FILE_PATH` - JSON file an OpenBao agent renders credentials to. When the file exists its values win over the environment, and `CL_API_URLS` is re-pointed without a restart when it is rotated; `EL_RPC_URLS` and `DB_PASSWORD` are reported as needing a restart, through the log and `secrets_reloads_total{status="restart_required"}`. When the file is absent everything is read from the environment, which is how the compose deployment runs.
+`SECRETS_FILE_PATH` - JSON file the credentials are read from. When it exists its values win over the environment, and `CL_API_URLS` is re-pointed without a restart when the file changes; `EL_RPC_URLS` and `DB_PASSWORD` are logged as needing a restart and counted in `secrets_reloads_total{status="restart_required"}`. When the file is absent everything comes from the environment.
 * **Required:** false
 * **Default:** /vault/secrets/config
 ---
-`SECRETS_POLL_INTERVAL_IN_SECONDS` - How often that path is checked for a rotation. The path is polled rather than watched because the agent replaces the file by renaming a new one over it, which a watcher attached to the file itself stops seeing.
+`SECRETS_POLL_INTERVAL_IN_SECONDS` - How often the path is checked for a change. The path is polled rather than watched, because the file is replaced by a rename.
 * **Required:** false
 * **Default:** 10
 ---

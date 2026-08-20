@@ -312,10 +312,7 @@ export class EnvironmentVariables {
   @IsEnum(WorkingMode)
   public WORKING_MODE = WorkingMode.Finalized;
 
-  /**
-   * Where the OpenBao agent writes the secrets this process reads. Absent means "no agent here,
-   * read the environment", which is how the compose deployment on the VMs runs.
-   */
+  /** File the secrets are read from. Absent means the values come from the environment. */
   @IsString()
   public SECRETS_FILE_PATH = DEFAULT_SECRETS_FILE_PATH;
 
@@ -326,10 +323,8 @@ export class EnvironmentVariables {
 }
 
 export function validate(config: Record<string, unknown>) {
-  // The secrets file wins over the environment, and it is merged here rather than read by whoever
-  // needs a credential: this is the one place every value passes through, so validation covers the
-  // file's values too — a rotated endpoint that is not a URL fails at startup rather than on the
-  // first request. The logger does not exist yet at this point, hence console.
+  // The file wins over the environment, merged here so its values pass the same validation.
+  // The logger does not exist yet at this point, hence console.
   const secretsFilePath = String(config.SECRETS_FILE_PATH ?? DEFAULT_SECRETS_FILE_PATH);
   const withSecrets = { ...config, ...readSecretsFile(secretsFilePath, (message) => console.error(message)) };
 

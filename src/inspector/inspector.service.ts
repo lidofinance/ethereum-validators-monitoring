@@ -15,7 +15,7 @@ import { RegistryService } from 'validators-registry';
 
 @Injectable()
 export class InspectorService implements OnModuleInit, OnApplicationShutdown {
-  /** Set by the shutdown hook; the loop finishes the epoch it is on and then returns. */
+  /** Set on shutdown; the loop finishes the epoch it is on and returns. */
   private stopping = false;
 
   public constructor(
@@ -40,9 +40,8 @@ export class InspectorService implements OnModuleInit, OnApplicationShutdown {
   }
 
   public onApplicationShutdown(): void {
-    // A pod termination lands here through app.enableShutdownHooks(). Stopping between epochs
-    // rather than mid-write is the point: an insert cut in half is re-done on the next start, and
-    // the epoch it was writing reads as processed-but-incomplete until then.
+    // Stop between epochs rather than mid-write: a half-written epoch is re-done on the next
+    // start and reads as processed-but-incomplete until then.
     this.stopping = true;
     this.logger.log('Stopping the inspector loop on shutdown');
   }

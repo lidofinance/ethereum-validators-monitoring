@@ -14,7 +14,6 @@ import {
   METRIC_AVG_CHAIN_PENALTY,
   METRIC_AVG_CHAIN_REWARD,
   METRIC_BUILD_INFO,
-  METRIC_SECRETS_RELOADS,
   METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_CONTRACT_KEYS_TOTAL,
   METRIC_DATA_ACTUALITY,
@@ -61,6 +60,7 @@ import {
   METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS,
   METRIC_OUTGOING_KEYSAPI_REQUESTS_COUNT,
   METRIC_OUTGOING_KEYSAPI_REQUESTS_DURATION_SECONDS,
+  METRIC_SECRETS_RELOADS,
   METRIC_STETH_BUFFERED_ETHER_TOTAL,
   METRIC_SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG,
   METRIC_TASK_DURATION_SECONDS,
@@ -208,11 +208,7 @@ export class PrometheusService implements OnApplicationBootstrap {
     labelNames: ['name', 'target'] as const,
   });
 
-  /**
-   * Rotated secrets picked up from the secrets file, by outcome. A rotation that did not reach the
-   * process is otherwise indistinguishable from a healthy deployment: the old endpoint keeps
-   * answering until the provider revokes the credential.
-   */
+  /** Rotated secrets picked up from the file, by outcome. */
   public secretsReloads = this.getOrCreateMetric('Counter', {
     name: METRIC_SECRETS_RELOADS,
     help: 'Rotated secrets picked up from the secrets file',

@@ -9,9 +9,8 @@ describe('secrets file', () => {
   let path: string;
 
   const write = (contents: string) => {
-    // The OpenBao agent renders to a temp file and renames it over the path, which is what makes
-    // the update atomic and what gives the file a new inode every time. Reproduced here because
-    // that new inode is the reason the watcher polls the path instead of watching the file.
+    // Replaced the way the real writer does it: a temp file renamed over the path, so the file
+    // gets a new inode every time.
     const tmp = `${path}.tmp`;
     writeFileSync(tmp, contents);
     renameSync(tmp, path);
@@ -69,8 +68,7 @@ describe('secrets file', () => {
     expect(onChange).not.toHaveBeenCalled();
     expect(onError).toHaveBeenCalled();
 
-    // The mtime is remembered even for a bad render: otherwise one broken template would report
-    // the same error every poll interval for as long as the process ran.
+    // The mtime is remembered even for a bad file, so it is reported once, not every interval.
     onError.mockClear();
     expect(watcher.checkOnce()).toBe(false);
     expect(onError).not.toHaveBeenCalled();

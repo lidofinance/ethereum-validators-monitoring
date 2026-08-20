@@ -20,9 +20,8 @@ async function bootstrap() {
   // logger
   app.useLogger(app.get(LOGGER_PROVIDER));
 
-  // Lifecycle hooks on SIGTERM/SIGINT. Without this the process still exits — node's default
-  // disposition does that — but it exits without running onModuleDestroy, so the ClickHouse client
-  // is never closed and the inspector is cut mid-cycle instead of stopping between epochs.
+  // Lifecycle hooks on SIGTERM/SIGINT: without them the process still exits, but onModuleDestroy
+  // never runs and the inspector is cut mid-cycle.
   app.enableShutdownHooks();
 
   // app

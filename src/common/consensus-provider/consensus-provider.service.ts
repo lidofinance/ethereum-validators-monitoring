@@ -45,7 +45,7 @@ export interface ForkEpochs {
 
 @Injectable()
 export class ConsensusProviderService {
-  protected readonly apiUrls: string[];
+  protected apiUrls: string[];
   protected readonly workingMode: string;
   protected readonly defaultMaxSlotDeepCount: number;
   protected version = '';
@@ -81,15 +81,15 @@ export class ConsensusProviderService {
   /**
    * Re-point the API list without restarting, used when the secrets file rotates.
    *
-   * The contents are replaced rather than the field: `apiUrls` is readonly, and retryRequest walks
-   * it on every request, so replacing the contents takes effect from the next one. Callers that
-   * captured the array — none today — would see the new list too, which is the intent.
+   * A new array rather than a mutation, because retryRequest walks a snapshot: a request in
+   * flight finishes against the list it started with, and shrinking the list under it cannot
+   * leave it reading past the end.
    */
   public setApiUrls(urls: string[]): void {
     if (urls.length === 0) {
       throw new Error('setApiUrls needs at least one URL');
     }
-    this.apiUrls.splice(0, this.apiUrls.length, ...urls);
+    this.apiUrls = [...urls];
   }
 
   public async getVersion(): Promise<string> {
@@ -374,16 +374,18 @@ export class ConsensusProviderService {
       useFallbackOnResolved: options?.useFallbackOnResolved ?? (() => false), // do NOT use fallback on success as default
     };
     const retry = retrier(this.logger, options.maxRetries, 100, 10000, true);
+    // Snapshot: the length and the element must come from the same version of the list.
+    const apiUrls = this.apiUrls;
     let res;
     let err;
-    for (let i = 0; i < this.apiUrls.length; i++) {
+    for (let i = 0; i < apiUrls.length; i++) {
       if (res != null) {
         break;
       }
 
-      res = await callback(this.apiUrls[i])
+      res = await callback(apiUrls[i])
         .catch(rejectDelay(this.config.get('CL_API_RETRY_DELAY_MS')))
-        .catch(() => retry(() => callback(this.apiUrls[i])))
+        .catch(() => retry(() => callback(apiUrls[i])))
         .then((r: any) => {
           if (options.useFallbackOnResolved(r)) {
             err = Error('Unresolved data on a successful CL API response');
@@ -401,7 +403,7 @@ export class ConsensusProviderService {
           throw currentError;
         });
 
-      if (i === this.apiUrls.length - 1 && res == null) {
+      if (i === apiUrls.length - 1 && res == null) {
         err.message = `Error while doing CL API request on all passed URLs. ${err.message}`;
         throw err;
       }
