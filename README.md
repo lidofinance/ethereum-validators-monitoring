@@ -219,7 +219,7 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1695902400 + (epoch * 32 * 
 `CL_API_URLS` - Ethereum consensus layer comma-separated API URLs.
 * **Required:** true
 ---
-`SECRETS_FILE_PATH` - JSON file the credentials are read from. When it exists its values win over the environment, and `CL_API_URLS` is re-pointed without a restart when the file changes; `EL_RPC_URLS` and `DB_PASSWORD` are logged as needing a restart and counted in `secrets_reloads_total{status="restart_required"}`. When the file is absent everything comes from the environment.
+`SECRETS_FILE_PATH` - JSON file the credentials are read from. When it exists its values win over the environment. A change to any value restarts the process so the new values are picked up on startup, counted in `secrets_reloads_total{status="restart"}`; a change that cannot be read keeps the values in force and is counted as `status="failure"`. When the file is absent everything comes from the environment.
 * **Required:** false
 * **Default:** /vault/secrets/config
 ---

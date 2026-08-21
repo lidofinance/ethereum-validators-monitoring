@@ -2,7 +2,7 @@ import { mkdtempSync, renameSync, rmSync, writeFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
-import { SecretsWatcher, readSecretsFile } from './secrets-file';
+import { SecretsWatcher, changedKeys, readSecretsFile } from './secrets-file';
 
 describe('secrets file', () => {
   let dir: string;
@@ -89,5 +89,25 @@ describe('secrets file', () => {
     write(JSON.stringify({ CL_API_URLS: 'http://two:5052' }));
     expect(watcher.checkOnce()).toBe(false);
     expect(onError).toHaveBeenCalledWith(expect.stringContaining('cannot apply'));
+  });
+});
+
+describe('changedKeys', () => {
+  it('reports a change for any key, not just the ones a live-apply path used to know about', () => {
+    for (const key of ['CL_API_URLS', 'EL_RPC_URLS', 'DB_PASSWORD', 'SOMETHING_ADDED_LATER']) {
+      expect(changedKeys({ [key]: 'before' }, { [key]: 'after' })).toEqual([key]);
+    }
+  });
+
+  it('reports nothing when the file is re-rendered with identical values', () => {
+    expect(changedKeys({ CL_API_URLS: 'a', DB_PASSWORD: 'b' }, { CL_API_URLS: 'a', DB_PASSWORD: 'b' })).toEqual([]);
+  });
+
+  it('reports a key that appeared', () => {
+    expect(changedKeys({ CL_API_URLS: 'a' }, { CL_API_URLS: 'a', DB_PASSWORD: 'b' })).toEqual(['DB_PASSWORD']);
+  });
+
+  it('ignores a key that disappeared, treating it as a bad render rather than an unset', () => {
+    expect(changedKeys({ CL_API_URLS: 'a', DB_PASSWORD: 'b' }, { CL_API_URLS: 'a' })).toEqual([]);
   });
 });

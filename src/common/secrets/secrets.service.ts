@@ -2,38 +2,39 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService, OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { ConsensusProviderService } from 'common/consensus-provider';
 import { PrometheusService } from 'common/prometheus';
 
-import { DEFAULT_SECRETS_POLL_INTERVAL_IN_SECONDS, SecretsWatcher, readSecretsFile } from './secrets-file';
+import { DEFAULT_SECRETS_POLL_INTERVAL_IN_SECONDS, SecretsWatcher, changedKeys, readSecretsFile } from './secrets-file';
 
 export enum SecretsReloadStatus {
-  Success = 'success',
+  /** A rotation was seen and a restart was asked for. */
+  Restart = 'restart',
+  /** The file changed but could not be used, so the values in force were kept. */
   Failure = 'failure',
-  /** Changed, but not swappable while running: what is left is a restart. */
-  RestartRequired = 'restart_required',
 }
 
 /**
- * Which keys this process can re-point without restarting.
+ * Watches the secrets file and restarts the process when its values change.
  *
- * CL_API_URLS can: the consensus client walks its list per request, so replacing it is enough.
- * EL_RPC_URLS cannot — the fallback list is private to the provider and the contracts hold that
- * instance, so re-pointing means rebuilding both. Neither can DB_PASSWORD: several callers hold a
- * connection built from it.
+ * There is deliberately no live-apply path. Startup already prefers the file over the environment,
+ * so a restart re-reads every key, including ones added later — correctness does not depend on a
+ * per-key list being kept up to date. Re-pointing a single key in place would only be provably
+ * enough while the module holding it keeps walking its own list per call, which is a detail of
+ * another module that can change without anything here noticing.
+ *
+ * The cost is bounded: processed epochs are persisted, so a restart resumes from the last one and
+ * redoes at most the epoch in flight.
  */
-const LIVE_APPLICABLE_KEYS = ['CL_API_URLS'];
-
 @Injectable()
 export class SecretsService implements OnModuleInit, OnApplicationShutdown {
   private watcher: SecretsWatcher | null = null;
   private applied: Record<string, string> = {};
+  private restarting = false;
 
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
     protected readonly prometheus: PrometheusService,
-    protected readonly clClient: ConsensusProviderService,
   ) {}
 
   public onModuleInit(): void {
@@ -64,44 +65,27 @@ export class SecretsService implements OnModuleInit, OnApplicationShutdown {
     this.watcher?.stop();
   }
 
-  /**
-   * Apply what can be applied, and log what cannot.
-   *
-   * A key missing from the new file is a bad render, not an instruction to unset a working value,
-   * so absences are ignored.
-   */
+  /** Restart if any value differs from the one in force. The comparison is in changedKeys. */
   private apply(values: Record<string, string>): void {
-    const changed = Object.keys(values).filter((key) => values[key] !== this.applied[key]);
-    if (changed.length === 0) return;
+    const changed = changedKeys(this.applied, values);
+    if (changed.length === 0 || this.restarting) return;
 
-    const live = changed.filter((key) => LIVE_APPLICABLE_KEYS.includes(key));
-    const needsRestart = changed.filter((key) => !LIVE_APPLICABLE_KEYS.includes(key));
+    this.restarting = true;
+    this.watcher?.stop();
 
-    if (live.includes('CL_API_URLS')) {
-      const urls = values['CL_API_URLS']
-        .split(',')
-        .map((url) => url.trim())
-        .filter((url) => url.length > 0);
-      if (urls.length === 0) {
-        throw new Error('CL_API_URLS in the secrets file has no usable URLs');
-      }
-      this.clClient.setApiUrls(urls);
-    }
+    this.logger.warn(`Rotated secrets, restarting to pick them up: ${changed.join(', ')}`);
+    this.prometheus.secretsReloads.inc({ status: SecretsReloadStatus.Restart });
 
-    for (const key of live) {
-      this.applied[key] = values[key];
-    }
+    this.requestRestart();
+  }
 
-    if (live.length > 0) {
-      this.logger.log(`Applied rotated secrets: ${live.join(', ')}`);
-      this.prometheus.secretsReloads.inc({ status: SecretsReloadStatus.Success });
-    }
-
-    if (needsRestart.length > 0) {
-      // Not recorded as applied, so later rotations report it again until a restart happens.
-      // Reported per rotation rather than per poll: alert on an increase, not on a level.
-      this.logger.warn(`Rotated secrets that need a restart to take effect: ${needsRestart.join(', ')}`);
-      this.prometheus.secretsReloads.inc({ status: SecretsReloadStatus.RestartRequired });
-    }
+  /**
+   * Signals ourselves rather than calling exit, so the shutdown runs the same lifecycle hooks a
+   * pod deletion would — the inspector finishes its cycle instead of being cut mid-write.
+   *
+   * Overridable so the decision to restart can be tested without ending the test process.
+   */
+  protected requestRestart(): void {
+    process.kill(process.pid, 'SIGTERM');
   }
 }

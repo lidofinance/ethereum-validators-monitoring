@@ -48,6 +48,17 @@ export function readSecretsFile(path: string, onError?: (message: string) => voi
   return Object.fromEntries(Object.entries(parsed as Record<string, unknown>).map(([key, value]) => [key, String(value)]));
 }
 
+/**
+ * Keys whose value differs from the one already in force.
+ *
+ * Compared by value, so an injector re-render with identical contents yields nothing. A key
+ * present before and absent now is a bad render, not an instruction to unset a working value, so
+ * absences are not reported as changes.
+ */
+export function changedKeys(applied: Record<string, string>, incoming: Record<string, string>): string[] {
+  return Object.keys(incoming).filter((key) => incoming[key] !== applied[key]);
+}
+
 /** The path's mtime in milliseconds, or null when there is nothing at the path. */
 export function readSecretsFileMtime(path: string): number | null {
   try {
