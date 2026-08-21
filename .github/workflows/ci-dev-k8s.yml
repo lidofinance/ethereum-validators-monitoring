@@ -2,25 +2,19 @@ name: Build and push ethereum-validators-monitoring to dev
 
 run-name: Build and push ethereum-validators-monitoring:dev to dev
 
-# The image the Kubernetes deployment runs: vroom-evm-app in helm-charts-vroom pulls
-# registry.dev.k8s-dev.org/team-vroom/ethereum-validators-monitoring:dev, and
-# argocd-image-updater rolls the Deployment when the digest behind that tag changes.
+# Builds the mutable `dev` image tag through the shared reusable build workflow, so action
+# pins, buildx setup and cache behaviour are maintained in one place.
 #
-# This does not replace ci-dev.yml. That one dispatches into lidofinance/infra-mainnet,
-# which builds the Docker Hub image and runs the ansible deployment — the path production
-# still uses. Both run off `develop` for now, and the second one goes away with ansible.
-#
-# The build itself now comes from the shared reusable workflow rather than being spelled
-# out here, so action pins, buildx setup and cache behaviour are maintained in one place
-# for every k8s-bound repo instead of drifting per repository.
+# This runs alongside ci-dev.yml and does not replace it: both delivery paths are active
+# for now.
 on:
   workflow_dispatch:
   push:
     branches:
       - develop
-    # paths-ignore rather than an allowlist of paths: the previous allowlist had to be
-    # extended every time something new was baked into the image, and a forgotten entry
-    # produces a stale image with a green pipeline rather than a failure.
+    # paths-ignore rather than an allowlist of paths: an allowlist has to be extended every
+    # time a new file is baked into the image, and a forgotten entry produces a stale image
+    # with a green pipeline rather than a failure.
     paths-ignore:
       - '.github/**'
       - 'test/**'
