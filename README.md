@@ -219,13 +219,17 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1695902400 + (epoch * 32 * 
 `CL_API_URLS` - Ethereum consensus layer comma-separated API URLs.
 * **Required:** true
 ---
-`SECRETS_FILE_PATH` - JSON file the credentials are read from. When it exists its values win over the environment. A change to any value restarts the process so the new values are picked up on startup, counted in `secrets_reloads_total{status="restart"}`; a change that cannot be read keeps the values in force and is counted as `status="failure"`. When the file is absent everything comes from the environment.
+`SECRETS_FILE_PATH` - JSON file the credentials are read from. When it exists its values win over the environment. A change to any value restarts the process so the new values are picked up on startup, counted in `secrets_reloads_total{status="restart"}`; a change that cannot be read keeps the values in force and is counted as `status="failure"`. When the file is absent everything comes from the environment. Whether a rotation reached the process is answered by the `secrets_file_mtime_seconds` gauge rather than by that counter, which is incremented immediately before the restart and reset by it.
 * **Required:** false
 * **Default:** /vault/secrets/config
 ---
 `SECRETS_POLL_INTERVAL_IN_SECONDS` - How often the path is checked for a change. The path is polled rather than watched, because the file is replaced by a rename.
 * **Required:** false
 * **Default:** 10
+---
+`SHUTDOWN_TIMEOUT_IN_SECONDS` - How long a shutdown waits for the epoch in flight before exiting anyway. Keep it below the deployment's termination grace period. An epoch that does not finish in time is redone on the next start. A restart the process asks for itself after a rotation is forced five seconds past this budget: unlike a pod deletion, nothing else bounds it, and a shutdown step that hangs would otherwise leave the process running with the credentials that were rotated away.
+* **Required:** false
+* **Default:** 25
 ---
 `CL_API_RETRY_DELAY_MS` - Ethereum consensus layer request retry delay (ms).
 * **Required:** false

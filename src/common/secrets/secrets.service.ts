@@ -4,7 +4,16 @@ import { Inject, Injectable, LoggerService, OnApplicationShutdown, OnModuleInit 
 import { ConfigService } from 'common/config';
 import { PrometheusService } from 'common/prometheus';
 
-import { DEFAULT_SECRETS_POLL_INTERVAL_IN_SECONDS, SecretsWatcher, changedKeys, readSecretsFile } from './secrets-file';
+import {
+  DEFAULT_SECRETS_POLL_INTERVAL_IN_SECONDS,
+  SecretsWatcher,
+  changedKeys,
+  readSecretsFile,
+  readSecretsFileMtime,
+} from './secrets-file';
+
+/** Added to the shutdown budget before the restart is forced, so the graceful path goes first. */
+const SHUTDOWN_MARGIN_IN_SECONDS = 5;
 
 export enum SecretsReloadStatus {
   /** A rotation was seen and a restart was asked for. */
@@ -44,10 +53,12 @@ export class SecretsService implements OnModuleInit, OnApplicationShutdown {
     if (Object.keys(this.applied).length === 0) {
       // Logged on both paths, so which source is in use is answerable from the log alone.
       this.logger.log(`Configuration: the environment (no secrets file at ${path})`);
+      this.prometheus.secretsFileMtime.set(0);
       return;
     }
 
     this.logger.log(`Configuration: ${path} over the environment`);
+    this.prometheus.secretsFileMtime.set((readSecretsFileMtime(path) ?? 0) / 1000);
 
     this.watcher = new SecretsWatcher({
       path,
@@ -81,11 +92,23 @@ export class SecretsService implements OnModuleInit, OnApplicationShutdown {
 
   /**
    * Signals ourselves rather than calling exit, so the shutdown runs the same lifecycle hooks a
-   * pod deletion would — the inspector finishes its cycle instead of being cut mid-write.
+   * pod deletion would — the inspector gets the shutdown window to finish its epoch instead of
+   * being cut mid-write.
    *
    * Overridable so the decision to restart can be tested without ending the test process.
    */
   protected requestRestart(): void {
     process.kill(process.pid, 'SIGTERM');
+
+    // A pod deletion is bounded by terminationGracePeriodSeconds; a restart the process asks for
+    // itself is bounded by nothing, so a shutdown step that hangs would leave the container running
+    // with the credentials that were rotated away. Unreferenced, so it never extends a shutdown
+    // that finished on its own.
+    const deadline = this.config.get('SHUTDOWN_TIMEOUT_IN_SECONDS') + SHUTDOWN_MARGIN_IN_SECONDS;
+    const fallback = setTimeout(() => {
+      this.logger.error(`Shutdown did not finish within ${deadline}s, exiting to pick up the rotated secrets`);
+      process.exit(1);
+    }, deadline * 1000);
+    fallback.unref?.();
   }
 }

@@ -320,6 +320,12 @@ export class EnvironmentVariables {
   @Min(1)
   @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
   public SECRETS_POLL_INTERVAL_IN_SECONDS = DEFAULT_SECRETS_POLL_INTERVAL_IN_SECONDS;
+
+  /** How long a shutdown waits for the epoch in flight. Keep it under terminationGracePeriodSeconds. */
+  @IsInt()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public SHUTDOWN_TIMEOUT_IN_SECONDS = 25;
 }
 
 export function validate(config: Record<string, unknown>) {

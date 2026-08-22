@@ -60,6 +60,7 @@ import {
   METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS,
   METRIC_OUTGOING_KEYSAPI_REQUESTS_COUNT,
   METRIC_OUTGOING_KEYSAPI_REQUESTS_DURATION_SECONDS,
+  METRIC_SECRETS_FILE_MTIME,
   METRIC_SECRETS_RELOADS,
   METRIC_STETH_BUFFERED_ETHER_TOTAL,
   METRIC_SYNC_PARTICIPATION_DISTANCE_DOWN_FROM_CHAIN_AVG,
@@ -213,6 +214,15 @@ export class PrometheusService implements OnApplicationBootstrap {
     name: METRIC_SECRETS_RELOADS,
     help: 'Rotated secrets picked up from the secrets file',
     labelNames: ['status'] as const,
+  });
+
+  /**
+   * The counter above cannot say whether a rotation reached the process: it is incremented a second
+   * before the restart it asks for, and reset by it.
+   */
+  public secretsFileMtime = this.getOrCreateMetric('Gauge', {
+    name: METRIC_SECRETS_FILE_MTIME,
+    help: 'mtime of the secrets file read at startup, 0 when the configuration came from the environment',
   });
 
   public outgoingELRequestsCount = this.getOrCreateMetric('Gauge', {

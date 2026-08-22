@@ -1,10 +1,11 @@
-import { APP_NAME } from 'app';
+import { APP_NAME } from 'app/app.constants';
 
 export const METRICS_URL = '/metrics';
 export const METRICS_PREFIX = `${APP_NAME.replace(/[- ]/g, '_')}_`;
 
 export const METRIC_BUILD_INFO = 'build_info';
 export const METRIC_SECRETS_RELOADS = 'secrets_reloads_total';
+export const METRIC_SECRETS_FILE_MTIME = 'secrets_file_mtime_seconds';
 
 export const METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS = 'outgoing_el_requests_duration_seconds';
 export const METRIC_OUTGOING_EL_REQUESTS_COUNT = 'outgoing_el_requests_count';

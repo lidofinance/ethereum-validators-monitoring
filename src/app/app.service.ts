@@ -33,6 +33,12 @@ export class AppService implements OnModuleInit, OnApplicationBootstrap {
   }
 
   public async onApplicationBootstrap(): Promise<void> {
-    this.inspectorService.startLoop().then();
+    // Not awaited — the loop runs for the life of the process — but a rejection has to land
+    // somewhere: unhandled, it ends the process without running a single shutdown hook.
+    this.inspectorService.startLoop().catch((error) => {
+      this.logger.error('The inspector loop ended with an error, shutting down');
+      this.logger.error(error);
+      process.kill(process.pid, 'SIGTERM');
+    });
   }
 }
