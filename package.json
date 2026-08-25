@@ -102,6 +102,9 @@
     "moduleNameMapper": {
       "^build-info$": "<rootDir>/../build-info.json"
     },
+    "setupFiles": [
+      "<rootDir>/../test/jest.env.js"
+    ],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"

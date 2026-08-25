@@ -17,6 +17,8 @@ import {
   validateSync,
 } from 'class-validator';
 
+import { DEFAULT_SECRETS_FILE_PATH, DEFAULT_SECRETS_POLL_INTERVAL_IN_SECONDS, readSecretsFile } from 'common/secrets/secrets-file';
+
 import { Environment, LogFormat, LogLevel } from './interfaces';
 
 export enum Network {
@@ -309,10 +311,30 @@ export class EnvironmentVariables {
 
   @IsEnum(WorkingMode)
   public WORKING_MODE = WorkingMode.Finalized;
+
+  /** File the secrets are read from. Absent means the values come from the environment. */
+  @IsString()
+  public SECRETS_FILE_PATH = DEFAULT_SECRETS_FILE_PATH;
+
+  @IsInt()
+  @Min(1)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public SECRETS_POLL_INTERVAL_IN_SECONDS = DEFAULT_SECRETS_POLL_INTERVAL_IN_SECONDS;
+
+  /** How long a shutdown waits for the epoch in flight. Keep it under terminationGracePeriodSeconds. */
+  @IsInt()
+  @Min(0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public SHUTDOWN_TIMEOUT_IN_SECONDS = 25;
 }
 
 export function validate(config: Record<string, unknown>) {
-  const validatedConfig = plainToInstance(EnvironmentVariables, config);
+  // The file wins over the environment, merged here so its values pass the same validation.
+  // The logger does not exist yet at this point, hence console.
+  const secretsFilePath = String(config.SECRETS_FILE_PATH ?? DEFAULT_SECRETS_FILE_PATH);
+  const withSecrets = { ...config, ...readSecretsFile(secretsFilePath, (message) => console.error(message)) };
+
+  const validatedConfig = plainToInstance(EnvironmentVariables, withSecrets);
 
   const validatorOptions = { skipMissingProperties: false };
   const errors = validateSync(validatedConfig, validatorOptions);

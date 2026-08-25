@@ -1,5 +1,5 @@
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
-import { Inject, Injectable, LoggerService, OnModuleInit } from '@nestjs/common';
+import { BeforeApplicationShutdown, Inject, Injectable, LoggerService, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 
 import { CriticalAlertsService } from 'common/alertmanager';
 import { ConfigService, WorkingMode } from 'common/config';
@@ -14,7 +14,14 @@ import { EpochProcessingState } from 'storage/clickhouse';
 import { RegistryService } from 'validators-registry';
 
 @Injectable()
-export class InspectorService implements OnModuleInit {
+export class InspectorService implements OnModuleInit, OnModuleDestroy, BeforeApplicationShutdown {
+  /** Set on shutdown; the loop returns instead of starting another epoch. */
+  private stopping = false;
+  /** The running loop, so shutdown has something to wait for. */
+  private loop: Promise<void> | null = null;
+  /** The CL version is logged once, on the first cycle that reaches it. */
+  private reportedVersion = false;
+
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
     protected readonly config: ConfigService,
@@ -36,12 +43,52 @@ export class InspectorService implements OnModuleInit {
     this.prometheus.epochNumber.set(Number(latestProcessedEpoch.epoch));
   }
 
-  public async startLoop(): Promise<never> {
-    const version = await this.clClient.getVersion();
-    this.logger.log(`Beacon chain API info [${version}]`);
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
+  public onModuleDestroy(): void {
+    // The first hook Nest runs on a signal, which leaves the rest of the shutdown sequence for the
+    // loop to notice the flag in.
+    this.stopping = true;
+    this.logger.log('Stopping the inspector loop on shutdown');
+  }
+
+  /**
+   * Wait for the epoch in flight, bounded by SHUTDOWN_TIMEOUT_IN_SECONDS.
+   *
+   * Nest re-raises the signal as soon as its hooks return, so this is the only point where an exit
+   * can be delayed at all. The bound is lower than an epoch takes: what the wait buys is that no new
+   * epoch starts and a write already running finishes, and a cut one is redone on the next start.
+   */
+  public async beforeApplicationShutdown(): Promise<void> {
+    if (!this.loop) return;
+
+    const seconds = this.config.get('SHUTDOWN_TIMEOUT_IN_SECONDS');
+    let timer: NodeJS.Timeout | undefined;
+    const deadline = new Promise<false>((resolve) => {
+      timer = setTimeout(() => resolve(false), seconds * 1000);
+    });
+
+    const stopped = await Promise.race([this.loop.then(() => true), deadline]);
+    if (timer) clearTimeout(timer);
+
+    if (stopped) {
+      this.logger.log('Inspector loop stopped');
+    } else {
+      this.logger.warn(`Inspector loop did not stop within ${seconds}s, exiting anyway`);
+    }
+  }
+
+  public startLoop(): Promise<void> {
+    this.loop = this.runLoop();
+    return this.loop;
+  }
+
+  protected async runLoop(): Promise<void> {
+    while (!this.stopping) {
       try {
+        if (!this.reportedVersion) {
+          // Read once, but inside the loop, so a failure is retried like any other cycle error.
+          this.logger.log(`Beacon chain API info [${await this.clClient.getVersion()}]`);
+          this.reportedVersion = true;
+        }
         const toProcess = await this.getEpochDataToProcess();
         if (toProcess) {
           if (this.config.get('WORKING_MODE') == WorkingMode.Head) {

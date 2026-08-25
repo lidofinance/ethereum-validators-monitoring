@@ -1,0 +1,35 @@
+name: Build and push ethereum-validators-monitoring to dev
+
+run-name: Build and push ethereum-validators-monitoring:dev to dev
+
+# Builds the mutable `dev` image tag through the shared reusable build workflow, so action
+# pins, buildx setup and cache behaviour are maintained in one place.
+#
+# This runs alongside ci-dev.yml and does not replace it: both delivery paths are active
+# for now.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+    # paths-ignore rather than an allowlist of paths: an allowlist has to be extended every
+    # time a new file is baked into the image, and a forgotten entry produces a stale image
+    # with a green pipeline rather than a failure.
+    paths-ignore:
+      - '.github/**'
+      - 'test/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-push:
+    uses: lidofinance/actions/.github/workflows/k8s-build-push-harbor.yml@c7b5b6c5d8013046347d728d748fa741eb214e28
+    with:
+      tag: dev
+      registry: registry.dev.k8s-dev.org
+      registry_username: ${{ vars.REGISTRY_USERNAME }}
+      image: team-vroom/ethereum-validators-monitoring
+      environment: harbor_dev_release
+    secrets:
+      registry_token: ${{ secrets.HARBOR_DEV_TOKEN }}
