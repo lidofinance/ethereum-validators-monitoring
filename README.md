@@ -269,7 +269,12 @@ latest known not missing slot, gets the timestamp of this block, and gets the CL
 timestamp. If this mode is disabled, to find the next not missing CL slot the app iterates all next (or previous) CL
 slots one by one from the currently processed slot to find the not missing one up to the depth specified in the
 `CL_API_MAX_SLOT_DEEP_COUNT` variable. It is suggested to use the `SPARSE_NETWORK_MODE` mode only on networks with very
-many missed slots.
+many missed slots. This mode requires `EL_RPC_URLS` to be set whatever the `VALIDATOR_REGISTRY_SOURCE` is.
+
+Since Glamsterdam (EIP-7732) a proposed block no longer carries its execution payload: the payload is revealed by the
+builder in a separate envelope, and a block whose payload was not revealed in time gets no EL block at all. So the EL
+block the app starts from is taken from `parent_block_hash` of the payload bid, and the blocks the EL walk jumps over
+are found by following `parent_root` back from the slot it lands on, which keeps them from being counted as missed.
 * **Required:** false
 * **Default:** false
 ---

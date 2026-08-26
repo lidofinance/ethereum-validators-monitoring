@@ -27,11 +27,36 @@ export interface BlockInfoResponse {
       sync_aggregate: {
         sync_committee_bits: string;
       };
-      execution_payload: {
+      /**
+       * Up to Fulu the block carries its execution payload inline. Since Gloas (EIP-7732) the
+       * payload is revealed by the builder in a separate envelope and the body commits to
+       * `signed_execution_payload_bid` instead, so it is absent from every post-fork block.
+       */
+      execution_payload?: {
         block_number: number;
         withdrawals: Withdrawal[];
       };
+      /**
+       * [New in Gloas:EIP7732]
+       */
+      signed_execution_payload_bid?: SignedExecutionPayloadBid;
     };
+  };
+}
+
+/**
+ * Commitment to an execution payload the proposer puts into the block since Gloas (EIP-7732).
+ *
+ * Only the field the app reads is modelled.
+ */
+export interface SignedExecutionPayloadBid {
+  message: {
+    /**
+     * Hash of the execution layer block the state already has: `process_execution_payload_bid`
+     * asserts `bid.parent_block_hash == state.latest_block_hash`, so it is the payload of the
+     * latest ancestor whose payload was revealed in time and applied.
+     */
+    parent_block_hash: string;
   };
 }
 
@@ -111,4 +136,5 @@ export interface VersionResponse {
 export interface SpecResponse {
   DENEB_FORK_EPOCH?: string;
   ELECTRA_FORK_EPOCH?: string;
+  GLOAS_FORK_EPOCH?: string;
 }
