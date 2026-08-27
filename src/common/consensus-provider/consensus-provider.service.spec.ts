@@ -314,3 +314,39 @@ describe('ConsensusProviderService fork epochs', () => {
     expect((await service.getForkEpochs()).gloas).toBe(Number.MAX_SAFE_INTEGER);
   });
 });
+
+describe('ConsensusProviderService execution payload envelope', () => {
+  class EnvelopeConsensusProviderService extends ConsensusProviderService {
+    public readonly requestedSubUrls: string[] = [];
+
+    protected async apiGet<T>(apiURL: string, subUrl: string): Promise<T> {
+      this.requestedSubUrls.push(subUrl);
+
+      if (this.envelope == null) {
+        throw new ResponseError(`Not found: ${subUrl}`, 404);
+      }
+
+      return { data: this.envelope, finalized: true } as T;
+    }
+
+    public constructor(private readonly envelope: unknown) {
+      const logger = { log: jest.fn(), warn: jest.fn(), error: jest.fn(), debug: jest.fn() };
+      super(logger as any, config as any, {} as any, {} as any, {} as any, {} as any);
+    }
+  }
+
+  it('reads the envelope of a block', async () => {
+    const service = new EnvelopeConsensusProviderService({ message: { payload: { withdrawals: [{ index: '1' }] } } });
+
+    const envelope = await service.getExecutionPayloadEnvelope(120);
+
+    expect(envelope.message.payload.withdrawals).toEqual([{ index: '1' }]);
+    expect(service.requestedSubUrls).toEqual(['eth/v1/beacon/execution_payload_envelopes/120']);
+  });
+
+  it('returns nothing when the builder never revealed the payload', async () => {
+    const service = new EnvelopeConsensusProviderService(null);
+
+    expect(await service.getExecutionPayloadEnvelope(120)).toBeUndefined();
+  });
+});

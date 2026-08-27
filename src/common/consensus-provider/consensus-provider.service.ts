@@ -22,6 +22,7 @@ import {
   BlockInfoResponse,
   GenesisResponse,
   ProposerDutyInfo,
+  SignedExecutionPayloadEnvelope,
   SpecResponse,
   SyncCommitteeInfo,
   VersionResponse,
@@ -59,6 +60,7 @@ export class ConsensusProviderService {
     genesis: 'eth/v1/beacon/genesis',
     spec: 'eth/v1/config/spec',
     blockInfo: (blockId: BlockId): string => `eth/v2/beacon/blocks/${blockId}`,
+    executionPayloadEnvelope: (blockId: BlockId): string => `eth/v1/beacon/execution_payload_envelopes/${blockId}`,
     beaconHeaders: (blockId: BlockId): string => `eth/v1/beacon/headers/${blockId}`,
     attestationCommittees: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/committees?epoch=${epoch}`,
     syncCommittee: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/sync_committees?epoch=${epoch}`,
@@ -283,6 +285,44 @@ export class ConsensusProviderService {
     } catch (error) {
       if (error.$httpCode !== 404) {
         this.logger.error('Unexpected status code while fetching block info');
+        throw error;
+      }
+    }
+  }
+
+  /**
+   * Execution payload the builder reveals for the block since Gloas (EIP-7732).
+   *
+   * Returns `undefined` when the builder never revealed it. That is a normal thing to happen, not an error: such a
+   * block has no envelope at all.
+   */
+  public async getExecutionPayloadEnvelope(blockId: BlockId): Promise<SignedExecutionPayloadEnvelope | undefined> {
+    try {
+      return await this.retryRequest<SignedExecutionPayloadEnvelope>(
+        async (apiURL: string) => this.apiGet(apiURL, this.endpoints.executionPayloadEnvelope(blockId)),
+        {
+          maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
+          useFallbackOnResolved: (r) => {
+            if (this.workingMode === WorkingMode.Finalized && r.finalized != null && !r.finalized) {
+              this.logger.error(`getExecutionPayloadEnvelope: block [${blockId}] is not finalized`);
+              return true;
+            }
+
+            return false;
+          },
+          useFallbackOnRejected: (lastFallbackError, currFallbackError) => {
+            if (lastFallbackError != null && lastFallbackError.$httpCode === 404 && currFallbackError.$httpCode !== 404) {
+              this.logger.debug('Request error from last fallback was 404, but current is not. Will be used previous error');
+              throw lastFallbackError;
+            }
+
+            return true;
+          },
+        },
+      );
+    } catch (error) {
+      if (error.$httpCode !== 404) {
+        this.logger.error('Unexpected status code while fetching execution payload envelope');
         throw error;
       }
     }
