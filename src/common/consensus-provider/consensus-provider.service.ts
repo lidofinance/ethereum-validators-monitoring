@@ -1,4 +1,3 @@
-import { ContainerTreeViewType } from '@chainsafe/ssz/lib/view/container';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
@@ -233,18 +232,19 @@ export class ConsensusProviderService {
     return (await this.getCurrentOrPreviousNotMissedBlockHeader(dutyRootSlot, sparseMode, this.defaultMaxSlotDeepCount, ignoreCache)).root;
   }
 
-  public async getState(stateId: StateId): Promise<ContainerTreeViewType<any>> {
+  public async getState(stateId: StateId): Promise<Record<string, any>> {
     const { body, headers } = await this.retryRequest<{ body: BodyReadable; headers: IncomingHttpHeaders }>(
       async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.state(stateId), { accept: 'application/octet-stream' }),
       {
         dataOnly: false,
       },
     );
-    const forkName = headers['eth-consensus-version'] as keyof typeof import('@lodestar/params').ForkName;
+    // Name of the fork the state belongs to: "electra", "fulu", "gloas", ...
+    const forkName = headers['eth-consensus-version'] as string;
     const bodyBytes = new Uint8Array(await body.arrayBuffer());
     // ugly hack to import ESModule to CommonJS project
     ssz = await eval(`import('@lodestar/types').then((m) => m.ssz)`);
-    return ssz[forkName].BeaconState.deserializeToView(bodyBytes) as any as ContainerTreeViewType<any>;
+    return ssz[forkName].BeaconState.deserializeToView(bodyBytes) as any as Record<string, any>;
   }
 
   public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse> {
