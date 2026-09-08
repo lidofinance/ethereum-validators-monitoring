@@ -17,7 +17,7 @@ import { PrometheusService, TrackTask } from 'common/prometheus';
 import { Epoch, Slot } from 'common/types/types';
 import { SummaryService } from 'duty/summary';
 
-import { getAttestationFlags } from './attestation.constants';
+import { MIN_ATTESTATION_INCLUSION_DELAY, getAttestationFlags } from './attestation.constants';
 
 interface SlotAttestation {
   includedInBlock: number;
@@ -113,10 +113,14 @@ export class AttestationService {
     const isElectraFork = attestationEpoch >= forkEpochs.electra;
     const isGloasFork = attestationEpoch >= forkEpochs.gloas;
 
-    const attValidHead = attestation.head === canonHead && (!isGloasFork || (await this.hasMatchingPayloadVote(attestation, canonHead)));
+    const attIncDelay = Number(attestation.includedInBlock - attestation.slot);
+    // The payload vote bears on the timely head flag alone, and that flag also asks for the least inclusion delay there
+    // is. Reading the vote costs requests, so leave it be once the delay has taken the flag away anyway.
+    const payloadVoteMatters = isGloasFork && attIncDelay === MIN_ATTESTATION_INCLUSION_DELAY;
+    const attValidHead =
+      attestation.head === canonHead && (!payloadVoteMatters || (await this.hasMatchingPayloadVote(attestation, canonHead)));
     const attValidTarget = attestation.targetRoot === canonTarget;
     const attValidSource = attestation.sourceRoot === canonSource;
-    const attIncDelay = Number(attestation.includedInBlock - attestation.slot);
     const flags = getAttestationFlags(attIncDelay, attValidSource, attValidTarget, attValidHead, isDenebFork);
 
     if (isElectraFork) {
@@ -171,7 +175,8 @@ export class AttestationService {
    * votes for an earlier block, whose payload it has had the time to see.
    *
    * Called only when the root of the attestation matches, so `is_attestation_same_slot` comes down to the root of the
-   * previous slot being a different one.
+   * previous slot being a different one. Called only at the least inclusion delay as well, so the block the attestation
+   * is included in is the one right after the slot it votes at.
    */
   protected async hasMatchingPayloadVote(attestation: SlotAttestation, canonHead: string): Promise<boolean> {
     if (attestation.slot === 0) {
@@ -215,7 +220,11 @@ export class AttestationService {
       return true;
     }
 
-    const parent = await this.clClient.getBlockInfo(parentRoot);
+    // The parent is read by its slot rather than by its root, because the cache of blocks is keyed by whatever the
+    // block was asked for and the prefetch has filled it by slot. Its header is asked for by root, but that one has
+    // been put into the cache already by the walk `getCanonSlotRoot` makes over the missed slot right above.
+    const parentSlot = (await this.clClient.getBlockHeader(parentRoot))?.header.message.slot;
+    const parent = parentSlot != null ? await this.clClient.getBlockInfo(Number(parentSlot)) : undefined;
     const parentPayloadHash = parent?.message.body.signed_execution_payload_bid?.message?.block_hash;
     if (!parentPayloadHash) {
       // The parent is the last block before the fork and carries its payload itself. The fork sets every bit of

@@ -50,7 +50,7 @@ const build = ({
       },
     ],
     [
-      blockRoot(parentOfIncluding),
+      String(parentOfIncluding),
       {
         message: {
           slot: String(parentOfIncluding),
@@ -60,15 +60,18 @@ const build = ({
     ],
   ]);
 
+  const headers = new Map<string, any>([
+    [String(INCLUDED_IN_BLOCK), { header: { message: { slot: INCLUDED_IN_BLOCK, parent_root: blockRoot(parentOfIncluding) } } }],
+    [blockRoot(parentOfIncluding), { header: { message: { slot: parentOfIncluding, parent_root: blockRoot(parentOfIncluding - 1) } } }],
+  ]);
+
   const logger = { log: jest.fn(), warn: jest.fn(), error: jest.fn(), debug: jest.fn() };
   const config = { get: (key: string) => (key === 'FETCH_INTERVAL_SLOTS' ? SLOTS_PER_EPOCH : undefined) };
   const clClient = {
     getForkEpochs: jest.fn(async () => ({ deneb: 0, electra: 0, gloas: gloasForkEpoch })),
     getSlotHeaderOrPreviousIfMissedByParentRootHash: jest.fn(async (slot: number) => ({ root: rootAt(slot) })),
     getBlockInfo: jest.fn(async (blockId: number | string) => blocks.get(String(blockId))),
-    getBlockHeader: jest.fn(async (slot: number) =>
-      slot === INCLUDED_IN_BLOCK ? { header: { message: { parent_root: blockRoot(parentOfIncluding) } } } : undefined,
-    ),
+    getBlockHeader: jest.fn(async (blockId: number | string) => headers.get(String(blockId))),
   };
   const summary = new SummaryService();
 
@@ -84,8 +87,8 @@ const build = ({
    * An attestation that votes right on the roots, and on the payload as the caller says. With the attested slot missed,
    * the right root to vote for is the one of the block before it.
    */
-  const attestation = (payloadVote: number) => ({
-    includedInBlock: INCLUDED_IN_BLOCK,
+  const attestation = (payloadVote: number, includedInBlock = INCLUDED_IN_BLOCK) => ({
+    includedInBlock,
     aggregationBits: BitArray.fromBoolArray([true]),
     committeeIndexes: [0],
     head: rootAt(ATTESTED_SLOT),
@@ -98,7 +101,7 @@ const build = ({
     payloadVote,
   });
 
-  return { service, summary, clClient, attestation };
+  return { service, summary, clClient, attestation, parentOfIncluding };
 };
 
 const committees = new Map<string, number[]>([[`0_${ATTESTED_SLOT}`, [VALIDATOR]]]);
@@ -149,6 +152,24 @@ describe('AttestationService head vote', () => {
     await service.process(attestation(0), committees);
 
     expect(headOf(summary)).toBe(true);
+  });
+
+  it('leaves the payload vote alone when the attestation came too late for the head flag anyway', async () => {
+    const { service, summary, clClient, attestation } = build({ proposedAtAttestedSlot: false, parentPayloadApplied: true });
+
+    await service.process(attestation(0, ATTESTED_SLOT + 2), committees);
+
+    expect(headOf(summary)).toBe(false);
+    expect(clClient.getBlockHeader).not.toHaveBeenCalled();
+  });
+
+  it('reads the parent of the including block by its slot, the key the cache of blocks is filled by', async () => {
+    const { service, clClient, attestation, parentOfIncluding } = build({ proposedAtAttestedSlot: false });
+
+    await service.process(attestation(1), committees);
+
+    expect(clClient.getBlockInfo).toHaveBeenCalledWith(parentOfIncluding);
+    expect(clClient.getBlockInfo).not.toHaveBeenCalledWith(blockRoot(parentOfIncluding));
   });
 
   it('takes the payload of a parent from before the fork as applied', async () => {
