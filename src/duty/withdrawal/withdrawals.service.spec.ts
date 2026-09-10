@@ -19,12 +19,14 @@ const withdrawal = (index: number, validatorIndex: number, amount: string): With
 });
 
 const payloadHash = (slot: number) => `0xpayload${slot}`;
+const blockRoot = (slot: number) => `0xb10c${slot}`;
 
 /** Body of a block up to Fulu, where the payload and its withdrawals are a part of the block */
-const inlineBlock = (slot: number, withdrawals: Withdrawal[]) => ({
+const inlineBlock = (slot: number, withdrawals: Withdrawal[], parentSlot = slot - 1) => ({
   message: {
     slot: String(slot),
     proposer_index: '1',
+    parent_root: blockRoot(parentSlot),
     body: { attestations: [], execution_payload: { block_number: 1, withdrawals } },
   },
 });
@@ -34,10 +36,11 @@ const inlineBlock = (slot: number, withdrawals: Withdrawal[]) => ({
  * payload the state already has, so pointing it at an earlier slot than the parent means the parent payload was
  * skipped.
  */
-const bidBlock = (slot: number, appliedBefore: number) => ({
+const bidBlock = (slot: number, appliedBefore: number, parentSlot = slot - 1) => ({
   message: {
     slot: String(slot),
     proposer_index: '1',
+    parent_root: blockRoot(parentSlot),
     body: {
       attestations: [],
       signed_execution_payload_bid: {
@@ -58,6 +61,7 @@ const build = (blocks: any[], envelopes: Record<number, any> = {}, unreadableFro
   };
   const config = { get: (key: string) => configValues[key] };
   const prometheus = { taskDuration: { startTimer: () => () => 0 }, taskCount: { inc: jest.fn() } };
+  const slotByRoot = new Map<string, number>(blocks.map((b) => [blockRoot(Number(b.message.slot)), Number(b.message.slot)]));
   const clClient = {
     getBlockInfo: jest.fn(async (slot: number) => {
       if (slot >= unreadableFrom) {
@@ -65,6 +69,11 @@ const build = (blocks: any[], envelopes: Record<number, any> = {}, unreadableFro
       }
 
       return bySlot.get(slot);
+    }),
+    // Only ever asked for by root here, to turn the `parent_root` of a block into the slot of its parent
+    getBlockHeader: jest.fn(async (root: string) => {
+      const slot = slotByRoot.get(root);
+      return slot != null ? { root, canonical: true, header: { message: { slot: String(slot) } } } : undefined;
     }),
     getExecutionPayloadEnvelope: jest.fn(async (slot: number) => envelopes[slot]),
   };
@@ -87,6 +96,8 @@ describe('WithdrawalsService', () => {
     expect(withdrawnBy(summary, 10)).toBe(BigInt(32));
     expect(withdrawnBy(summary, 11)).toBe(BigInt(64));
     expect(clClient.getExecutionPayloadEnvelope).not.toHaveBeenCalled();
+    // Every block takes its own withdrawals, so no block outside the epoch is read
+    expect(clClient.getBlockInfo).toHaveBeenCalledTimes(SLOTS_PER_EPOCH);
   });
 
   it('reads the withdrawals from the payload envelope since Gloas', async () => {
@@ -112,9 +123,9 @@ describe('WithdrawalsService', () => {
     expect(withdrawnBy(summary, 11)).toBe(BigInt(64));
   });
 
-  it('counts the list of a skipped payload at the later slot that applied it, and only there', async () => {
-    // The payload of the second slot was skipped: the third block points its bid at the payload of the first one. The
-    // state keeps the list of the second slot, so both envelopes carry it
+  it('counts a list once, at the slot that took it, when a later payload carries it', async () => {
+    // The payload of the second slot was skipped: the third block points its bid at the payload of the first one. So
+    // the third block took nothing, and the payload it does carry holds the list the second slot took
     const repeated = [withdrawal(1, 10, '32')];
     const { service, summary, clClient, logger } = build(
       [
@@ -134,8 +145,68 @@ describe('WithdrawalsService', () => {
     await service.check(EPOCH);
 
     expect(withdrawnBy(summary, 10)).toBe(BigInt(32));
+    // There is no payload to read for the slot that took the list, and the slot that carries it took nothing
     expect(clClient.getExecutionPayloadEnvelope).not.toHaveBeenCalledWith(FIRST_SLOT + 1);
-    expect(logger.log).toHaveBeenCalledWith(expect.stringContaining(`Execution payload of slot [${FIRST_SLOT + 1}] was skipped`));
+    expect(logger.log).toHaveBeenCalledWith(
+      `Withdrawals taken at slot [${FIRST_SLOT + 1}] are carried by the payload of slot [${FIRST_SLOT + 2}]`,
+    );
+    expect(logger.log).toHaveBeenCalledWith(expect.stringContaining(`Block [${FIRST_SLOT + 2}] took no withdrawals`));
+  });
+
+  it('counts a list the last slot of the epoch took, even when a payload after the epoch carries it', async () => {
+    // The payload of the last slot was skipped, so its list only shows up after the epoch. It changed the balances
+    // within the epoch all the same, and counting it in the next one would look like a drop of the balance here
+    const { service, summary, logger } = build(
+      [
+        bidBlock(LAST_SLOT - 1, LAST_SLOT - 2),
+        bidBlock(LAST_SLOT, LAST_SLOT - 1),
+        bidBlock(LAST_SLOT + 1, LAST_SLOT - 1),
+        bidBlock(LAST_SLOT + 2, LAST_SLOT + 1),
+      ],
+      {
+        [LAST_SLOT - 1]: envelope([]),
+        [LAST_SLOT + 1]: envelope([withdrawal(1, 10, '32')]),
+      },
+    );
+
+    await service.check(EPOCH);
+
+    expect(withdrawnBy(summary, 10)).toBe(BigInt(32));
+    expect(logger.log).toHaveBeenCalledWith(
+      `Withdrawals taken at slot [${LAST_SLOT}] are carried by the payload of slot [${LAST_SLOT + 1}]`,
+    );
+  });
+
+  it('leaves out a list the epoch before took, even when a payload of this epoch carries it', async () => {
+    // The payload of the last block of the epoch before was skipped, so the first block of this epoch took nothing and
+    // only carries what that block took. Counting it here would look like a rise of the balance out of nowhere.
+    // That block sits further back than `MAX_SLOT_DEEP_COUNT`, so it is only found by following `parent_root`
+    const beforeEpoch = FIRST_SLOT - MAX_SLOT_DEEP_COUNT - 1;
+    const { service, summary, clClient } = build(
+      [bidBlock(beforeEpoch, beforeEpoch - 1), bidBlock(FIRST_SLOT, beforeEpoch - 1, beforeEpoch), bidBlock(FIRST_SLOT + 1, FIRST_SLOT)],
+      {
+        [FIRST_SLOT]: envelope([withdrawal(1, 10, '32')]),
+        [FIRST_SLOT + 1]: envelope([]),
+      },
+    );
+
+    await service.check(EPOCH);
+
+    expect(withdrawnBy(summary, 10)).toBeUndefined();
+    expect(clClient.getExecutionPayloadEnvelope).not.toHaveBeenCalledWith(FIRST_SLOT);
+  });
+
+  it('warns and counts the list all the same when the block before the epoch cannot be read', async () => {
+    // With nothing to compare the first block of the epoch with, it has to count as one that took withdrawals
+    const { service, summary, logger } = build([bidBlock(FIRST_SLOT, FIRST_SLOT - 2), bidBlock(FIRST_SLOT + 1, FIRST_SLOT)], {
+      [FIRST_SLOT]: envelope([withdrawal(1, 10, '32')]),
+      [FIRST_SLOT + 1]: envelope([]),
+    });
+
+    await service.check(EPOCH);
+
+    expect(withdrawnBy(summary, 10)).toBe(BigInt(32));
+    expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining(`Cannot read the block before slot [${FIRST_SLOT}]`));
   });
 
   it('takes the payload as applied when the next block of the last slot cannot be read', async () => {

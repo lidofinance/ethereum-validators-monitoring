@@ -22,6 +22,7 @@ export interface BlockInfoResponse {
   message: {
     slot: string;
     proposer_index: ValidatorIndex;
+    parent_root: RootHex;
     body: {
       attestations: BeaconBlockAttestation[];
       sync_aggregate: {
