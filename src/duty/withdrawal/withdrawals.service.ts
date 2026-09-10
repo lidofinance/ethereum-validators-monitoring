@@ -2,7 +2,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { BlockInfoResponse, ConsensusProviderService, Withdrawal } from 'common/consensus-provider';
+import { BlockInfoResponse, ConsensusProviderService, Withdrawal, wasPayloadApplied } from 'common/consensus-provider';
 import { allSettled } from 'common/functions/allSettled';
 import { range } from 'common/functions/range';
 import { PrometheusService, TrackTask } from 'common/prometheus';
@@ -103,14 +103,14 @@ export class WithdrawalsService {
         this.logger.log(`Block [${slot}] took no withdrawals, the payload of its parent was not applied`);
       }
 
-      let applied = this.wasPayloadApplied(block, chain[i + 1]);
+      let applied = wasPayloadApplied(block, chain[i + 1], this.logger);
       // Only the block after this one tells whether the payload was applied. Past the end of the epoch such a block is
       // read one by one, and only while a list taken within the epoch is still to be found.
       if (applied == null && takenInEpoch(takenAt) && slot < lastSlotInEpoch + maxDeep) {
-        const next = await this.getNextProposedBlock(slot, maxDeep);
+        const next = await this.clClient.getNextProposedBlockInfo(slot, maxDeep);
         if (next != null) {
           chain.push(next);
-          applied = this.wasPayloadApplied(block, next);
+          applied = wasPayloadApplied(block, next, this.logger);
         }
       }
 
@@ -166,34 +166,6 @@ export class WithdrawalsService {
   }
 
   /**
-   * Whether the payload of the block was applied to the state, `undefined` when there is no block after it to tell.
-   *
-   * Up to Fulu the payload is a part of the block, so it is always applied. Since Gloas (EIP-7732) the next proposer
-   * may build on the branch without the payload of the parent, if the builder did not reveal it in time. Such a block
-   * commits to a payload whose parent is the payload of an earlier block, so the hashes tell the two cases apart.
-   * `process_parent_execution_payload` makes the very same comparison.
-   */
-  private wasPayloadApplied(block: BlockInfoResponse, next?: BlockInfoResponse): boolean | undefined {
-    if (block.message.body.execution_payload != null) {
-      return true;
-    }
-
-    if (next == null) {
-      return undefined;
-    }
-
-    const blockHash = block.message.body.signed_execution_payload_bid?.message?.block_hash;
-    const nextParentBlockHash = next.message.body.signed_execution_payload_bid?.message?.parent_block_hash;
-
-    if (!blockHash || !nextParentBlockHash) {
-      this.logger.warn(`Cannot tell if the payload of slot [${block.message.slot}] was applied, a bid hash is missing`);
-      return true;
-    }
-
-    return blockHash === nextParentBlockHash;
-  }
-
-  /**
    * The block right before the first block of the epoch, `undefined` when it is not needed or cannot be read.
    *
    * It is only needed when the first block of the epoch carries no payload of its own, because up to Fulu every block
@@ -225,29 +197,5 @@ export class WithdrawalsService {
 
     const parentSlot = (await this.clClient.getBlockHeader(parentRoot))?.header.message.slot;
     return parentSlot != null ? await this.clClient.getBlockInfo(Number(parentSlot)) : undefined;
-  }
-
-  /**
-   * First proposed block after the slot, `undefined` when there is none to read.
-   *
-   * Only needed past the end of the epoch, since within it the next block is already at hand. Reading it can fail: the
-   * app processes an epoch as soon as its last slot is finalized, so the slots right after the epoch may still be past
-   * the finalized head.
-   */
-  private async getNextProposedBlock(slot: Slot, maxDeep: number): Promise<BlockInfoResponse | undefined> {
-    for (let next = slot + 1; next <= slot + maxDeep; next++) {
-      try {
-        const block = await this.clClient.getBlockInfo(next);
-        if (block != null) {
-          return block;
-        }
-      } catch {
-        this.logger.log(`Cannot read block [${next}] to tell if the payload of slot [${slot}] was applied`);
-        return undefined;
-      }
-    }
-
-    this.logger.log(`No proposed block within [${maxDeep}] slots after slot [${slot}]`);
-    return undefined;
   }
 }

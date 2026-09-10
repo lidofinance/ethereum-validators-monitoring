@@ -25,6 +25,15 @@ export interface ValidatorDutySummary {
   is_proposer?: boolean;
   block_to_propose?: number;
   block_proposed?: boolean;
+  /**
+   * Whether the execution payload of the proposed block was applied. Only set when the block was proposed.
+   *
+   * Up to Fulu the payload is a part of the block, so this is always true. Since Gloas (EIP-7732) the builder reveals
+   * it later in the slot, and a block whose payload never came in time leaves the slot with no execution block at
+   * all. The spec calls such a slot empty. The proposer did its work, so the proposal is a good one, but the builder
+   * pays nothing for it.
+   */
+  block_payload_applied?: boolean;
   ///
   is_sync?: boolean;
   sync_percent?: number;

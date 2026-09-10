@@ -17,6 +17,7 @@ import { EpochMeta, EpochPendingConsolidation, ValidatorDutySummary } from 'duty
 import {
   avgChainRewardsAndPenaltiesStatsQuery,
   avgUserValidatorBalanceDeltaQuery,
+  chainProposedAndEmptySlotsQuery,
   chainSyncParticipationAvgPercentQuery,
   epochMetadataQuery,
   epochProcessingQuery,
@@ -50,6 +51,7 @@ import {
   NOsValidatorsStatusStats,
   NOsWithdrawalsStats,
   OtherValidatorsCountAndBalance,
+  ProposedAndEmptySlots,
   SyncCommitteeParticipationAvgPercents,
   UserNOsValidatorsCount,
   UserNOsValidatorsCountAndBalance,
@@ -66,6 +68,7 @@ import migration_000006_stuck_validators from './migrations/migration_000006_stu
 import migration_000007_module_id from './migrations/migration_000007_module_id';
 import migration_000008_last_not_missed_slot from './migrations/migration_000008_last_not_missed_slot';
 import migration_000009_pending_consolidations from './migrations/migration_000009_pending_consolidations';
+import migration_000010_block_payload from './migrations/migration_000010_block_payload';
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -299,6 +302,7 @@ export class ClickhouseService implements OnModuleInit {
       migration_000007_module_id,
       migration_000008_last_not_missed_slot,
       migration_000009_pending_consolidations,
+      migration_000010_block_payload,
     ];
     for (const migration of migrations) {
       const query = typeof migration === 'function' ? migration(engine) : migration;
@@ -344,6 +348,14 @@ export class ClickhouseService implements OnModuleInit {
   public async getOtherSyncParticipationAvgPercent(epoch: Epoch): Promise<SyncCommitteeParticipationAvgPercents> {
     const ret = await this.select(otherSyncParticipationAvgPercentQuery(epoch));
     return { amount: Number(ret[0].amount) };
+  }
+
+  /**
+   * Send query to Clickhouse and receives the proposed and the empty slot counts of the epoch
+   */
+  public async getChainProposedAndEmptySlots(epoch: Epoch): Promise<ProposedAndEmptySlots> {
+    const ret = await this.select<ProposedAndEmptySlots[]>(chainProposedAndEmptySlotsQuery(epoch));
+    return { proposed: Number(ret[0].proposed), empty: Number(ret[0].empty) };
   }
 
   /**
@@ -539,8 +551,23 @@ export class ClickhouseService implements OnModuleInit {
   }
 
   /**
-   * Send query to Clickhouse and receives information about
-   * how many User Node Operator validators miss proposals at our last processed epoch
+   * Send query to Clickhouse and receives information about validators whose proposed block got no execution payload
+   */
+  public async getValidatorsCountWithEmptyProposes(epoch: Epoch): Promise<NOsValidatorsCountAndBalance[]> {
+    return (
+      await this.select<NOsValidatorsCountAndBalance[]>(
+        validatorsCountByConditionProposeQuery(epoch, [], 'block_proposed = 1 AND block_payload_applied = 0'),
+      )
+    ).map((v) => ({
+      ...v,
+      amount: Number(v.amount),
+      balance: BigInt(v.balance),
+    }));
+  }
+
+  /**
+   * Send query to Clickhouse and receives information about how many User Node Operator validators miss proposals at
+   * our last processed epoch
    */
   public async getValidatorsCountWithMissedProposes(
     epoch: Epoch,

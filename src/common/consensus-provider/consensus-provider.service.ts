@@ -291,6 +291,29 @@ export class ConsensusProviderService {
   }
 
   /**
+   * Info of the first proposed block after the slot, `undefined` when there is none to read.
+   *
+   * Reading it can fail, and that is a normal thing to happen: the app takes an epoch as soon as its last slot is
+   * finalized, so the slots right after the epoch may still be past the finalized head.
+   */
+  public async getNextProposedBlockInfo(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockInfoResponse | undefined> {
+    for (let next = slot + 1; next <= slot + maxDeep; next++) {
+      try {
+        const block = await this.getBlockInfo(next);
+        if (block != null) {
+          return block;
+        }
+      } catch {
+        this.logger.log(`Cannot read block [${next}] while looking for the first proposed block after slot [${slot}]`);
+        return undefined;
+      }
+    }
+
+    this.logger.log(`No proposed block within [${maxDeep}] slots after slot [${slot}]`);
+    return undefined;
+  }
+
+  /**
    * Execution payload the builder reveals for the block since Gloas (EIP-7732).
    *
    * Returns `undefined` when the builder never revealed it. That is a normal thing to happen, not an error: such a

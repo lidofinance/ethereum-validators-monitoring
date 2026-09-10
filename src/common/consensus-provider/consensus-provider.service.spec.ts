@@ -350,3 +350,54 @@ describe('ConsensusProviderService execution payload envelope', () => {
     expect(await service.getExecutionPayloadEnvelope(120)).toBeUndefined();
   });
 });
+
+describe('ConsensusProviderService next proposed block', () => {
+  class NextBlockConsensusProviderService extends ConsensusProviderService {
+    protected async apiGet<T>(apiURL: string, subUrl: string): Promise<T> {
+      const slot = Number(subUrl.split('/').pop());
+
+      // A slot past the finalized head, which the provider reports as unresolved rather than as a 404
+      if (slot >= this.unreadableFrom) {
+        throw new Error(`slot [${slot}] is not finalized`);
+      }
+
+      if (!this.proposed.includes(slot)) {
+        throw new ResponseError(`Not found: ${subUrl}`, 404);
+      }
+
+      return { data: { message: { slot: String(slot), proposer_index: '1', body: {} } }, finalized: true } as T;
+    }
+
+    public constructor(private readonly proposed: number[], private readonly unreadableFrom = Number.MAX_SAFE_INTEGER) {
+      const logger = { log: jest.fn(), warn: jest.fn(), error: jest.fn(), debug: jest.fn() };
+      const cache = new BlockCacheService({ debug: jest.fn() } as any, config as any);
+      super(logger as any, config as any, {} as any, cache, {} as any, {} as any);
+    }
+
+    public get logged(): { log: jest.Mock } {
+      return (this as any).logger;
+    }
+  }
+
+  const slotOf = (block: unknown) => Number((block as any)?.message.slot);
+
+  it('jumps over the missed slots to the next proposed one', async () => {
+    const service = new NextBlockConsensusProviderService([120, 125]);
+
+    expect(slotOf(await service.getNextProposedBlockInfo(120))).toBe(125);
+  });
+
+  it('gives up when a slot cannot be read, since it is past the finalized head', async () => {
+    const service = new NextBlockConsensusProviderService([120, 125], 121);
+
+    expect(await service.getNextProposedBlockInfo(120)).toBeUndefined();
+    expect(service.logged.log).toHaveBeenCalledWith(expect.stringContaining('Cannot read block [121]'));
+  });
+
+  it('gives up when nothing is proposed within the given depth', async () => {
+    const service = new NextBlockConsensusProviderService([120, 125]);
+
+    expect(await service.getNextProposedBlockInfo(120, 3)).toBeUndefined();
+    expect(service.logged.log).toHaveBeenCalledWith(expect.stringContaining('No proposed block within [3] slots after slot [120]'));
+  });
+});

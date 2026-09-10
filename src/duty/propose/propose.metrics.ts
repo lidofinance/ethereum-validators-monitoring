@@ -26,7 +26,13 @@ export class ProposeMetrics {
     this.logger.log('Calculating proposal metrics');
     this.processedEpoch = epoch;
     this.operators = await this.registryService.getOperators();
-    await allSettled([this.goodProposes(), this.missProposes(), this.highRewardMissProposes(possibleHighRewardValidators)]);
+    await allSettled([
+      this.goodProposes(),
+      this.missProposes(),
+      this.emptyProposes(),
+      this.chainSlots(),
+      this.highRewardMissProposes(possibleHighRewardValidators),
+    ]);
   }
 
   private async goodProposes() {
@@ -43,6 +49,31 @@ export class ProposeMetrics {
     setUserOperatorsMetric(this.prometheus.validatorsBalanceMissPropose, data, this.operators, {}, (item) => gweiToEthBP(item.balance));
     setOtherOperatorsMetric(this.prometheus.otherValidatorsCountMissPropose, data);
     setOtherOperatorsMetric(this.prometheus.otherValidatorsBalanceMissPropose, data, {}, (item) => gweiToEthBP(item.balance));
+  }
+
+  /**
+   * Proposals that made it into a block, but whose execution payload never was applied.
+   *
+   * Since Gloas (EIP-7732) the builder reveals the payload later in the slot, and the slot stays empty when it does
+   * not come in time. Such a proposal counts as a good one, because the proposer did its work, but it pays the
+   * operator nothing. Before the fork these are always at 0.
+   */
+  private async emptyProposes() {
+    const data = await this.storage.getValidatorsCountWithEmptyProposes(this.processedEpoch);
+    setUserOperatorsMetric(this.prometheus.validatorsCountEmptyPropose, data, this.operators);
+    setUserOperatorsMetric(this.prometheus.validatorsBalanceEmptyPropose, data, this.operators, {}, (item) => gweiToEthBP(item.balance));
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsCountEmptyPropose, data);
+    setOtherOperatorsMetric(this.prometheus.otherValidatorsBalanceEmptyPropose, data, {}, (item) => gweiToEthBP(item.balance));
+  }
+
+  /**
+   * How many slots of the epoch got a block, and how many of those stayed empty. The two together give the empty slot
+   * rate of the chain.
+   */
+  private async chainSlots() {
+    const { proposed, empty } = await this.storage.getChainProposedAndEmptySlots(this.processedEpoch);
+    this.prometheus.chainProposedSlotsCount.set(proposed);
+    this.prometheus.chainEmptySlotsCount.set(empty);
   }
 
   private async highRewardMissProposes(possibleHighRewardValidators: string[]) {

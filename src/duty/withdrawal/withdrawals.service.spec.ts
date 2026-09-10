@@ -62,18 +62,34 @@ const build = (blocks: any[], envelopes: Record<number, any> = {}, unreadableFro
   const config = { get: (key: string) => configValues[key] };
   const prometheus = { taskDuration: { startTimer: () => () => 0 }, taskCount: { inc: jest.fn() } };
   const slotByRoot = new Map<string, number>(blocks.map((b) => [blockRoot(Number(b.message.slot)), Number(b.message.slot)]));
-  const clClient = {
-    getBlockInfo: jest.fn(async (slot: number) => {
-      if (slot >= unreadableFrom) {
-        throw new Error(`slot [${slot}] is not finalized`);
-      }
+  const getBlockInfo = jest.fn(async (slot: number) => {
+    if (slot >= unreadableFrom) {
+      throw new Error(`slot [${slot}] is not finalized`);
+    }
 
-      return bySlot.get(slot);
-    }),
+    return bySlot.get(slot);
+  });
+  const clClient = {
+    getBlockInfo,
     // Only ever asked for by root here, to turn the `parent_root` of a block into the slot of its parent
     getBlockHeader: jest.fn(async (root: string) => {
       const slot = slotByRoot.get(root);
       return slot != null ? { root, canonical: true, header: { message: { slot: String(slot) } } } : undefined;
+    }),
+    // The walk the real provider makes, without its logging: it is covered by the provider's own tests
+    getNextProposedBlockInfo: jest.fn(async (slot: number) => {
+      for (let next = slot + 1; next <= slot + MAX_SLOT_DEEP_COUNT; next++) {
+        try {
+          const block = await getBlockInfo(next);
+          if (block != null) {
+            return block;
+          }
+        } catch {
+          return undefined;
+        }
+      }
+
+      return undefined;
     }),
     getExecutionPayloadEnvelope: jest.fn(async (slot: number) => envelopes[slot]),
   };
@@ -212,7 +228,7 @@ describe('WithdrawalsService', () => {
   it('takes the payload as applied when the next block of the last slot cannot be read', async () => {
     // The app processes an epoch as soon as its last slot is finalized, so the slot after it may be out of reach. The
     // payload almost always was applied, and losing an amount is worse than counting one twice
-    const { service, summary, logger } = build(
+    const { service, summary, clClient } = build(
       [bidBlock(LAST_SLOT, LAST_SLOT - 1)],
       { [LAST_SLOT]: envelope([withdrawal(1, 10, '32')]) },
       LAST_SLOT + 1,
@@ -221,7 +237,7 @@ describe('WithdrawalsService', () => {
     await service.check(EPOCH);
 
     expect(withdrawnBy(summary, 10)).toBe(BigInt(32));
-    expect(logger.log).toHaveBeenCalledWith(expect.stringContaining(`Cannot read block [${LAST_SLOT + 1}]`));
+    expect(clClient.getNextProposedBlockInfo).toHaveBeenCalledWith(LAST_SLOT, MAX_SLOT_DEEP_COUNT);
   });
 
   it('takes the payload as applied when the bids carry no hashes to compare', async () => {
