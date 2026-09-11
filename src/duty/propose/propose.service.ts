@@ -57,10 +57,12 @@ export class ProposeService {
    * Since Gloas (EIP-7732) the builder reveals the payload later in the slot, and the next proposer builds without it
    * when it does not come in time. Such a slot has a block but no execution block, and the spec calls it empty.
    *
-   * Telling the two apart matters for two things. A proposer of an empty slot did its work and gets no payment from
-   * the builder all the same, so this is not the same failure as a missed proposal. And empty slots take the timely
-   * head flag away from the attesters that voted the payload wrong, so they explain a drop in attestation metrics
-   * that has nothing to do with the operators.
+   * Telling the two apart matters for two things. A proposer of an empty slot did its work and is paid all the same:
+   * the builder owes the value of its bid whether it reveals the payload or not, and that payment settles either
+   * along with the payload or at the end of the epoch, once the block has gathered the attestation weight
+   * `process_builder_pending_payments` asks for. So this is not the same failure as a missed proposal, which earns
+   * nothing at all. And empty slots take the timely head flag away from the attesters that voted the payload wrong, so
+   * they explain a drop in attestation metrics that has nothing to do with the operators.
    */
   private async checkPayloads(epoch: Epoch, proposers: Map<Slot, number>): Promise<void> {
     // The duties come in order of slot, so the next entry is the next proposed block of the epoch

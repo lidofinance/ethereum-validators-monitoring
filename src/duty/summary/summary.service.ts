@@ -30,8 +30,8 @@ export interface ValidatorDutySummary {
    *
    * Up to Fulu the payload is a part of the block, so this is always true. Since Gloas (EIP-7732) the builder reveals
    * it later in the slot, and a block whose payload never came in time leaves the slot with no execution block at
-   * all. The spec calls such a slot empty. The proposer did its work, so the proposal is a good one, but the builder
-   * pays nothing for it.
+   * all. The spec calls such a slot empty. The proposer did its work, so the proposal is a good one, and the builder
+   * owes the value of its bid whether it reveals the payload or not.
    */
   block_payload_applied?: boolean;
   ///
