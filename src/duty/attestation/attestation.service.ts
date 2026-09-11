@@ -17,7 +17,7 @@ import { PrometheusService, TrackTask } from 'common/prometheus';
 import { Epoch, Slot } from 'common/types/types';
 import { SummaryService } from 'duty/summary';
 
-import { getAttestationFlags } from './attestation.constants';
+import { MIN_ATTESTATION_INCLUSION_DELAY, getAttestationFlags } from './attestation.constants';
 
 interface SlotAttestation {
   includedInBlock: number;
@@ -30,6 +30,11 @@ interface SlotAttestation {
   sourceEpoch: Epoch;
   slot: number;
   committeeIndex: number;
+  /**
+   * The `data.index` field again. Up to Electra it holds the committee index, since Gloas (EIP-7732) it holds the vote
+   * of the attester on whether the payload of the block it attests to was there.
+   */
+  payloadVote: number;
 }
 
 interface AttestationValidators {
@@ -48,6 +53,8 @@ interface AttestationFlags {
 export class AttestationService {
   private readonly slotsInEpoch: number;
   private readonly savedCanonSlotsAttProperties: Map<number, string>;
+  /** Keyed by the slot of a block: whether that block applied the payload of its parent */
+  private readonly savedParentPayloadApplied: Map<Slot, boolean>;
   private processedEpoch: number;
 
   public constructor(
@@ -59,12 +66,14 @@ export class AttestationService {
   ) {
     this.slotsInEpoch = this.config.get('FETCH_INTERVAL_SLOTS');
     this.savedCanonSlotsAttProperties = new Map<number, string>();
+    this.savedParentPayloadApplied = new Map<Slot, boolean>();
   }
 
   @TrackTask('check-attestation-duties')
   public async check(epoch: Epoch, stateSlot: Slot): Promise<void> {
     this.processedEpoch = epoch;
     this.savedCanonSlotsAttProperties.clear();
+    this.savedParentPayloadApplied.clear();
     this.logger.log(`Getting attestations and duties info`);
     const [attestations, committees] = await allSettled([this.getProcessedAttestations(), this.getAttestationCommittees(stateSlot)]);
     this.logger.log(`Processing attestation duty info`);
@@ -102,11 +111,16 @@ export class AttestationService {
     const attestationEpoch = Math.floor(attestation.includedInBlock / this.slotsInEpoch);
     const isDenebFork = attestationEpoch >= forkEpochs.deneb;
     const isElectraFork = attestationEpoch >= forkEpochs.electra;
+    const isGloasFork = attestationEpoch >= forkEpochs.gloas;
 
-    const attValidHead = attestation.head === canonHead;
+    const attIncDelay = Number(attestation.includedInBlock - attestation.slot);
+    // The payload vote bears on the timely head flag alone, and that flag also asks for the least inclusion delay there
+    // is. Reading the vote costs requests, so leave it be once the delay has taken the flag away anyway.
+    const payloadVoteMatters = isGloasFork && attIncDelay === MIN_ATTESTATION_INCLUSION_DELAY;
+    const attValidHead =
+      attestation.head === canonHead && (!payloadVoteMatters || (await this.hasMatchingPayloadVote(attestation, canonHead)));
     const attValidTarget = attestation.targetRoot === canonTarget;
     const attValidSource = attestation.sourceRoot === canonSource;
-    const attIncDelay = Number(attestation.includedInBlock - attestation.slot);
     const flags = getAttestationFlags(attIncDelay, attValidSource, attValidTarget, attValidHead, isDenebFork);
 
     if (isElectraFork) {
@@ -146,6 +160,79 @@ export class AttestationService {
     const root = (await this.clClient.getSlotHeaderOrPreviousIfMissedByParentRootHash(slot)).root;
     this.savedCanonSlotsAttProperties.set(slot, root);
     return root;
+  }
+
+  /**
+   * Whether the attester voted right on the payload of the block it attests to.
+   *
+   * Since Gloas (EIP-7732) the head vote is a pair: the root of the block and whether the payload of that block was
+   * there. `get_attestation_participation_flag_indices` gives the timely head flag only when both are right, and the
+   * vote on the payload is the `data.index` field of the attestation.
+   *
+   * An attester that votes for a block proposed in its own slot has not seen the payload of that block yet, because the
+   * builder reveals it later in the slot. Such a vote is always taken as right, which is what
+   * `is_attestation_same_slot` does. So the check only bites when the slot the attester votes at was missed and it
+   * votes for an earlier block, whose payload it has had the time to see.
+   *
+   * Called only when the root of the attestation matches, so `is_attestation_same_slot` comes down to the root of the
+   * previous slot being a different one. Called only at the least inclusion delay as well, so the block the attestation
+   * is included in is the one right after the slot it votes at.
+   */
+  protected async hasMatchingPayloadVote(attestation: SlotAttestation, canonHead: string): Promise<boolean> {
+    if (attestation.slot === 0) {
+      return true;
+    }
+
+    const previousRoot = await this.getCanonSlotRoot(attestation.slot - 1);
+    if (canonHead !== previousRoot) {
+      return true;
+    }
+
+    const applied = await this.getParentPayloadApplied(attestation.includedInBlock);
+    return attestation.payloadVote === Number(applied);
+  }
+
+  /**
+   * Whether the block at the slot applied the payload of its parent.
+   *
+   * That is the bit `get_attestation_participation_flag_indices` reads out of `state.execution_payload_availability`,
+   * and it is set by `process_parent_execution_payload` of the very same block, which tells the two cases apart by the
+   * same comparison of hashes made here.
+   */
+  protected async getParentPayloadApplied(slot: Slot): Promise<boolean> {
+    const cached = this.savedParentPayloadApplied.get(slot);
+    if (cached != null) {
+      return cached;
+    }
+
+    const applied = await this.resolveParentPayloadApplied(slot);
+    this.savedParentPayloadApplied.set(slot, applied);
+    return applied;
+  }
+
+  private async resolveParentPayloadApplied(slot: Slot): Promise<boolean> {
+    const block = await this.clClient.getBlockInfo(slot);
+    const parentBlockHash = block?.message.body.signed_execution_payload_bid?.message?.parent_block_hash;
+    const parentRoot = (await this.clClient.getBlockHeader(slot))?.header.message.parent_root;
+
+    if (!parentBlockHash || !parentRoot) {
+      this.logger.warn(`Cannot tell if block [${slot}] applied the payload of its parent, taking it as applied`);
+      return true;
+    }
+
+    // The parent is read by its slot rather than by its root, because the cache of blocks is keyed by whatever the
+    // block was asked for and the prefetch has filled it by slot. Its header is asked for by root, but that one has
+    // been put into the cache already by the walk `getCanonSlotRoot` makes over the missed slot right above.
+    const parentSlot = (await this.clClient.getBlockHeader(parentRoot))?.header.message.slot;
+    const parent = parentSlot != null ? await this.clClient.getBlockInfo(Number(parentSlot)) : undefined;
+    const parentPayloadHash = parent?.message.body.signed_execution_payload_bid?.message?.block_hash;
+    if (!parentPayloadHash) {
+      // The parent is the last block before the fork and carries its payload itself. The fork sets every bit of
+      // `execution_payload_availability` to one, so such a payload counts as applied.
+      return true;
+    }
+
+    return parentBlockHash === parentPayloadHash;
   }
 
   @TrackTask('process-chain-attestations')
@@ -193,6 +280,7 @@ export class AttestationService {
           sourceEpoch: Number(att.data.source.epoch),
           slot: Number(att.data.slot),
           committeeIndex: Number(att.data.index),
+          payloadVote: Number(att.data.index),
         });
       }
     }

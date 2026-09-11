@@ -1,4 +1,3 @@
-import { ContainerTreeViewType } from '@chainsafe/ssz/lib/view/container';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
@@ -22,6 +21,7 @@ import {
   BlockInfoResponse,
   GenesisResponse,
   ProposerDutyInfo,
+  SignedExecutionPayloadEnvelope,
   SpecResponse,
   SyncCommitteeInfo,
   VersionResponse,
@@ -41,6 +41,7 @@ interface RequestRetryOptions {
 export interface ForkEpochs {
   deneb: number;
   electra: number;
+  gloas: number;
 }
 
 @Injectable()
@@ -58,6 +59,7 @@ export class ConsensusProviderService {
     genesis: 'eth/v1/beacon/genesis',
     spec: 'eth/v1/config/spec',
     blockInfo: (blockId: BlockId): string => `eth/v2/beacon/blocks/${blockId}`,
+    executionPayloadEnvelope: (blockId: BlockId): string => `eth/v1/beacon/execution_payload_envelopes/${blockId}`,
     beaconHeaders: (blockId: BlockId): string => `eth/v1/beacon/headers/${blockId}`,
     attestationCommittees: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/committees?epoch=${epoch}`,
     syncCommittee: (stateId: StateId, epoch: Epoch): string => `eth/v1/beacon/states/${stateId}/sync_committees?epoch=${epoch}`,
@@ -96,10 +98,12 @@ export class ConsensusProviderService {
     this.forkEpochs = {
       deneb: spec.DENEB_FORK_EPOCH != null ? parseInt(spec.DENEB_FORK_EPOCH, 10) : Number.MAX_SAFE_INTEGER,
       electra: spec.ELECTRA_FORK_EPOCH != null ? parseInt(spec.ELECTRA_FORK_EPOCH, 10) : Number.MAX_SAFE_INTEGER,
+      gloas: spec.GLOAS_FORK_EPOCH != null ? parseInt(spec.GLOAS_FORK_EPOCH, 10) : Number.MAX_SAFE_INTEGER,
     };
 
     this.logger.log(`Deneb fork epoch: ${this.forkEpochs.deneb}`);
     this.logger.log(`Electra fork epoch: ${this.forkEpochs.electra}`);
+    this.logger.log(`Gloas fork epoch: ${this.forkEpochs.gloas}`);
 
     return this.forkEpochs;
   }
@@ -228,18 +232,19 @@ export class ConsensusProviderService {
     return (await this.getCurrentOrPreviousNotMissedBlockHeader(dutyRootSlot, sparseMode, this.defaultMaxSlotDeepCount, ignoreCache)).root;
   }
 
-  public async getState(stateId: StateId): Promise<ContainerTreeViewType<any>> {
+  public async getState(stateId: StateId): Promise<Record<string, any>> {
     const { body, headers } = await this.retryRequest<{ body: BodyReadable; headers: IncomingHttpHeaders }>(
       async (apiURL: string) => await this.apiGetStream(apiURL, this.endpoints.state(stateId), { accept: 'application/octet-stream' }),
       {
         dataOnly: false,
       },
     );
-    const forkName = headers['eth-consensus-version'] as keyof typeof import('@lodestar/params').ForkName;
+    // Name of the fork the state belongs to: "electra", "fulu", "gloas", ...
+    const forkName = headers['eth-consensus-version'] as string;
     const bodyBytes = new Uint8Array(await body.arrayBuffer());
     // ugly hack to import ESModule to CommonJS project
     ssz = await eval(`import('@lodestar/types').then((m) => m.ssz)`);
-    return ssz[forkName].BeaconState.deserializeToView(bodyBytes) as any as ContainerTreeViewType<any>;
+    return ssz[forkName].BeaconState.deserializeToView(bodyBytes) as any as Record<string, any>;
   }
 
   public async getBlockInfo(blockId: BlockId): Promise<BlockInfoResponse> {
@@ -280,6 +285,67 @@ export class ConsensusProviderService {
     } catch (error) {
       if (error.$httpCode !== 404) {
         this.logger.error('Unexpected status code while fetching block info');
+        throw error;
+      }
+    }
+  }
+
+  /**
+   * Info of the first proposed block after the slot, `undefined` when there is none to read.
+   *
+   * Reading it can fail, and that is a normal thing to happen: the app takes an epoch as soon as its last slot is
+   * finalized, so the slots right after the epoch may still be past the finalized head.
+   */
+  public async getNextProposedBlockInfo(slot: Slot, maxDeep = this.defaultMaxSlotDeepCount): Promise<BlockInfoResponse | undefined> {
+    for (let next = slot + 1; next <= slot + maxDeep; next++) {
+      try {
+        const block = await this.getBlockInfo(next);
+        if (block != null) {
+          return block;
+        }
+      } catch {
+        this.logger.log(`Cannot read block [${next}] while looking for the first proposed block after slot [${slot}]`);
+        return undefined;
+      }
+    }
+
+    this.logger.log(`No proposed block within [${maxDeep}] slots after slot [${slot}]`);
+    return undefined;
+  }
+
+  /**
+   * Execution payload the builder reveals for the block since Gloas (EIP-7732).
+   *
+   * Returns `undefined` when the builder never revealed it. That is a normal thing to happen, not an error: such a
+   * block has no envelope at all.
+   */
+  public async getExecutionPayloadEnvelope(blockId: BlockId): Promise<SignedExecutionPayloadEnvelope | undefined> {
+    try {
+      return await this.retryRequest<SignedExecutionPayloadEnvelope>(
+        async (apiURL: string) => this.apiGet(apiURL, this.endpoints.executionPayloadEnvelope(blockId)),
+        {
+          maxRetries: this.config.get('CL_API_GET_BLOCK_INFO_MAX_RETRIES'),
+          useFallbackOnResolved: (r) => {
+            if (this.workingMode === WorkingMode.Finalized && r.finalized != null && !r.finalized) {
+              this.logger.error(`getExecutionPayloadEnvelope: block [${blockId}] is not finalized`);
+              return true;
+            }
+
+            return false;
+          },
+          useFallbackOnRejected: (lastFallbackError, currFallbackError) => {
+            if (lastFallbackError != null && lastFallbackError.$httpCode === 404 && currFallbackError.$httpCode !== 404) {
+              this.logger.debug('Request error from last fallback was 404, but current is not. Will be used previous error');
+              throw lastFallbackError;
+            }
+
+            return true;
+          },
+        },
+      );
+    } catch (error) {
+      if (error.$httpCode !== 404) {
+        this.logger.error('Unexpected status code while fetching execution payload envelope');
         throw error;
       }
     }
@@ -552,8 +618,12 @@ export class ConsensusProviderService {
       return await this.getSurroundingNotMissedBlockHeadersInDenseNetwork(targetSlot, maxDeep);
     }
 
+    const genesisTime = await this.getGenesisTime();
+
     let slot = previousKnownNotMissedSlot;
     let previousSlot = previousKnownNotMissedSlot;
+    let executionBlockNumber: number | null = null;
+
     while (slot <= targetSlot) {
       this.logger.log(`Try to get next not missed slot after slot [${slot}]`);
 
@@ -564,19 +634,33 @@ export class ConsensusProviderService {
         return await this.getSurroundingNotMissedBlockHeadersInDenseNetwork(targetSlot, maxDeep);
       }
 
-      const slotTime = await this.getSlotTime(slot);
-      const blockNumber = Number(slotInfo.message.body.execution_payload.block_number);
-      const nextBlockTime = await this.executionProvider.getBlockTimestamp(blockNumber + 1);
+      // The execution layer block is resolved from the consensus layer only once. From there on the walk moves along
+      // the execution layer chain itself, and the block it stops at is by construction the payload of the slot it lands
+      // on, so the cursor stays in sync for free.
+      if (executionBlockNumber == null) {
+        executionBlockNumber = await this.getAppliedExecutionBlockNumber(slotInfo);
 
-      slot = slot + (nextBlockTime - slotTime) / 12;
-
-      for (let i = previousSlot + 1; i < slot; i++) {
-        this.cache.set(String(i), {
-          missed: true,
-          header: undefined,
-          info: undefined,
-        });
+        if (executionBlockNumber == null) {
+          return await this.getSurroundingNotMissedBlockHeadersInDenseNetwork(targetSlot, maxDeep);
+        }
       }
+
+      // Since Gloas the anchor is the payload applied *before* the slot, so the first step can land on the payload of
+      // the slot the walk is already at
+      let nextSlot = slot;
+      while (nextSlot <= slot) {
+        executionBlockNumber++;
+        const blockTime = await this.executionProvider.getBlockTimestamp(executionBlockNumber);
+        nextSlot = (blockTime - genesisTime) / 12;
+
+        if (!Number.isInteger(nextSlot)) {
+          this.logger.warn(`Timestamp of execution layer block [${executionBlockNumber}] does not fall on a slot boundary`);
+          return await this.getSurroundingNotMissedBlockHeadersInDenseNetwork(targetSlot, maxDeep);
+        }
+      }
+
+      slot = nextSlot;
+      await this.markSkippedSlotsAsMissed(previousSlot, slot);
     }
 
     const nextHeader = await this.getBlockHeader(slot);
@@ -593,6 +677,86 @@ export class ConsensusProviderService {
       `Surrounding not missed slots for slot [${targetSlot}] are [${previousHeader.header.message.slot}, ${nextHeader.header.message.slot}]`,
     );
     return { next: nextHeader, previous: previousHeader };
+  }
+
+  /**
+   * Number of the latest execution layer block known to be applied to the state at the given block.
+   *
+   * Up to Fulu it is the block of the payload the block carries itself. Since Gloas (EIP-7732) the body has no payload:
+   * the block only commits to a bid, and `parent_block_hash` of that bid is `state.latest_block_hash` — the payload the
+   * state already has. In the common case that is one execution layer block behind, which the caller handles by
+   * skipping the blocks that belong to the slots it has already walked past.
+   *
+   * Returns `undefined` when the block has neither, since a shape we do not understand must send the caller to the
+   * dense algorithm instead of making it walk the execution layer at random.
+   */
+  private async getAppliedExecutionBlockNumber(slotInfo: BlockInfoResponse): Promise<number | undefined> {
+    const body = slotInfo.message.body;
+
+    if (body.execution_payload != null) {
+      return Number(body.execution_payload.block_number);
+    }
+
+    const parentBlockHash = body.signed_execution_payload_bid?.message?.parent_block_hash;
+    if (!parentBlockHash) {
+      this.logger.warn(`Block [${slotInfo.message.slot}] carries neither an execution payload nor a payload bid`);
+      return undefined;
+    }
+
+    return await this.executionProvider.getBlockNumberByHash(parentBlockHash);
+  }
+
+  /**
+   * Mark the slots between two proposed ones as missed.
+   *
+   * Up to Fulu every proposed slot has an execution payload, so the walk along the execution layer lands on the very
+   * next proposed slot and everything in between is really missed. Since Gloas (EIP-7732) a block may end up with no
+   * payload applied — the builder did not reveal it in time — and then it has no execution layer block at all, so the
+   * walk jumps right over it. Such blocks are found by following `parent_root` back from the slot the walk landed on,
+   * which costs one request per block that was really proposed within the gap. Caching them as missed instead would
+   * report a proposed block as missed and would spoil the head votes of everyone who attested to it.
+   */
+  private async markSkippedSlotsAsMissed(previousSlot: Slot, nextSlot: Slot): Promise<void> {
+    const proposed = new Set<Slot>();
+
+    if (await this.isGloasSlot(nextSlot)) {
+      let parentRoot = (await this.getBlockHeader(nextSlot))?.header.message.parent_root;
+
+      while (parentRoot != null) {
+        const header = await this.getBlockHeader(parentRoot);
+        if (!header) {
+          this.logger.warn(`Block [${parentRoot}] between slots [${previousSlot}] and [${nextSlot}] is unavailable`);
+          break;
+        }
+
+        const slot = Number(header.header.message.slot);
+        if (slot <= previousSlot) {
+          break;
+        }
+
+        this.logger.log(`Slot [${slot}] is proposed, but its execution payload was not applied`);
+        proposed.add(slot);
+        this.cache.set(String(slot), { missed: false, header });
+        parentRoot = header.header.message.parent_root;
+      }
+    }
+
+    for (let i = previousSlot + 1; i < nextSlot; i++) {
+      if (proposed.has(i)) {
+        continue;
+      }
+
+      this.cache.set(String(i), {
+        missed: true,
+        header: undefined,
+        info: undefined,
+      });
+    }
+  }
+
+  private async isGloasSlot(slot: Slot): Promise<boolean> {
+    const epoch = Math.trunc(slot / 32);
+    return epoch >= (await this.getForkEpochs()).gloas;
   }
 
   private async getSurroundingNotMissedBlockHeadersInDenseNetwork(

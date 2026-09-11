@@ -8,6 +8,7 @@ import migration_000006_stuck_validators from './migration_000006_stuck_validato
 import migration_000007_module_id from './migration_000007_module_id';
 import migration_000008_last_not_missed_slot from './migration_000008_last_not_missed_slot';
 import migration_000009_pending_consolidations from './migration_000009_pending_consolidations';
+import migration_000010_block_payload from './migration_000010_block_payload';
 
 const PLAIN_ENGINE = 'ReplacingMergeTree()';
 const REPLICATED_ENGINE = 'ReplicatedReplacingMergeTree()';
@@ -26,6 +27,7 @@ const plainMigrations: Record<string, string> = {
   migration_000006_stuck_validators,
   migration_000007_module_id,
   migration_000008_last_not_missed_slot,
+  migration_000010_block_payload,
 };
 
 /**
