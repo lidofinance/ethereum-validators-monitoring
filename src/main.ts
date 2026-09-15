@@ -3,7 +3,7 @@ import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
-import { ConfigService } from 'common/config';
+import { ConfigService, bootstrapLogger } from 'common/config';
 
 import { AppModule } from './app';
 
@@ -34,8 +34,11 @@ async function bootstrap() {
   await app.listen(appPort, '0.0.0.0');
 }
 // A startup failure ends the process either way; caught, it ends with one line saying so instead of
-// an unhandled rejection's stack trace.
+// an unhandled rejection's stack trace. The line goes through the bootstrap logger because the DI
+// one may not exist yet, and because the stack can name an endpoint that carries a key.
 bootstrap().catch((error) => {
-  console.error('Startup failed', error);
+  // The trace goes in the second argument on purpose: cleanSecrets walks enumerable fields only,
+  // and `stack` is not one, so an Error passed as the message loses its trace entirely.
+  bootstrapLogger().error('Startup failed', error instanceof Error ? error.stack : String(error));
   process.exit(1);
 });

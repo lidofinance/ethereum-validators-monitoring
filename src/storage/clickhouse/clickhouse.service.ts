@@ -67,6 +67,9 @@ import migration_000007_module_id from './migrations/migration_000007_module_id'
 import migration_000008_last_not_missed_slot from './migrations/migration_000008_last_not_missed_slot';
 import migration_000009_pending_consolidations from './migrations/migration_000009_pending_consolidations';
 
+/** How long the readiness probe waits for ClickHouse before calling it unreachable. */
+const PING_TIMEOUT_MS = 1000;
+
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
   private readonly db: ClickHouseClient;
@@ -107,6 +110,22 @@ export class ClickhouseService implements OnModuleInit {
 
   public async onModuleInit(): Promise<void> {
     await this.retry(async () => await this.migrate());
+  }
+
+  /**
+   * One query, and deliberately not through select(): the readiness probe answers "can this process
+   * reach ClickHouse right now", while the retrier behind select() backs off for up to two minutes
+   * before it gives an answer at all. The client's own request timeout defaults to five minutes,
+   * hence the signal.
+   */
+  public async ping(): Promise<void> {
+    const result = await this.db.query({
+      query: 'SELECT 1',
+      format: 'JSONEachRow',
+      abort_signal: AbortSignal.timeout(PING_TIMEOUT_MS),
+    });
+    // Read the body: an unconsumed response holds its socket open.
+    await result.text();
   }
 
   public async getLastProcessedEpoch(): Promise<EpochProcessingState> {

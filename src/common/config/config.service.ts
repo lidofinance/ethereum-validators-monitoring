@@ -1,23 +1,26 @@
 import { ConfigService as ConfigServiceSource } from '@nestjs/config';
 
-import { EnvironmentVariables } from './env.validation';
+import { EnvironmentVariables, SECRET_KEYS, URL_KEYS, loggableConfig } from './env.validation';
 import { CriticalAlertParamsForModule } from './interfaces';
 import { ethToGwei } from '../functions/ethToGwei';
 
 export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
   /**
-   * List of env variables that should be hidden
+   * Values that should be replaced wherever they appear in a log line.
+   *
+   * Derived from the same two lists the startup config dump masks by key, so a new secret cannot
+   * be added to one and forgotten in the other.
    */
   public get secrets(): string[] {
-    return [
-      ...this.get('EL_RPC_URLS'),
-      ...this.get('CL_API_URLS'),
-      ...this.get('VALIDATOR_REGISTRY_KEYSAPI_SOURCE_URLS'),
-      this.get('CRITICAL_ALERTS_ALERTMANAGER_URL'),
-      this.get('DB_PASSWORD'),
-    ]
+    return [...URL_KEYS, ...SECRET_KEYS]
+      .flatMap((key) => this.get(key))
       .filter((v) => v)
       .map((v) => String(v));
+  }
+
+  /** The whole configuration as it may be logged: secrets masked, endpoints cut to scheme and host. */
+  public get loggableConfig(): Record<string, unknown> {
+    return loggableConfig((key) => this.get(key));
   }
 
   public get<T extends keyof EnvironmentVariables>(key: T): EnvironmentVariables[T] {
