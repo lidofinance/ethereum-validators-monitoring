@@ -7,8 +7,7 @@ export const METRIC_BUILD_INFO = 'build_info';
 export const METRIC_SECRETS_RELOADS = 'secrets_reloads_total';
 export const METRIC_SECRETS_FILE_MTIME = 'secrets_file_mtime_seconds';
 
-// The cross-service RPC shape, deliberately unprefixed: fleet dashboards and the RPC budget read
-// these names from every application, and a prefix hides this one from all of them.
+// Unprefixed on purpose: dashboards read these names from every application.
 export const METRIC_HTTP_RPC_REQUESTS_TOTAL = 'http_rpc_requests_total';
 export const METRIC_HTTP_RPC_RESPONSE_SECONDS = 'http_rpc_response_seconds';
 export const METRIC_RPC_REQUEST_TOTAL = 'rpc_request_total';

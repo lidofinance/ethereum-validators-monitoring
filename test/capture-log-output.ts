@@ -1,9 +1,5 @@
-/**
- * Everything the logger wrote during a test.
- *
- * winston's Console transport writes to console._stdout when the console has one — under jest that
- * is jest's own stream rather than process.stdout — and falls back to console.log when it does not.
- */
+/** winston's Console transport writes to console._stdout — under jest that is jest's own stream,
+ * not process.stdout — and falls back to console.log when there is none. */
 export function captureLogOutput(): { output: () => string; restore: () => void } {
   const written: string[] = [];
   const capture = (chunk: any) => {

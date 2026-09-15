@@ -68,10 +68,8 @@ const toBoolean = (value: any): boolean => {
   }
 };
 
-/**
- * JSON.parse quotes the first ten characters of its input in the SyntaxError it throws, so a value
- * pasted into the wrong variable ends up in the log. The key alone locates the mistake.
- */
+/** JSON.parse quotes the first ten characters of its input in the SyntaxError, so a value pasted
+ * into the wrong variable reaches the log. */
 const parseJsonEnv = ({ key, value }: TransformFnParams) => {
   try {
     return JSON.parse(value);
@@ -80,7 +78,7 @@ const parseJsonEnv = ({ key, value }: TransformFnParams) => {
   }
 };
 
-/** Same reason as parseJsonEnv: the TypeError from a non-string value carries the value. */
+/** The TypeError from a non-string value carries the value. */
 const splitList = ({ key, value }: TransformFnParams) => {
   if (typeof value !== 'string') {
     throw new Error(`${key} must be a comma-separated string`);
@@ -391,13 +389,8 @@ const loggableValue = (key: keyof EnvironmentVariables, value: unknown): unknown
   return value;
 };
 
-/**
- * Every configuration key, secrets masked by key rather than by value.
- *
- * Enumeration relies on the fields being defined on the instance, which holds because tsconfig
- * targets ESNext (useDefineForClassFields) — the `DB_HOST!: string` ones would otherwise be absent.
- * There is a test pinning that.
- */
+/** Enumeration relies on useDefineForClassFields (tsconfig targets ESNext): without it the
+ * `DB_HOST!: string` fields are absent from a fresh instance. */
 export function loggableConfig(read: (key: keyof EnvironmentVariables) => unknown): Record<string, unknown> {
   const keys = Object.keys(new EnvironmentVariables()) as (keyof EnvironmentVariables)[];
 
@@ -412,10 +405,8 @@ function rawSecretValues(raw: Record<string, unknown>): string[] {
     .filter((value) => value);
 }
 
-/**
- * target and value off: toString() prints neither, but the errors carry both, so anything that
- * serialises them — a future log line, a test snapshot — would dump the whole configuration.
- */
+/** toString() prints neither, but the errors carry both — serialising one would dump the whole
+ * configuration. */
 export const VALIDATOR_OPTIONS = { skipMissingProperties: false, validationError: { target: false, value: false } };
 
 /** Remembered from validate(), so a failure later in the startup is redacted with the same values. */

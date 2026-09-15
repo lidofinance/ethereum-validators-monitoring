@@ -9,16 +9,14 @@ COPY ./tsconfig*.json ./
 COPY ./src ./src
 RUN yarn build
 
-# Separate from the build stage rather than pruned after it: a prune leaves the devDependency tree
-# in the layer it is pruned from, and the runtime image copies layers, not the final filesystem.
+# A prune in the build stage would not shrink this: the image copies layers, not a filesystem.
 FROM node:20.20.0-alpine AS prod-deps
 
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-# The prune is not redundant: yarn 1 --production drops the root's devDependencies but keeps
-# packages only those reached — typescript, 23 MB of it, stayed behind. --legacy-peer-deps because
-# npm otherwise refuses a tree yarn accepts: the @lido-nestjs packages pin Nest 8 as a peer.
+# yarn 1 --production keeps packages only devDependencies reached (typescript, 23 MB); npm refuses
+# the tree yarn accepts without --legacy-peer-deps, the @lido-nestjs packages pin Nest 8 as a peer.
 RUN yarn install --frozen-lockfile --non-interactive --production \
   && npm prune --omit=dev --legacy-peer-deps \
   && yarn cache clean

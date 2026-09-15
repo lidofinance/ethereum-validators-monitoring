@@ -160,12 +160,8 @@ export enum RpcResult {
   FAIL = 'fail',
 }
 
-/**
- * The provider label: the last two DNS labels, userinfo dropped.
- *
- * An address or a single-label in-cluster name keeps its port, which is then the only thing telling
- * two services on one host apart.
- */
+/** An address or a single-label host keeps its port: with two services on one host it is the only
+ * thing telling them apart. */
 export function normalizeProvider(url: string): string {
   let hostname: string;
   let port: string;
@@ -185,7 +181,6 @@ export function normalizeProvider(url: string): string {
   return labels.slice(-2).join('.');
 }
 
-/** The aggregated response code the policy asks for; empty when no response arrived. */
 export function responseCodeClass(code?: number): string {
   if (!code) return '';
 
@@ -244,13 +239,8 @@ export class PrometheusService implements OnApplicationBootstrap {
     } as Options<L>) as Metric<T, L>;
   }
 
-  /**
-   * One call site for the three cross-service RPC metrics, so a layer cannot end up reporting a
-   * different label set than the other.
-   *
-   * Only blockchain RPC goes here: the Keys API and the Alertmanager are HTTP services of ours, and
-   * counting them against the RPC budget would misreport it.
-   */
+  /** Blockchain RPC only: the Keys API and the Alertmanager are plain HTTP services, and counting
+   * them would misreport the RPC budget. */
   public observeRpcRequest(params: {
     layer: RpcLayer;
     url: string;
@@ -913,8 +903,7 @@ export function TrackCLRequest(target: any, propertyKey: string, descriptor: Pro
       name: reqName,
       target: targetName,
     });
-    // The policy metrics are observed alongside the app's own: 200 on the resolved path is not an
-    // assumption, the wrapped call throws on any other status.
+    // 200 is not an assumption: the wrapped call throws on any other status.
     const observeRpc = (responseCode?: number) =>
       this.prometheus.observeRpcRequest({
         layer: RpcLayer.CL,

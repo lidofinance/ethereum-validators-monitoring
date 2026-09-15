@@ -1,13 +1,8 @@
 import { USER_AGENT } from 'app/app.constants';
 import { PrometheusService, RequestStatus, RpcLayer } from 'common/prometheus';
 
-/**
- * What every execution-layer batch passes through: the app's own request metrics, the cross-service
- * RPC ones, and the User-Agent.
- *
- * The header goes here because the module takes plain URL strings — this middleware is the only
- * place holding the connection object ethers builds the request from.
- */
+/** The module takes plain URL strings, so this is the only place holding the connection object
+ * ethers builds the request from. */
 export function createExecutionFetchMiddleware(prometheusService: PrometheusService) {
   return async (next: () => Promise<any>, ctx: any) => {
     ctx.provider.connection.headers = { ...ctx.provider.connection.headers, 'user-agent': USER_AGENT };
@@ -18,8 +13,7 @@ export function createExecutionFetchMiddleware(prometheusService: PrometheusServ
     const started = Date.now();
     const stop = prometheusService.outgoingELRequestsDuration.startTimer({ name: reqName, target: targetName });
     // No method label: the middleware is handed the fetch, not the JSON-RPC payload, so
-    // rpc_request_total would have nothing to name. It is reported for the consensus layer, where
-    // the endpoint is the method.
+    // rpc_request_total would have nothing to name.
     const observeRpc = (responseCode?: number) =>
       prometheusService.observeRpcRequest({
         layer: RpcLayer.EL,

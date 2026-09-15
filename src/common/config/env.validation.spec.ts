@@ -13,7 +13,7 @@ import {
 import { captureLogOutput } from '../../../test/capture-log-output';
 
 describe('config transforms', () => {
-  const CREDENTIAL = 'https://user:s3cr3t@alertmanager.example.com/api';
+  const CREDENTIALED_URL = 'https://user:s3cr3t@alertmanager.example.com/api';
 
   test.each([
     'CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT',
@@ -24,10 +24,10 @@ describe('config transforms', () => {
   ])('%s that is not JSON is reported by key, without the value', (key) => {
     // JSON.parse quotes the first ten characters of its input, which for a misplaced endpoint is
     // enough to confirm the credential's shape and host.
-    expect(() => plainToInstance(EnvironmentVariables, { [key]: CREDENTIAL })).toThrow(`${key} is not valid JSON`);
+    expect(() => plainToInstance(EnvironmentVariables, { [key]: CREDENTIALED_URL })).toThrow(`${key} is not valid JSON`);
 
     try {
-      plainToInstance(EnvironmentVariables, { [key]: CREDENTIAL });
+      plainToInstance(EnvironmentVariables, { [key]: CREDENTIALED_URL });
     } catch (error: any) {
       expect(error.message).not.toContain('https');
     }
@@ -52,8 +52,9 @@ describe('config transforms', () => {
 });
 
 describe('loggable configuration', () => {
+  const CREDENTIAL = 'hunter2';
   const values: Record<string, unknown> = {
-    DB_PASSWORD: 'hunter2',
+    DB_PASSWORD: CREDENTIAL,
     EL_RPC_URLS: ['https://user:key@rpc.example.com/v2/deadbeef?apikey=k'],
     CL_API_URLS: ['http://cl:5052'],
     VALIDATOR_REGISTRY_KEYSAPI_SOURCE_URLS: ['not a url at all'],
@@ -86,7 +87,7 @@ describe('loggable configuration', () => {
   test('every declared secret key is masked or reduced in the dump', () => {
     const serialised = JSON.stringify(dump());
 
-    expect(serialised).not.toContain('hunter2');
+    expect(serialised).not.toContain(CREDENTIAL);
     expect(serialised).not.toContain('deadbeef');
     [...SECRET_KEYS, ...URL_KEYS].forEach((key) => expect(Object.keys(dump())).toContain(key));
   });
@@ -129,11 +130,12 @@ describe('validate', () => {
   });
 
   test('the secret values it saw are redacted in whatever the startup reports later', () => {
-    validate({ NODE_ENV: 'test', ETH_NETWORK: '1', DB_PASSWORD: 'hunter2' });
+    const credential = 'hunter2';
+    validate({ NODE_ENV: 'test', ETH_NETWORK: '1', DB_PASSWORD: credential });
 
-    bootstrapLogger().error('Startup failed', 'Error: connect ECONNREFUSED, password hunter2');
+    bootstrapLogger().error('Startup failed', `Error: connect ECONNREFUSED, ${credential}`);
 
-    expect(captured.output()).not.toContain('hunter2');
+    expect(captured.output()).not.toContain(credential);
     expect(captured.output()).toContain('<removed>');
   });
 });

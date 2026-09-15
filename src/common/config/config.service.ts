@@ -5,12 +5,8 @@ import { CriticalAlertParamsForModule } from './interfaces';
 import { ethToGwei } from '../functions/ethToGwei';
 
 export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
-  /**
-   * Values that should be replaced wherever they appear in a log line.
-   *
-   * Derived from the same two lists the startup config dump masks by key, so a new secret cannot
-   * be added to one and forgotten in the other.
-   */
+  /** Values replaced wherever they appear in a log line. Same lists the config dump masks by key,
+   * so the two cannot drift. */
   public get secrets(): string[] {
     return [...URL_KEYS, ...SECRET_KEYS]
       .flatMap((key) => this.get(key))
@@ -18,7 +14,6 @@ export class ConfigService extends ConfigServiceSource<EnvironmentVariables> {
       .map((v) => String(v));
   }
 
-  /** The whole configuration as it may be logged: secrets masked, endpoints cut to scheme and host. */
   public get loggableConfig(): Record<string, unknown> {
     return loggableConfig((key) => this.get(key));
   }

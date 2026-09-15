@@ -7,9 +7,6 @@ import { ClickhouseService } from 'storage/clickhouse';
 
 import { HEALTH_READY_URL, HEALTH_URL } from './health.constants';
 
-// No cache or throttle interceptor is registered in this app, so neither probe needs a skip
-// decorator — a probe served from a response cache keeps answering 200 through an outage of the
-// thing it checks.
 @Controller(HEALTH_URL)
 export class HealthController {
   private readonly maxHeapSize: number;
@@ -23,14 +20,8 @@ export class HealthController {
     return this.health.check([async () => this.memory.checkHeap('memoryHeap', this.maxHeapSize)]);
   }
 
-  /**
-   * ClickHouse is the one hard dependency this process owns: without it an epoch can be read but
-   * not stored.
-   *
-   * Note which probe reads this. Kubernetes readiness stays on /health, because the indexer is
-   * scraped through its Service and a pod dropped from the endpoints stops being scraped — a
-   * ClickHouse outage would take the indexer's own metrics with it, exactly when they are needed.
-   */
+  /** Not what orchestrator readiness reads: a pod taken out of service on a ClickHouse outage
+   * stops being scraped, and its metrics go absent. */
   @Get(HEALTH_READY_URL)
   @HealthCheck()
   ready() {

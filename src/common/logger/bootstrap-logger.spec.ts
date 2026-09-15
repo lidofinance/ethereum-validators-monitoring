@@ -4,7 +4,7 @@ import { createBootstrapLogger } from './bootstrap-logger';
 import { captureLogOutput } from '../../../test/capture-log-output';
 
 describe('bootstrap logger', () => {
-  const SECRET = 'https://user:s3cr3t@cl.example.com/eth/v1';
+  const CREDENTIALED_URL = 'https://user:s3cr3t@cl.example.com/eth/v1';
   let captured: ReturnType<typeof captureLogOutput>;
 
   beforeEach(() => (captured = captureLogOutput()));
@@ -13,7 +13,7 @@ describe('bootstrap logger', () => {
   const output = () => captured.output();
 
   test('a secret is replaced in the message', () => {
-    createBootstrapLogger(LogFormat.json, [SECRET]).error(`Can not reach ${SECRET}`);
+    createBootstrapLogger(LogFormat.json, [CREDENTIALED_URL]).error(`Can not reach ${CREDENTIALED_URL}`);
 
     expect(output()).not.toContain('s3cr3t');
     expect(output()).toContain('<removed>');
@@ -21,9 +21,9 @@ describe('bootstrap logger', () => {
   });
 
   test('a secret is replaced in the trace, which is how a startup failure reports one', () => {
-    const error = new Error(`getaddrinfo ENOTFOUND ${SECRET}`);
+    const error = new Error(`getaddrinfo ENOTFOUND ${CREDENTIALED_URL}`);
 
-    createBootstrapLogger(LogFormat.json, [SECRET]).error('Startup failed', error.stack);
+    createBootstrapLogger(LogFormat.json, [CREDENTIALED_URL]).error('Startup failed', error.stack);
 
     expect(output()).toContain('Startup failed');
     expect(output()).not.toContain('s3cr3t');
