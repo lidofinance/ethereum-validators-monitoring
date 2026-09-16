@@ -2,12 +2,14 @@ import { LoggerModule as Logger, jsonTransport, simpleTransport } from '@lido-ne
 
 import { ConfigModule, ConfigService, LogFormat } from 'common/config';
 
+import { toWinstonLevel } from './winston-level';
+
 export const LoggerModule = Logger.forRootAsync({
   imports: [ConfigModule],
   inject: [ConfigService],
   useFactory: async (configService: ConfigService) => {
     const { secrets } = configService;
-    const level = configService.get('LOG_LEVEL');
+    const level = toWinstonLevel(configService.get('LOG_LEVEL'));
     const format = configService.get('LOG_FORMAT');
     const isJSON = format === LogFormat.json;
 

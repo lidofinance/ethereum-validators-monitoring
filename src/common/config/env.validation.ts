@@ -1,4 +1,5 @@
-import { Transform, plainToInstance } from 'class-transformer';
+import { LoggerService } from '@nestjs/common';
+import { Transform, TransformFnParams, plainToInstance } from 'class-transformer';
 import {
   ArrayMinSize,
   IsArray,
@@ -17,6 +18,7 @@ import {
   validateSync,
 } from 'class-validator';
 
+import { createBootstrapLogger } from 'common/logger/bootstrap-logger';
 import { DEFAULT_SECRETS_FILE_PATH, DEFAULT_SECRETS_POLL_INTERVAL_IN_SECONDS, readSecretsFile } from 'common/secrets/secrets-file';
 
 import { Environment, LogFormat, LogLevel } from './interfaces';
@@ -64,6 +66,25 @@ const toBoolean = (value: any): boolean => {
     default:
       return false;
   }
+};
+
+/** JSON.parse quotes the first ten characters of its input in the SyntaxError, so a value pasted
+ * into the wrong variable reaches the log. */
+const parseJsonEnv = ({ key, value }: TransformFnParams) => {
+  try {
+    return JSON.parse(value);
+  } catch {
+    throw new Error(`${key} is not valid JSON`);
+  }
+};
+
+/** The TypeError from a non-string value carries the value. */
+const splitList = ({ key, value }: TransformFnParams) => {
+  if (typeof value !== 'string') {
+    throw new Error(`${key} must be a comma-separated string`);
+  }
+
+  return value.split(',');
 };
 
 export class EnvironmentVariables {
@@ -139,13 +160,13 @@ export class EnvironmentVariables {
 
   @IsArray()
   @ArrayMinSize(1)
-  @Transform(({ value }) => value.split(','))
+  @Transform(splitList)
   @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.Lido && vars.NODE_ENV != Environment.test)
   public EL_RPC_URLS: string[] = [];
 
   @IsArray()
   @ArrayMinSize(1)
-  @Transform(({ value }) => value.split(','))
+  @Transform(splitList)
   @ValidateIf((vars) => vars.NODE_ENV != Environment.test)
   public CL_API_URLS!: string[];
 
@@ -202,7 +223,7 @@ export class EnvironmentVariables {
 
   @IsArray()
   @ArrayMinSize(1)
-  @Transform(({ value }) => value.split(','))
+  @Transform(splitList)
   @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.KeysAPI && vars.NODE_ENV != Environment.test)
   public VALIDATOR_REGISTRY_KEYSAPI_SOURCE_URLS!: string[];
 
@@ -283,19 +304,19 @@ export class EnvironmentVariables {
   public CRITICAL_ALERTS_MIN_VAL_COUNT = 100;
 
   @IsObject()
-  @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
+  @Transform(parseJsonEnv, { toClassOnly: true })
   public CRITICAL_ALERTS_MIN_ACTIVE_VAL_COUNT = {};
 
   @IsObject()
-  @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
+  @Transform(parseJsonEnv, { toClassOnly: true })
   public CRITICAL_ALERTS_MIN_AFFECTED_VAL_COUNT = {};
 
   @IsObject()
-  @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
+  @Transform(parseJsonEnv, { toClassOnly: true })
   public CRITICAL_ALERTS_MIN_ACTIVE_VAL_BALANCE = {};
 
   @IsObject()
-  @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
+  @Transform(parseJsonEnv, { toClassOnly: true })
   public CRITICAL_ALERTS_MIN_AFFECTED_VAL_BALANCE = {};
 
   @IsString()
@@ -306,7 +327,7 @@ export class EnvironmentVariables {
    * For example - '{"a":"valueA","b":"valueB"}'
    */
   @IsObject()
-  @Transform(({ value }) => JSON.parse(value), { toClassOnly: true })
+  @Transform(parseJsonEnv, { toClassOnly: true })
   public CRITICAL_ALERTS_ALERTMANAGER_LABELS = {};
 
   @IsEnum(WorkingMode)
@@ -328,19 +349,99 @@ export class EnvironmentVariables {
   public SHUTDOWN_TIMEOUT_IN_SECONDS = 25;
 }
 
+/** Never logged in any form. ConfigService.secrets is derived from this, so the two cannot drift. */
+export const SECRET_KEYS = ['DB_PASSWORD'] as const satisfies readonly (keyof EnvironmentVariables)[];
+
+/** Logged as scheme and host only: these carry credentials in userinfo, path or query. */
+export const URL_KEYS = [
+  'EL_RPC_URLS',
+  'CL_API_URLS',
+  'VALIDATOR_REGISTRY_KEYSAPI_SOURCE_URLS',
+  'CRITICAL_ALERTS_ALERTMANAGER_URL',
+] as const satisfies readonly (keyof EnvironmentVariables)[];
+
+const MASKED = '<masked>';
+const UNPARSEABLE = '<unparseable>';
+
+/** Deliberately not the raw value on failure: an endpoint that does not parse is still an endpoint. */
+const schemeAndHost = (value: string): string => {
+  if (!value) return value;
+
+  try {
+    const url = new URL(value);
+    // host keeps the port and drops userinfo, which is where a provider key usually sits.
+    return `${url.protocol}//${url.host}`;
+  } catch {
+    return UNPARSEABLE;
+  }
+};
+
+const loggableValue = (key: keyof EnvironmentVariables, value: unknown): unknown => {
+  if ((SECRET_KEYS as readonly string[]).includes(key)) {
+    // An unset secret stays empty: "not set" is a diagnosis, and it reveals nothing.
+    return value ? MASKED : value;
+  }
+
+  if ((URL_KEYS as readonly string[]).includes(key)) {
+    return Array.isArray(value) ? value.map((entry) => schemeAndHost(String(entry))) : schemeAndHost(String(value ?? ''));
+  }
+
+  return value;
+};
+
+/** Enumeration relies on useDefineForClassFields (tsconfig targets ESNext): without it the
+ * `DB_HOST!: string` fields are absent from a fresh instance. */
+export function loggableConfig(read: (key: keyof EnvironmentVariables) => unknown): Record<string, unknown> {
+  const keys = Object.keys(new EnvironmentVariables()) as (keyof EnvironmentVariables)[];
+
+  return Object.fromEntries(keys.map((key) => [key, loggableValue(key, read(key))]));
+}
+
+/** Secret values as they are before validation, for a logger that has to exist before it. */
+function rawSecretValues(raw: Record<string, unknown>): string[] {
+  return [...URL_KEYS, ...SECRET_KEYS]
+    .flatMap((key) => String(raw[key] ?? '').split(','))
+    .map((value) => value.trim())
+    .filter((value) => value);
+}
+
+/** toString() prints neither, but the errors carry both — serialising one would dump the whole
+ * configuration. */
+export const VALIDATOR_OPTIONS = { skipMissingProperties: false, validationError: { target: false, value: false } };
+
+/** Remembered from validate(), so a failure later in the startup is redacted with the same values. */
+let bootstrapSecrets: string[] = [];
+
+export function bootstrapLogger(raw: Record<string, unknown> = {}): LoggerService {
+  return createBootstrapLogger(raw.LOG_FORMAT ?? process.env.LOG_FORMAT, bootstrapSecrets);
+}
+
 export function validate(config: Record<string, unknown>) {
   // The file wins over the environment, merged here so its values pass the same validation.
-  // The logger does not exist yet at this point, hence console.
   const secretsFilePath = String(config.SECRETS_FILE_PATH ?? DEFAULT_SECRETS_FILE_PATH);
-  const withSecrets = { ...config, ...readSecretsFile(secretsFilePath, (message) => console.error(message)) };
+  // Buffered: nothing can be logged until the file has been read, because the file is where the
+  // values that must not reach the log come from.
+  const messages: string[] = [];
+  const withSecrets = { ...config, ...readSecretsFile(secretsFilePath, (message) => messages.push(message)) };
 
-  const validatedConfig = plainToInstance(EnvironmentVariables, withSecrets);
+  bootstrapSecrets = rawSecretValues(withSecrets);
+  const logger = bootstrapLogger(withSecrets);
+  messages.forEach((message) => logger.error(message));
 
-  const validatorOptions = { skipMissingProperties: false };
-  const errors = validateSync(validatedConfig, validatorOptions);
+  let validatedConfig: EnvironmentVariables;
+  try {
+    validatedConfig = plainToInstance(EnvironmentVariables, withSecrets);
+  } catch (error) {
+    // A @Transform threw, before validateSync ever saw the value. Only the reason is logged: the
+    // transforms raise errors that name the key and nothing else.
+    logger.error(`Can not read the configuration: ${error instanceof Error ? error.message : 'unknown error'}`);
+    process.exit(1);
+  }
+
+  const errors = validateSync(validatedConfig, VALIDATOR_OPTIONS);
 
   if (errors.length > 0) {
-    console.error(errors.toString());
+    logger.error(errors.toString());
     process.exit(1);
   }
 

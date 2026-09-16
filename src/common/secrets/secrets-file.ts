@@ -35,8 +35,10 @@ export function readSecretsFile(path: string, onError?: (message: string) => voi
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
-  } catch (error) {
-    onError?.(`Secrets file ${path} is not valid JSON, ignoring it: ${String(error)}`);
+  } catch {
+    // Without the parser's message on purpose: it quotes the first characters of the file, which
+    // here is a file of secrets.
+    onError?.(`Secrets file ${path} is not valid JSON, ignoring it`);
     return {};
   }
 

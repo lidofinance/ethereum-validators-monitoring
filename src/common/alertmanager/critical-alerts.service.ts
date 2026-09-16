@@ -2,6 +2,7 @@ import { LOGGER_PROVIDER, LoggerService } from '@lido-nestjs/logger';
 import { Inject, Injectable } from '@nestjs/common';
 import { got } from 'got-cjs';
 
+import { USER_AGENT } from 'app/app.constants';
 import { ConfigService } from 'common/config';
 import { PrometheusService } from 'common/prometheus';
 import { Epoch } from 'common/types/types';
@@ -99,7 +100,7 @@ export class CriticalAlertsService {
 
   private async fire(alert: AlertRequestBody) {
     got
-      .post(`${this.baseUrl}/api/v2/alerts`, { json: [alert] })
+      .post(`${this.baseUrl}/api/v2/alerts`, { json: [alert], headers: { 'user-agent': USER_AGENT } })
       .then((r) => r.statusCode)
       .catch((error) => {
         this.logger.error(`Error when trying to send alert`);

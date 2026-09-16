@@ -6,6 +6,7 @@ import { request } from 'undici';
 import { IncomingHttpHeaders } from 'undici/types/header';
 import BodyReadable from 'undici/types/readable';
 
+import { USER_AGENT } from 'app/app.constants';
 import { ConfigService, WorkingMode } from 'common/config';
 import { ExecutionProviderService } from 'common/execution-provider';
 import { rejectDelay } from 'common/functions/rejectDelay';
@@ -409,6 +410,7 @@ export class ConsensusProviderService {
     const { body, statusCode } = await request(urljoin(apiURL, subUrl), {
       method: 'GET',
       headersTimeout: this.config.get('CL_API_GET_RESPONSE_TIMEOUT'),
+      headers: { 'user-agent': USER_AGENT },
     }).catch((e) => {
       if (e.response) {
         throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);
@@ -434,7 +436,7 @@ export class ConsensusProviderService {
     const { body, headers, statusCode } = await request(urljoin(apiURL, subUrl), {
       method: 'GET',
       headersTimeout: this.config.get('CL_API_GET_RESPONSE_TIMEOUT'),
-      headers: headersToSend,
+      headers: { 'user-agent': USER_AGENT, ...headersToSend },
     }).catch((e) => {
       if (e.response) {
         throw new ResponseError(errRequest(e.response.body, subUrl, apiURL), e.response.statusCode);

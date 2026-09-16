@@ -7,6 +7,11 @@ export const METRIC_BUILD_INFO = 'build_info';
 export const METRIC_SECRETS_RELOADS = 'secrets_reloads_total';
 export const METRIC_SECRETS_FILE_MTIME = 'secrets_file_mtime_seconds';
 
+// Unprefixed on purpose: dashboards read these names from every application.
+export const METRIC_HTTP_RPC_REQUESTS_TOTAL = 'http_rpc_requests_total';
+export const METRIC_HTTP_RPC_RESPONSE_SECONDS = 'http_rpc_response_seconds';
+export const METRIC_RPC_REQUEST_TOTAL = 'rpc_request_total';
+
 export const METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS = 'outgoing_el_requests_duration_seconds';
 export const METRIC_OUTGOING_EL_REQUESTS_COUNT = 'outgoing_el_requests_count';
 export const METRIC_OUTGOING_CL_REQUESTS_DURATION_SECONDS = 'outgoing_cl_requests_duration_seconds';
