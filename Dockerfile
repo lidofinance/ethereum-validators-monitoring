@@ -9,7 +9,8 @@ COPY ./tsconfig*.json ./
 COPY ./src ./src
 RUN yarn build
 
-# A prune in the build stage would not shrink this: the image copies layers, not a filesystem.
+# Its own stage so that editing src does not reinstall production dependencies: this install is
+# keyed on the manifests alone, while the build stage's is invalidated by every source change.
 FROM node:20.20.0-alpine AS prod-deps
 
 WORKDIR /app
