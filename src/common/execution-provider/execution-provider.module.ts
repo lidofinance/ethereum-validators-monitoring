@@ -1,11 +1,10 @@
-import { FallbackProviderModule } from '@lido-nestjs/execution';
+import { FallbackProviderModule, NonEmptyArray } from '@lido-nestjs/execution';
 import { Global, Module } from '@nestjs/common';
-import { NonEmptyArray } from 'fp-ts/NonEmptyArray';
 
 import { ConfigService } from 'common/config';
 import { PrometheusService } from 'common/prometheus';
 
-import { createExecutionFetchMiddleware } from './execution-provider.middleware';
+import { executionProviderConfig } from './execution-provider.config';
 import { ExecutionProviderService } from './execution-provider.service';
 
 @Global()
@@ -13,11 +12,11 @@ import { ExecutionProviderService } from './execution-provider.service';
   imports: [
     FallbackProviderModule.forRootAsync({
       async useFactory(configService: ConfigService, prometheusService: PrometheusService) {
-        return {
-          urls: configService.get('EL_RPC_URLS') as NonEmptyArray<string>,
-          network: configService.get('ETH_NETWORK'),
-          fetchMiddlewares: [createExecutionFetchMiddleware(prometheusService)],
-        };
+        return executionProviderConfig(
+          configService.get('EL_RPC_URLS') as NonEmptyArray<string>,
+          configService.get('ETH_NETWORK'),
+          prometheusService,
+        );
       },
       inject: [ConfigService, PrometheusService],
     }),

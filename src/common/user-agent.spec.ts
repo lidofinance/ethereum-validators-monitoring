@@ -1,11 +1,22 @@
 import { Server, createServer } from 'http';
 import { AddressInfo } from 'net';
 
+import { SimpleFallbackJsonRpcBatchProvider } from '@lido-nestjs/execution';
+
 import { USER_AGENT } from 'app/app.constants';
 import { CriticalAlertsService } from 'common/alertmanager';
 import { ConsensusProviderService } from 'common/consensus-provider';
-import { createExecutionFetchMiddleware } from 'common/execution-provider/execution-provider.middleware';
+import { executionProviderConfig } from 'common/execution-provider/execution-provider.config';
 import { KeysapiSourceClient } from 'validators-registry/keysapi-source/keysapi-source.client';
+
+/** Answers a JSON-RPC batch with a chain id and a block number, anything else with nothing. */
+const jsonRpcReply = (body: string) => {
+  const calls = body.startsWith('[') ? JSON.parse(body) : [];
+  if (calls.length === 0) return undefined;
+  return JSON.stringify(
+    calls.map(({ id, method }: any) => ({ jsonrpc: '2.0', id, result: method === 'eth_blockNumber' ? '0x10' : '0x1' })),
+  );
+};
 
 /** Every outgoing client, against a server that only remembers who asked. */
 describe('User-Agent', () => {
@@ -31,8 +42,12 @@ describe('User-Agent', () => {
     seen = [];
     server = createServer((req, res) => {
       seen.push(req.headers['user-agent']);
-      res.writeHead(200, { 'content-type': 'application/json' });
-      res.end('{}');
+      let body = '';
+      req.on('data', (chunk) => (body += chunk));
+      req.on('end', () => {
+        res.writeHead(200, { 'content-type': 'application/json' });
+        res.end(jsonRpcReply(body) ?? '{}');
+      });
     });
     await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
     url = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
@@ -81,12 +96,15 @@ describe('User-Agent', () => {
     expect(seen).toEqual([USER_AGENT]);
   });
 
-  test('the execution middleware puts it on the connection ethers builds the request from', async () => {
-    const ctx = { provider: { connection: { url } } };
-    const middleware = createExecutionFetchMiddleware(fakes({}).prometheus as any);
+  test('the execution provider sends it', async () => {
+    const { logger, prometheus } = fakes({});
+    const provider = new SimpleFallbackJsonRpcBatchProvider(executionProviderConfig([url], 1, prometheus as any), logger as any);
 
-    await middleware(async () => 'ok', ctx);
+    await expect(provider.getBlockNumber()).resolves.toBe(16);
+    // The provider re-arms a fallback reset after network detection and has no teardown.
+    clearTimeout((provider as any).resetTimer);
 
-    expect(ctx.provider.connection).toMatchObject({ headers: { 'user-agent': USER_AGENT } });
+    expect(seen.length).toBeGreaterThan(0);
+    expect(new Set(seen)).toEqual(new Set([USER_AGENT]));
   });
 });

@@ -1,12 +1,8 @@
-import { USER_AGENT } from 'app/app.constants';
 import { PrometheusService, RequestStatus, RpcLayer } from 'common/prometheus';
 
-/** The module takes plain URL strings, so this is the only place holding the connection object
- * ethers builds the request from. */
+/** Read-only on the connection: ethers freezes it, so a header set here throws on every call. */
 export function createExecutionFetchMiddleware(prometheusService: PrometheusService) {
   return async (next: () => Promise<any>, ctx: any) => {
-    ctx.provider.connection.headers = { ...ctx.provider.connection.headers, 'user-agent': USER_AGENT };
-
     const url = ctx.provider.connection.url;
     const targetName = new URL(url).hostname;
     const reqName = 'batch';
