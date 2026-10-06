@@ -25,6 +25,8 @@ import {
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_ATTESTATION_LAST_N_EPOCH,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE,
   METRIC_HIGH_REWARD_VALIDATOR_COUNT_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
+  METRIC_HTTP_RPC_REQUESTS_TOTAL,
+  METRIC_HTTP_RPC_RESPONSE_SECONDS,
   METRIC_OPERATOR_BALANCE_24H_DIFFERENCE,
   METRIC_OPERATOR_CALCULATED_BALANCE_CALCULATION_ERROR,
   METRIC_OPERATOR_CALCULATED_BALANCE_DELTA,
@@ -60,6 +62,7 @@ import {
   METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS,
   METRIC_OUTGOING_KEYSAPI_REQUESTS_COUNT,
   METRIC_OUTGOING_KEYSAPI_REQUESTS_DURATION_SECONDS,
+  METRIC_RPC_REQUEST_TOTAL,
   METRIC_SECRETS_FILE_MTIME,
   METRIC_SECRETS_RELOADS,
   METRIC_STETH_BUFFERED_ETHER_TOTAL,
@@ -144,6 +147,46 @@ export function requestLabels(apiUrl: string, subUrl: string) {
   return [targetName, reqName];
 }
 
+/** The chain family, not the deployment's network name: the RPC metrics are read across chains. */
+export const RPC_NETWORK = 'ethereum';
+
+export enum RpcLayer {
+  EL = 'el',
+  CL = 'cl',
+}
+
+export enum RpcResult {
+  SUCCESS = 'success',
+  FAIL = 'fail',
+}
+
+/** An address or a single-label host keeps its port: with two services on one host it is the only
+ * thing telling them apart. */
+export function normalizeProvider(url: string): string {
+  let hostname: string;
+  let port: string;
+  try {
+    ({ hostname, port } = new URL(url));
+  } catch {
+    return 'unknown';
+  }
+
+  const labels = hostname.split('.');
+  const isAddress = /^[0-9.]+$/.test(hostname) || hostname.includes(':');
+
+  if (isAddress || labels.length === 1) {
+    return port ? `${hostname}:${port}` : hostname;
+  }
+
+  return labels.slice(-2).join('.');
+}
+
+export function responseCodeClass(code?: number): string {
+  if (!code) return '';
+
+  return `${Math.floor(code / 100)}xx`;
+}
+
 @Injectable()
 export class PrometheusService implements OnApplicationBootstrap {
   private prefix = METRICS_PREFIX;
@@ -188,18 +231,73 @@ export class PrometheusService implements OnApplicationBootstrap {
   }
 
   private getOrCreateMetric<T extends Metrics, L extends string>(type: T, options: Options<L>): Metric<T, L> {
-    const nameWithPrefix = this.prefix + options.name;
+    const { prefix = true, ...metricOptions } = options;
 
     return getOrCreateMetric(type, {
-      ...options,
-      name: nameWithPrefix,
-    }) as Metric<T, L>;
+      ...metricOptions,
+      name: prefix ? this.prefix + options.name : options.name,
+    } as Options<L>) as Metric<T, L>;
+  }
+
+  /** Blockchain RPC only: the Keys API and the Alertmanager are plain HTTP services, and counting
+   * them would misreport the RPC budget. */
+  public observeRpcRequest(params: {
+    layer: RpcLayer;
+    url: string;
+    /** Absent for a batch: the execution provider's fetch middleware is not handed the payload. */
+    method?: string;
+    batched: boolean;
+    durationSeconds: number;
+    responseCode?: number;
+    rpcErrorCode?: string;
+  }): void {
+    const common = {
+      network: RPC_NETWORK,
+      layer: params.layer,
+      chain_id: this.config.get('ETH_NETWORK'),
+      provider: normalizeProvider(params.url),
+    };
+    const result = params.responseCode && params.responseCode < 400 ? RpcResult.SUCCESS : RpcResult.FAIL;
+
+    this.httpRpcRequestsTotal.inc({
+      ...common,
+      batched: String(params.batched),
+      response_code: responseCodeClass(params.responseCode),
+      result,
+    });
+    this.httpRpcResponseSeconds.observe(common, params.durationSeconds);
+
+    if (params.method) {
+      this.rpcRequestTotal.inc({ ...common, method: params.method, result, rpc_error_code: params.rpcErrorCode ?? '' });
+    }
   }
 
   public buildInfo = this.getOrCreateMetric('Counter', {
     name: METRIC_BUILD_INFO,
     help: 'Information about app build',
     labelNames: ['name', 'version', 'commit', 'branch', 'env', 'network'],
+  });
+
+  public httpRpcRequestsTotal = this.getOrCreateMetric('Counter', {
+    prefix: false,
+    name: METRIC_HTTP_RPC_REQUESTS_TOTAL,
+    help: 'Counts total HTTP requests used by any layer (EL, CL, or other)',
+    labelNames: ['network', 'layer', 'chain_id', 'provider', 'batched', 'response_code', 'result'] as const,
+  });
+
+  public httpRpcResponseSeconds = this.getOrCreateMetric('Histogram', {
+    prefix: false,
+    name: METRIC_HTTP_RPC_RESPONSE_SECONDS,
+    help: 'Distribution of RPC response times in seconds',
+    buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10],
+    labelNames: ['network', 'layer', 'chain_id', 'provider'] as const,
+  });
+
+  public rpcRequestTotal = this.getOrCreateMetric('Counter', {
+    prefix: false,
+    name: METRIC_RPC_REQUEST_TOTAL,
+    help: 'Total number of RPC requests',
+    labelNames: ['network', 'layer', 'chain_id', 'provider', 'method', 'result', 'rpc_error_code'] as const,
   });
 
   public outgoingELRequestsDuration = this.getOrCreateMetric('Histogram', {
@@ -800,10 +898,21 @@ export function TrackCLRequest(target: any, propertyKey: string, descriptor: Pro
     if (!this.prometheus) throw Error(`'${this.constructor.name}' class object must contain 'prometheus' property`);
     const [apiUrl, subUrl] = args;
     const [targetName, reqName] = requestLabels(apiUrl, subUrl);
+    const started = Date.now();
     const stop = this.prometheus.outgoingCLRequestsDuration.startTimer({
       name: reqName,
       target: targetName,
     });
+    // 200 is not an assumption: the wrapped call throws on any other status.
+    const observeRpc = (responseCode?: number) =>
+      this.prometheus.observeRpcRequest({
+        layer: RpcLayer.CL,
+        url: apiUrl,
+        method: reqName,
+        batched: false,
+        durationSeconds: (Date.now() - started) / 1000,
+        responseCode,
+      });
     return originalValue
       .apply(this, args)
       .then((r: any) => {
@@ -813,6 +922,7 @@ export function TrackCLRequest(target: any, propertyKey: string, descriptor: Pro
           status: RequestStatus.COMPLETE,
           code: 200,
         });
+        observeRpc(200);
         return r;
       })
       .catch((e: any) => {
@@ -822,6 +932,7 @@ export function TrackCLRequest(target: any, propertyKey: string, descriptor: Pro
           status: RequestStatus.ERROR,
           code: e.$httpCode,
         });
+        observeRpc(e.$httpCode);
         throw e;
       })
       .finally(() => stop());
