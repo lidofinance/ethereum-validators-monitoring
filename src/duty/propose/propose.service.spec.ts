@@ -34,17 +34,29 @@ const bidBlock = (slot: number, appliedBefore: number) => ({
   },
 });
 
-/** `proposers` maps a slot of the epoch to the validator on duty for it; every listed slot has a block */
-const build = (proposers: Record<number, number>, blocks: any[]) => {
+/**
+ * `proposers` maps a slot of the epoch to the validator on duty for it; every listed slot has a block.
+ *
+ * The duties are handed over in order of slot unless `dutiesInSlotOrder` says otherwise. The order has to be set here
+ * rather than by the caller, because integer-like keys of an object are always walked in ascending order whatever the
+ * literal says.
+ */
+const build = (proposers: Record<number, number>, blocks: any[], dutiesInSlotOrder = true) => {
   const bySlot = new Map<number, any>(blocks.map((b) => [Number(b.message.slot), b]));
   const logger = { log: jest.fn(), warn: jest.fn(), error: jest.fn(), debug: jest.fn() };
   const configValues: Record<string, any> = { FETCH_INTERVAL_SLOTS: SLOTS_PER_EPOCH, SPARSE_NETWORK_MODE: false };
   const config = { get: (key: string) => configValues[key] };
   const prometheus = { taskDuration: { startTimer: () => () => 0 }, taskCount: { inc: jest.fn() } };
   const clClient = {
-    getCanonicalProposerDuties: jest.fn(async () =>
-      Object.entries(proposers).map(([slot, valId]) => ({ pubkey: '0x0', validator_index: String(valId), slot, proposed: false })),
-    ),
+    getCanonicalProposerDuties: jest.fn(async () => {
+      const duties = Object.entries(proposers).map(([slot, valId]) => ({
+        pubkey: '0x0',
+        validator_index: String(valId),
+        slot,
+        proposed: false,
+      }));
+      return dutiesInSlotOrder ? duties : duties.reverse();
+    }),
     getBlockHeader: jest.fn(async (slot: number) =>
       bySlot.has(Number(slot)) ? { header: { message: { slot: String(slot) } } } : undefined,
     ),
@@ -98,6 +110,23 @@ describe('ProposeService', () => {
     // The proposal itself is still a good one, only the payload is missing
     expect(proposalOf(summary, 10)).toMatchObject({ block_proposed: true, block_payload_applied: false });
     expect(logger.log).toHaveBeenCalledWith(expect.stringContaining(`Slot [${FIRST_SLOT}] is empty`));
+  });
+
+  it('judges every payload by the block that follows it, whatever order the duties came in', async () => {
+    // Only the payload of the middle slot was skipped: the third block builds on the payload of the first one
+    const { service, summary } = build(
+      { [FIRST_SLOT]: 10, [FIRST_SLOT + 1]: 11, [FIRST_SLOT + 2]: 12 },
+      [bidBlock(FIRST_SLOT, FIRST_SLOT - 1), bidBlock(FIRST_SLOT + 1, FIRST_SLOT), bidBlock(FIRST_SLOT + 2, FIRST_SLOT)],
+      false,
+    );
+
+    await service.check(EPOCH);
+
+    expect(proposalOf(summary, 10)).toMatchObject({ block_payload_applied: true });
+    expect(proposalOf(summary, 11)).toMatchObject({ block_payload_applied: false });
+    // Taken as applied, because there is no block after it to tell. Out of order the block of slot [FIRST_SLOT + 1]
+    // would have stood in for that one and called this slot empty.
+    expect(proposalOf(summary, 12)).toMatchObject({ block_payload_applied: true });
   });
 
   it('reads the block after the epoch for the last proposed slot', async () => {

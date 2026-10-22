@@ -27,7 +27,7 @@ export class ProposeService {
     }
 
     this.logger.log(`Processing proposers duties info`);
-    // Slots of the epoch that got a block, in order, with the validator that proposed it
+    // Slots of the epoch that got a block, with the validator that proposed it
     const proposers = new Map<Slot, number>();
 
     for (const prop of proposersDutyInfo) {
@@ -65,8 +65,10 @@ export class ProposeService {
    * they explain a drop in attestation metrics that has nothing to do with the operators.
    */
   private async checkPayloads(epoch: Epoch, proposers: Map<Slot, number>): Promise<void> {
-    // The duties come in order of slot, so the next entry is the next proposed block of the epoch
-    const slots = [...proposers.keys()];
+    // The walk reads the next entry as the next proposed block of the epoch, so the slots are put in order here. The
+    // duties they come from are in order of slot on every client seen so far, but the beacon API does not promise it,
+    // and out of order they would have the payload of one block judged by the bid of another.
+    const slots = [...proposers.keys()].sort((a, b) => a - b);
 
     for (let i = 0; i < slots.length; i++) {
       const slot = slots[i];
