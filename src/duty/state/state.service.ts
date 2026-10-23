@@ -1,7 +1,3 @@
-import { iterateNodesAtDepth } from '@chainsafe/persistent-merkle-tree';
-import { BooleanType, ByteVectorType, ContainerNodeStructType, ContainerType, UintNumberType } from '@chainsafe/ssz';
-import { ArrayBasicTreeView } from '@chainsafe/ssz/lib/view/arrayBasic';
-import { ListCompositeTreeView } from '@chainsafe/ssz/lib/view/listComposite';
 import { BigNumber } from '@ethersproject/bignumber';
 import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
@@ -18,25 +14,32 @@ import { RegistryService } from 'validators-registry';
 
 const FAR_FUTURE_EPOCH = Infinity;
 
-type Validators = ListCompositeTreeView<
-  ContainerNodeStructType<{
-    pubkey: ByteVectorType;
-    withdrawalCredentials: ByteVectorType;
-    effectiveBalance: UintNumberType;
-    slashed: BooleanType;
-    activationEligibilityEpoch: UintNumberType;
-    activationEpoch: UintNumberType;
-    exitEpoch: UintNumberType;
-    withdrawableEpoch: UintNumberType;
-  }>
->;
+/**
+ * A validator as the state gives it back. `FAR_FUTURE_EPOCH` comes as `Infinity`, which is what `getValidatorStatus`
+ * compares against.
+ */
+interface ValidatorValue {
+  pubkey: Uint8Array;
+  effectiveBalance: number;
+  slashed: boolean;
+  activationEligibilityEpoch: number;
+  activationEpoch: number;
+  exitEpoch: number;
+  withdrawableEpoch: number;
+}
 
-type PendingConsolidations = ListCompositeTreeView<
-  ContainerType<{
-    sourceIndex: UintNumberType;
-    targetIndex: UintNumberType;
-  }>
->;
+/**
+ * The reads the app makes on the state, and no more than that.
+ *
+ * Up to Fulu the state keeps its lists as plain ones, and since Gloas (EIP-7916) as progressive ones. The two are
+ * different classes with different trees, so the type says what is asked of them rather than which class they are. Only
+ * balances keep a `get`, because a list of numbers has no `getAllReadonlyValues`.
+ */
+interface StateView {
+  validators: { getAllReadonlyValues(): ValidatorValue[] };
+  balances: { get(index: number): number };
+  pendingConsolidations?: { length: number; get(index: number): { sourceIndex: number; targetIndex: number } };
+}
 
 @Injectable()
 export class StateService {
@@ -56,24 +59,19 @@ export class StateService {
     await this.registry.updateKeysRegistry(Number(slotTime));
     const stuckKeys = this.registry.getStuckKeys();
     this.logger.log('Getting all validators state');
-    const stateView = await this.clClient.getState(stateSlot);
+    const stateView = (await this.clClient.getState(stateSlot)) as StateView;
     this.logger.log('Processing all validators state');
     let activeValidatorsCount = 0;
     let activeValidatorsEffectiveBalance = 0n;
-    const balances = stateView.balances as ArrayBasicTreeView<UintNumberType>;
-    const validators = stateView.validators as Validators;
-    const iterator = iterateNodesAtDepth(
-      validators.type.tree_getChunksNode(validators.node),
-      validators.type.chunkDepth,
-      0,
-      validators.length,
-    );
+    const balances = stateView.balances;
+    // The values are the very objects the tree holds already, so this walks the tree without copying anything out of it
+    const validators = stateView.validators.getAllReadonlyValues();
+
     for (let index = 0; index < validators.length; index++) {
       if (index % 100 === 0) {
         await unblock();
       }
-      const node = iterator.next().value;
-      const validator = node.value;
+      const validator = validators[index];
       const status = this.getValidatorStatus(validator, epoch);
       const pubkey = '0x'.concat(Buffer.from(validator.pubkey).toString('hex'));
       const operator = this.registry.getOperatorKey(pubkey);
@@ -97,7 +95,7 @@ export class StateService {
       }
     }
 
-    const pendingConsolidations = stateView.pendingConsolidations as PendingConsolidations;
+    const pendingConsolidations = stateView.pendingConsolidations;
     if (pendingConsolidations != null) {
       for (let index = 0; index < pendingConsolidations.length; index++) {
         if (index % 100 === 0) {
@@ -127,7 +125,7 @@ export class StateService {
   }
 
   //https://github.com/ChainSafe/lodestar/blob/stable/packages/beacon-node/src/api/impl/beacon/state/utils.ts
-  public getValidatorStatus(validator: any, currentEpoch: Epoch): ValStatus {
+  public getValidatorStatus(validator: ValidatorValue, currentEpoch: Epoch): ValStatus {
     // pending
     if (validator.activationEpoch > currentEpoch) {
       if (validator.activationEligibilityEpoch === FAR_FUTURE_EPOCH) {

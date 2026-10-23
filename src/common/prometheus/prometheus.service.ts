@@ -14,6 +14,8 @@ import {
   METRIC_AVG_CHAIN_PENALTY,
   METRIC_AVG_CHAIN_REWARD,
   METRIC_BUILD_INFO,
+  METRIC_CHAIN_EMPTY_SLOTS_COUNT,
+  METRIC_CHAIN_PROPOSED_SLOTS_COUNT,
   METRIC_CHAIN_SYNC_PARTICIPATION_AVG_PERCENT,
   METRIC_CONTRACT_KEYS_TOTAL,
   METRIC_DATA_ACTUALITY,
@@ -38,6 +40,7 @@ import {
   METRIC_OTHER_CHAIN_WITHDRAWALS_COUNT,
   METRIC_OTHER_CHAIN_WITHDRAWALS_SUM,
   METRIC_OTHER_SYNC_PARTICIPATION_AVG_PERCENT,
+  METRIC_OTHER_VALIDATOR_BALANCE_EMPTY_PROPOSE,
   METRIC_OTHER_VALIDATOR_BALANCE_GOOD_PROPOSE,
   METRIC_OTHER_VALIDATOR_BALANCE_INVALID_ATTESTATION,
   METRIC_OTHER_VALIDATOR_BALANCE_MISS_ATTESTATION,
@@ -47,6 +50,7 @@ import {
   METRIC_OTHER_VALIDATOR_BALANCE_WITH_SYNC_PARTICIPATION_LESS_AVG,
   METRIC_OTHER_VALIDATOR_CONSOLIDATION_BALANCE,
   METRIC_OTHER_VALIDATOR_CONSOLIDATION_COUNT,
+  METRIC_OTHER_VALIDATOR_COUNT_EMPTY_PROPOSE,
   METRIC_OTHER_VALIDATOR_COUNT_GOOD_PROPOSE,
   METRIC_OTHER_VALIDATOR_COUNT_INVALID_ATTESTATION,
   METRIC_OTHER_VALIDATOR_COUNT_MISS_ATTESTATION,
@@ -74,6 +78,7 @@ import {
   METRIC_VALIDATORS,
   METRIC_VALIDATORS_BALANCE,
   METRIC_VALIDATOR_BALANCES_DELTA,
+  METRIC_VALIDATOR_BALANCE_EMPTY_PROPOSE,
   METRIC_VALIDATOR_BALANCE_GOOD_PROPOSE,
   METRIC_VALIDATOR_BALANCE_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
   METRIC_VALIDATOR_BALANCE_INVALID_ATTESTATION,
@@ -89,6 +94,7 @@ import {
   METRIC_VALIDATOR_BALANCE_WITH_SYNC_PARTICIPATION_LESS_AVG_LAST_N_EPOCH,
   METRIC_VALIDATOR_CONSOLIDATION_BALANCE,
   METRIC_VALIDATOR_CONSOLIDATION_COUNT,
+  METRIC_VALIDATOR_COUNT_EMPTY_PROPOSE,
   METRIC_VALIDATOR_COUNT_GOOD_PROPOSE,
   METRIC_VALIDATOR_COUNT_HIGH_INC_DELAY_ATTESTATION_LAST_N_EPOCH,
   METRIC_VALIDATOR_COUNT_INVALID_ATTESTATION,
@@ -646,6 +652,42 @@ export class PrometheusService implements OnApplicationBootstrap {
     name: METRIC_HIGH_REWARD_VALIDATOR_BALANCE_MISS_PROPOSE,
     help: 'Total balance of validators with missed proposals (with possible high reward in the future) for each user Node Operator',
     labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+  });
+
+  public otherValidatorsCountEmptyPropose = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_COUNT_EMPTY_PROPOSE,
+    help: 'Number of non-user validators in the chain whose proposed block got no execution payload',
+    labelNames: [],
+  });
+
+  public otherValidatorsBalanceEmptyPropose = this.getOrCreateMetric('Gauge', {
+    name: METRIC_OTHER_VALIDATOR_BALANCE_EMPTY_PROPOSE,
+    help: 'Total balance of non-user validators in the chain whose proposed block got no execution payload',
+    labelNames: [],
+  });
+
+  public validatorsCountEmptyPropose = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_COUNT_EMPTY_PROPOSE,
+    help: 'Number of validators whose proposed block got no execution payload for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+  });
+
+  public validatorsBalanceEmptyPropose = this.getOrCreateMetric('Gauge', {
+    name: METRIC_VALIDATOR_BALANCE_EMPTY_PROPOSE,
+    help: 'Total balance of validators whose proposed block got no execution payload for each user Node Operator',
+    labelNames: ['nos_module_id', 'nos_id', 'nos_name'],
+  });
+
+  public chainProposedSlotsCount = this.getOrCreateMetric('Gauge', {
+    name: METRIC_CHAIN_PROPOSED_SLOTS_COUNT,
+    help: 'Number of slots of the epoch that got a block',
+    labelNames: [],
+  });
+
+  public chainEmptySlotsCount = this.getOrCreateMetric('Gauge', {
+    name: METRIC_CHAIN_EMPTY_SLOTS_COUNT,
+    help: 'Number of slots of the epoch that got a block but no execution payload',
+    labelNames: [],
   });
 
   public operatorReward = this.getOrCreateMetric('Gauge', {

@@ -22,15 +22,60 @@ export interface BlockInfoResponse {
   message: {
     slot: string;
     proposer_index: ValidatorIndex;
+    parent_root: RootHex;
     body: {
       attestations: BeaconBlockAttestation[];
       sync_aggregate: {
         sync_committee_bits: string;
       };
-      execution_payload: {
+      /**
+       * Up to Fulu the block carries its execution payload inline. Since Gloas (EIP-7732) the payload is revealed by
+       * the builder in a separate envelope and the body commits to `signed_execution_payload_bid` instead, so it is
+       * absent from every post-fork block.
+       */
+      execution_payload?: {
         block_number: number;
         withdrawals: Withdrawal[];
       };
+      /**
+       * [New in Gloas:EIP7732]
+       */
+      signed_execution_payload_bid?: SignedExecutionPayloadBid;
+    };
+  };
+}
+
+/**
+ * Commitment to an execution payload the proposer puts into the block since Gloas (EIP-7732).
+ *
+ * Only the field the app reads is modelled.
+ */
+export interface SignedExecutionPayloadBid {
+  message: {
+    /**
+     * Hash of the execution layer block the state already has: `process_execution_payload_bid` asserts
+     * `bid.parent_block_hash == state.latest_block_hash`, so it is the payload of the latest ancestor whose payload was
+     * revealed in time and applied.
+     */
+    parent_block_hash: string;
+    /**
+     * Hash of the execution layer block the builder promises to reveal for this block. The next block tells whether
+     * that happened in time: if its `parent_block_hash` is this hash, the payload was applied, and if it is an older
+     * one, the payload was skipped.
+     */
+    block_hash: string;
+  };
+}
+
+/**
+ * Execution payload the builder reveals for a block since Gloas (EIP-7732).
+ *
+ * Only the field the app reads is modelled.
+ */
+export interface SignedExecutionPayloadEnvelope {
+  message: {
+    payload: {
+      withdrawals: Withdrawal[];
     };
   };
 }
@@ -111,4 +156,5 @@ export interface VersionResponse {
 export interface SpecResponse {
   DENEB_FORK_EPOCH?: string;
   ELECTRA_FORK_EPOCH?: string;
+  GLOAS_FORK_EPOCH?: string;
 }
