@@ -55,9 +55,10 @@ export class ProposeMetrics {
    * Proposals that made it into a block, but whose execution payload never was applied.
    *
    * Since Gloas (EIP-7732) the builder reveals the payload later in the slot, and the slot stays empty when it does
-   * not come in time. Such a proposal counts as a good one: the proposer did its work, and the builder owes the value
-   * of its bid whether it reveals the payload or not. What goes missing is the execution block, not the payment to
-   * the operator. Before the fork these are always at 0.
+   * not come in time. Such a proposal counts as a good one, because the proposer did its work and keeps the consensus
+   * layer rewards of the block. Whether it loses anything beyond that depends on who built: the bid of an outside
+   * builder is owed either way, while a proposer that builds for itself loses the whole execution layer reward of the
+   * block. Before the fork these are always at 0.
    */
   private async emptyProposes() {
     const data = await this.storage.getValidatorsCountWithEmptyProposes(this.processedEpoch);

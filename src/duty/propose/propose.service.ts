@@ -57,12 +57,17 @@ export class ProposeService {
    * Since Gloas (EIP-7732) the builder reveals the payload later in the slot, and the next proposer builds without it
    * when it does not come in time. Such a slot has a block but no execution block, and the spec calls it empty.
    *
-   * Telling the two apart matters for two things. A proposer of an empty slot did its work and is paid all the same:
-   * the builder owes the value of its bid whether it reveals the payload or not, and that payment settles either
-   * along with the payload or at the end of the epoch, once the block has gathered the attestation weight
-   * `process_builder_pending_payments` asks for. So this is not the same failure as a missed proposal, which earns
-   * nothing at all. And empty slots take the timely head flag away from the attesters that voted the payload wrong, so
-   * they explain a drop in attestation metrics that has nothing to do with the operators.
+   * Telling the two apart matters for two things. A proposer of an empty slot did its work and earns the consensus
+   * layer rewards of the block all the same, so this is not the same failure as a missed proposal, which earns
+   * nothing at all. And empty slots take the timely head flag away from the attesters that voted the payload wrong,
+   * so they explain a drop in attestation metrics that has nothing to do with the operators.
+   *
+   * What an empty slot costs the proposer depends on who built the block. The bid of an outside builder is owed
+   * whether the payload is revealed or not: it settles along with the payload, or at the end of the epoch once the
+   * block has gathered the attestation weight `process_builder_pending_payments` asks for. A proposer that builds
+   * for itself bids zero — the spec asks for it — and takes the fees inside its own payload instead, so a payload it
+   * fails to reveal in time costs it the whole execution layer reward of the block, and that one is a failure of its
+   * own node.
    */
   private async checkPayloads(epoch: Epoch, proposers: Map<Slot, number>): Promise<void> {
     // The walk reads the next entry as the next proposed block of the epoch, so the slots are put in order here. The
