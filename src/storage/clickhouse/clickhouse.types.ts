@@ -98,6 +98,12 @@ export interface SyncCommitteeParticipationAvgPercents {
   amount: number;
 }
 
+/** Slots of an epoch that got a block, and how many of those blocks got no execution payload */
+export interface ProposedAndEmptySlots {
+  proposed: number;
+  empty: number;
+}
+
 export interface EpochProcessingState {
   epoch: Epoch;
   is_stored?: boolean;

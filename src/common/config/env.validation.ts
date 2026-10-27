@@ -161,7 +161,10 @@ export class EnvironmentVariables {
   @IsArray()
   @ArrayMinSize(1)
   @Transform(splitList)
-  @ValidateIf((vars) => vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.Lido && vars.NODE_ENV != Environment.test)
+  @ValidateIf(
+    (vars) =>
+      (vars.VALIDATOR_REGISTRY_SOURCE == ValidatorRegistrySource.Lido || vars.SPARSE_NETWORK_MODE) && vars.NODE_ENV != Environment.test,
+  )
   public EL_RPC_URLS: string[] = [];
 
   @IsArray()
