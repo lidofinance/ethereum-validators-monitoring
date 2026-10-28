@@ -20,8 +20,8 @@ export class HealthController {
     return this.health.check([async () => this.memory.checkHeap('memoryHeap', this.maxHeapSize)]);
   }
 
-  /** Not what orchestrator readiness reads: a pod taken out of service on a ClickHouse outage
-   * stops being scraped, and its metrics go absent. */
+  /** Whether ClickHouse answers. Not meant to take the instance out of service: its metrics are
+   * needed most while the database is down. */
   @Get(HEALTH_READY_URL)
   @HealthCheck()
   ready() {

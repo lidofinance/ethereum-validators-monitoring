@@ -639,26 +639,20 @@ If `ethereum_validators_monitoring_data_actuality < 1h` alerts from table bellow
 | `/health`       | The process is serving and its heap is not exhausted. Nothing about ClickHouse |
 | `/health/ready` | ClickHouse answered `SELECT 1` within a second                                |
 
-`/health/ready` is a probe you can call, not the probe Kubernetes readiness is pointed at. The
-indexer is scraped through its Service, and a pod that fails readiness leaves the Service endpoints
-— so a readiness gated on ClickHouse would take the indexer's own metrics away during a ClickHouse
-outage, which is exactly when they are read. Staleness belongs in alerts on `epoch_number` and
-`data_actuality`, which stay scrapable while the indexer is stuck.
+`/health/ready` reports whether the database is reachable. Do not use it to take the instance out of
+service: the metrics are needed most while ClickHouse is down. Watch staleness through `epoch_number`
+and `data_actuality` instead.
 
 ## Application metrics
 
 **WARNING: all metrics are prefixed with `ethereum_validators_monitoring_`, except the blockchain
-RPC metrics below, which carry the names every Lido application reports them under**
+RPC metrics below, which use common unprefixed names**
 
 | Metric                     | Labels                                                                    | Description                                                        |
 |----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------|
 | http_rpc_requests_total    | network, layer, chain_id, provider, batched, response_code, result        | HTTP requests to the execution and consensus layers                |
 | http_rpc_response_seconds  | network, layer, chain_id, provider                                        | Response time of those requests                                    |
 | rpc_request_total          | network, layer, chain_id, provider, method, result, rpc_error_code        | Consensus layer only: the execution layer is batched, and the fetch middleware is not handed the methods in a batch |
-
-The Keys API and the Alertmanager are not counted there: they are HTTP services of ours, not
-blockchain RPC, and counting them would misreport the RPC budget. The `outgoing_*` metrics below
-cover all three and are unchanged.
 
 | Metric                                                                      | Labels                                                  | Description                                                                                                                                                                                                                           |
 |-----------------------------------------------------------------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
