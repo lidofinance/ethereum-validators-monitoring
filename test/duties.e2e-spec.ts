@@ -73,6 +73,7 @@ const testProposerMember = {
     is_proposer: true,
     block_to_propose: 4895297,
     block_proposed: true,
+    block_payload_applied: true,
     ///
     att_happened: true,
     att_inc_delay: 1,

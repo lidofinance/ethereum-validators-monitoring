@@ -2,6 +2,7 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { HTTPError, Response, got } from 'got-cjs';
 
+import { USER_AGENT } from 'app/app.constants';
 import { ConfigService } from 'common/config';
 import { ResponseError, errCommon, errRequest } from 'common/consensus-provider';
 import { rejectDelay } from 'common/functions/rejectDelay';
@@ -141,6 +142,7 @@ export class KeysapiSourceClient {
     const res = await got
       .get(urljoin(apiURL, subUrl), {
         timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RESPONSE_TIMEOUT') },
+        headers: { 'user-agent': USER_AGENT },
       })
       .catch((e) => {
         if (e.response) {
@@ -162,6 +164,7 @@ export class KeysapiSourceClient {
   protected async apiGetStream(apiURL: string, subUrl: string): Promise<Request> {
     const readStream = got.stream.get(urljoin(apiURL, subUrl), {
       timeout: { ...REQUEST_TIMEOUT_POLICY_MS, response: this.config.get('VALIDATOR_REGISTRY_KEYSAPI_SOURCE_RESPONSE_TIMEOUT') },
+      headers: { 'user-agent': USER_AGENT },
     });
 
     return new Promise((resolve, reject) => {

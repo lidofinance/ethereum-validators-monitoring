@@ -27,6 +27,7 @@ export class AppService implements OnModuleInit, OnApplicationBootstrap {
 
     this.prometheus.buildInfo.labels({ env, name, version, commit, branch }).inc();
     this.logger.log('Init app', { env, name, version, startEpoch });
+    this.logger.log('Effective configuration', this.configService.loggableConfig);
     this.logger.log(`DRY RUN ${this.configService.get('DRY_RUN') ? 'enabled' : 'disabled'}`);
     this.logger.log(`Slot time: ${this.configService.get('CHAIN_SLOT_TIME_SECONDS')} seconds`);
     this.logger.log(`Epoch size: ${this.configService.get('FETCH_INTERVAL_SLOTS')} slots`);
