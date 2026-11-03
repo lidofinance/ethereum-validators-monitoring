@@ -11,7 +11,7 @@ RUN yarn build
 
 # Its own stage so that editing src does not reinstall production dependencies: this install is
 # keyed on the manifests alone, while the build stage's is invalidated by every source change.
-FROM node:20.20.0-alpine AS prod-deps
+FROM node:22.23.4-alpine AS prod-deps
 
 WORKDIR /app
 
@@ -22,7 +22,7 @@ RUN yarn install --frozen-lockfile --non-interactive --production \
   && npm prune --omit=dev --legacy-peer-deps \
   && yarn cache clean
 
-FROM node:20.20.0-alpine
+FROM node:22.23.4-alpine
 
 WORKDIR /app
 
