@@ -55,7 +55,6 @@
     "rxjs": "^7.1.0",
     "stream-chain": "^2.2.5",
     "stream-json": "^1.7.5",
-    "typechain": "^5.2.0",
     "undici": "^6.21.2"
   },
   "devDependencies": {
