@@ -271,7 +271,7 @@ export class PrometheusService implements OnApplicationBootstrap {
       response_code: responseCodeClass(params.responseCode),
       result,
     });
-    this.httpRpcResponseSeconds.observe(common, params.durationSeconds);
+    this.httpRpcResponseSeconds.observe({ ...common, result }, params.durationSeconds);
 
     if (params.method) {
       this.rpcRequestTotal.inc({ ...common, method: params.method, result, rpc_error_code: params.rpcErrorCode ?? '' });
@@ -296,7 +296,7 @@ export class PrometheusService implements OnApplicationBootstrap {
     name: METRIC_HTTP_RPC_RESPONSE_SECONDS,
     help: 'Distribution of RPC response times in seconds',
     buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10],
-    labelNames: ['network', 'layer', 'chain_id', 'provider'] as const,
+    labelNames: ['network', 'layer', 'chain_id', 'provider', 'result'] as const,
   });
 
   public rpcRequestTotal = this.getOrCreateMetric('Counter', {

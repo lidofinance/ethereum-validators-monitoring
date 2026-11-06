@@ -70,7 +70,7 @@ describe('observeRpcRequest', () => {
     expect(await labelsOf('rpc_request_total')).toEqual([
       expect.objectContaining({ method: '/eth/v1/beacon/states/{param}/validators', result: 'success', rpc_error_code: '' }),
     ]);
-    expect(await labelsOf('http_rpc_response_seconds')).not.toHaveLength(0);
+    expect(await labelsOf('http_rpc_response_seconds')).toContainEqual(expect.objectContaining({ result: 'success' }));
   });
 
   test('a batch without a method reports the HTTP families only', async () => {
@@ -79,6 +79,7 @@ describe('observeRpcRequest', () => {
     expect(await labelsOf('http_rpc_requests_total')).toEqual([
       expect.objectContaining({ layer: 'el', batched: 'true', response_code: '', result: 'fail' }),
     ]);
+    expect(await labelsOf('http_rpc_response_seconds')).toContainEqual(expect.objectContaining({ result: 'fail' }));
     expect(await labelsOf('rpc_request_total')).toHaveLength(0);
   });
 });
