@@ -136,6 +136,6 @@ describe('validate', () => {
     bootstrapLogger().error('Startup failed', `Error: connect ECONNREFUSED, ${credential}`);
 
     expect(captured.output()).not.toContain(credential);
-    expect(captured.output()).toContain('<removed>');
+    expect(captured.output()).toContain('ECONNREFUSED');
   });
 });
