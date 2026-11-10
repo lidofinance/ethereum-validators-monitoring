@@ -26,7 +26,7 @@
     "@clickhouse/client": "^0.0.11",
     "@ethersproject/bignumber": "^5.4.1",
     "@lido-nestjs/execution": "^1.14.1",
-    "@lido-nestjs/logger": "^1.3.2",
+    "@lido-nestjs/logger": "^3.0.0",
     "@lido-nestjs/registry": "^7.11.1",
     "@lodestar/types": "^1.46.0",
     "@mikro-orm/core": "^5.3.1",
