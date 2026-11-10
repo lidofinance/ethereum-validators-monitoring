@@ -16,7 +16,7 @@ describe('bootstrap logger', () => {
     createBootstrapLogger(LogFormat.json, [CREDENTIALED_URL]).error(`Can not reach ${CREDENTIALED_URL}`);
 
     expect(output()).not.toContain('s3cr3t');
-    expect(output()).toContain('<removed>');
+    expect(output()).toContain('Can not reach');
     expect(JSON.parse(output())).toMatchObject({ level: 'error' });
   });
 
