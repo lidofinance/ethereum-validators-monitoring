@@ -14,7 +14,7 @@ const render = (meta: Record<string, unknown>, secrets: string[] = []): string =
 describe('plainContext', () => {
   it('drops non-enumerable own properties, as an ORM entity keeps its manager there', () => {
     const entity = { id: 1, name: 'module' };
-    Object.defineProperty(entity, '__helper', { value: { em: { password: 'x' } }, enumerable: false });
+    Object.defineProperty(entity, '__helper', { value: { em: { config: {} } }, enumerable: false });
 
     expect(JSON.parse(render({ entity }))).toMatchObject({ entity: { id: 1, name: 'module' } });
     expect(render({ entity })).not.toContain('__helper');
