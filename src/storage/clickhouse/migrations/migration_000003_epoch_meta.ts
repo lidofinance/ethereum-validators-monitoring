@@ -1,4 +1,4 @@
-const sql = `
+const sql = (engine: string) => `
 CREATE TABLE IF NOT EXISTS epochs_metadata (
     "epoch" Int64,
     "active_validators" UInt32,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS epochs_metadata (
     "sync_blocks_to_sync" Array(Int64),
     INDEX epoch_index (epoch) TYPE minmax GRANULARITY 8192
 )
-ENGINE = ReplacingMergeTree()
+ENGINE = ${engine}
 ORDER BY epoch
 `;
 export default sql;

@@ -4,6 +4,8 @@ export const TIMELY_TARGET_WEIGHT = 26; // Wt
 export const TIMELY_HEAD_WEIGHT = 14; // Wh
 const WEIGHT_DENOMINATOR = 64; // W sigma
 
+export const MIN_ATTESTATION_INCLUSION_DELAY = 1;
+
 const timelySource = (attIncDelay: number, attValidSource: boolean): boolean => {
   return attValidSource && attIncDelay <= 5;
 };
@@ -17,7 +19,7 @@ const timelyTargetDeneb = (attValidSource: boolean, attValidTarget: boolean): bo
 };
 
 const timelyHead = (attIncDelay: number, attValidSource: boolean, attValidTarget: boolean, attValidHead: boolean): boolean => {
-  return attValidSource && attValidTarget && attValidHead && attIncDelay === 1;
+  return attValidSource && attValidTarget && attValidHead && attIncDelay === MIN_ATTESTATION_INCLUSION_DELAY;
 };
 
 export const getAttestationFlags = (

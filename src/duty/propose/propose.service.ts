@@ -2,9 +2,9 @@ import { LOGGER_PROVIDER } from '@lido-nestjs/logger';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 
 import { ConfigService } from 'common/config';
-import { ConsensusProviderService } from 'common/consensus-provider';
+import { ConsensusProviderService, wasPayloadApplied } from 'common/consensus-provider';
 import { PrometheusService, TrackTask } from 'common/prometheus';
-import { Epoch } from 'common/types/types';
+import { Epoch, Slot } from 'common/types/types';
 import { SummaryService } from 'duty/summary';
 
 @Injectable()
@@ -27,6 +27,9 @@ export class ProposeService {
     }
 
     this.logger.log(`Processing proposers duties info`);
+    // Slots of the epoch that got a block, with the validator that proposed it
+    const proposers = new Map<Slot, number>();
+
     for (const prop of proposersDutyInfo) {
       const index = Number(prop.validator_index);
       const slot = Number(prop.slot);
@@ -38,6 +41,65 @@ export class ProposeService {
         block_to_propose: slot,
         block_proposed: !!blockHeader,
       });
+
+      if (blockHeader) {
+        proposers.set(slot, index);
+      }
+    }
+
+    await this.checkPayloads(epoch, proposers);
+  }
+
+  /**
+   * Whether the execution payload of every proposed block of the epoch was applied.
+   *
+   * Up to Fulu the payload is a part of the block, so the answer is always yes and no block is read twice for it.
+   * Since Gloas (EIP-7732) the builder reveals the payload later in the slot, and the next proposer builds without it
+   * when it does not come in time. Such a slot has a block but no execution block, and the spec calls it empty.
+   *
+   * Telling the two apart matters for two things. A proposer of an empty slot did its work and earns the consensus
+   * layer rewards of the block all the same, so this is not the same failure as a missed proposal, which earns
+   * nothing at all. And empty slots take the timely head flag away from the attesters that voted the payload wrong,
+   * so they explain a drop in attestation metrics that has nothing to do with the operators.
+   *
+   * What an empty slot costs the proposer depends on who built the block. The bid of an outside builder is owed
+   * whether the payload is revealed or not: it settles along with the payload, or at the end of the epoch once the
+   * block has gathered the attestation weight `process_builder_pending_payments` asks for. A proposer that builds
+   * for itself bids zero — the spec asks for it — and takes the fees inside its own payload instead, so a payload it
+   * fails to reveal in time costs it the whole execution layer reward of the block, and that one is a failure of its
+   * own node.
+   */
+  private async checkPayloads(epoch: Epoch, proposers: Map<Slot, number>): Promise<void> {
+    // The walk reads the next entry as the next proposed block of the epoch, so the slots are put in order here. The
+    // duties they come from are in order of slot on every client seen so far, but the beacon API does not promise it,
+    // and out of order they would have the payload of one block judged by the bid of another.
+    const slots = [...proposers.keys()].sort((a, b) => a - b);
+
+    for (let i = 0; i < slots.length; i++) {
+      const slot = slots[i];
+      const block = await this.clClient.getBlockInfo(slot);
+      if (block == null) {
+        continue;
+      }
+
+      let applied = wasPayloadApplied(
+        block,
+        i + 1 < slots.length ? await this.clClient.getBlockInfo(slots[i + 1]) : undefined,
+        this.logger,
+      );
+      // Only the block after this one tells whether the payload was applied, and for the last block of the epoch it
+      // has to be read. That block is past the epoch, so it may still be past the finalized head as well.
+      if (applied == null) {
+        applied = wasPayloadApplied(block, await this.clClient.getNextProposedBlockInfo(slot), this.logger);
+      }
+
+      if (applied === false) {
+        this.logger.log(`Slot [${slot}] is empty: the block is there, but its execution payload was not applied`);
+      }
+
+      // Stays `undefined` when there is no block to compare with, and then the payload counts as applied: it almost
+      // always was, and calling a good proposal empty is worse than missing an empty one
+      this.summary.epoch(epoch).set({ epoch, val_id: proposers.get(slot), block_payload_applied: applied ?? true });
     }
   }
 }

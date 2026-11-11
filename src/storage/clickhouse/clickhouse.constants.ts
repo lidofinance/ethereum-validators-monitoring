@@ -283,6 +283,25 @@ export const otherSyncParticipationAvgPercentQuery = (epoch: Epoch): string => `
   )
 `;
 
+/**
+ * How many slots of the epoch got a block, and how many of those blocks got no execution payload.
+ *
+ * The second number is the empty slot count of Gloas (EIP-7732). Before the fork it is always 0, because up to Fulu
+ * the payload is a part of the block.
+ */
+export const chainProposedAndEmptySlotsQuery = (epoch: Epoch): string => `
+  SELECT
+    count() AS proposed,
+    countIf(block_payload_applied = 0) AS empty
+  FROM (
+    SELECT block_payload_applied
+    FROM validators_summary
+    WHERE
+      is_proposer = 1 AND block_proposed = 1 AND epoch = ${epoch}
+    LIMIT 1 BY epoch, val_id
+  )
+`;
+
 export const chainSyncParticipationAvgPercentQuery = (epoch: Epoch): string => `
   SELECT
     avg(sync_percent) AS amount

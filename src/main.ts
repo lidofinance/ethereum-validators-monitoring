@@ -3,12 +3,18 @@ import { VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 
-import { ConfigService } from 'common/config';
+import { ConfigService, bootstrapLogger } from 'common/config';
 
 import { AppModule } from './app';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter({ trustProxy: true }), { bufferLogs: true });
+  // An idle keep-alive socket left by a scrape otherwise holds close() open until Fastify's
+  // keep-alive timeout, long after the shutdown has finished its own work.
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter({ trustProxy: true, forceCloseConnections: true }),
+    { bufferLogs: true },
+  );
 
   // config
   const configService: ConfigService = app.get(ConfigService);
@@ -20,7 +26,16 @@ async function bootstrap() {
   // logger
   app.useLogger(app.get(LOGGER_PROVIDER));
 
+  // Lifecycle hooks on SIGTERM/SIGINT: without them the process still exits, but onModuleDestroy
+  // never runs and the inspector is cut mid-cycle.
+  app.enableShutdownHooks();
+
   // app
   await app.listen(appPort, '0.0.0.0');
 }
-bootstrap();
+// A startup failure ends the process either way; caught, it ends with one line saying so instead of
+// an unhandled rejection's stack trace.
+bootstrap().catch((error) => {
+  bootstrapLogger().error('Startup failed', error instanceof Error ? error.stack : String(error));
+  process.exit(1);
+});

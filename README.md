@@ -145,7 +145,8 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1695902400 + (epoch * 32 * 
 * **Values:** error / warning / notice / info / debug
 * **Default:** info
 ---
-`LOG_FORMAT` - Application log format.
+`LOG_FORMAT` - Application log format. Startup and configuration errors are emitted in this format
+too, so a failure before the application is up is still one parseable line with the secrets replaced.
 * **Required:** false
 * **Values:** simple / json
 * **Default:** json
@@ -192,6 +193,13 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1695902400 + (epoch * 32 * 
 * **Required:** false
 * **Default:** 120
 ---
+`DB_CLICKHOUSE_REPLICATED` - Create Clickhouse tables with the `Replicated*` table engine family instead of the plain one.
+* **Required:** false
+* **Default:** false
+* **Note:** enable it only when the target database is backed by a replicated Clickhouse cluster. The table engine is
+  declared without arguments, so the replica path is taken from the database (`Replicated` database engine) or from the
+  server-side `default_replica_path` / `default_replica_name` defaults.
+---
 `DRY_RUN` - Run application in dry mode. This means that it runs a main cycle once every 24 hours.
 * **Required:** false
 * **Values:** true / false
@@ -211,6 +219,26 @@ ALTER TABLE validators_summary MODIFY TTL toDateTime(1695902400 + (epoch * 32 * 
 ---
 `CL_API_URLS` - Ethereum consensus layer comma-separated API URLs.
 * **Required:** true
+---
+`SECRETS_FILE_PATH` - JSON file the credentials are read from. When it exists its values win over the environment. A
+change to any value restarts the process so the new values are picked up on startup, counted in
+`secrets_reloads_total{status="restart"}`; a change that cannot be read keeps the values in force and is counted as
+`status="failure"`. When the file is absent everything comes from the environment. Whether a rotation reached the
+process is answered by the `secrets_file_mtime_seconds` gauge rather than by that counter, which is incremented
+immediately before the restart and reset by it.
+* **Required:** false
+* **Default:** /vault/secrets/config
+---
+`SECRETS_POLL_INTERVAL_IN_SECONDS` - How often the path is checked for a change. The path is polled rather than watched,
+because the file is replaced by a rename.
+* **Required:** false
+* **Default:** 10
+---
+`SHUTDOWN_TIMEOUT_IN_SECONDS` - How long a shutdown waits for the epoch in flight before exiting anyway. Keep it below
+the deployment's termination grace period. An epoch that does not finish in time is redone on the next start. A restart
+the process asks for itself after a rotation is forced five seconds past this budget.
+* **Required:** false
+* **Default:** 25
 ---
 `CL_API_RETRY_DELAY_MS` - Ethereum consensus layer request retry delay (ms).
 * **Required:** false
@@ -242,7 +270,12 @@ latest known not missing slot, gets the timestamp of this block, and gets the CL
 timestamp. If this mode is disabled, to find the next not missing CL slot the app iterates all next (or previous) CL
 slots one by one from the currently processed slot to find the not missing one up to the depth specified in the
 `CL_API_MAX_SLOT_DEEP_COUNT` variable. It is suggested to use the `SPARSE_NETWORK_MODE` mode only on networks with very
-many missed slots.
+many missed slots. This mode requires `EL_RPC_URLS` to be set whatever the `VALIDATOR_REGISTRY_SOURCE` is.
+
+Since Glamsterdam (EIP-7732) a proposed block no longer carries its execution payload: the payload is revealed by the
+builder in a separate envelope, and a block whose payload was not revealed in time gets no EL block at all. So the EL
+block the app starts from is taken from `parent_block_hash` of the payload bid, and the blocks the EL walk jumps over
+are found by following `parent_root` back from the slot it lands on, which keeps them from being counted as missed.
 * **Required:** false
 * **Default:** false
 ---
@@ -598,13 +631,34 @@ If `ethereum_validators_monitoring_data_actuality < 1h` alerts from table bellow
 | CriticalMissedAttestations | A certain number of validators with missed attestations in the last `{{BAD_ATTESTATION_EPOCHS}}` epochs | every 6h        | every 1h                  |
 
 
+## HTTP endpoints
+
+| Path            | Answers                                                                       |
+|-----------------|-------------------------------------------------------------------------------|
+| `/metrics`      | Prometheus metrics                                                            |
+| `/health`       | The process is serving and its heap is not exhausted. Nothing about ClickHouse |
+| `/health/ready` | ClickHouse answered `SELECT 1` within a second                                |
+
+`/health/ready` reports whether the database is reachable. Do not use it to take the instance out of
+service: the metrics are needed most while ClickHouse is down. Watch staleness through `epoch_number`
+and `data_actuality` instead.
+
 ## Application metrics
 
-**WARNING: all metrics are prefixed with `ethereum_validators_monitoring_`**
+**WARNING: all metrics are prefixed with `ethereum_validators_monitoring_`, except the blockchain
+RPC metrics below, which use common unprefixed names**
+
+| Metric                     | Labels                                                                    | Description                                                        |
+|----------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------|
+| http_rpc_requests_total    | network, layer, chain_id, provider, batched, response_code, result        | HTTP requests to the execution and consensus layers                |
+| http_rpc_response_seconds  | network, layer, chain_id, provider                                        | Response time of those requests                                    |
+| rpc_request_total          | network, layer, chain_id, provider, method, result, rpc_error_code        | Consensus layer only: the execution layer is batched, and the fetch middleware is not handed the methods in a batch |
 
 | Metric                                                                      | Labels                                                  | Description                                                                                                                                                                                                                           |
 |-----------------------------------------------------------------------------|---------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | build_info                                                                  | name, version, commit, branch, env, network             | Information about app build                                                                                                                                                                                                           |
+| secrets_reloads_total                                                       | status                                                  | Rotated secrets picked up from the secrets file                                                                                                                                                                                       |
+| secrets_file_mtime_seconds                                                  |                                                         | mtime of the secrets file read at startup, 0 when the configuration came from the environment                                                                                                                                         |
 | outgoing_el_requests_duration_seconds                                       | name, target                                            | Duration of outgoing execution layer requests in seconds                                                                                                                                                                              |
 | outgoing_el_requests_count                                                  | name, target, status                                    | Count of outgoing execution layer requests                                                                                                                                                                                            |
 | outgoing_cl_requests_duration_seconds                                       | name, target                                            | Duration of outgoing consensus layer requests in seconds                                                                                                                                                                              |
@@ -679,6 +733,12 @@ If `ethereum_validators_monitoring_data_actuality < 1h` alerts from table bellow
 | validator_balance_miss_propose                                              | nos_module_id, nos_id, nos_name                         | Total balance of validators with missed proposals for each user Node Operator                                                                                                                                                         |
 | high_reward_validator_count_miss_propose                                    | nos_module_id, nos_id, nos_name                         | Number of validators with missed proposals (with possible high reward in the future) for each user Node Operator                                                                                                                      |
 | high_reward_validator_balance_miss_propose                                  | nos_module_id, nos_id, nos_name                         | Total balance of validators with missed proposals (with possible high reward in the future) for each user Node Operator                                                                                                               |
+| other_validator_count_empty_propose                                         |                                                         | Number of non-user validators in the chain whose proposed block got no execution payload                                                                                                                                              |
+| other_validator_balance_empty_propose                                       |                                                         | Total balance of non-user validators in the chain whose proposed block got no execution payload                                                                                                                                       |
+| validator_count_empty_propose                                               | nos_module_id, nos_id, nos_name                         | Number of validators whose proposed block got no execution payload for each user Node Operator                                                                                                                                        |
+| validator_balance_empty_propose                                             | nos_module_id, nos_id, nos_name                         | Total balance of validators whose proposed block got no execution payload for each user Node Operator                                                                                                                                 |
+| chain_proposed_slots_count                                                  |                                                         | Number of slots of the epoch that got a block                                                                                                                                                                                         |
+| chain_empty_slots_count                                                     |                                                         | Number of slots of the epoch that got a block but no execution payload                                                                                                                                                                |
 | operator_reward                                                             | nos_module_id, nos_id, nos_name, duty                   | Average validators reward for each duty for each user Node Operator                                                                                                                                                                   |
 | avg_chain_reward                                                            | duty                                                    | Average reward of all validators in the chain for each duty                                                                                                                                                                           |
 | operator_missed_reward                                                      | nos_module_id, nos_id, nos_name, duty                   | Average validators missed reward for each duty for each user Node Operator                                                                                                                                                            |

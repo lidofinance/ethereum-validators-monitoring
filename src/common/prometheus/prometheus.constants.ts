@@ -1,9 +1,16 @@
-import { APP_NAME } from 'app';
+import { APP_NAME } from 'app/app.constants';
 
 export const METRICS_URL = '/metrics';
 export const METRICS_PREFIX = `${APP_NAME.replace(/[- ]/g, '_')}_`;
 
 export const METRIC_BUILD_INFO = 'build_info';
+export const METRIC_SECRETS_RELOADS = 'secrets_reloads_total';
+export const METRIC_SECRETS_FILE_MTIME = 'secrets_file_mtime_seconds';
+
+// Unprefixed on purpose: dashboards read these names from every application.
+export const METRIC_HTTP_RPC_REQUESTS_TOTAL = 'http_rpc_requests_total';
+export const METRIC_HTTP_RPC_RESPONSE_SECONDS = 'http_rpc_response_seconds';
+export const METRIC_RPC_REQUEST_TOTAL = 'rpc_request_total';
 
 export const METRIC_OUTGOING_EL_REQUESTS_DURATION_SECONDS = 'outgoing_el_requests_duration_seconds';
 export const METRIC_OUTGOING_EL_REQUESTS_COUNT = 'outgoing_el_requests_count';
@@ -86,6 +93,12 @@ export const METRIC_VALIDATOR_COUNT_MISS_PROPOSE = 'validator_count_miss_propose
 export const METRIC_VALIDATOR_BALANCE_MISS_PROPOSE = 'validator_balance_miss_propose';
 export const METRIC_HIGH_REWARD_VALIDATOR_COUNT_MISS_PROPOSE = 'high_reward_validator_count_miss_propose';
 export const METRIC_HIGH_REWARD_VALIDATOR_BALANCE_MISS_PROPOSE = 'high_reward_validator_balance_miss_propose';
+export const METRIC_OTHER_VALIDATOR_COUNT_EMPTY_PROPOSE = 'other_validator_count_empty_propose';
+export const METRIC_OTHER_VALIDATOR_BALANCE_EMPTY_PROPOSE = 'other_validator_balance_empty_propose';
+export const METRIC_VALIDATOR_COUNT_EMPTY_PROPOSE = 'validator_count_empty_propose';
+export const METRIC_VALIDATOR_BALANCE_EMPTY_PROPOSE = 'validator_balance_empty_propose';
+export const METRIC_CHAIN_PROPOSED_SLOTS_COUNT = 'chain_proposed_slots_count';
+export const METRIC_CHAIN_EMPTY_SLOTS_COUNT = 'chain_empty_slots_count';
 export const METRIC_OPERATOR_REWARD = 'operator_reward';
 export const METRIC_AVG_CHAIN_REWARD = 'avg_chain_reward';
 export const METRIC_OPERATOR_MISSED_REWARD = 'operator_missed_reward';
