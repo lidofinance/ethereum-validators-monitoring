@@ -17,7 +17,8 @@ WORKDIR /app
 
 COPY package.json yarn.lock ./
 # yarn 1 --production keeps packages only devDependencies reached (typescript, 23 MB); npm refuses
-# the tree yarn accepts without --legacy-peer-deps, the @lido-nestjs packages pin Nest 8 as a peer.
+# the tree yarn accepts without --legacy-peer-deps (@lido-nestjs/registry peers @mikro-orm/migrations,
+# which is not installed). npm ignores yarn resolutions, so package.json repeats them as overrides.
 RUN yarn install --frozen-lockfile --non-interactive --production \
   && npm prune --omit=dev --legacy-peer-deps \
   && yarn cache clean
