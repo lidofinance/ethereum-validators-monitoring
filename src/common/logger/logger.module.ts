@@ -2,7 +2,6 @@ import { LoggerModule as Logger, jsonTransport, simpleTransport } from '@lido-ne
 
 import { ConfigModule, ConfigService, LogFormat } from 'common/config';
 
-import { plainContext } from './plain-context.format';
 import { toWinstonLevel } from './winston-level';
 
 export const LoggerModule = Logger.forRootAsync({
@@ -16,6 +15,6 @@ export const LoggerModule = Logger.forRootAsync({
 
     const transports = isJSON ? jsonTransport({ secrets }) : simpleTransport({ secrets });
 
-    return { level, transports, format: plainContext };
+    return { level, transports };
   },
 });
