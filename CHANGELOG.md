@@ -1,3 +1,39 @@
+# [4.13.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.12.0...4.13.0) (2026-11-12)
+
+
+### Bug Fixes
+
+* bound the shutdown a rotation asks for, and stop dying on a CL failure at startup ([2eb91e5](https://github.com/lidofinance/ethereum-validators-monitoring/commit/2eb91e5737e4fc956e4051d79def87f262e7b03e))
+* check sparse mode in env validation ([01dc325](https://github.com/lidofinance/ethereum-validators-monitoring/commit/01dc3256847b1ad6947e56aa8ae10e24e2d97b4e))
+* count withdrawals at the slot that took them since Gloas (EIP-7732) ([9d02ecd](https://github.com/lidofinance/ethereum-validators-monitoring/commit/9d02ecd1ccb7b432af6e781201f3252c415f88a8))
+* judge the head vote by the payload vote too since Gloas (EIP-7732) ([a7955c1](https://github.com/lidofinance/ethereum-validators-monitoring/commit/a7955c1b7dd2e53a23ac853c7c5b29c9605b2e4d))
+* mask Keys API source URLs and the Alertmanager URL in logs ([699ee59](https://github.com/lidofinance/ethereum-validators-monitoring/commit/699ee59bc4d0292458bcb99477717502307e4627))
+* sort proposed slots before checking their payloads ([57c91bf](https://github.com/lidofinance/ethereum-validators-monitoring/commit/57c91bf90caaf09362c4cf69e8f64d3fa1fcd6ca))
+* **VROOM-675:** drop unused typechain from production dependencies ([e997110](https://github.com/lidofinance/ethereum-validators-monitoring/commit/e997110654af5a5c63b6e08f1f94a491fd695a4f))
+* **VROOM-675:** set the execution-layer User-Agent where ethers still accepts it ([51ab589](https://github.com/lidofinance/ethereum-validators-monitoring/commit/51ab58947367bf105c7c5aa8f065a3d27c44e80a))
+* **VROOM-754:** move to NestJS 11.2 and MikroORM 6 to clear critical CVEs ([8671d48](https://github.com/lidofinance/ethereum-validators-monitoring/commit/8671d484e779d3467be5015d7f93b4e72a05da40))
+* **VROOM-768:** log entities and dates as plain data ([2f28afb](https://github.com/lidofinance/ethereum-validators-monitoring/commit/2f28afb1db89bc9c816c32681f6855f1838e7ec9))
+
+
+### Features
+
+* count withdrawals from the payload envelope since Gloas (EIP-7732) ([4b4d9ff](https://github.com/lidofinance/ethereum-validators-monitoring/commit/4b4d9ff6ecb5d9a59358039336d763783375fa06)), closes [#5094](https://github.com/lidofinance/ethereum-validators-monitoring/issues/5094)
+* keep the sparse network slot search working under Gloas (EIP-7732) ([e09cfc8](https://github.com/lidofinance/ethereum-validators-monitoring/commit/e09cfc89e4b2efebe40b794d2994c2cd613cb119))
+* read secrets from a file and shut down gracefully ([1e5eec4](https://github.com/lidofinance/ethereum-validators-monitoring/commit/1e5eec45db9008b00dba0d34feb5c74367b3d10a))
+* read the beacon state under Gloas (EIP-7732, EIP-7916) ([f4c5d24](https://github.com/lidofinance/ethereum-validators-monitoring/commit/f4c5d24c675bd3b4ee740f69f950c6c1277d8783))
+* tell an empty slot from a missed proposal since Gloas (EIP-7732) ([dd93c3e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/dd93c3e320a8b0f258bb8fa66dc7e9c778d9d497))
+* **vroom-551:** parameterise ClickHouse table engine ([7d51ccb](https://github.com/lidofinance/ethereum-validators-monitoring/commit/7d51ccb3b9dd17598a2472811374af42ca5d646d))
+* **VROOM-675:** redacted startup logs, config dump, readiness, slim image, RPC metrics ([15de49c](https://github.com/lidofinance/ethereum-validators-monitoring/commit/15de49c1d973845d542179381740cf0e23255da4))
+* **VROOM-675:** result label on the RPC response time histogram ([531afc5](https://github.com/lidofinance/ethereum-validators-monitoring/commit/531afc5183e5767651582f003ffd5d5a67793c4a))
+* workflow ([adb92ae](https://github.com/lidofinance/ethereum-validators-monitoring/commit/adb92ae62b18e13fcd3cc08cf9f6c01848d7fe7a))
+
+
+### Performance Improvements
+
+* make fewer requests when checking the payload vote ([4b1d7a4](https://github.com/lidofinance/ethereum-validators-monitoring/commit/4b1d7a45fc524f2db7e710af90094aff78ced755))
+
+
+
 # [4.12.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.11.0...4.12.0) (2026-07-22)
 
 
@@ -294,23 +330,6 @@
 * `head` working mode ([71fb8a8](https://github.com/lidofinance/ethereum-validators-monitoring/commit/71fb8a8c212dfdeeee97999f59cee8bfe311e900))
 * README ([51e113e](https://github.com/lidofinance/ethereum-validators-monitoring/commit/51e113ef838371c145724a61cc2a9aa192894824))
 * speed up writing to db ([9441c0b](https://github.com/lidofinance/ethereum-validators-monitoring/commit/9441c0bffe91535a9018c573d848ef4f799304e2))
-
-
-
-# [4.4.0](https://github.com/lidofinance/ethereum-validators-monitoring/compare/4.3.3...4.4.0) (2023-07-05)
-
-
-### Bug Fixes
-
-* add label to metric ([#178](https://github.com/lidofinance/ethereum-validators-monitoring/issues/178)) ([e324034](https://github.com/lidofinance/ethereum-validators-monitoring/commit/e324034394d7e81030110d988db8ecbbd9c90c9d))
-* unused module init ([#182](https://github.com/lidofinance/ethereum-validators-monitoring/issues/182)) ([#184](https://github.com/lidofinance/ethereum-validators-monitoring/issues/184)) ([f243331](https://github.com/lidofinance/ethereum-validators-monitoring/commit/f2433314502cacbd66a6c06ea348bd97d260f189))
-
-
-### Features
-
-* keys-api interface ([#177](https://github.com/lidofinance/ethereum-validators-monitoring/issues/177)) ([4815355](https://github.com/lidofinance/ethereum-validators-monitoring/commit/481535586424c2c0fae5ccf1fd75f06f62a87cfe))
-* stuck keys ([#170](https://github.com/lidofinance/ethereum-validators-monitoring/issues/170)) ([8a9bd2d](https://github.com/lidofinance/ethereum-validators-monitoring/commit/8a9bd2db6ce9c930d36a7367e71598717fa738ca))
-* VALIDATOR_USE_STUCK_KEYS_FILE, readme ([#175](https://github.com/lidofinance/ethereum-validators-monitoring/issues/175)) ([3bd8174](https://github.com/lidofinance/ethereum-validators-monitoring/commit/3bd8174b0e82f73508f57d89ab8c35a2f725bea5))
 
 
 
