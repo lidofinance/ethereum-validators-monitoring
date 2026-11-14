@@ -1,0 +1,12 @@
+# Third-party images this application's chart runs on staging, copied into the team's staging
+# Harbor project by .github/workflows/mirror-staging-images.yml. One line per image: the source
+# pinned by digest, then the repository and tag in the project, under this application's prefix
+# so another application's copy of the same image never moves this tag.
+#
+# The digest has to match the chart's; bump both together.
+docker.io/library/postgres@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777             evm/library/postgres:16-alpine
+docker.io/lidofinance/lido-keys-api@sha256:c73f406b7b5fac9dd0175236ae148594de3819ffecaf8503da087a77cd9c5d45    evm/lidofinance/lido-keys-api:5.0.0
+docker.io/clickhouse/clickhouse-server@sha256:c93927bb54cda3e5de39390d6465ddbe17adb8a45c2a18aaf38f5840779130bb evm/clickhouse/clickhouse-server:25.3.6.56
+docker.io/clickhouse/clickhouse-keeper@sha256:62e6ba41626bc57199fa3866a63b7bee84e4478e23e40eb19ef651908dcf5001 evm/clickhouse/clickhouse-keeper:25.3.6.56
+docker.io/prom/prometheus@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06              evm/prom/prometheus:v3.16.0
+docker.io/prom/alertmanager@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c            evm/prom/alertmanager:v0.35.0

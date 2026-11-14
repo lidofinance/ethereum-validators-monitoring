@@ -1,0 +1,54 @@
+name: Copy third-party images to staging Harbor
+
+# Staging pulls only from its own Harbor, so the third-party images this application's chart
+# runs are copied there from mirror/images.txt, with their digests unchanged.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'mirror/images.txt'
+      - '.github/workflows/mirror-staging-images.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mirror-staging-images
+  cancel-in-progress: false
+
+jobs:
+  copy:
+    runs-on: ubuntu-24.04
+    environment: harbor_stage_release
+    env:
+      REGISTRY: registry.staging.k8s-staging.org
+      PROJECT: team-vroom
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # skopeo ships with the runner image, so no third-party action handles the token.
+      - name: Log in to Harbor
+        env:
+          REGISTRY_USERNAME: ${{ vars.REGISTRY_USERNAME }}
+          HARBOR_TOKEN: ${{ secrets.HARBOR_STAGE_TOKEN }}
+        run: printf '%s' "$HARBOR_TOKEN" | skopeo login --username "$REGISTRY_USERNAME" --password-stdin "$REGISTRY"
+
+      # --preserve-digests fails the copy rather than publish a digest the chart would not find.
+      - name: Copy images
+        run: |
+          set -euo pipefail
+          grep -Ev '^[[:space:]]*(#|$)' mirror/images.txt | while read -r source target; do
+            digest="${source##*@}"
+            dest="$REGISTRY/$PROJECT/$target"
+            if skopeo inspect --raw "docker://${dest%:*}@$digest" >/dev/null 2>&1; then
+              echo "present  ${dest%:*}@$digest"
+              continue
+            fi
+            skopeo copy --all --preserve-digests --retry-times 3 "docker://$source" "docker://$dest"
+            echo "copied   ${dest%:*}@$digest"
+          done
