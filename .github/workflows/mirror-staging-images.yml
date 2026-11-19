@@ -38,6 +38,13 @@ jobs:
           HARBOR_TOKEN: ${{ secrets.HARBOR_STAGE_TOKEN }}
         run: printf '%s' "$HARBOR_TOKEN" | skopeo login --username "$REGISTRY_USERNAME" --password-stdin "$REGISTRY"
 
+      # Docker Hardened Images need an authenticated pull.
+      - name: Log in to DHI
+        env:
+          DHI_USERNAME: ${{ secrets.DHI_USERNAME }}
+          DHI_TOKEN: ${{ secrets.DHI_TOKEN }}
+        run: printf '%s' "$DHI_TOKEN" | skopeo login --username "$DHI_USERNAME" --password-stdin dhi.io
+
       # --preserve-digests fails the copy rather than publish a digest the chart would not find.
       - name: Copy images
         run: |
