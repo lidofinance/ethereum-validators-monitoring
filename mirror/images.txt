@@ -1,0 +1,14 @@
+# Third-party images this application's charts run on staging, copied into the team's staging
+# Harbor project by .github/workflows/mirror-staging-images.yml. One line per image: the source
+# pinned by digest, then the repository and tag in the project. Sources are Docker Hardened Images.
+#
+# Lines under shared/ are images several applications run (the shared Keys API and its Postgres).
+# Keep them identical in every repository that lists them, so any of them can refresh the copy.
+# The rest sit under this application's prefix, so another application's copy never moves them.
+#
+# The digest has to match the chart's; bump both together.
+dhi.io/postgres@sha256:a7e446f813623e776304e925f65586e2ee035c127447b15a771df671bc4254a9          shared/dhi/postgres:16.16-alpine3.24
+dhi.io/clickhouse-server@sha256:1f6cc90b0856b16b30c4b2aab67212ea418e7112b3c65cb96a4ca7523d53715b evm/dhi/clickhouse-server:25.3.14-debian13
+dhi.io/clickhouse-keeper@sha256:33181f43a0a5ea7b6ae63171a9d5181810ae7679c6a0bb3fccf9563d45fa0dd5 evm/dhi/clickhouse-keeper:25.3.14-debian13
+dhi.io/prometheus@sha256:08729d0832cb83d0062def8d737a4db2cb75fed9ebe64ecc5704badb4853c592        evm/dhi/prometheus:3.16.0-debian13
+dhi.io/alertmanager@sha256:45868377e49ac045b17b828d3894114a95ef44e18a061c8c1357857bcb28d9a2      evm/dhi/alertmanager:0.35.0-alpine3.24
