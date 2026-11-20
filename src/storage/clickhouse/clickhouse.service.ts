@@ -71,6 +71,8 @@ import migration_000009_pending_consolidations from './migrations/migration_0000
 import migration_000010_block_payload from './migrations/migration_000010_block_payload';
 
 const PING_TIMEOUT_MS = 1000;
+// Rows per event-loop yield while streaming an epoch's summary into ClickHouse
+const WRITE_BATCH_SIZE = 1000;
 
 @Injectable()
 export class ClickhouseService implements OnModuleInit {
@@ -79,6 +81,8 @@ export class ClickhouseService implements OnModuleInit {
   private readonly minBackoff: number;
   private readonly maxBackoff: number;
   private readonly retry: ReturnType<typeof retrier>;
+  // Highest val_id already in validators_index; read from the table on the first write
+  private indexedUpTo: number | undefined;
 
   private async select<T>(query: string): Promise<T> {
     return await (await this.retry(async () => await this.db.query({ query, format: 'JSONEachRow' }))).json<T>();
@@ -159,8 +163,19 @@ export class ClickhouseService implements OnModuleInit {
     return { slot: 0 };
   }
 
+  private async getIndexedUpTo(): Promise<number> {
+    if (this.indexedUpTo === undefined) {
+      const [row] = await this.select<{ rows: string; max: string }[]>('SELECT count() AS rows, max(val_id) AS max FROM validators_index');
+      this.indexedUpTo = Number(row?.rows ?? 0) > 0 ? Number(row.max) : -1;
+    }
+    return this.indexedUpTo;
+  }
+
   @TrackTask('write-summary')
   public async writeSummary(summary: IterableIterator<ValidatorDutySummary>): Promise<void> {
+    const indexedUpTo = await this.getIndexedUpTo();
+    let newIndexedUpTo = indexedUpTo;
+
     const runWriteTasks = (stream: Readable): Promise<any>[] => {
       const indexes = this.retry(async () =>
         this.db.insert({
@@ -168,6 +183,10 @@ export class ClickhouseService implements OnModuleInit {
           values: stream.pipe(
             new Transform({
               transform(chunk, encoding, callback) {
+                // The registry only grows and an index never changes its pubkey, so every row up to
+                // the highest stored index is already there
+                if (chunk.val_id <= indexedUpTo) return callback();
+                newIndexedUpTo = Math.max(newIndexedUpTo, chunk.val_id);
                 callback(null, { val_id: chunk.val_id, val_pubkey: chunk.val_pubkey });
               },
               objectMode: true,
@@ -209,7 +228,7 @@ export class ClickhouseService implements OnModuleInit {
       runWriteTasks(
         chain([
           Readable.from(summary, { objectMode: true, autoDestroy: true }),
-          batch({ batchSize: 100 }),
+          batch({ batchSize: WRITE_BATCH_SIZE }),
           async (batch) => {
             await unblock();
             return batch;
@@ -217,6 +236,7 @@ export class ClickhouseService implements OnModuleInit {
         ]),
       ),
     );
+    this.indexedUpTo = newIndexedUpTo;
   }
 
   @TrackTask('write-pending-consolidations')
@@ -244,7 +264,7 @@ export class ClickhouseService implements OnModuleInit {
     await runWriteTask(
       chain([
         Readable.from(consolidations, { objectMode: true, autoDestroy: true }),
-        batch({ batchSize: 100 }),
+        batch({ batchSize: WRITE_BATCH_SIZE }),
         async (batch) => {
           await unblock();
           return batch;
