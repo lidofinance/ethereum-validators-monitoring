@@ -78,6 +78,34 @@ fetching and saving them to local storage can take time (depends on EL RPC host)
 For avoiding `heap out of memory` error, you can pass `NODE_OPTIONS` env var with `--max-old-space-size=8192` value
 and when the application completes its first cycle, you can restart your instance without this env variable.
 
+## Performance optimizations and monitoring the monitor
+
+To tail the logs of your instantiation you can use `docker compose logs -f`. Watch out for connection errors and other issues especially regarding `ethereum-validators-monitoring` process. You can choose to ignore alerting related errors if you haven't configured this feature yet.
+To see a real-time, dynamic view of these containers performance use `docker stats`.
+After the initial launch you can improve the performance, by using some or all of the following options:
+- consider running a local CL+EL.
+- remove `--max-old-space-size=8192` from `start:prod` section of `ethereum-validators-monitoring/package.json` file.
+- edit `./docker-compose.yml` file and assign more cpus and memory to `app` and `clickhouse` like so:
+```
+  clickhouse:
+    << text omitted >>
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 16g
+  app:
+    << text omitted >>
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 16g
+```
+
+Do not forget to stop and re-launch docker-compose after performing a modification.
+
+
 ## Run via docker-compose
 
 1. Use `.env.example.compose` file content to create your own `.env` file
