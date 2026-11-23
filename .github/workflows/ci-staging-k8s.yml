@@ -1,0 +1,26 @@
+name: Build and push ethereum-validators-monitoring to staging
+
+run-name: Build and push ethereum-validators-monitoring:staging to staging
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    # paths-ignore, not an allowlist: a forgotten allowlist entry ships a stale image with a green pipeline.
+    paths-ignore:
+      - '.github/**'
+      - 'test/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-push:
+    # @main until the DevOps rollout settles, then a reviewed commit SHA.
+    uses: lidofinance/actions/.github/workflows/k8s-build-push-harbor.yml@main
+    with:
+      target: staging
+      harbor_project: team-vroom
+      image: ethereum-validators-monitoring
+    secrets: inherit
