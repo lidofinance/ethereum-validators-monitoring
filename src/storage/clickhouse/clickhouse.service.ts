@@ -114,6 +114,35 @@ export class ClickhouseService implements OnModuleInit {
     await this.retry(async () => await this.migrate());
   }
 
+  /**
+   * Sets DB_SUMMARY_TTL_DAYS as the TTL of `validators_summary`, the one table that grows with the whole network.
+   * The migrations create it without one, so a recreated database gets it here rather than by hand.
+   */
+  public async applySummaryTtl(genesisTime: number): Promise<void> {
+    const days = this.config.get('DB_SUMMARY_TTL_DAYS');
+    if (!days) return;
+
+    const epochSeconds = this.config.get('CHAIN_SLOT_TIME_SECONDS') * this.config.get('FETCH_INTERVAL_SLOTS');
+    const ttl = `toDateTime(${genesisTime} + epoch * ${epochSeconds}) + toIntervalDay(${days})`;
+    // Compared in the server's own formatting: MODIFY TTL recalculates it in every part of the table, so it
+    // runs only when the TTL actually changes, not on every start.
+    const [{ expected, engine }] = await this.select<{ expected: string; engine: string }[]>(`
+      SELECT
+        substring(formatQuerySingleLine('SELECT ${ttl}'), 8) AS expected,
+        engine_full AS engine
+      FROM system.tables
+      WHERE database = currentDatabase() AND name = 'validators_summary'
+    `);
+    if (!engine.includes('ttl_only_drop_parts = 1')) {
+      // Expired days go as whole parts instead of being rewritten row by row.
+      await this.retry(async () => await this.db.exec({ query: 'ALTER TABLE validators_summary MODIFY SETTING ttl_only_drop_parts = 1' }));
+    }
+    if (engine.match(/ TTL (.+?)(?: SETTINGS |$)/)?.[1] !== expected) {
+      await this.retry(async () => await this.db.exec({ query: `ALTER TABLE validators_summary MODIFY TTL ${ttl}` }));
+      this.logger.log(`validators_summary TTL set to ${days} days`);
+    }
+  }
+
   /** Not through select(): its retrier backs off for up to two minutes, and the client's own
    * request timeout defaults to five. */
   public async ping(): Promise<void> {

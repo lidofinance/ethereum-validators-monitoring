@@ -21,6 +21,7 @@ export class InspectorService implements OnModuleInit, OnModuleDestroy, BeforeAp
   private loop: Promise<void> | null = null;
   /** The CL version is logged once, on the first cycle that reaches it. */
   private reportedVersion = false;
+  private appliedSummaryTtl = false;
 
   public constructor(
     @Inject(LOGGER_PROVIDER) protected readonly logger: LoggerService,
@@ -88,6 +89,11 @@ export class InspectorService implements OnModuleInit, OnModuleDestroy, BeforeAp
           // Read once, but inside the loop, so a failure is retried like any other cycle error.
           this.logger.log(`Beacon chain API info [${await this.clClient.getVersion()}]`);
           this.reportedVersion = true;
+        }
+        if (!this.appliedSummaryTtl) {
+          // Here and not with the migrations: the TTL needs the genesis time from the CL client.
+          await this.storage.applySummaryTtl(await this.clClient.getGenesisTime());
+          this.appliedSummaryTtl = true;
         }
         const toProcess = await this.getEpochDataToProcess();
         if (toProcess) {

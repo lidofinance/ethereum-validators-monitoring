@@ -122,6 +122,15 @@ describe('validate', () => {
     expect(line.message).toContain('CRITICAL_ALERTS_ALERTMANAGER_LABELS is not valid JSON');
   });
 
+  test.each(['0', '2', '21'])('DB_SUMMARY_TTL_DAYS=%s is accepted', (days) => {
+    expect(validate({ NODE_ENV: 'test', ETH_NETWORK: '1', DB_SUMMARY_TTL_DAYS: days }).DB_SUMMARY_TTL_DAYS).toBe(Number(days));
+  });
+
+  test('DB_SUMMARY_TTL_DAYS of 1 is refused: the indexer reads the epoch 225 back', () => {
+    expect(() => validate({ NODE_ENV: 'test', ETH_NETWORK: '1', DB_SUMMARY_TTL_DAYS: '1' })).toThrow('exit 1');
+    expect(captured.output()).toContain('DB_SUMMARY_TTL_DAYS');
+  });
+
   test('a validation failure is reported as JSON and ends the process', () => {
     expect(() => validate({ NODE_ENV: 'test', HTTP_PORT: '1024' })).toThrow('exit 1');
 
