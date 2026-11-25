@@ -200,6 +200,14 @@ too, so a failure before the application is up is still one parseable line with 
   declared without arguments, so the replica path is taken from the database (`Replicated` database engine) or from the
   server-side `default_replica_path` / `default_replica_name` defaults.
 ---
+`DB_SUMMARY_TTL_DAYS` - Days of epochs the `validators_summary` table keeps; older days are dropped as whole parts.
+* **Required:** false
+* **Default:** 0
+* **Note:** 0 leaves the table's TTL as it is; otherwise at least 2, since the indexer reads the epoch 225 back. The TTL
+  counts from the epoch's time, so an indexer further behind the head than the TTL keeps only the epoch it writes. It is
+  set on start and only when it differs from the table's, since changing it makes Clickhouse recalculate it in every
+  part. The table grows by ~4.6 GiB a day on mainnet.
+---
 `DRY_RUN` - Run application in dry mode. This means that it runs a main cycle once every 24 hours.
 * **Required:** false
 * **Values:** true / false

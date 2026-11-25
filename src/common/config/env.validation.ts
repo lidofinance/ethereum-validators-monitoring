@@ -151,6 +151,16 @@ export class EnvironmentVariables {
   @Transform(({ value }) => toBoolean(value), { toClassOnly: true })
   public DB_CLICKHOUSE_REPLICATED = false;
 
+  /**
+   * Days of epochs `validators_summary` keeps. 0 leaves the table's TTL as it is. Never under 2: the indexer reads
+   * the epoch 225 back.
+   */
+  @IsInt()
+  @Min(2)
+  @ValidateIf((vars) => vars.DB_SUMMARY_TTL_DAYS !== 0)
+  @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
+  public DB_SUMMARY_TTL_DAYS = 0;
+
   @IsNotEmpty()
   @IsInt()
   @Min(1)
